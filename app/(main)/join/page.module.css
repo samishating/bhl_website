@@ -1,0 +1,25 @@
+.page { min-height: 100vh; padding-bottom: 5rem; }
+.header { position: relative; padding: 5rem 0 3rem; text-align: center; overflow: hidden; }
+.headerGlow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(255,0,0,0.1), transparent 70%); pointer-events: none; }
+.headerSub { color: var(--text-secondary); margin-top: 0.75rem; max-width: 550px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+.formGrid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; align-items: start; }
+.stepTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); }
+.stepNum { background: linear-gradient(135deg, #FF0000, #CC0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.5rem; }
+.divisionCards { display: flex; flex-direction: column; gap: 0.75rem; }
+.divCard { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; }
+.divCard:hover { border-color: var(--brand-red); background: rgba(255,0,0,0.04); }
+.divCardSelected { border-color: var(--brand-red) !important; background: rgba(255,0,0,0.08) !important; }
+.divIcon { font-size: 1.5rem; }
+.divLabel { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; flex: 1; }
+.checkMark { color: var(--brand-red); font-weight: 700; }
+.appForm { display: flex; flex-direction: column; gap: 1rem; }
+.hint { color: var(--brand-red); font-size: 0.82rem; text-align: center; }
+
+.successPage { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.successCard { max-width: 540px; background: var(--bg-card); border: 1px solid rgba(255,0,0,0.2); border-radius: var(--radius-lg); padding: 3rem; text-align: center; display: flex; flex-direction: column; gap: 1.25rem; align-items: center; box-shadow: 0 0 60px rgba(255,0,0,0.06); }
+.successIcon { font-size: 4rem; animation: float 3s ease-in-out infinite; }
+.successCard h2 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2rem; }
+.successCard p { color: var(--text-secondary); line-height: 1.7; }
+.successSub { color: var(--brand-red) !important; font-style: italic; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; }
+
+@media (max-width: 768px) { .formGrid { grid-template-columns: 1fr; } }

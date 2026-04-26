@@ -1,0 +1,77 @@
+.page { min-height: 100vh; }
+.header {
+  position: relative;
+  padding: 5rem 0 3rem;
+  text-align: center;
+  overflow: hidden;
+}
+.headerGlow {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(255,0,0,0.1), transparent 70%);
+  pointer-events: none;
+}
+.headerSub {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 1rem auto 0;
+  line-height: 1.7;
+}
+.divisionsSection { padding: 2rem 0 6rem; }
+.divisionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+.divCard {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow: hidden;
+  transition: var(--transition);
+  animation: fadeInUp 0.6s ease both;
+}
+.divCard:hover {
+  border-color: var(--div-color, var(--neon-blue));
+  transform: translateY(-4px);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--div-color, #FF0000) 20%, transparent);
+}
+.divCardGlow {
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  opacity: 0.08;
+  filter: blur(60px);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.divCard:hover .divCardGlow { opacity: 0.2; }
+.divCardTop { display: flex; align-items: center; gap: 1rem; }
+.divIcon { font-size: 2.5rem; }
+.memberCount { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem; }
+.divDesc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; }
+.divPerks {
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+.perksTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+.perk { font-size: 0.85rem; color: var(--text-secondary); padding: 0.2rem 0; display: flex; gap: 0.5rem; }
+@media (max-width: 768px) { .divisionsGrid { grid-template-columns: 1fr; } }

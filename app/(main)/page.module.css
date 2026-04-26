@@ -1,0 +1,86 @@
+/* ─── Hero ───────────────────────────────────────────── */
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--gradient-hero); }
+.canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.heroGlow {
+  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse at center, rgba(255, 0, 0, 0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.heroContent { position: relative; z-index: 1; text-align: center; max-width: 900px; padding: 4rem 1.5rem; animation: fadeInUp 0.8s ease forwards; }
+.heroPill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  border-radius: 999px; padding: 0.4rem 1rem;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.8rem;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--brand-red);
+  margin-bottom: 2rem;
+}
+.pillDot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-red); box-shadow: 0 0 6px var(--brand-red); animation: glow-pulse 1.5s ease-in-out infinite; }
+.heroTitle { margin-bottom: 1.5rem; line-height: 1.05; font-size: clamp(3rem, 8vw, 6.5rem); }
+.heroWord { color: white; }
+.heroSub { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text-secondary); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.7; }
+.heroCtas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 4rem; }
+.statsRow { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); }
+.stat { text-align: center; }
+.statValue {
+  display: block; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2rem;
+  background: linear-gradient(135deg, #FF0000, #CC0000);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.statLabel { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.scrollIndicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; animation: fadeInDown 1s ease 1s forwards; opacity: 0; }
+.scrollLine { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--brand-red), transparent); animation: float 2s ease-in-out infinite; }
+
+/* ─── Divisions ─────────────────────────────────────── */
+.divisionsSection { padding: 6rem 0; }
+.sectionHeader { text-align: center; margin-bottom: 3rem; }
+.sectionDesc { color: var(--text-secondary); font-size: 1rem; margin-top: 0.75rem; }
+.divisionsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.divCard {
+  position: relative; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 2rem 1.5rem;
+  display: flex; flex-direction: column; gap: 0.75rem; overflow: hidden;
+  transition: var(--transition); animation: fadeInUp 0.6s ease both; cursor: pointer;
+}
+.divCard:hover { border-color: var(--div-color, var(--brand-red)); transform: translateY(-6px); box-shadow: 0 0 30px color-mix(in srgb, var(--div-color, #FF0000) 30%, transparent); }
+.divCardGlow { position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; border-radius: 50%; opacity: 0.08; filter: blur(40px); pointer-events: none; transition: opacity 0.3s ease; }
+.divCard:hover .divCardGlow { opacity: 0.2; }
+.divIcon { font-size: 2.5rem; }
+.divDesc { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; flex: 1; }
+.divArrow { color: var(--text-muted); font-size: 1.2rem; transition: all 0.2s ease; align-self: flex-end; }
+.divCard:hover .divArrow { color: var(--div-color, var(--brand-red)); transform: translateX(4px); }
+
+/* ─── XP Section ─────────────────────────────────────── */
+.xpSection { padding: 6rem 0; background: linear-gradient(180deg, transparent 0%, rgba(255, 0, 0, 0.03) 50%, transparent 100%); }
+.xpGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.xpDesc { color: var(--text-secondary); line-height: 1.7; margin: 1rem 0 2rem; }
+.xpActions { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+.xpAction { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: var(--transition); }
+.xpAction:hover { border-color: var(--border-hover); background: rgba(255,0,0,0.04); }
+.xpActionIcon { font-size: 1.3rem; }
+.xpActionName { flex: 1; font-size: 0.9rem; color: var(--text-secondary); }
+.xpActionXp { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--brand-red); font-size: 0.95rem; }
+.xpCard {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  border-radius: var(--radius-lg); padding: 2rem;
+  box-shadow: 0 0 40px rgba(255, 0, 0, 0.08);
+  animation: float 5s ease-in-out infinite;
+}
+.mockProfile { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.mockAvatar { background: linear-gradient(135deg, #FF0000, #CC0000) !important; }
+.mockName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.3rem; }
+.mockXpBar { margin-bottom: 1.5rem; }
+.mockBadges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* ─── CTA Section ────────────────────────────────────── */
+.ctaSection { position: relative; padding: 6rem 0; overflow: hidden; }
+.ctaGlow { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255, 0, 0, 0.07) 0%, transparent 70%); pointer-events: none; }
+.ctaContent { text-align: center; position: relative; z-index: 1; }
+.ctaContent p { color: var(--text-secondary); font-size: 1.1rem; margin: 1rem 0 2rem; }
+.ctaBtns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 1100px) { .divisionsGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px)  { .xpGrid { grid-template-columns: 1fr; gap: 3rem; } .divisionsGrid { grid-template-columns: 1fr; } }

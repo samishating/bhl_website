@@ -1,0 +1,74 @@
+'use client';
+import { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import styles from '../auth.module.css';
+
+function LoginForm() {
+  const { login } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    const result = await login(email, password);
+    setLoading(false);
+    if (result.success) {
+      const callbackUrl = searchParams.get('callbackUrl') || '/profile';
+      router.push(callbackUrl);
+    } else {
+      setError(result.error || 'Login failed');
+    }
+  };
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.glow} />
+      <div className={styles.card}>
+        <Link href="/" className={styles.logo}>
+          <img src="/brand/logo.png" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
+        </Link>
+        <h2 className={styles.title}>Welcome Back</h2>
+        <p className={styles.sub}>Sign in to your Brotherhood account</p>
+
+        {error && <div className={styles.error}>{error}</div>}
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input className="form-input" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" id="login-email" />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input className="form-input" type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" id="login-password" />
+          </div>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={loading} id="login-submit-btn">
+            {loading ? <span className="spinner" /> : 'Login to BHL'}
+          </button>
+        </form>
+
+        <p className={styles.link}>
+          Don&apos;t have an account? <Link href="/register">Join the Brotherhood →</Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <AuthProvider>
+      <Suspense fallback={<div className={styles.page} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
+        <LoginForm />
+      </Suspense>
+    </AuthProvider>
+  );
+}

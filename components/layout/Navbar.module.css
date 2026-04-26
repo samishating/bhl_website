@@ -1,0 +1,118 @@
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(14, 13, 13, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.12);
+}
+.inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Logo */
+.logo { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.logoIcon { font-size: 1.5rem; filter: drop-shadow(0 0 8px #FF0000); }
+.logoText {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  background: linear-gradient(135deg, #FF0000, #CC0000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Nav Links */
+.navLinks { display: flex; align-items: center; gap: 0.25rem; flex: 1; list-style: none; margin: 0; padding: 0; }
+.navLink {
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.navLink:hover { color: white; background: rgba(255,255,255,0.04); }
+.navLink.active { color: var(--brand-red); background: rgba(255, 0, 0, 0.07); }
+
+/* Actions */
+.actions { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+
+/* Cart */
+.cartBtn {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+.cartBtn:hover { color: var(--brand-red); border-color: var(--brand-red); background: rgba(255,0,0,0.06); }
+.cartBadge {
+  position: absolute; top: -6px; right: -6px;
+  background: var(--brand-red);
+  color: white; border-radius: 50%;
+  width: 18px; height: 18px;
+  font-size: 0.65rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* User Menu */
+.userMenu { display: flex; align-items: center; gap: 0.5rem; }
+.userAvatarBtn {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+.userAvatarBtn:hover { background: rgba(255,0,0,0.05); border-color: var(--border-hover); }
+.navAvatar { width: 30px !important; height: 30px !important; font-size: 0.8rem !important; }
+.username { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.9rem; color: white; }
+.levelBadge { font-size: 0.7rem !important; }
+
+/* Auth */
+.authButtons { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Burger */
+.burger {
+  display: none; width: 38px; height: 38px;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px; color: white;
+}
+.burger span { display: block; width: 18px; height: 2px; background: white; position: relative; transition: all 0.3s ease; }
+.burger span::before, .burger span::after { content: ''; position: absolute; width: 18px; height: 2px; background: white; transition: all 0.3s ease; }
+.burger span::before { top: -6px; }
+.burger span::after  { top:  6px; }
+
+/* Mobile Menu */
+.mobileMenu { display: flex; flex-direction: column; padding: 1rem 1.5rem; background: var(--bg-secondary); border-top: 1px solid var(--border); gap: 0.25rem; }
+.mobileLink {
+  padding: 0.75rem 1rem; border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-secondary); display: block; transition: all 0.2s ease;
+  background: none; border: none; text-align: left; cursor: pointer; width: 100%;
+}
+.mobileLink:hover, .mobileLink.active { color: var(--brand-red); background: rgba(255,0,0,0.06); }
+
+@media (max-width: 900px) { .navLinks { display: none; } .burger { display: flex; } .userMenu .btn, .authButtons .btn { display: none; } }
+@media (max-width: 500px)  { .username, .levelBadge { display: none; } }

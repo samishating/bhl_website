@@ -1,0 +1,36 @@
+.footer {
+  position: relative;
+  margin-top: 6rem;
+  border-top: 1px solid rgba(255, 0, 0, 0.12);
+  padding: 4rem 0 2rem;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+.glow {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 1px;
+  background: linear-gradient(90deg, transparent, #CC0000, #FF0000, #CC0000, transparent);
+  box-shadow: 0 0 40px 10px rgba(255, 0, 0, 0.15);
+}
+.grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+.brand .logo { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+.logoIcon { font-size: 1.5rem; filter: drop-shadow(0 0 8px #FF0000); }
+.logoText {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #FF0000, #CC0000);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.tagline { font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--brand-red); font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.75rem; }
+.desc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }
+.links h4 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 1rem; }
+.links ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.links a { color: var(--text-muted); font-size: 0.88rem; transition: color 0.2s ease; }
+.links a:hover { color: var(--brand-red); }
+.bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.bottom p { color: var(--text-muted); font-size: 0.82rem; }
+.divisionTags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } .brand { grid-column: 1 / -1; } }
+@media (max-width: 500px)  { .grid { grid-template-columns: 1fr; } }

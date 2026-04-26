@@ -1,0 +1,203 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { useCart } from '@/contexts/CartContext';
+import styles from './page.module.css';
+
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  stock: number;
+  isLimitedDrop: boolean;
+  category: string;
+}
+
+const CATEGORIES = ['all', 'apparel', 'accessories', 'gear', 'digital'];
+
+export default function MerchPage() {
+  const { addItem, items, count, total, removeItem, updateQuantity, clearCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [cartOpen, setCartOpen] = useState(false);
+  const [checkout, setCheckout] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [orderDone, setOrderDone] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(r => r.json())
+      .then(d => { setProducts(d.products || []); setLoading(false); });
+  }, []);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  };
+
+  const filtered = filter === 'all' ? products : products.filter(p =>
+    filter === 'drop' ? p.isLimitedDrop : p.category === filter
+  );
+
+  const handleAddToCart = (p: Product) => {
+    addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
+    showToast(`🛒 ${p.name} added to cart!`);
+  };
+
+  const handleCheckout = () => {
+    setCheckout(false);
+    setOrderDone(true);
+    clearCart();
+  };
+
+  return (
+    <div className={styles.page}>
+      {toast && <div className="toast">{toast}</div>}
+
+      {/* Cart Sidebar */}
+      {cartOpen && (
+        <div className={styles.cartOverlay} onClick={() => setCartOpen(false)}>
+          <div className={styles.cart} onClick={e => e.stopPropagation()}>
+            <div className={styles.cartHeader}>
+              <h3>Your Cart ({count})</h3>
+              <button onClick={() => setCartOpen(false)} className={styles.cartClose}>✕</button>
+            </div>
+            {items.length === 0 ? (
+              <div className={styles.emptyCart}>Your cart is empty</div>
+            ) : (
+              <>
+                <div className={styles.cartItems}>
+                  {items.map(item => (
+                    <div key={item.id} className={styles.cartItem}>
+                      <div className={styles.cartItemImg}>{item.name[0]}</div>
+                      <div className={styles.cartItemInfo}>
+                        <div className={styles.cartItemName}>{item.name}</div>
+                        <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
+                      </div>
+                      <div className={styles.cartQty}>
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                      </div>
+                      <button className={styles.removeItem} onClick={() => removeItem(item.id)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.cartFooter}>
+                  <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
+                  <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { setCartOpen(false); setCheckout(true); }} id="proceed-checkout-btn">
+                    Proceed to Checkout
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Checkout Modal */}
+      {checkout && (
+        <div className={styles.cartOverlay} onClick={() => setCheckout(false)}>
+          <div className={styles.checkoutModal} onClick={e => e.stopPropagation()}>
+            <h3>Checkout</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              This is a mock checkout. No real payment is processed.
+            </p>
+            <div className={styles.checkoutForm}>
+              <input className="form-input" placeholder="Full Name" id="checkout-name" />
+              <input className="form-input" placeholder="Email" id="checkout-email" />
+              <input className="form-input" placeholder="Shipping Address" id="checkout-address" />
+              <input className="form-input" placeholder="Card Number (mock)" id="checkout-card" />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <input className="form-input" placeholder="MM/YY" id="checkout-expiry" />
+                <input className="form-input" placeholder="CVV" id="checkout-cvv" />
+              </div>
+              <div className={styles.checkoutTotal}>Order Total: <strong>${total.toFixed(2)}</strong></div>
+              <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleCheckout} id="place-order-btn">
+                Place Order (Mock)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Success */}
+      {orderDone && (
+        <div className={styles.cartOverlay} onClick={() => setOrderDone(false)}>
+          <div className={styles.successModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.successIcon}>🎉</div>
+            <h3>Order Placed!</h3>
+            <p>Your Brotherhood Legacy order is confirmed. You'll receive a confirmation (mock) shortly.</p>
+            <button className="btn btn-primary" onClick={() => setOrderDone(false)}>Continue Shopping</button>
+          </div>
+        </div>
+      )}
+
+      <section className={styles.header}>
+        <div className={styles.headerGlow} />
+        <div className="container">
+          <div className="section-tag">Official Store</div>
+          <h1>BHL <span className="gradient-text">Merch</span></h1>
+          <p className={styles.headerSub}>Rep the Brotherhood. Premium drops, limited editions, streetwear culture.</p>
+        </div>
+        <button
+          className={styles.floatingCart}
+          onClick={() => setCartOpen(true)}
+          id="open-cart-btn"
+        >
+          🛒
+          {count > 0 && <span className={styles.floatBadge}>{count}</span>}
+        </button>
+      </section>
+
+      <div className="container">
+        <div className={styles.tabs}>
+          {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
+            <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
+              onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
+              {c === 'drop' ? '🔥 Limited Drops' : c.charAt(0).toUpperCase() + c.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '4rem' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
+        ) : filtered.length === 0 ? (
+          <div className={styles.empty}>No products in this category yet.</div>
+        ) : (
+          <div className={styles.grid}>
+            {filtered.map((p, i) => (
+              <div key={p._id} className={styles.productCard} style={{ animationDelay: `${i * 0.06}s` }} id={`product-${p._id}`}>
+                <div className={styles.productImg}>
+                  {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
+                    <div className={styles.productImgPlaceholder}>{p.name[0]}</div>
+                  )}
+                  {p.isLimitedDrop && <span className={styles.dropBadge}>🔥 Limited</span>}
+                  {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>Only {p.stock} left</span>}
+                </div>
+                <div className={styles.productInfo}>
+                  <div className={styles.productCategory}>{p.category}</div>
+                  <h3 className={styles.productName}>{p.name}</h3>
+                  <p className={styles.productDesc}>{p.description}</p>
+                  <div className={styles.productFooter}>
+                    <span className={styles.productPrice}>${p.price.toFixed(2)}</span>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleAddToCart(p)}
+                      disabled={p.stock === 0}
+                      id={`add-to-cart-${p._id}`}
+                    >
+                      {p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,21 @@
+.page { min-height: 100vh; padding-bottom: 5rem; }
+.hero { position: relative; padding: 5rem 0 3rem; text-align: center; overflow: hidden; }
+.heroGlow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 400px; background: radial-gradient(ellipse, rgba(255,0,0,0.08), transparent 70%); pointer-events: none; }
+.heroSub { color: var(--text-secondary); max-width: 700px; margin: 1.25rem auto 0; line-height: 1.7; font-size: 1rem; }
+.missionCard { position: relative; background: var(--bg-card); border: 1px solid rgba(255,0,0,0.12); border-radius: var(--radius-lg); padding: 3rem; margin-bottom: 4rem; overflow: hidden; }
+.missionCard p { color: var(--text-secondary); line-height: 1.8; font-size: 1rem; max-width: 700px; }
+.missionCard h2 { margin-bottom: 1rem; }
+.missionGlow { position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,0,0,0.06), transparent 70%); pointer-events: none; }
+.centeredTitle { text-align: center; margin-bottom: 2rem; }
+.valuesSection, .teamSection { margin-bottom: 4rem; }
+.valueIcon { font-size: 2.5rem; margin-bottom: 1rem; }
+.teamCard { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.teamAvatar { background: var(--brand-red) !important; font-size: 2rem !important; border: 2px solid rgba(255,0,0,0.3); }
+.teamName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.1rem; }
+.teamRole { color: var(--text-secondary); font-size: 0.82rem; }
+.statsSection { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.statItem { text-align: center; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 2rem; }
+.statNum { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.5rem; background: linear-gradient(135deg, #FF0000, #CC0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.statLabel { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
+@media (max-width: 900px) { .statsSection { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .statsSection { grid-template-columns: 1fr; } }

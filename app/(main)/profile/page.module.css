@@ -1,0 +1,32 @@
+.page { min-height: 100vh; padding: 3rem 0 5rem; }
+.profileHeader { display: grid; grid-template-columns: auto 1fr auto; gap: 2.5rem; align-items: start; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 2rem; }
+.avatarSection { position: relative; width: fit-content; }
+.mainAvatar { border: 3px solid var(--brand-red) !important; box-shadow: 0 0 20px rgba(255,0,0,0.3) !important; }
+.rankRing { position: absolute; inset: -6px; border-radius: 50%; border: 2px solid; border-color: transparent var(--brand-red) transparent var(--brand-red-dark); animation: spin 4s linear infinite; pointer-events: none; }
+.profileInfo { display: flex; flex-direction: column; gap: 0.6rem; }
+.nameRow { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.username { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.levelRow { display: flex; align-items: center; gap: 0.5rem; }
+.levelTitle { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
+.bio { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+.divisionTags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.profileActions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+
+.xpCard { min-width: 260px; background: rgba(255,0,0,0.04); border: 1px solid rgba(255,0,0,0.18); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.xpTop { display: flex; justify-content: space-between; align-items: center; }
+.xpTotal { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; color: var(--brand-red); }
+.xpLevel { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--cream); }
+.xpBarLabel { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
+.badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem; }
+.badgeItem { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.5rem; background: rgba(255,255,255,0.03); border-radius: 4px; border: 1px solid currentColor; opacity: 0.85; }
+
+.editSection, .historySection { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 2rem; margin-bottom: 2rem; }
+.sectionTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem; color: var(--text-secondary); }
+.editForm { display: flex; flex-direction: column; gap: 1rem; max-width: 600px; }
+.divisionPicker { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.divPickBtn { padding: 0.5rem 1rem; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; }
+.divPickBtn:hover { border-color: var(--div-color, var(--brand-red)); color: white; }
+.divPickActive { border-color: var(--div-color, var(--brand-red)) !important; color: white !important; background: rgba(255,0,0,0.1) !important; }
+
+@media (max-width: 900px) { .profileHeader { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .profileHeader { padding: 1.5rem; gap: 1.5rem; } }

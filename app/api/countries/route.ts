@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const countries = [
   { name: 'France', code: 'FR', dial_code: '+33', flag: '🇫🇷' },
   { name: 'United States', code: 'US', dial_code: '+1', flag: '🇺🇸' },

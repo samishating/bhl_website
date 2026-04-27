@@ -135,13 +135,13 @@ export default function CartDrawer() {
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <select 
                   className="form-input" 
-                  style={{ width: '100px', cursor: 'pointer' }}
+                  style={{ width: '140px', cursor: 'pointer' }}
                   value={dialCode}
                   onChange={e => setDialCode(e.target.value)}
                 >
                   {countries.map(c => (
                     <option key={c.code} value={c.dial_code}>
-                      {c.flag} {c.dial_code}
+                      {c.flag} {c.name} ({c.dial_code})
                     </option>
                   ))}
                 </select>

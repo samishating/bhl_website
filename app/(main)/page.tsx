@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import HeroWrapper from '@/components/HeroWrapper';
+import dynamic from 'next/dynamic';
+import HomeParallaxBackground from '@/components/HomeParallaxBackground';
+const HeroClient = dynamic(() => import('@/components/HeroClient'), { ssr: true });
 import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
 
@@ -16,8 +18,11 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO (Three.js Wrapper) */}
-      <HeroWrapper statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
+      {/* Cinematic Parallax Background */}
+      <HomeParallaxBackground />
+
+      {/* HERO (Client Side Counters) */}
+      <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
 
       {/* DIVISIONS PREVIEW (Server Side) */}
       <section className={styles.divisionsSection}>

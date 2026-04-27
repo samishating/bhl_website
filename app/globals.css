@@ -429,3 +429,69 @@ tbody tr:last-child td { border-bottom: none; }
 .status-online  { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
 .status-pending { background: var(--cream); }
 .status-offline { background: var(--text-muted); }
+
+/* ─── Home Parallax Background ──────────────────────── */
+.home-parallax-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: #0E0D0D;
+  pointer-events: none;
+}
+
+.bg-layer {
+  position: absolute;
+  inset: -5%;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+/* BLUR LAYER (DEPTH) */
+.bg-blur {
+  background-image: url("/backgrounds/hero-ultra-blur.webp");
+  filter: blur(40px) brightness(0.35);
+  transform: scale(1.08);
+}
+
+/* MAIN IMAGE */
+.bg-main {
+  background-image: url("/backgrounds/hero-ultra.webp");
+  opacity: 0.65;
+  filter: brightness(0.55) contrast(0.95) saturate(0.9);
+}
+
+/* OVERLAY (READABILITY) */
+.bg-overlay {
+  background:
+    radial-gradient(circle at center, rgba(255,0,0,0.12), transparent 45%),
+    linear-gradient(to bottom, rgba(14,13,13,0.4), rgba(0,0,0,0.85));
+}
+
+/* NOISE */
+.bg-noise {
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+/* PARTICLES */
+.bg-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .bg-main {
+    background-image: url("/backgrounds/hero-mobile.webp");
+    opacity: 0.5;
+    background-position: center top;
+  }
+
+  .bg-blur {
+    background-image: url("/backgrounds/hero-mobile-blur.webp");
+  }
+}

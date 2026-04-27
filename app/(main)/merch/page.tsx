@@ -53,6 +53,10 @@ export default function MerchPage() {
   });
 
   const handleAddToCart = (p: Product) => {
+    if (!user) {
+      showToast('❌ Please login to add items to cart');
+      return;
+    }
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
     showToast(`🛒 ${p.name} added to cart!`);
   };
@@ -168,10 +172,10 @@ export default function MerchPage() {
                 <button
                   className="btn btn-primary"
                   style={{ width: '100%', marginTop: '2rem' }}
-                  onClick={() => { handleAddToCart(selectedProduct); setSelectedProduct(null); }}
-                  disabled={selectedProduct.stock === 0 || (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP)}
+                  onClick={() => { handleAddToCart(selectedProduct); if(user) setSelectedProduct(null); }}
+                  disabled={selectedProduct.stock === 0}
                 >
-                  {(selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Locked (Need 40k XP)' : 'Add to Cart 🛒'}
+                  {!user ? 'Login to Buy' : (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Locked (Need 40k XP)' : 'Add to Cart 🛒'}
                 </button>
               </div>
             </div>
@@ -267,11 +271,11 @@ export default function MerchPage() {
                     <span className={styles.productPrice}>${p.price.toFixed(2)}</span>
                     <button
                       className="btn btn-primary btn-sm"
-                      onClick={() => handleAddToCart(p)}
-                      disabled={p.stock === 0 || (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP)}
+                      onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
+                      disabled={p.stock === 0}
                       id={`add-to-cart-${p._id}`}
                     >
-                      {p.stock === 0 ? 'Sold Out' : (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Need 40k XP 🔐' : 'Add to Cart'}
+                      {p.stock === 0 ? 'Sold Out' : !user ? 'Login to Buy' : (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Need 40k XP 🔐' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>

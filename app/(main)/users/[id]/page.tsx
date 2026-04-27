@@ -112,7 +112,7 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
           <div className={styles.profileInfo}>
             <div className={styles.nameRow}>
               <h1 className={styles.username}>{profile.username}</h1>
-              {profile.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)' }}>SUPERADMIN</span>}
+              {profile.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' }}>SUPERADMIN</span>}
               {profile.role === 'admin' && <span className="badge badge-red">Admin</span>}
             </div>
             <div className={styles.levelRow}>

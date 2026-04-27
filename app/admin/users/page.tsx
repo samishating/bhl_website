@@ -158,7 +158,7 @@ export default function AdminUsersPage() {
                     </div>
                   </td>
                   <td>
-                    <span className={`badge ${u.role === 'superadmin' ? 'badge-red' : u.role === 'admin' ? 'badge-red' : 'badge-blue'}`} style={u.role === 'superadmin' ? { background: 'linear-gradient(90deg, #ff0055, #cc0000)' } : {}}>
+                    <span className={`badge ${u.role === 'superadmin' ? 'badge-red' : u.role === 'admin' ? 'badge-red' : 'badge-blue'}`} style={u.role === 'superadmin' ? { background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' } : {}}>
                       {u.role === 'superadmin' ? 'SUPERADMIN' : u.role === 'admin' ? 'Admin' : 'Member'}
                     </span>
                   </td>

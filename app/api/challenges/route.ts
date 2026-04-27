@@ -25,10 +25,16 @@ export async function POST(req: NextRequest) {
     if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
-    const { title, description, xpReward, division } = await req.json();
+    const { title, description, xpReward, division, allowRepeats } = await req.json();
     if (!title || !description) return NextResponse.json({ error: 'Title and description required' }, { status: 400 });
 
-    const challenge = await Challenge.create({ title, description, xpReward: xpReward || 50, division: division || 'global' });
+    const challenge = await Challenge.create({ 
+      title, 
+      description, 
+      xpReward: xpReward || 50, 
+      division: division || 'global',
+      allowRepeats: !!allowRepeats 
+    });
     return NextResponse.json({ challenge }, { status: 201 });
   } catch (err) {
     console.error(err);

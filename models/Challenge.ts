@@ -6,6 +6,7 @@ export interface IChallenge extends Document {
   xpReward: number;
   division: string;
   active: boolean;
+  allowRepeats: boolean;
   createdAt: Date;
 }
 
@@ -15,6 +16,7 @@ const ChallengeSchema = new Schema<IChallenge>({
   xpReward: { type: Number, required: true, default: 50 },
   division: { type: String, enum: ['gaming', 'music', 'sport', 'content'], default: 'gaming' },
   active: { type: Boolean, default: true },
+  allowRepeats: { type: Boolean, default: false },
 }, { timestamps: true });
 
 if (mongoose.models.Challenge) {

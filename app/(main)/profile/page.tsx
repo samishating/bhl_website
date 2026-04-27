@@ -116,7 +116,7 @@ export default function ProfilePage() {
           <div className={styles.profileInfo}>
             <div className={styles.nameRow}>
               <h1 className={styles.username}>{user.username}</h1>
-              {user.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)' }}>SUPERADMIN</span>}
+              {user.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' }}>SUPERADMIN</span>}
               {user.role === 'admin' && <span className="badge badge-red">Admin</span>}
             </div>
             <div className={styles.levelRow}>

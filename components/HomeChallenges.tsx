@@ -98,18 +98,26 @@ export default function HomeChallenges() {
               return (
                 <div key={c._id} className={`${styles.card} ${status === 'approved' ? styles.cardDone : ''}`}>
                   <div className={styles.cardTop}>
-                    <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>
+                      {c.allowRepeats && <span className="badge badge-violet" style={{ fontSize: '0.65rem' }}>Repeatable</span>}
+                    </div>
                     <span className={styles.xpBadge}>+{c.xpReward} XP</span>
                   </div>
                   <h3 className={styles.cardTitle}>{c.title}</h3>
                   <p className={styles.cardDesc}>{c.description}</p>
                   
-                  {status ? (
+                  {status && !c.allowRepeats ? (
                     <div className={styles.doneState}>
                       {status === 'approved' ? '✅ Completed' : status === 'rejected' ? '❌ Rejected' : '⏳ Pending Approval'}
                     </div>
                   ) : (
                     <div className={styles.submitForm}>
+                      {status && c.allowRepeats && (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                          Last status: <span style={{ color: status === 'approved' ? '#22c55e' : 'var(--brand-red)' }}>{status.toUpperCase()}</span>
+                        </div>
+                      )}
                       <input
                         type="url"
                         className="form-input"

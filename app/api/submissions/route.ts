@@ -30,8 +30,13 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    const existing = await Submission.findOne({ userId: payload.userId, challengeId });
-    if (existing) {
+    const existing = await Submission.findOne({ 
+      userId: payload.userId, 
+      challengeId,
+      status: { $in: ['pending', 'approved'] }
+    });
+    
+    if (existing && !challenge.allowRepeats) {
       return NextResponse.json({ error: 'Already submitted for this challenge' }, { status: 409 });
     }
 

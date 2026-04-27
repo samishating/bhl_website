@@ -53,7 +53,7 @@ export default function CommunityPage() {
               <a href="https://discord.gg/bhl" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                 Join Discord
               </a>
-              <a href="https://github.com/samishating/bhl_website" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+              <a href="https://github.com/samishating/bhl_website" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
                 View Source
               </a>
             </div>

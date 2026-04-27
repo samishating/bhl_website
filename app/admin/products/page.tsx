@@ -5,6 +5,25 @@ import styles from './page.module.css';
 interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; isLimitedDrop: boolean; }
 const defaultForm = { name: '', description: '', price: 29.99, image: '', images: [] as string[], stock: 100, isLimitedDrop: false, category: 'apparel' };
 
+/** Compress an image file client-side to max 800px and 75% JPEG quality before upload */
+function compressImage(file: File, maxDim = 800, quality = 0.75): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression failed')), 'image/jpeg', quality);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,18 +111,19 @@ export default function AdminProductsPage() {
                 <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
                 <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
                   {uploading ? '⌛ Uploading...' : '📂 Upload'}
-                  <input type="file" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
+                  <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
                     setUploading(true);
-                    const formData = new FormData();
-                    formData.append('file', file);
                     try {
+                      const compressed = await compressImage(file);
+                      const formData = new FormData();
+                      formData.append('file', compressed, 'image.jpg');
                       const res = await fetch('/api/upload', { method: 'POST', body: formData });
                       const data = await res.json();
                       if (data.url) {
                         setForm(p => ({ ...p, image: data.url }));
-                        showToast('✅ Image uploaded successfully!');
+                        showToast('✅ Image uploaded!');
                       } else {
                         showToast(`❌ Upload failed: ${data.error}`);
                       }
@@ -130,16 +150,18 @@ export default function AdminProductsPage() {
               </div>
               <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-block' }}>
                 {uploadingSecondary ? '⌛...' : '+ Add Image'}
-                <input type="file" style={{ display: 'none' }} disabled={uploadingSecondary} onChange={async (e) => {
+                <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploadingSecondary} onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
                   setUploadingSecondary(true);
-                  const formData = new FormData();
-                  formData.append('file', file);
                   try {
+                    const compressed = await compressImage(file);
+                    const formData = new FormData();
+                    formData.append('file', compressed, 'image.jpg');
                     const res = await fetch('/api/upload', { method: 'POST', body: formData });
                     const data = await res.json();
                     if (data.url) setForm(f => ({ ...f, images: [...f.images, data.url] }));
+                    else showToast(`❌ Upload failed: ${data.error}`);
                   } catch { showToast('❌ Upload error'); }
                   finally { setUploadingSecondary(false); }
                 }} />

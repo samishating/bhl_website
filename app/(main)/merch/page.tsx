@@ -47,7 +47,7 @@ export default function MerchPage() {
 
   const handleAddToCart = (p: Product) => {
     if (!user) {
-      showToast('❌ Please login to add items to cart', 'error');
+      showToast('Please login to add items to cart', 'error');
       return;
     }
     if (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) {

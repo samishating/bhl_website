@@ -24,6 +24,7 @@ function LoginForm() {
     if (result.success) {
       const callbackUrl = searchParams.get('callbackUrl') || '/profile';
       router.push(callbackUrl);
+      router.refresh();
     } else {
       setError(result.error || 'Login failed');
     }
@@ -65,10 +66,8 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <AuthProvider>
-      <Suspense fallback={<div className={styles.page} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
-        <LoginForm />
-      </Suspense>
-    </AuthProvider>
+    <Suspense fallback={<div className={styles.page} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

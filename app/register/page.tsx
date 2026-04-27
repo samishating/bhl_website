@@ -20,8 +20,10 @@ function RegisterForm() {
     setLoading(true);
     const result = await register(form.email, form.password, form.username);
     setLoading(false);
-    if (result.success) router.push('/profile');
-    else setError(result.error || 'Registration failed');
+    if (result.success) {
+      router.push('/profile');
+      router.refresh();
+    } else setError(result.error || 'Registration failed');
   };
 
   return (
@@ -66,5 +68,5 @@ function RegisterForm() {
 }
 
 export default function RegisterPage() {
-  return <AuthProvider><RegisterForm /></AuthProvider>;
+  return <RegisterForm />;
 }

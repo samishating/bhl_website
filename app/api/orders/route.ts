@@ -47,7 +47,9 @@ export async function GET(req: NextRequest) {
     }
 
     await connectDB();
-    const orders = await Order.find({}).sort({ createdAt: -1 });
+    const orders = await Order.find({})
+      .populate('processedBy', 'username')
+      .sort({ createdAt: -1 });
     return NextResponse.json({ orders });
   } catch (err) {
     console.error(err);

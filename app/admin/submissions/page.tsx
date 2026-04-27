@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/contexts/ToastContext';
+import { useAdmin } from '../layout';
 import styles from '../admin.module.css';
 
 interface PopulatedSubmission {
@@ -8,6 +9,8 @@ interface PopulatedSubmission {
   userId: { _id: string; username: string; avatar: string; divisions: string[] };
   challengeId: { _id: string; title: string; xpReward: number; division: string };
   proofUrl: string;
+  status: 'pending' | 'approved' | 'rejected';
+  processedBy?: { username: string };
   createdAt: string;
 }
 
@@ -16,6 +19,7 @@ export default function AdminSubmissionsPage() {
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { refreshCounts, setGlobalLoading } = useAdmin();
 
   useEffect(() => {
     fetchSubmissions();
@@ -29,11 +33,7 @@ export default function AdminSubmissionsPage() {
   };
 
   const handleAction = async (id: string, action: 'approve' | 'reject') => {
-    // Optimistic Update: Remove from list immediately
-    const subToMove = submissions.find(s => s._id === id);
-    const prevSubmissions = [...submissions];
-    setSubmissions(prev => prev.filter(s => s._id !== id));
-    
+    setGlobalLoading(true);
     setProcessingId(id);
     try {
       const res = await fetch(`/api/admin/submissions/${id}`, {
@@ -43,12 +43,15 @@ export default function AdminSubmissionsPage() {
       });
       
       if (!res.ok) throw new Error('Failed');
+      
+      refreshCounts();
+      fetchSubmissions();
       showToast(`✅ Submission ${action}ed!`, 'success');
     } catch (err) {
-      setSubmissions(prevSubmissions); // Rollback
       showToast('❌ Failed to process submission', 'error');
     } finally {
       setProcessingId(null);
+      setGlobalLoading(false);
     }
   };
 
@@ -74,7 +77,7 @@ export default function AdminSubmissionsPage() {
               <tr>
                 <th>User</th>
                 <th>Challenge</th>
-                <th>XP Reward</th>
+                <th>Status</th>
                 <th>Proof</th>
                 <th>Submitted</th>
                 <th>Actions</th>
@@ -91,8 +94,26 @@ export default function AdminSubmissionsPage() {
                         <span style={{ fontWeight: 600 }}>{sub.userId?.username}</span>
                       </a>
                   </td>
-                  <td style={{ fontWeight: 600 }}>{sub.challengeId?.title}</td>
-                  <td><span className="badge badge-red">+{sub.challengeId?.xpReward} XP</span></td>
+                  <td>
+                    <div style={{ fontWeight: 600 }}>{sub.challengeId?.title}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--brand-red)' }}>+{sub.challengeId?.xpReward} XP</div>
+                  </td>
+                  <td>
+                    <div style={{ 
+                      color: sub.status === 'approved' ? 'var(--neon-green)' : sub.status === 'rejected' ? 'var(--brand-red)' : 'var(--neon-blue)',
+                      textTransform: 'uppercase',
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      letterSpacing: '1px'
+                    }}>
+                      {sub.status}
+                    </div>
+                    {sub.processedBy && (
+                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                        by {sub.processedBy.username}
+                      </div>
+                    )}
+                  </td>
                   <td>
                     <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--neon-blue)', textDecoration: 'underline' }}>
                       View Proof ↗
@@ -102,25 +123,27 @@ export default function AdminSubmissionsPage() {
                     {new Date(sub.createdAt).toLocaleDateString()}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleAction(sub._id, 'approve')}
-                        disabled={processingId === sub._id}
-                        id={`approve-btn-${sub._id}`}
-                      >
-                        {processingId === sub._id ? '…' : 'Approve'}
-                      </button>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => handleAction(sub._id, 'reject')}
-                        disabled={processingId === sub._id}
-                        id={`reject-btn-${sub._id}`}
-                        style={{ border: '1px solid var(--text-muted)' }}
-                      >
-                        Reject
-                      </button>
-                    </div>
+                    {sub.status === 'pending' && (
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => handleAction(sub._id, 'approve')}
+                          disabled={processingId === sub._id}
+                          id={`approve-btn-${sub._id}`}
+                        >
+                          {processingId === sub._id ? '…' : 'Approve'}
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => handleAction(sub._id, 'reject')}
+                          disabled={processingId === sub._id}
+                          id={`reject-btn-${sub._id}`}
+                          style={{ border: '1px solid var(--text-muted)' }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

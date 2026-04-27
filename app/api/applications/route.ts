@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
     await connectDB();
     const applications = await Application.find()
       .populate('userId', 'username avatar xp level')
+      .populate('processedBy', 'username')
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ applications });

@@ -15,6 +15,8 @@ export interface IOrder extends Document {
     address: string;
   };
   status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+  processedBy?: mongoose.Types.ObjectId;
+  processedAt?: Date;
   createdAt: Date;
 }
 
@@ -33,6 +35,8 @@ const OrderSchema = new Schema<IOrder>({
     address: { type: String, required: true },
   },
   status: { type: String, enum: ['pending', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
+  processedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  processedAt: { type: Date },
 }, { timestamps: true });
 
 export const Order = models.Order || model<IOrder>('Order', OrderSchema);

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/contexts/ToastContext';
+import { useAdmin } from '../layout';
 import styles from './page.module.css';
 
 interface Application {
@@ -13,6 +14,7 @@ interface Application {
   motivation: string;
   links: string;
   status: 'pending' | 'approved' | 'rejected';
+  processedBy?: { username: string };
   createdAt: string;
 }
 
@@ -21,6 +23,7 @@ export default function ApplicationsInbox() {
   const [loading, setLoading] = useState(true);
   const [actioning, setActioning] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { refreshCounts, setGlobalLoading } = useAdmin();
 
   const load = () => {
     fetch('/api/applications')
@@ -31,6 +34,7 @@ export default function ApplicationsInbox() {
   useEffect(load, []);
 
   const handleAction = async (id: string, status: 'approved' | 'rejected') => {
+    setGlobalLoading(true);
     // Optimistic Update
     const prevApps = [...apps];
     setApps(current => current.map(a => a._id === id ? { ...a, status } : a));
@@ -44,12 +48,16 @@ export default function ApplicationsInbox() {
       });
       
       if (!res.ok) throw new Error('Failed');
+      
+      refreshCounts();
+      load(); // Reload to get attribution
       showToast(`✅ Application ${status}!`, 'success');
     } catch (err) {
       setApps(prevApps); // Rollback
       showToast('❌ Action failed', 'error');
     } finally {
       setActioning(null);
+      setGlobalLoading(false);
     }
   };
 
@@ -76,12 +84,19 @@ export default function ApplicationsInbox() {
                     {app.userId?.avatar ? <img src={app.userId.avatar} alt="" /> : app.userId?.username?.[0].toUpperCase()}
                   </div>
                   <div>
-                    <div className={styles.username}>{app.userId?.username}</div>
-                    <div className={styles.userMeta}>Lv.{app.userId?.level} • {app.userId?.xp} XP</div>
+                    <div className={styles.username}>{app.userId?.username || 'Guest'}</div>
+                    <div className={styles.userMeta}>{app.userId ? `Lv.${app.userId.level} • ${app.userId.xp} XP` : 'New Member Application'}</div>
                   </div>
                 </div>
-                <div className={`badge ${app.status === 'pending' ? 'badge-blue' : app.status === 'approved' ? 'badge-green' : 'badge-red'}`}>
-                  {app.status.toUpperCase()}
+                <div style={{ textAlign: 'right' }}>
+                  <div className={`badge ${app.status === 'pending' ? 'badge-blue' : app.status === 'approved' ? 'badge-green' : 'badge-red'}`}>
+                    {app.status.toUpperCase()}
+                  </div>
+                  {app.processedBy && (
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
+                      by {app.processedBy.username}
+                    </div>
+                  )}
                 </div>
               </div>
 

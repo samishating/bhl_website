@@ -18,7 +18,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
-    const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+    const order = await Order.findByIdAndUpdate(id, { 
+      status,
+      processedBy: payload.userId,
+      processedAt: new Date()
+    }, { new: true });
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
     return NextResponse.json({ order, message: `Order marked as ${status}` });

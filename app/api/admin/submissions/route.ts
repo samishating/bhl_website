@@ -24,11 +24,12 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
     
-    // Fetch pending submissions and populate related data
-    const submissions = await Submission.find({ status: 'pending' })
+    // Fetch submissions and populate related data
+    const submissions = await Submission.find({})
       .populate('userId', 'username avatar divisions')
       .populate('challengeId', 'title xpReward division')
-      .sort({ createdAt: 1 }); // Oldest first
+      .populate('processedBy', 'username')
+      .sort({ createdAt: -1 }); // Newest first for history
       
     return NextResponse.json({ submissions });
   } catch (err) {

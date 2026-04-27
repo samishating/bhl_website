@@ -18,7 +18,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     await connectDB();
-    const application = await Application.findByIdAndUpdate(id, { status }, { new: true });
+    const application = await Application.findByIdAndUpdate(id, { 
+      status,
+      processedBy: payload.userId,
+      processedAt: new Date()
+    }, { new: true });
     
     return NextResponse.json({ application });
   } catch (err) {

@@ -6,6 +6,8 @@ export interface ISubmission extends Document {
   proofUrl: string;
   status: 'pending' | 'approved' | 'rejected';
   xpAwarded: boolean;
+  processedBy?: Types.ObjectId;
+  processedAt?: Date;
   createdAt: Date;
 }
 
@@ -15,6 +17,8 @@ const SubmissionSchema = new Schema<ISubmission>({
   proofUrl: { type: String, required: true },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
   xpAwarded: { type: Boolean, default: false },
+  processedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  processedAt: { type: Date },
 }, { timestamps: true });
 
 export const Submission = models.Submission || model<ISubmission>('Submission', SubmissionSchema);

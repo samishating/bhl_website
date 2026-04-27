@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useAdmin } from '../layout';
 import styles from '../page.module.css';
 
 interface Order {
@@ -8,12 +9,15 @@ interface Order {
   total: number;
   customerInfo: { name: string; email: string; address: string };
   status: string;
+  processedBy?: { username: string };
+  processedAt?: string;
   createdAt: string;
 }
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshCounts, setGlobalLoading } = useAdmin();
 
   useEffect(() => {
     fetch('/api/orders')
@@ -36,6 +40,7 @@ export default function AdminOrdersPage() {
   };
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
+    setGlobalLoading(true);
     // Optimistic update
     setOrders(prev => prev.map(o => o._id === id ? { ...o, status: newStatus } : o));
 
@@ -50,9 +55,13 @@ export default function AdminOrdersPage() {
         const r = await fetch('/api/orders');
         const d = await r.json();
         setOrders(d.orders || []);
+      } else {
+        refreshCounts();
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
@@ -102,7 +111,7 @@ export default function AdminOrdersPage() {
                     <span style={{ fontWeight: 700, color: 'var(--neon-blue)' }}>${o.total.toFixed(2)}</span>
                   </td>
                   <td>
-                    <span style={{ 
+                    <div style={{ 
                       color: getStatusColor(o.status),
                       textTransform: 'uppercase',
                       fontSize: '0.7rem',
@@ -110,7 +119,12 @@ export default function AdminOrdersPage() {
                       letterSpacing: '1px'
                     }}>
                       {o.status}
-                    </span>
+                    </div>
+                    {o.processedBy && (
+                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                        by {o.processedBy.username}
+                      </div>
+                    )}
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                     {new Date(o.createdAt).toLocaleDateString()}

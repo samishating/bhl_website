@@ -39,6 +39,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (action === 'reject') {
       submission.status = 'rejected';
+      submission.processedBy = payload!.userId as any;
+      submission.processedAt = new Date();
       await submission.save();
       return NextResponse.json({ submission, message: 'Submission rejected' });
     }
@@ -46,6 +48,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (action === 'approve') {
       submission.status = 'approved';
       submission.xpAwarded = true;
+      submission.processedBy = payload!.userId as any;
+      submission.processedAt = new Date();
       await submission.save();
 
       const user = await User.findById(submission.userId);

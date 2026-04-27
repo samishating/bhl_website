@@ -61,10 +61,6 @@ export default function HeroClient({ statsData }: HeroClientProps) {
         </div>
       </div>
 
-      <div className={styles.scrollIndicator}>
-        <span>Scroll</span>
-        <div className={styles.scrollLine} />
-      </div>
     </section>
   );
 }

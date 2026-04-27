@@ -330,6 +330,60 @@ select.form-input option { background: var(--bg-card); }
 .animate-float     { animation: float      4s ease-in-out infinite; }
 .animate-glow      { animation: glow-pulse 2s ease-in-out infinite; }
 
+/* ─── Scroll-Reveal ──────────────────────────────────── */
+/*
+ * [data-reveal] starts hidden. The useScrollReveal hook adds:
+ *   .reveal-in  → scrolling down into view  (assemble)
+ *   .reveal-out → scrolling back up past    (spread/scatter)
+ *
+ * Stagger: set --reveal-i on each child (hook handles this when stagger=true)
+ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(48px) scale(0.97);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--reveal-i, 0) * 80ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal].reveal-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Scatter outward when scrolling back up */
+[data-reveal].reveal-out {
+  opacity: 0;
+  transform: translateY(40px) scale(0.96);
+  transition-delay: calc(var(--reveal-i, 0) * 40ms);
+}
+
+/* Section headers get a slight slide from below, no scale */
+[data-reveal="header"] {
+  transform: translateY(32px);
+}
+[data-reveal="header"].reveal-in  { transform: translateY(0); }
+[data-reveal="header"].reveal-out { transform: translateY(28px); }
+
+/* ─── Skeleton Shimmer ───────────────────────────────── */
+@keyframes skeleton-shine {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shine 1.6s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
 /* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 1024px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px)  { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } .container { padding: 0 1rem; } h1 { font-size: 2.2rem; } }

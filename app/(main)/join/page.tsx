@@ -4,10 +4,10 @@ import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.css';
 
 const DIVISIONS = [
-  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FF0000' },
-  { id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', color: '#FFFDBA' },
-  { id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', color: '#FF5050' },
-  { id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', color: '#CC0000' },
+  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FFFDBA' },
+  { id: 'music',  label: 'Music',  icon: '🎵', image: '/brand/music.png',  color: '#A855F7' },
+  { id: 'sport',  label: 'Sport',  icon: '💪', image: '/brand/sport.png',  color: '#06B6D4' },
+  { id: 'content',label: 'Content',icon: '🎬', image: '/brand/logo.png',   color: '#EF4444' },
 ];
 
 export default function JoinPage() {

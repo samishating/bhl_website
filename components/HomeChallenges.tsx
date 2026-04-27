@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import styles from '@/app/(main)/challenges/page.module.css';
 
 const divTagClass: Record<string, string> = {
@@ -18,6 +19,8 @@ export default function HomeChallenges() {
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const contentRef = useScrollReveal<HTMLDivElement>(true);
 
   useEffect(() => {
     setLoading(true);
@@ -67,11 +70,15 @@ export default function HomeChallenges() {
   return (
     <section id="challenges" className="content-band" style={{ borderTop: 'none' }}>
       <div className="content-inner">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <div className="section-tag">Earn XP</div>
-          <h2>Active <span className="gradient-text">Challenges</span></h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Complete tasks, submit proof, and level up your legacy.</p>
+        <div ref={headerRef}>
+          <div data-reveal="header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <div className="section-tag">Earn XP</div>
+            <h2>Active <span className="gradient-text">Challenges</span></h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Complete tasks, submit proof, and level up your legacy.</p>
+          </div>
         </div>
+
+        <div ref={contentRef}>
 
         <div className={styles.tabs} style={{ justifyContent: 'center', marginBottom: '4rem' }}>
           {DIVS.map(d => (
@@ -124,6 +131,7 @@ export default function HomeChallenges() {
             })}
           </div>
         )}
+        </div> {/* close contentRef */}
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getLevelTitle, BADGES } from '@/lib/xp';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import styles from '@/app/(main)/leaderboard/page.module.css';
 
 const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
@@ -13,6 +14,8 @@ export default function HomeLeaderboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const contentRef = useScrollReveal<HTMLDivElement>();
 
   useEffect(() => {
     setLoading(true);
@@ -24,14 +27,17 @@ export default function HomeLeaderboard() {
   return (
     <section id="leaderboard" className="content-band" style={{ borderTop: 'none' }}>
       <div className="content-inner">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <div className="section-tag">Rankings</div>
-          <h2>Global <span className="gradient-text">Leaderboard</span></h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Top members ranked by XP across all divisions</p>
+        <div ref={headerRef}>
+          <div data-reveal="header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <div className="section-tag">Rankings</div>
+            <h2>Global <span className="gradient-text">Leaderboard</span></h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Top members ranked by XP across all divisions</p>
+          </div>
         </div>
 
         {/* Tabs */}
-        <div className={styles.tabs} style={{ justifyContent: 'center', marginBottom: '4rem' }}>
+        <div ref={contentRef}>
+        <div data-reveal className={styles.tabs} style={{ justifyContent: 'center', marginBottom: '4rem' }}>
           {DIVISIONS.map(d => (
             <button
               key={d}
@@ -115,6 +121,7 @@ export default function HomeLeaderboard() {
             </div>
           )}
         </div>
+        </div> {/* close contentRef */}
       </div>
     </section>
   );

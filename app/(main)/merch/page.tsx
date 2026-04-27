@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -27,7 +28,7 @@ export default function MerchPage() {
   const [filter, setFilter] = useState('all');
   const [cartOpen, setCartOpen] = useState(false);
   const [checkout, setCheckout] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const { showToast } = useToast();
   const [orderDone, setOrderDone] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImg, setActiveImg] = useState(0);
@@ -41,11 +42,6 @@ export default function MerchPage() {
       .then(d => { setProducts(d.products || []); setLoading(false); });
   }, []);
 
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
-  };
-
   const filtered = products.filter(p => {
     if (filter === 'all') return true;
     if (filter === 'drop') return p.isLimitedDrop;
@@ -54,11 +50,15 @@ export default function MerchPage() {
 
   const handleAddToCart = (p: Product) => {
     if (!user) {
-      showToast('❌ Please login to add items to cart');
+      showToast('❌ Please login to add items to cart', 'error');
+      return;
+    }
+    if (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) {
+      showToast('🔐 You need 40k XP to buy this item', 'error');
       return;
     }
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
-    showToast(`🛒 ${p.name} added to cart!`);
+    showToast(`🛒 ${p.name} added to cart!`, 'success');
   };
 
   const handleCheckout = () => {
@@ -69,8 +69,6 @@ export default function MerchPage() {
 
   return (
     <div className={styles.page}>
-      {toast && <div className="toast">{toast}</div>}
-
       {/* Cart Sidebar */}
       {cartOpen && (
         <div className={styles.cartOverlay} onClick={() => setCartOpen(false)}>

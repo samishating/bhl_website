@@ -43,9 +43,11 @@ export default function MerchPage() {
     setTimeout(() => setToast(null), 2500);
   };
 
-  const filtered = filter === 'all' 
-    ? products.filter(p => !p.isLimitedDrop) 
-    : products.filter(p => filter === 'drop' ? p.isLimitedDrop : p.category === filter);
+  const filtered = products.filter(p => {
+    if (filter === 'all') return !p.isLimitedDrop;
+    if (filter === 'drop') return p.isLimitedDrop;
+    return p.category === filter && !p.isLimitedDrop;
+  });
 
   const handleAddToCart = (p: Product) => {
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });

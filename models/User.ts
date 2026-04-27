@@ -24,10 +24,11 @@ const UserSchema = new Schema<IUser>({
   bio: { type: String, default: '' },
   xp: { type: Number, default: 0 },
   level: { type: Number, default: 1 },
-  divisionXp: { 
-    type: Map, 
-    of: Number, 
-    default: () => ({ gaming: 0, music: 0, sport: 0, content: 0 }) 
+  divisionXp: {
+    gaming: { type: Number, default: 0 },
+    music: { type: Number, default: 0 },
+    sport: { type: Number, default: 0 },
+    content: { type: Number, default: 0 },
   },
   divisions: [{ type: String, enum: ['gaming', 'music', 'sport', 'content'] }],
   badges: [{ type: String }],

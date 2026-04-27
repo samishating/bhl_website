@@ -20,15 +20,16 @@ export default async function AboutPage() {
   ];
 
   const team = await Promise.all(divisions.map(async (d) => {
+    // Sort by division-specific XP
     const leader = await User.findOne({ divisions: d.id })
-      .sort({ xp: -1 })
+      .sort({ [`divisionXp.${d.id}`]: -1 })
       .select('username avatar');
     
     return {
       name: leader?.username || 'No contender yet',
       role: d.role,
       div: d.id,
-      icon: leader?.avatar || d.defaultIcon
+      icon: (leader?.avatar && leader.avatar.trim() !== '') ? leader.avatar : d.defaultIcon
     };
   }));
 
@@ -85,9 +86,13 @@ export default async function AboutPage() {
           <h2 className={styles.centeredTitle}>Division <span className="gradient-text">Leaders</span></h2>
           <div className="grid-4">
             {team.map(member => (
-              <div key={member.name} className={`card ${styles.teamCard}`}>
+              <div key={member.div} className={`card ${styles.teamCard}`}>
                 <div className={`avatar avatar-lg ${styles.teamAvatar}`}>
-                  {member.icon}
+                  {member.icon.startsWith('http') || member.icon.startsWith('/') || member.icon.startsWith('data:') ? (
+                    <img src={member.icon} alt={member.name} />
+                  ) : (
+                    member.icon
+                  )}
                 </div>
                 <div className={styles.teamName}>{member.name}</div>
                 <div className={styles.teamRole}>{member.role}</div>

@@ -141,7 +141,7 @@ export default function CartDrawer() {
                 >
                   {countries.map(c => (
                     <option key={c.code} value={c.dial_code}>
-                      {c.code} ({c.dial_code})
+                      {c.flag} {c.dial_code}
                     </option>
                   ))}
                 </select>

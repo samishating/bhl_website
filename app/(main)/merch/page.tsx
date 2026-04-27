@@ -162,12 +162,15 @@ export default function MerchPage() {
 
       <div className="container">
         <div className={styles.tabs}>
-          {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
-            <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
-              onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
-              {c === 'drop' ? '🔥 Conqueror drops' : c.charAt(0).toUpperCase() + c.slice(1)}
-            </button>
-          ))}
+          {['all', ...CATEGORIES.slice(1), 'drop'].map(c => {
+            if (c === 'drop' && (user?.xp || 0) < REQUIRED_XP) return null;
+            return (
+              <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
+                onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
+                {c === 'drop' ? '🔥 Conqueror drops' : c.charAt(0).toUpperCase() + c.slice(1)}
+              </button>
+            );
+          })}
         </div>
 
         {loading ? (

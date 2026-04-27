@@ -14,23 +14,21 @@ BHL is built on a progression system where every action contributes to your lega
 | **Submit Challenge** | +50 XP | Complete community challenges and provide proof. |
 
 ### 🏆 Ranks & Progression
-There are **10 elite ranks** in the Brotherhood. Reaching higher levels unlocks exclusive features and store access.
+There are **30 elite ranks** in the Brotherhood. Reaching higher levels unlocks exclusive features and store access.
 
 | Level | Title | XP Required | Unlocks |
 | :--- | :--- | :--- | :--- |
 | 1 | **Recruit** | 0 XP | Basic platform access |
-| 2 | **Initiate** | 100 XP | Profile customization |
-| 3 | **Member** | 250 XP | Forum posting permissions |
-| 4 | **Veteran** | 500 XP | Division-specific challenges |
-| 5 | **Elite** | 1,000 XP | **Ranked Badge** unlocked |
-| 6 | **Champion** | 1,750 XP | Priority challenge review |
-| 7 | **Legend** | 2,750 XP | Squad recruitment access |
-| 8 | **Icon** | 4,000 XP | High-tier badge access |
-| 9 | **Mythic** | 5,500 XP | **Ultra Members Drops** store access |
-| 10 | **Brotherhood Master** | 7,500 XP | Legendary status & admin visibility |
+| 5 | **Member** | 1,000 XP | Forum posting permissions |
+| 10 | **Warrior** | 7,500 XP | Division-specific challenges |
+| 15 | **Legend** | 20,000 XP | **Ranked Badge** unlocked |
+| 20 | **Guardian** | 32,500 XP | Priority challenge review |
+| 25 | **Immortal** | 44,000 XP | Squad recruitment access |
+| 29 | **Brotherhood Master** | 49,500 XP | Legendary status |
+| 30 | **Eternal Legacy** | 50,000 XP | The Ultimate Recognition |
 
 > [!IMPORTANT]
-> **Ultra Members Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **5,000+ XP**. You must reach Level 8 (Icon) to begin accessing these drops.
+> **Ultra Members Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **40,000+ XP**. You must reach Level 23 (Conqueror) to begin accessing these drops.
 
 ### 🎖️ Badges
 Badges are displayed on your profile to showcase your achievements and loyalty.

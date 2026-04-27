@@ -1,9 +1,8 @@
-import dynamic from 'next/dynamic';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
-const HeroClient = dynamic(() => import('@/components/HeroClient'), { ssr: true });
-const HomeDivisions = dynamic(() => import('@/components/HomeDivisions'), { ssr: false });
-const HomeLeaderboard = dynamic(() => import('@/components/HomeLeaderboard'), { ssr: false });
-const HomeChallenges = dynamic(() => import('@/components/HomeChallenges'), { ssr: false });
+import HeroClient from '@/components/HeroClient';
+import HomeDivisions from '@/components/HomeDivisions';
+import HomeLeaderboard from '@/components/HomeLeaderboard';
+import HomeChallenges from '@/components/HomeChallenges';
 import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
 

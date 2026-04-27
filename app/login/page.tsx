@@ -10,7 +10,7 @@ function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const result = await login(email, password);
+    const result = await login(username, password);
     setLoading(false);
     if (result.success) {
       const callbackUrl = searchParams.get('callbackUrl') || '/profile';
@@ -44,8 +44,8 @@ function LoginForm() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className="form-group">
-            <label className="form-label">Email</label>
-            <input className="form-input" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" id="login-email" />
+            <label className="form-label">Username</label>
+            <input className="form-input" required value={username} onChange={e => setUsername(e.target.value)} placeholder="YourUsername" id="login-username" />
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>

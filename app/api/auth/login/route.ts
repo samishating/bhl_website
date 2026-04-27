@@ -7,13 +7,11 @@ import { signToken } from '@/lib/auth';
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const { email, password } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
+    const { username, password } = await req.json();
+    if (!username || !password) {
+      return NextResponse.json({ error: 'Username and password required' }, { status: 400 });
     }
-
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
     if (!user) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }

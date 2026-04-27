@@ -175,8 +175,8 @@ export default function ProfilePage() {
                 <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell the Brotherhood who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
               </div>
 
-              <button className="btn btn-primary" onClick={handleSave} disabled={saving} id="save-profile-btn">
-                {saving ? '…' : 'Save Changes'}
+              <button className="btn btn-primary" onClick={handleSave} disabled={saving || uploading} id="save-profile-btn" style={{ minWidth: '140px', justifyContent: 'center' }}>
+                {saving ? <span className="spinner" /> : 'Save Changes'}
               </button>
             </div>
           </div>

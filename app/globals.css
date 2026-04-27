@@ -433,16 +433,16 @@ tbody tr:last-child td { border-bottom: none; }
 /* ─── Home Fixed Background ─────────────────────────── */
 .home-fixed-bg {
   position: fixed;
-  inset: -10px; /* Slight inset to avoid blur edges */
+  inset: -5px;
   z-index: -10;
   background-image: 
-    linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85)),
+    linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.8)),
     url("/backgrounds/hero-ultra.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   pointer-events: none;
-  filter: blur(4px) brightness(0.85);
+  filter: blur(1.5px) brightness(0.9);
 }
 
 .home-page {
@@ -504,7 +504,7 @@ tbody tr:last-child td { border-bottom: none; }
 @media (max-width: 768px) {
   .home-fixed-bg {
     background-image: 
-      linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.9)),
+      linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.8)),
       url("/backgrounds/hero-mobile.webp");
     background-position: center top;
   }

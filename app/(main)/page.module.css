@@ -98,7 +98,7 @@
 .joinBtn {
   width: 100%; padding: 1.1rem;
   background: var(--div-color);
-  color: #fff;
+  color: #0a0a0a;
   border-radius: var(--radius-md);
   font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem;
   text-transform: uppercase; letter-spacing: 0.15em;

@@ -30,7 +30,19 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({
       message: 'Login successful',
-      user: { id: user._id, username: user.username, email: user.email, xp: user.xp, level: user.level, divisions: user.divisions, badges: user.badges, role: user.role, avatar: user.avatar, bio: user.bio },
+      user: { 
+        id: user._id, 
+        username: user.username, 
+        email: user.email, 
+        xp: user.xp, 
+        level: user.level, 
+        divisions: user.divisions, 
+        badges: user.badges, 
+        role: user.role, 
+        avatar: user.avatar, 
+        bio: user.bio,
+        divisionXp: user.divisionXp || { gaming: 0, music: 0, sport: 0, content: 0 }
+      },
       token,
     });
 

@@ -79,7 +79,7 @@ export default function ProfilePage() {
         <div className={styles.profileHeader}>
           <div className={styles.avatarSection}>
             <div className={`avatar avatar-xl ${styles.mainAvatar}`}>
-              {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username[0].toUpperCase()}
+              {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className={styles.rankRing} />
           </div>
@@ -96,10 +96,10 @@ export default function ProfilePage() {
             </div>
             <p className={styles.bio}>{user.bio || 'No bio yet.'}</p>
             <div className={styles.divisionTags}>
-              {user.divisions.map(d => (
+              {(user.divisions || []).map(d => (
                 <span key={d} className={`division-tag tag-${d}`}>{d}</span>
               ))}
-              {user.divisions.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No divisions joined yet</span>}
+              {(!user.divisions || user.divisions.length === 0) && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No divisions joined yet</span>}
             </div>
 
             <div className={styles.profileActions}>
@@ -126,7 +126,7 @@ export default function ProfilePage() {
               <div className="xp-bar-fill" style={{ width: `${xpInfo.progress}%` }} />
             </div>
             <div className={styles.badges}>
-              {user.badges.map(b => {
+              {(user.badges || []).map(b => {
                 const badge = BADGES[b as keyof typeof BADGES];
                 return badge ? (
                   <span key={b} className={styles.badgeItem} style={{ color: badge.color }} title={badge.description}>

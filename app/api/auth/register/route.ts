@@ -38,7 +38,19 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({
       message: 'Account created successfully',
-      user: { id: user._id, username: user.username, email: user.email, xp: user.xp, level: user.level, badges: user.badges, role: user.role },
+      user: { 
+        id: user._id, 
+        username: user.username, 
+        email: user.email, 
+        xp: user.xp, 
+        level: user.level, 
+        badges: user.badges, 
+        role: user.role,
+        avatar: user.avatar || '',
+        bio: user.bio || '',
+        divisions: user.divisions || [],
+        divisionXp: user.divisionXp || { gaming: 0, music: 0, sport: 0, content: 0 }
+      },
       token,
     }, { status: 201 });
 

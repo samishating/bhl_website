@@ -83,7 +83,7 @@ export default function Navbar() {
             <div className={styles.userMenu}>
               <Link href="/profile" className={styles.userAvatarBtn} id="nav-profile-btn">
                 <div className={`avatar ${styles.navAvatar}`}>
-                  {user.avatar ? <Image src={user.avatar} alt={user.username} width={32} height={32} /> : user.username[0].toUpperCase()}
+                  {user.avatar ? <Image src={user.avatar} alt={user.username} width={32} height={32} /> : user.username?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <span className={styles.username}>{user.username}</span>
                 <span className={`badge badge-blue ${styles.levelBadge}`}>Lv.{user.level}</span>

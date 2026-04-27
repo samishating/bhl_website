@@ -39,24 +39,24 @@ export default function CommunityPage() {
         </div>
 
         <div className="animate-fade-up" style={{ marginTop: '4rem' }}>
-          <div className="card" style={{ 
+          <div style={{ 
             display: 'inline-block', 
-            padding: '1.5rem 3rem', 
-            background: 'linear-gradient(135deg, rgba(255,0,0,0.1), transparent)',
-            border: '1px solid var(--brand-red)'
+            padding: '2.5rem 5rem', 
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid rgba(255, 0, 0, 0.3)',
+            boxShadow: '0 0 40px rgba(255, 0, 0, 0.1)',
+            background: 'rgba(255, 0, 0, 0.02)',
+            backdropFilter: 'blur(10px)',
+            position: 'relative'
           }}>
-            <h3 style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }}>Coming Soon</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', border: '1px solid var(--brand-red)', opacity: 0.5, pointerEvents: 'none' }} />
+            <h3 style={{ marginBottom: '0.5rem', fontSize: '1.75rem' }}>Coming Soon</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '1.1rem' }}>
               Join our Discord to stay updated on the launch.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <a href="https://discord.gg/bhl" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                Join Discord
-              </a>
-              <a href="https://github.com/samishating/bhl_website" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
-                View Source
-              </a>
-            </div>
+            <a href="https://discord.gg/bhl" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
+              Join Discord
+            </a>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ import styles from './page.module.css';
 
 const divisions = [
   {
-    id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FFD700', tag: 'tag-gaming',
+    id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FFFDBA', tag: 'tag-gaming',
     desc: 'Our Gaming division is home to the most competitive gamers in the Brotherhood. We compete across titles like Valorant, League of Legends, FIFA, and more. If you have the skill and the drive to win, this is your home.',
     perks: ['Team scrimmages', 'Tournament entries', 'Coaching sessions', 'Exclusive gaming gear discounts'],
     members: 142,

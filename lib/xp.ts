@@ -69,10 +69,10 @@ export function xpForNextLevel(currentXp: number): { current: number; needed: nu
 
 
 export const BADGES = {
-  FOUNDER: { id: 'FOUNDER', label: 'Founder', color: '#FFD700', description: 'Joined at launch' },
+  FOUNDER: { id: 'FOUNDER', label: 'Founder', color: '#FFFDBA', description: 'Joined at launch' },
   CHALLENGER: { id: 'CHALLENGER', label: 'Challenger', color: '#FF0000', description: 'First challenge submission' },
   RANKED: { id: 'RANKED', label: 'Ranked', color: '#CC0000', description: 'Reached Level 5' },
-  GAMING_ELITE: { id: 'GAMING_ELITE', label: 'Gaming Elite', color: '#FFD700', description: 'Gaming division member' },
+  GAMING_ELITE: { id: 'GAMING_ELITE', label: 'Gaming Elite', color: '#FFFDBA', description: 'Gaming division member' },
   MUSIC_ARTIST: { id: 'MUSIC_ARTIST', label: 'Music Artist', color: '#A855F7', description: 'Music division member' },
   SPORT_BEAST: { id: 'SPORT_BEAST', label: 'Sport Beast', color: '#06B6D4', description: 'Sport division member' },
   CONTENT_KING: { id: 'CONTENT_KING', label: 'Content King', color: '#EF4444', description: 'Content division member' },

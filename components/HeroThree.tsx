@@ -33,7 +33,7 @@ export default function HeroThree({ statsData }: HeroThreeProps) {
     const colors = new Float32Array(particlesCount * 3);
     const colorChoices = [
       new THREE.Color('#FF0000'),
-      new THREE.Color('#FFD700'),
+      new THREE.Color('#FFFDBA'),
       new THREE.Color('#A855F7'),
       new THREE.Color('#06B6D4')
     ];

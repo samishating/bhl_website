@@ -6,7 +6,7 @@ import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
 
 const divisions = [
-  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', desc: 'Competitive gaming at the highest level', color: '#FFD700', tag: 'tag-gaming' },
+  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', desc: 'Competitive gaming at the highest level', color: '#FFFDBA', tag: 'tag-gaming' },
   { id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', desc: 'Artists shaping the sound of the future', color: '#A855F7', tag: 'tag-music' },
   { id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', desc: 'Global sports, fitness & physical excellence', color: '#06B6D4', tag: 'tag-sport' },
   { id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', desc: 'Creators dominating digital culture', color: '#EF4444', tag: 'tag-content' },

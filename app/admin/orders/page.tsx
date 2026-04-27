@@ -7,7 +7,7 @@ interface Order {
   _id: string;
   items: Array<{ name: string; quantity: number; price: number }>;
   total: number;
-  customerInfo: { name: string; email: string; address: string };
+  customerInfo: { name: string; email: string; address: string; phone: string };
   status: string;
   processedBy?: { username: string };
   processedAt?: string;
@@ -102,6 +102,7 @@ export default function AdminOrdersPage() {
                   <td>
                     <div style={{ fontWeight: 600 }}>{o.customerInfo.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.customerInfo.email}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--neon-blue)', fontWeight: 600 }}>{o.customerInfo.phone}</div>
                   </td>
                   <td>
                     <div style={{ fontSize: '0.85rem' }}>
@@ -176,7 +177,10 @@ export default function AdminOrdersPage() {
               <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
                 {selectedOrder.customerInfo.address}
               </div>
-              <div style={{ marginTop: '0.5rem', color: 'var(--neon-blue)', fontSize: '0.9rem' }}>{selectedOrder.customerInfo.email}</div>
+              <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <div style={{ color: 'var(--neon-blue)', fontSize: '0.9rem' }}>📧 {selectedOrder.customerInfo.email}</div>
+                <div style={{ color: 'var(--neon-green)', fontSize: '0.9rem', fontWeight: 600 }}>📞 {selectedOrder.customerInfo.phone}</div>
+              </div>
             </div>
 
             <div style={{ marginBottom: '2rem' }}>

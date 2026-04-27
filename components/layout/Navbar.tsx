@@ -8,12 +8,11 @@ import { useCart } from '@/contexts/CartContext';
 import styles from './Navbar.module.css';
 
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/divisions', label: 'Divisions' },
-  { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/challenges', label: 'Challenges' },
+  { href: '/#hero', label: 'Home' },
+  { href: '/#divisions', label: 'Divisions' },
+  { href: '/#leaderboard', label: 'Leaderboard' },
+  { href: '/#challenges', label: 'Challenges' },
   { href: '/merch', label: 'Merch' },
-  { href: '/community', label: 'Coming Soon' },
   { href: '/about', label: 'About' },
 ];
 

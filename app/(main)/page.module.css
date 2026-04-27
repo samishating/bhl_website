@@ -31,57 +31,100 @@
   line-height: 1.2;
 }
 .statLabel { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
-.scrollIndicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; animation: fadeInDown 1s ease 1s forwards; opacity: 0; }
-.scrollLine { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--brand-red), transparent); animation: float 2s ease-in-out infinite; }
 
 /* ─── Divisions ─────────────────────────────────────── */
-.divisionsSection { width: 100%; }
-.sectionHeader { text-align: center; margin-bottom: 3rem; }
-.sectionDesc { color: var(--text-secondary); font-size: 1rem; margin-top: 0.75rem; }
-.divisionsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.sectionHeader { text-align: center; margin-bottom: 3.5rem; }
+.sectionDesc { color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.75rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+.divisionsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+
 .divCard {
-  position: relative; background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius-md); padding: 2rem 1.5rem;
-  display: flex; flex-direction: column; gap: 0.75rem; overflow: hidden;
-  transition: var(--transition); animation: fadeInUp 0.6s ease both; cursor: pointer;
+  position: relative; 
+  background: rgba(10, 10, 10, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-lg); 
+  padding: 2.5rem;
+  display: flex; flex-direction: column; gap: 1.5rem; 
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.6s ease both;
 }
-.divCard:hover { border-color: var(--div-color, var(--brand-red)); transform: translateY(-6px); box-shadow: 0 0 50px color-mix(in srgb, var(--div-color, #FF0000) 40%, transparent); }
-.divCardGlow { position: absolute; top: -60px; left: -60px; width: 180px; height: 180px; border-radius: 50%; opacity: 0.15; filter: blur(60px); pointer-events: none; transition: opacity 0.3s ease; }
-.divCard:hover .divCardGlow { opacity: 0.2; }
+
+/* Red Neon Hover Theme for ALL division cards on Home */
+.divCard:hover { 
+  border-color: var(--brand-red); 
+  transform: translateY(-8px); 
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 0, 0, 0.15),
+    inset 0 0 15px rgba(255, 0, 0, 0.05);
+}
+
+.divCardGlow { 
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at top right, rgba(255, 0, 0, 0.05), transparent 70%);
+  pointer-events: none; transition: opacity 0.4s ease; opacity: 0;
+}
+.divCard:hover .divCardGlow { opacity: 1; }
+
+.divCardTop { display: flex; align-items: center; gap: 1.25rem; }
 .divIcon { font-size: 2.5rem; }
-.divDesc { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; flex: 1; }
-.divArrow { color: var(--text-muted); font-size: 1.2rem; transition: all 0.2s ease; align-self: flex-end; }
-.divCard:hover .divArrow { color: var(--div-color, var(--brand-red)); transform: translateX(4px); }
+.memberCount { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem; }
+.divDesc { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; flex: 1; }
 
-/* ─── XP Section ─────────────────────────────────────── */
-.xpSection { width: 100%; }
-.xpGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-.xpDesc { color: var(--text-secondary); line-height: 1.7; margin: 1rem 0 2rem; }
-.xpActions { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
-.xpAction { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: var(--transition); }
-.xpAction:hover { border-color: var(--border-hover); background: rgba(255,0,0,0.04); }
-.xpActionIcon { font-size: 1.3rem; }
-.xpActionName { flex: 1; font-size: 0.9rem; color: var(--text-secondary); }
-.xpActionXp { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--brand-red); font-size: 0.95rem; }
-.xpCard {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 0, 0, 0.2);
-  border-radius: var(--radius-lg); padding: 2rem;
-  box-shadow: 0 0 40px rgba(255, 0, 0, 0.08);
-  animation: float 5s ease-in-out infinite;
+.divPerks {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+  padding: 1.25rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-md);
 }
-.mockProfile { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-.mockAvatar { background: linear-gradient(135deg, #FF0000, #CC0000) !important; }
-.mockName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.3rem; }
-.mockXpBar { margin-bottom: 1.5rem; }
-.mockBadges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.perk { font-size: 0.85rem; color: var(--text-secondary); display: flex; gap: 0.6rem; align-items: center; }
+.perkBullet { color: var(--brand-red); font-weight: bold; }
 
-/* ─── CTA Section ────────────────────────────────────── */
-.ctaSection { width: 100%; position: relative; }
-.ctaGlow { position: absolute; inset: 0; background: transparent; pointer-events: none; }
+.divLeader {
+  background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md); padding: 1rem 1.25rem;
+}
+.perksTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; }
+.leaderRow { display: flex; align-items: center; gap: 1rem; }
+.leaderInfo { display: flex; flex-direction: column; }
+.leaderName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+.leaderXp { font-size: 0.8rem; color: var(--brand-red); font-weight: 600; }
+
+/* Join/Leave Neon Buttons (Red/Logo Theme) */
+.joinBtn {
+  width: 100%; padding: 1.1rem;
+  background: var(--brand-red);
+  color: white; border-radius: var(--radius-md);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem;
+  text-transform: uppercase; letter-spacing: 0.15em;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.25);
+}
+.joinBtn:hover {
+  background: #FF1E1E;
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+  transform: scale(1.02);
+}
+.leaveBtn {
+  background: transparent;
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  color: var(--brand-red);
+  box-shadow: none;
+}
+.leaveBtn:hover {
+  background: rgba(255, 0, 0, 0.05);
+  border-color: var(--brand-red);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+}
+
+/* ─── XP / CTA ─────────────────────────────────────── */
 .ctaContent { text-align: center; position: relative; z-index: 1; }
-.ctaContent p { color: var(--text-secondary); font-size: 1.1rem; margin: 1rem 0 2rem; }
-.ctaBtns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.ctaContent h2 { font-size: clamp(2.5rem, 5vw, 4rem); }
+.ctaContent p { color: var(--text-secondary); font-size: 1.2rem; margin: 1.5rem 0 3rem; }
+.ctaBtns { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
 
 @media (max-width: 1100px) { .divisionsGrid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 768px)  { .xpGrid { grid-template-columns: 1fr; gap: 3rem; } .divisionsGrid { grid-template-columns: 1fr; } }
+@media (max-width: 768px)  { 
+  .divisionsGrid { grid-template-columns: 1fr; } 
+  .divPerks { grid-template-columns: 1fr; }
+}

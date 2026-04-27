@@ -8,6 +8,7 @@ export interface IUser extends Document {
   bio: string;
   xp: number;
   level: number;
+  divisionXp: Record<string, number>;
   divisions: string[];
   badges: string[];
   role: 'user' | 'admin' | 'superadmin';
@@ -23,6 +24,11 @@ const UserSchema = new Schema<IUser>({
   bio: { type: String, default: '' },
   xp: { type: Number, default: 0 },
   level: { type: Number, default: 1 },
+  divisionXp: { 
+    type: Map, 
+    of: Number, 
+    default: () => ({ gaming: 0, music: 0, sport: 0, content: 0 }) 
+  },
   divisions: [{ type: String, enum: ['gaming', 'music', 'sport', 'content'] }],
   badges: [{ type: String }],
   role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },

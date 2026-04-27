@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.css';
 
 const divisions = [
@@ -35,9 +36,10 @@ const divisions = [
 export default function DivisionsPage() {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
+  const { showToast } = useToast();
   const [divisionCounts, setDivisionCounts] = useState<Record<string, number>>({});
-  const [toast, setToast] = useState<string | null>(null);
   const [joining, setJoining] = useState<string | null>(null);
+  const [leaders, setLeaders] = useState<Record<string, any>>({});
 
   useEffect(() => {
     fetch('/api/stats')
@@ -45,6 +47,9 @@ export default function DivisionsPage() {
       .then(data => {
         if (data.divisionCounts) {
           setDivisionCounts(data.divisionCounts);
+        }
+        if (data.divisionLeaders) {
+          setLeaders(data.divisionLeaders);
         }
       })
       .catch(console.error);
@@ -72,21 +77,19 @@ export default function DivisionsPage() {
 
       if (res.ok) {
         await refreshUser();
-        setToast(isMember ? '🚪 Left division' : '✅ Successfully joined division!');
+        showToast(isMember ? '🚪 Left division' : '✅ Successfully joined division!');
       } else {
-        setToast(isMember ? '❌ Failed to leave division' : '❌ Failed to join division');
+        showToast(isMember ? '❌ Failed to leave division' : '❌ Failed to join division', 'error');
       }
     } catch (e) {
-      setToast('❌ Error updating division');
+      showToast('❌ Error updating division', 'error');
     }
 
     setJoining(null);
-    setTimeout(() => setToast(null), 3000);
   };
 
   return (
     <div className={styles.page}>
-      {toast && <div className="toast">{toast}</div>}
       {/* Header */}
       <section className={styles.header}>
         <div className={styles.headerGlow} />
@@ -126,6 +129,22 @@ export default function DivisionsPage() {
                   </div>
                 </div>
                 <p className={styles.divDesc}>{div.desc}</p>
+                {leaders[div.id] && (
+                  <div className={styles.divLeader}>
+                    <div className={styles.perksTitle}>Division Leader</div>
+                    <div className={styles.leaderRow}>
+                      <div className="avatar" style={{ width: '32px', height: '32px', fontSize: '0.9rem' }}>
+                        {leaders[div.id].avatar ? <img src={leaders[div.id].avatar} alt={leaders[div.id].username} /> : leaders[div.id].username[0].toUpperCase()}
+                      </div>
+                      <div className={styles.leaderInfo}>
+                        <span className={styles.leaderName}>{leaders[div.id].username}</span>
+                        <span className={styles.leaderXp}>
+                          {leaders[div.id].xp.toLocaleString()} XP
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className={styles.divPerks}>
                   <div className={styles.perksTitle}>Division Perks</div>
                   {div.perks.map(p => (

@@ -9,6 +9,7 @@ interface User {
   bio: string;
   xp: number;
   level: number;
+  divisionXp: Record<string, number>;
   divisions: string[];
   badges: string[];
   role: string;

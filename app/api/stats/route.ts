@@ -31,11 +31,33 @@ export async function GET() {
 
     const completedChallenges = await mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' });
 
+    // Fetch division leaders based on divisionXp
+    const divisionLeaders: Record<string, any> = {};
+    const divs = ['gaming', 'music', 'sport', 'content'];
+    
+    for (const div of divs) {
+      const leader = await User.findOne({ divisions: div })
+        .sort({ [`divisionXp.${div}`]: -1, xp: -1 }) // Fallback to global xp if divisionXp isn't tracked yet
+        .select('username avatar xp divisionXp')
+        .lean();
+        
+      if (leader) {
+        divisionLeaders[div] = {
+          _id: leader._id,
+          username: leader.username,
+          avatar: leader.avatar,
+          // Show divisionXp if available, fallback to 0
+          xp: leader.divisionXp?.[div] || 0
+        };
+      }
+    }
+
     return NextResponse.json({
       totalMembers,
       totalXP,
       divisionCounts,
-      completedChallenges
+      completedChallenges,
+      divisionLeaders
     });
   } catch (err) {
     console.error(err);

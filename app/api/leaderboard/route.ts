@@ -9,9 +9,11 @@ export async function GET(req: NextRequest) {
     const division = searchParams.get('division');
 
     const query = division && division !== 'all' ? { divisions: division } : {};
+    const sortField = division && division !== 'all' ? `divisionXp.${division}` : 'xp';
+    
     const users = await User.find(query)
-      .select('username avatar xp level divisions badges')
-      .sort({ xp: -1 })
+      .select('username avatar xp level divisionXp divisions badges')
+      .sort({ [sortField]: -1 })
       .limit(50);
 
     return NextResponse.json({ users });

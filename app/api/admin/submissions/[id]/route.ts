@@ -52,7 +52,25 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       if (user && submission.challengeId) {
         // Assume challengeId has been populated
         const challengeReward = (submission.challengeId as any).xpReward || 50;
+        const challengeDivision = (submission.challengeId as any).division;
+        
         user.xp += challengeReward;
+        
+        // Award division XP if applicable
+        if (challengeDivision && challengeDivision !== 'global') {
+          // divisionXp is typed as Record but mongoose treats Map as a special type 
+          // that has get/set methods, so we use type assertion
+          const divXpMap = user.divisionXp as any;
+          const currentDivXp = divXpMap.get ? divXpMap.get(challengeDivision) : (user.divisionXp[challengeDivision] || 0);
+          
+          if (divXpMap.set) {
+            divXpMap.set(challengeDivision, currentDivXp + challengeReward);
+          } else {
+            user.divisionXp[challengeDivision] = currentDivXp + challengeReward;
+            user.markModified('divisionXp');
+          }
+        }
+        
         user.level = calculateLevel(user.xp);
         
         if (!user.badges.includes(BADGES.CHALLENGER.id)) {

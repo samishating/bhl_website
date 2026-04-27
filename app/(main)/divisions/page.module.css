@@ -74,4 +74,29 @@
   margin-bottom: 0.75rem;
 }
 .perk { font-size: 0.85rem; color: var(--text-secondary); padding: 0.2rem 0; display: flex; gap: 0.5rem; }
+.divLeader {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+.leaderRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.leaderInfo {
+  display: flex;
+  flex-direction: column;
+}
+.leaderName {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+.leaderXp {
+  font-size: 0.8rem;
+  color: var(--div-color, var(--brand-red));
+}
 @media (max-width: 768px) { .divisionsGrid { grid-template-columns: 1fr; } }

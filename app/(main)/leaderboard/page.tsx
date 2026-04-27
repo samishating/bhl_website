@@ -11,6 +11,7 @@ interface LeaderboardUser {
   avatar: string;
   xp: number;
   level: number;
+  divisionXp: Record<string, number>;
   divisions: string[];
   badges: string[];
 }
@@ -144,7 +145,11 @@ export default function LeaderboardPage() {
                         </div>
                       </td>
                       <td>
-                        <span className={styles.xpValue}>{u.xp.toLocaleString()}</span>
+                        <span className={styles.xpValue}>
+                          {filter === 'all' 
+                            ? u.xp.toLocaleString() 
+                            : (u.divisionXp?.[filter] || 0).toLocaleString()}
+                        </span>
                       </td>
                     </tr>
                   ))}

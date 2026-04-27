@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { xpForNextLevel, getLevelTitle, BADGES, calculateLevel } from '@/lib/xp';
 import styles from './page.module.css';
 
@@ -26,7 +27,7 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [claimingXp, setClaimingXp] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [toast, setToast] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!loading && !user) { router.push('/login'); return; }
@@ -40,8 +41,6 @@ export default function ProfilePage() {
       .then(r => r.json())
       .then(d => setSubmissions(d.submissions || []));
   }, [user, loading, router]);
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   const handleSave = async () => {
     if (!user) return;
@@ -63,7 +62,7 @@ export default function ProfilePage() {
     setClaimingXp(false);
     if (res.ok) {
       await refreshUser();
-      showToast(data.gained ? `🔥 +${data.gained} XP! Daily login reward claimed!` : '⏳ Already claimed today');
+      showToast(data.gained ? `🔥 +${data.gained} XP! Daily login reward claimed!` : '⏳ Already claimed today', 'success');
     }
   };
 
@@ -75,8 +74,6 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.page}>
-      {toast && <div className="toast">{toast}</div>}
-
       <div className="container">
         {/* Profile Header */}
         <div className={styles.profileHeader}>

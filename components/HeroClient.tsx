@@ -32,7 +32,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
           <Link href="/register" className="btn btn-primary btn-lg">
             Join the Brotherhood
           </Link>
-          <Link href="/divisions" className="btn btn-secondary btn-lg">
+          <Link href="/#divisions" className="btn btn-secondary btn-lg">
             Explore Divisions
           </Link>
         </div>

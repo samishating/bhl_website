@@ -18,7 +18,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const { count, setCartOpen } = useCart();
   const pathname = usePathname();
   const router = useRouter();
@@ -74,11 +74,16 @@ export default function Navbar() {
             {count > 0 && <span className={styles.cartBadge}>{count}</span>}
           </button>
 
-          {user ? (
+          {loading ? (
+            <div className={styles.navLoading}>
+              <div className={styles.skeletonAvatar} />
+              <div className={styles.skeletonText} />
+            </div>
+          ) : user ? (
             <div className={styles.userMenu}>
               <Link href="/profile" className={styles.userAvatarBtn} id="nav-profile-btn">
                 <div className={`avatar ${styles.navAvatar}`}>
-                  {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username[0].toUpperCase()}
+                  {user.avatar ? <Image src={user.avatar} alt={user.username} width={32} height={32} /> : user.username[0].toUpperCase()}
                 </div>
                 <span className={styles.username}>{user.username}</span>
                 <span className={`badge badge-blue ${styles.levelBadge}`}>Lv.{user.level}</span>

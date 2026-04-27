@@ -38,11 +38,12 @@ export function getUserFromRequest(req: NextRequest): JWTPayload | null {
 }
 
 // Helper for Server Components
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { User } from '@/models/User';
 import { connectDB } from './db';
 
-export async function getServerUser() {
+export const getServerUser = cache(async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get('bhl_token')?.value;
   if (!token) return null;
@@ -58,4 +59,4 @@ export async function getServerUser() {
   } catch {
     return null;
   }
-}
+});

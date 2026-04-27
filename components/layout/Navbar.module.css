@@ -114,5 +114,14 @@
 }
 .mobileLink:hover, .mobileLink.active { color: var(--brand-red); background: rgba(255,0,0,0.06); }
 
+.navLoading { display: flex; align-items: center; gap: 0.75rem; padding: 0.3rem 0.6rem; }
+.skeletonAvatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
+.skeletonText { width: 60px; height: 12px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
 @media (max-width: 900px) { .navLinks { display: none; } .burger { display: flex; } .userMenu .btn, .authButtons .btn { display: none; } }
 @media (max-width: 500px)  { .username, .levelBadge { display: none; } }

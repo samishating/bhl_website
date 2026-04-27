@@ -31,13 +31,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getServerUser();
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${rajdhani.variable} ${inter.variable}`}>
       <body>
-        <AuthProvider initialUser={user}>
+        <AuthProvider>
           <CartProvider>
             <ToastProvider>
               {children}

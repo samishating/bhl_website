@@ -36,10 +36,6 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         <div className={styles.sidebarLogo}>
           <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
         </div>
-        <div style={{ padding: '0.5rem 1.25rem', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-           Logged as: {user?.username} ({user?.role || (user?.isAdmin ? 'legacy-admin' : 'user')})
-           <details><summary>Debug Data</summary><pre style={{ fontSize: '10px' }}>{JSON.stringify(user, null, 2)}</pre></details>
-        </div>
         <nav className={styles.nav}>
           {links.map(l => (
             <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>

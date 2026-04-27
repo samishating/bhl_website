@@ -30,10 +30,6 @@ export default function AdminUsersPage() {
     fetch('/api/users')
       .then(r => r.json())
       .then(d => { 
-        console.log('[AdminUsers] Received data:', d);
-        if (d.error) {
-          alert(`Error fetching users: ${d.error}`);
-        }
         setUsers(d.users || []); 
         setLoading(false); 
       })

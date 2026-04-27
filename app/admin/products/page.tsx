@@ -11,6 +11,7 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState(defaultForm);
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
@@ -74,15 +75,27 @@ export default function AdminProductsPage() {
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
                 <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  📂 Upload
-                  <input type="file" style={{ display: 'none' }} onChange={async (e) => {
+                  {uploading ? '⌛ Uploading...' : '📂 Upload'}
+                  <input type="file" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
+                    setUploading(true);
                     const formData = new FormData();
                     formData.append('file', file);
-                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.url) setForm(p => ({ ...p, image: data.url }));
+                    try {
+                      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                      const data = await res.json();
+                      if (data.url) {
+                        setForm(p => ({ ...p, image: data.url }));
+                        showToast('✅ Image uploaded successfully!');
+                      } else {
+                        showToast(`❌ Upload failed: ${data.error}`);
+                      }
+                    } catch {
+                      showToast('❌ Upload error');
+                    } finally {
+                      setUploading(false);
+                    }
                   }} />
                 </label>
               </div>

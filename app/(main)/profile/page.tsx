@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const [username, setUsername] = useState('');
   const [divisions, setDivisions] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [claimingXp, setClaimingXp] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [toast, setToast] = useState<string | null>(null);
@@ -154,15 +155,27 @@ export default function ProfilePage() {
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <input className="form-input" value={avatar} onChange={e => setAvatar(e.target.value)} placeholder="https://…" id="profile-avatar-input" />
                   <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    📂 Upload
-                    <input type="file" style={{ display: 'none' }} onChange={async (e) => {
+                    {uploading ? '⌛ Uploading...' : '📂 Upload'}
+                    <input type="file" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
+                      setUploading(true);
                       const formData = new FormData();
                       formData.append('file', file);
-                      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                      const data = await res.json();
-                      if (data.url) setAvatar(data.url);
+                      try {
+                        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.url) {
+                          setAvatar(data.url);
+                          showToast('✅ Avatar uploaded!');
+                        } else {
+                          showToast(`❌ Upload failed: ${data.error}`);
+                        }
+                      } catch {
+                        showToast('❌ Upload error');
+                      } finally {
+                        setUploading(false);
+                      }
                     }} />
                   </label>
                 </div>

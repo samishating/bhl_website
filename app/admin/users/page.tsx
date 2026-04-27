@@ -6,7 +6,7 @@ import styles from './page.module.css';
 
 interface User {
   _id: string; username: string; email: string; xp: number; level: number;
-  divisions: string[]; badges: string[]; role: string; createdAt: string;
+  divisions: string[]; badges: string[]; role: string; isAdmin?: boolean; createdAt: string;
 }
 
 const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content' };
@@ -145,8 +145,8 @@ export default function AdminUsersPage() {
                     </div>
                   </td>
                   <td>
-                    <span className={`badge ${u.role === 'superadmin' ? 'badge-red' : u.role === 'admin' ? 'badge-red' : 'badge-blue'}`} style={u.role === 'superadmin' ? { background: 'linear-gradient(90deg, #ff0055, #cc0000)' } : {}}>
-                      {u.role === 'superadmin' ? 'SUPERADMIN' : u.role === 'admin' ? 'Admin' : 'Member'}
+                    <span className={`badge ${u.role === 'superadmin' ? 'badge-red' : (u.role === 'admin' || (u as any).isAdmin) ? 'badge-red' : 'badge-blue'}`} style={u.role === 'superadmin' ? { background: 'linear-gradient(90deg, #ff0055, #cc0000)' } : {}}>
+                      {u.role === 'superadmin' ? 'SUPERADMIN' : (u.role === 'admin' || (u as any).isAdmin) ? 'Admin' : 'Member'}
                     </span>
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(u.createdAt).toLocaleDateString()}</td>

@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
       lastLogin: new Date(),
     });
 
-    const token = signToken({ userId: user._id.toString(), email: user.email, username: user.username, role: user.role });
+    const token = signToken({ userId: user._id.toString(), email: user.email, username: user.username, role: user.role, isAdmin: false });
 
     const response = NextResponse.json({
       message: 'Account created successfully',
-      user: { id: user._id, username: user.username, email: user.email, xp: user.xp, level: user.level, badges: user.badges, role: user.role },
+      user: { id: user._id, username: user.username, email: user.email, xp: user.xp, level: user.level, badges: user.badges, role: user.role, isAdmin: false },
       token,
     }, { status: 201 });
 

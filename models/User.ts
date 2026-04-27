@@ -11,6 +11,7 @@ export interface IUser extends Document {
   divisions: string[];
   badges: string[];
   role: 'user' | 'admin' | 'superadmin';
+  isAdmin: boolean;
   lastLogin: Date;
   createdAt: Date;
 }
@@ -26,6 +27,7 @@ const UserSchema = new Schema<IUser>({
   divisions: [{ type: String, enum: ['gaming', 'music', 'sport', 'content'] }],
   badges: [{ type: String }],
   role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },
+  isAdmin: { type: Boolean, default: false },
   lastLogin: { type: Date, default: null },
 }, { timestamps: true });
 

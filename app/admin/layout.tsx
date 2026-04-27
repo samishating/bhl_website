@@ -12,6 +12,7 @@ const links = [
   { href: '/admin/submissions', label: 'Challenges Inbox', icon: '📥' },
   { href: '/admin/applications', label: 'Applications Inbox', icon: '📝' },
   { href: '/admin/products', label: 'Products', icon: '👕' },
+  { href: '/admin/orders', label: 'Orders', icon: '📦' },
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {

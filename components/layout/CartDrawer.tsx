@@ -8,10 +8,39 @@ export default function CartDrawer() {
   const [checkout, setCheckout] = useState(false);
   const [orderDone, setOrderDone] = useState(false);
 
-  const handleCheckout = () => {
-    setCheckout(false);
-    setOrderDone(true);
-    clearCart();
+  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', address: '' });
+  const [loading, setLoading] = useState(false);
+
+  const handleCheckout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map(i => ({
+            productId: i.id,
+            name: i.name,
+            quantity: i.quantity,
+            price: i.price
+          })),
+          total,
+          customerInfo
+        })
+      });
+
+      if (res.ok) {
+        setCheckout(false);
+        setOrderDone(true);
+        clearCart();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isCartOpen) return null;
@@ -62,22 +91,38 @@ export default function CartDrawer() {
           <div className={styles.checkoutModal} onClick={e => e.stopPropagation()}>
             <h3>Checkout</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              This is a mock checkout. No real payment is processed.
+              Confirm your shipping details to place your order.
             </p>
-            <div className={styles.checkoutForm}>
-              <input className="form-input" placeholder="Full Name" />
-              <input className="form-input" placeholder="Email" />
-              <input className="form-input" placeholder="Shipping Address" />
-              <input className="form-input" placeholder="Card Number (mock)" />
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <input className="form-input" placeholder="MM/YY" />
-                <input className="form-input" placeholder="CVV" />
-              </div>
+            <form onSubmit={handleCheckout} className={styles.checkoutForm}>
+              <input 
+                required 
+                className="form-input" 
+                placeholder="Full Name" 
+                value={customerInfo.name}
+                onChange={e => setCustomerInfo(p => ({ ...p, name: e.target.value }))}
+              />
+              <input 
+                required 
+                type="email" 
+                className="form-input" 
+                placeholder="Email Address" 
+                value={customerInfo.email}
+                onChange={e => setCustomerInfo(p => ({ ...p, email: e.target.value }))}
+              />
+              <textarea 
+                required 
+                className="form-input" 
+                placeholder="Shipping Address" 
+                rows={3}
+                style={{ resize: 'vertical' }}
+                value={customerInfo.address}
+                onChange={e => setCustomerInfo(p => ({ ...p, address: e.target.value }))}
+              />
               <div className={styles.checkoutTotal}>Order Total: <strong>${total.toFixed(2)}</strong></div>
-              <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleCheckout}>
-                Place Order (Mock)
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+                {loading ? <span className="spinner" /> : 'Confirm Order'}
               </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
@@ -88,7 +133,7 @@ export default function CartDrawer() {
           <div className={styles.successModal} onClick={e => e.stopPropagation()}>
             <div className={styles.successIcon}>🎉</div>
             <h3>Order Placed!</h3>
-            <p>Your Brotherhood Legacy order is confirmed. You'll receive a confirmation (mock) shortly.</p>
+            <p>Your Brotherhood Legacy order is confirmed. You can view your orders in your dashboard.</p>
             <button className="btn btn-primary" onClick={() => setOrderDone(false)}>Continue Shopping</button>
           </div>
         </div>

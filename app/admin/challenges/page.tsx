@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
 
-interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; }
+interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; allowRepeats: boolean; }
 const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global' };
 
-const defaultForm = { title: '', description: '', xpReward: 50, division: 'gaming' };
+const defaultForm = { title: '', description: '', xpReward: 50, division: 'gaming', allowRepeats: false };
 
 export default function AdminChallengesPage() {
   const { user } = useAuth();
@@ -53,7 +53,7 @@ export default function AdminChallengesPage() {
 
   const handleEdit = (c: Challenge) => {
     setEditingId(c._id);
-    setForm({ title: c.title, description: c.description, xpReward: c.xpReward, division: c.division });
+    setForm({ title: c.title, description: c.description, xpReward: c.xpReward, division: c.division, allowRepeats: !!c.allowRepeats });
     setShowForm(true);
   };
 
@@ -95,6 +95,16 @@ export default function AdminChallengesPage() {
                 {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1.5rem' }}>
+              <input 
+                type="checkbox" 
+                id="challenge-repeats"
+                checked={form.allowRepeats} 
+                onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} 
+                style={{ width: '1.2rem', height: '1.2rem', cursor: 'pointer' }}
+              />
+              <label htmlFor="challenge-repeats" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>Allow Repeats</label>
+            </div>
           </div>
           <div className="form-group">
             <label className="form-label">Description *</label>
@@ -124,7 +134,10 @@ export default function AdminChallengesPage() {
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>{c.description.slice(0, 60)}…</div>
                   </td>
                   <td><span className={`division-tag ${divTagClass[c.division]}`}>{c.division}</span></td>
-                  <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{c.xpReward} XP</span></td>
+                  <td>
+                    <span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{c.xpReward} XP</span>
+                    {c.allowRepeats && <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Repeatable</div>}
+                  </td>
                   <td style={{ display: 'flex', gap: '0.5rem' }}>
                     <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(c)} id={`edit-challenge-${c._id}`}>
                       Edit

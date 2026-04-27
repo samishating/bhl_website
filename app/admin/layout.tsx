@@ -1,5 +1,5 @@
 'use client';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './admin.module.css';
@@ -13,12 +13,32 @@ const links = [
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
   const pathname = usePathname();
+
+  if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}><div className="spinner" /></div>;
+  
+  const isAuthorized = user?.role === 'admin' || user?.role === 'superadmin' || user?.isAdmin === true;
+  
+  if (!isAuthorized) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#fff', gap: '1rem' }}>
+        <h2>Access Denied</h2>
+        <p>You do not have permission to view this page.</p>
+        <Link href="/" className="btn btn-primary">Back to Site</Link>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
         <div className={styles.sidebarLogo}>
           <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
+        </div>
+        <div style={{ padding: '0.5rem 1.25rem', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+           Logged as: {user?.username} ({user?.role || (user?.isAdmin ? 'legacy-admin' : 'user')})
+           <details><summary>Debug Data</summary><pre style={{ fontSize: '10px' }}>{JSON.stringify(user, null, 2)}</pre></details>
         </div>
         <nav className={styles.nav}>
           {links.map(l => (

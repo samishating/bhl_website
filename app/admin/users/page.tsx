@@ -29,7 +29,18 @@ export default function AdminUsersPage() {
   useEffect(() => {
     fetch('/api/users')
       .then(r => r.json())
-      .then(d => { setUsers(d.users || []); setLoading(false); });
+      .then(d => { 
+        console.log('[AdminUsers] Received data:', d);
+        if (d.error) {
+          alert(`Error fetching users: ${d.error}`);
+        }
+        setUsers(d.users || []); 
+        setLoading(false); 
+      })
+      .catch(err => {
+        console.error('[AdminUsers] Fetch error:', err);
+        setLoading(false);
+      });
   }, []);
 
   const filtered = users.filter(u =>

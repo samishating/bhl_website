@@ -1,5 +1,6 @@
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import HeroClient from '@/components/HeroClient';
+const HeroClient = dynamic(() => import('@/components/HeroClient'), { ssr: true });
 import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
 
@@ -41,7 +42,7 @@ export default async function HomePage() {
               >
                 <div className={styles.divCardGlow} style={{ background: div.color }} />
                   {div.image ? (
-                    <img src={div.image} alt={div.label} style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                    <img src={div.image} alt={div.label} loading="lazy" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
                   ) : (
                     <span className={styles.divIcon}>{div.icon}</span>
                   )}

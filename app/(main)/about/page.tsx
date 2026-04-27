@@ -81,7 +81,7 @@ export default async function AboutPage() {
               <div key={member.div} className={`card ${styles.teamCard}`}>
                 <div className={`avatar avatar-lg ${styles.teamAvatar}`}>
                   {member.icon.startsWith('http') || member.icon.startsWith('/') || member.icon.startsWith('data:') ? (
-                    <img src={member.icon} alt={member.name} />
+                    <img src={member.icon} alt={member.name} loading="lazy" />
                   ) : (
                     member.icon
                   )}

@@ -80,11 +80,13 @@ export default function AdminChallengesPage() {
       {showForm && (
         <form onSubmit={handleCreate} className={styles.createForm}>
           <h3 className={styles.formTitle}>{editingId ? 'Edit Challenge' : 'Create Challenge'}</h3>
+          
+          <div className="form-group">
+            <label className="form-label">Title *</label>
+            <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" id="challenge-title" />
+          </div>
+
           <div className={styles.formRow}>
-            <div className="form-group">
-              <label className="form-label">Title *</label>
-              <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" id="challenge-title" />
-            </div>
             <div className="form-group">
               <label className="form-label">XP Reward</label>
               <input type="number" className="form-input" value={form.xpReward} onChange={e => setForm(p => ({ ...p, xpReward: Number(e.target.value) }))} id="challenge-xp" />
@@ -95,22 +97,33 @@ export default function AdminChallengesPage() {
                 {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', paddingBottom: '0.6rem' }}>
-              <input 
-                type="checkbox" 
-                id="challenge-repeats"
-                checked={form.allowRepeats} 
-                onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} 
-                style={{ width: '1.1rem', height: '1.1rem', cursor: 'pointer' }}
-              />
-              <label htmlFor="challenge-repeats" className="form-label" style={{ marginBottom: 0, cursor: 'pointer', whiteSpace: 'nowrap' }}>Allow Repeats</label>
+            <div className="form-group">
+              <label className={styles.toggleLabel}>Allow Repeats</label>
+              <div className={styles.segmentedToggle}>
+                <button 
+                  type="button" 
+                  className={`${styles.toggleBtn} ${!form.allowRepeats ? styles.toggleActive : ''}`}
+                  onClick={() => setForm(p => ({ ...p, allowRepeats: false }))}
+                >
+                  OFF
+                </button>
+                <button 
+                  type="button" 
+                  className={`${styles.toggleBtn} ${form.allowRepeats ? styles.toggleActive : ''}`}
+                  onClick={() => setForm(p => ({ ...p, allowRepeats: true }))}
+                >
+                  ON
+                </button>
+              </div>
             </div>
           </div>
+
           <div className="form-group">
             <label className="form-label">Description *</label>
             <textarea required className="form-input" rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe what members need to do…" id="challenge-desc" style={{ resize: 'vertical' }} />
           </div>
-          <button type="submit" className="btn btn-primary" disabled={creating} id="challenge-submit-btn">
+
+          <button type="submit" className="btn btn-primary" style={{ height: '50px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.1em' }} disabled={creating} id="challenge-submit-btn">
             {creating ? <span className="spinner" /> : editingId ? 'Update Challenge' : 'Create Challenge'}
           </button>
         </form>

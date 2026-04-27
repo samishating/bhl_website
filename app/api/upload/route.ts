@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
 
+/**
+ * Since Vercel (serverless) has a read-only filesystem, 
+ * we use a Base64 approach here to store images directly in the database.
+ * This ensures uploads work on Vercel without needing external storage like S3/Cloudinary.
+ */
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -11,18 +14,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
+    // Limit file size to 4MB for Base64 storage
+    if (file.size > 4 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large (max 4MB)' }, { status: 400 });
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Create a unique filename
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    const filePath = path.join(uploadDir, filename);
-
-    await writeFile(filePath, buffer);
     
-    const url = `/uploads/${filename}`;
-    return NextResponse.json({ url });
+    // Convert to Data URI
+    const base64Image = buffer.toString('base64');
+    const dataUri = `data:${file.type};base64,${base64Image}`;
+
+    return NextResponse.json({ url: dataUri });
   } catch (err) {
     console.error('[Upload API Error]:', err);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });

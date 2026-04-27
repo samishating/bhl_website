@@ -29,11 +29,18 @@ export default function Navbar() {
     router.push('/');
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.inner}>
         {/* Logo */}
-        <Link href="/" className={styles.logo}>
+        <Link href="/" className={styles.logo} onClick={handleLogoClick}>
           <Image 
             src="/brand/logo.png" 
             alt="BHL" 

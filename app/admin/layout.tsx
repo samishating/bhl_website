@@ -77,9 +77,9 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
         )}
         <aside className={styles.sidebar}>
-          <div className={styles.sidebarLogo}>
+          <Link href="/" className={styles.sidebarLogo}>
             <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
-          </div>
+          </Link>
           <nav className={styles.nav}>
             {links.map(l => {
               let badgeCount = 0;

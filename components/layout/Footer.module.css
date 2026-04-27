@@ -1,11 +1,11 @@
 .footer {
+  width: 100%;
   position: relative;
-  margin-top: 6rem;
-  border-top: 1px solid rgba(255, 0, 0, 0.12);
+  background: rgba(5, 5, 5, 0.96);
+  border-top: 1px solid rgba(255, 0, 0, 0.2);
   padding: 4rem 0 2rem;
-  background: rgba(5, 5, 5, 0.85);
-  backdrop-filter: blur(10px);
   overflow: hidden;
+  z-index: 5;
 }
 .glow {
   position: absolute;

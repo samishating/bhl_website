@@ -18,17 +18,19 @@ export default async function HomePage() {
 
   return (
     <div className="home-page">
-      {/* Cinematic Fixed Background */}
+      {/* Fixed Background */}
       <HomeFixedBackground />
 
-      {/* HERO SECTION */}
-      <div className="section-panel" style={{ marginTop: '80px' }}>
-        <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
-      </div>
+      {/* HERO SECTION (Transparent Overlay) */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
+        </div>
+      </section>
 
-      {/* DIVISIONS PREVIEW */}
-      <section className={styles.divisionsSection}>
-        <div className="section-panel">
+      {/* DIVISIONS BAND */}
+      <section className="content-band">
+        <div className="content-inner">
           <div className={styles.sectionHeader}>
             <div className="section-tag">Our Divisions</div>
             <h2>Choose Your <span className="gradient-text">Path</span></h2>
@@ -61,9 +63,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* XP SECTION */}
-      <section className={styles.xpSection}>
-        <div className="section-panel">
+      {/* XP SECTION BAND */}
+      <section className="content-band" style={{ borderTop: 'none' }}>
+        <div className="content-inner">
           <div className={styles.xpGrid}>
             <div className={styles.xpLeft}>
               <div className="section-tag">Gamification</div>
@@ -118,9 +120,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className={styles.ctaSection}>
-        <div className="section-panel">
+      {/* CTA SECTION BAND */}
+      <section className="content-band" style={{ borderTop: 'none', paddingBottom: '160px' }}>
+        <div className="content-inner">
           <div className={styles.ctaContent}>
             <h2>Ready to Write Your <span className="gradient-text">Legacy?</span></h2>
             <p>Join hundreds of members already building their story in the Brotherhood.</p>

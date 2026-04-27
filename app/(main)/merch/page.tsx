@@ -29,6 +29,8 @@ export default function MerchPage() {
   const { showToast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImg, setActiveImg] = useState(0);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [isZooming, setIsZooming] = useState(false);
 
   const REQUIRED_XP = 40000;
   const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
@@ -71,8 +73,25 @@ export default function MerchPage() {
             <button className={styles.detailClose} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>✕</button>
             <div className={styles.detailGrid}>
               <div className={styles.detailGallery}>
-                <div className={styles.mainDetailImg}>
-                  <img src={[selectedProduct.image, ...(selectedProduct.images || [])][activeImg]} alt={selectedProduct.name} />
+                <div 
+                  className={styles.mainDetailImg}
+                  onMouseMove={(e) => {
+                    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - left) / width) * 100;
+                    const y = ((e.clientY - top) / height) * 100;
+                    setZoomPos({ x, y });
+                  }}
+                  onMouseEnter={() => setIsZooming(true)}
+                  onMouseLeave={() => setIsZooming(false)}
+                >
+                  <img 
+                    src={[selectedProduct.image, ...(selectedProduct.images || [])][activeImg]} 
+                    alt={selectedProduct.name} 
+                    style={{ 
+                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                      transform: isZooming ? 'scale(2)' : 'scale(1)'
+                    }}
+                  />
                 </div>
                 {selectedProduct.images && selectedProduct.images.length > 0 && (
                   <div className={styles.thumbGallery}>

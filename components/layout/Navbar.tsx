@@ -40,7 +40,7 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.inner}>
         {/* Logo */}
-        <Link href="/divisions" className={styles.logo} onClick={handleLogoClick}>
+        <Link href="/" className={styles.logo} onClick={handleLogoClick}>
           <Image 
             src="/brand/logo.png" 
             alt="BHL" 

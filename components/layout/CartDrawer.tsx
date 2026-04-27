@@ -43,47 +43,47 @@ export default function CartDrawer() {
     }
   };
 
-  if (!isCartOpen) return null;
-
   return (
     <>
-      <div className={styles.cartOverlay} onClick={() => setCartOpen(false)}>
-        <div className={styles.cart} onClick={e => e.stopPropagation()}>
-          <div className={styles.cartHeader}>
-            <h3>Your Cart ({count})</h3>
-            <button onClick={() => setCartOpen(false)} className={styles.cartClose}>✕</button>
+      {isCartOpen && (
+        <div className={styles.cartOverlay} onClick={() => setCartOpen(false)}>
+          <div className={styles.cart} onClick={e => e.stopPropagation()}>
+            <div className={styles.cartHeader}>
+              <h3>Your Cart ({count})</h3>
+              <button onClick={() => setCartOpen(false)} className={styles.cartClose}>✕</button>
+            </div>
+            {items.length === 0 ? (
+              <div className={styles.emptyCart}>Your cart is empty</div>
+            ) : (
+              <>
+                <div className={styles.cartItems}>
+                  {items.map(item => (
+                    <div key={item.id} className={styles.cartItem}>
+                      <div className={styles.cartItemImg}>{item.name[0]}</div>
+                      <div className={styles.cartItemInfo}>
+                        <div className={styles.cartItemName}>{item.name}</div>
+                        <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
+                      </div>
+                      <div className={styles.cartQty}>
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                      </div>
+                      <button className={styles.removeItem} onClick={() => removeItem(item.id)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.cartFooter}>
+                  <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
+                  <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { setCartOpen(false); setCheckout(true); }}>
+                    Proceed to Checkout
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-          {items.length === 0 ? (
-            <div className={styles.emptyCart}>Your cart is empty</div>
-          ) : (
-            <>
-              <div className={styles.cartItems}>
-                {items.map(item => (
-                  <div key={item.id} className={styles.cartItem}>
-                    <div className={styles.cartItemImg}>{item.name[0]}</div>
-                    <div className={styles.cartItemInfo}>
-                      <div className={styles.cartItemName}>{item.name}</div>
-                      <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
-                    </div>
-                    <div className={styles.cartQty}>
-                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
-                    </div>
-                    <button className={styles.removeItem} onClick={() => removeItem(item.id)}>✕</button>
-                  </div>
-                ))}
-              </div>
-              <div className={styles.cartFooter}>
-                <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
-                <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { setCartOpen(false); setCheckout(true); }}>
-                  Proceed to Checkout
-                </button>
-              </div>
-            </>
-          )}
         </div>
-      </div>
+      )}
 
       {/* Checkout Modal */}
       {checkout && (

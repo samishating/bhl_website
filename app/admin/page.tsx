@@ -19,6 +19,7 @@ export default function AdminPage() {
     });
   }, []);
 
+
   const statCards = [
     { label: 'Total Members', value: stats.users, icon: '👥', color: '#FF0000' },
     { label: 'Active Challenges', value: stats.challenges, icon: '🏆', color: '#CC0000' },

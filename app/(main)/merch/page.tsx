@@ -163,7 +163,7 @@ export default function MerchPage() {
           {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
             <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
               onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
-              {c === 'drop' ? '🔥 Limited Drops' : c.charAt(0).toUpperCase() + c.slice(1)}
+              {c === 'drop' ? '🔥 Ultra members drops' : c.charAt(0).toUpperCase() + c.slice(1)}
             </button>
           ))}
         </div>
@@ -175,7 +175,7 @@ export default function MerchPage() {
             <div className={styles.lockedIcon}>🔐</div>
             <h2 className={styles.lockedTitle}>Exclusive <span className="gradient-text">Access</span></h2>
             <p className={styles.lockedDesc}>
-              Limited Drops are reserved for our most dedicated members. 
+              Ultra members drops are reserved for our most dedicated members. 
               You need at least <strong>{REQUIRED_XP} XP</strong> to access this collection.
             </p>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -200,7 +200,7 @@ export default function MerchPage() {
                   {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
                     <div className={styles.productImgPlaceholder}>{p.name[0]}</div>
                   )}
-                  {p.isLimitedDrop && <span className={styles.dropBadge}>🔥 Limited</span>}
+                  {p.isLimitedDrop && <span className={styles.dropBadge}>🔥 Ultra</span>}
                   {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>Only {p.stock} left</span>}
                 </div>
                 <div className={styles.productInfo}>

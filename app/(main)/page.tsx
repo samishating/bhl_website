@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-const HeroClient = dynamic(() => import('@/components/HeroClient'), { ssr: true });
+const HeroThree = dynamic(() => import('@/components/HeroThree'), { ssr: false });
 import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
 
@@ -18,7 +18,7 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO (Client Side Canvas + Counters) */}
-      <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
+      <HeroThree statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
 
       {/* DIVISIONS PREVIEW (Server Side) */}
       <section className={styles.divisionsSection}>

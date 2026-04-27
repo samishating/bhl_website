@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
-    if (payload.userId !== id && payload.role !== 'admin' && payload.role !== 'superadmin' && !payload.isAdmin) {
+    if (payload.userId !== id && payload.role !== 'admin' && payload.role !== 'superadmin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

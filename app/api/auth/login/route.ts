@@ -26,12 +26,11 @@ export async function POST(req: NextRequest) {
     user.lastLogin = new Date();
     await user.save();
 
-    const isAdmin = user.role === 'admin' || user.role === 'superadmin' || (user as any).isAdmin === true;
-    const token = signToken({ userId: user._id.toString(), email: user.email, username: user.username, role: user.role, isAdmin });
+    const token = signToken({ userId: user._id.toString(), email: user.email, username: user.username, role: user.role });
 
     const response = NextResponse.json({
       message: 'Login successful',
-      user: { id: user._id, username: user.username, email: user.email, xp: user.xp, level: user.level, divisions: user.divisions, badges: user.badges, role: user.role, avatar: user.avatar, bio: user.bio, isAdmin },
+      user: { id: user._id, username: user.username, email: user.email, xp: user.xp, level: user.level, divisions: user.divisions, badges: user.badges, role: user.role, avatar: user.avatar, bio: user.bio },
       token,
     });
 

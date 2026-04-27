@@ -12,7 +12,6 @@ interface User {
   divisions: string[];
   badges: string[];
   role: string;
-  isAdmin?: boolean;
 }
 
 interface AuthContextType {

@@ -9,13 +9,13 @@ import '@/models/Challenge';
 export async function GET(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
-    let isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin' || payload?.isAdmin === true;
+    let isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin';
 
     // Fallback for old tokens
     if (!isAuthorized && payload?.userId) {
       await connectDB();
       const user = await User.findById(payload.userId);
-      if (user && (user.role === 'admin' || user.role === 'superadmin' || (user as any).isAdmin)) {
+      if (user && (user.role === 'admin' || user.role === 'superadmin')) {
         isAuthorized = true;
       }
     }

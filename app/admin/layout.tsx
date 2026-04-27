@@ -18,7 +18,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
   if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}><div className="spinner" /></div>;
   
-  const isAuthorized = user?.role === 'admin' || user?.role === 'superadmin' || user?.isAdmin === true;
+  const isAuthorized = user?.role === 'admin' || user?.role === 'superadmin';
   
   if (!isAuthorized) {
     return (

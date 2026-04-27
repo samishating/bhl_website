@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useAdmin } from '../layout';
 import styles from '../admin.module.css';
@@ -18,6 +19,7 @@ export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<PopulatedSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   const { refreshCounts, setGlobalLoading } = useAdmin();
 
@@ -32,7 +34,9 @@ export default function AdminSubmissionsPage() {
     setLoading(false);
   };
 
-  const handleAction = async (id: string, action: 'approve' | 'reject') => {
+  const handleAction = async (id: string, action: 'approve' | 'reject' | 'revoke') => {
+    if (action === 'revoke' && !window.confirm('Are you sure you want to revoke this approval? This will deduct the XP from the user.')) return;
+    
     setGlobalLoading(true);
     setProcessingId(id);
     try {
@@ -42,18 +46,23 @@ export default function AdminSubmissionsPage() {
         body: JSON.stringify({ action }),
       });
       
-      if (!res.ok) throw new Error('Failed');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed');
+      }
       
       refreshCounts();
       fetchSubmissions();
-      showToast(`✅ Submission ${action}ed!`, 'success');
-    } catch (err) {
-      showToast('❌ Failed to process submission', 'error');
+      showToast(`✅ Submission ${action === 'revoke' ? 'revoked' : action + 'ed'}!`, 'success');
+    } catch (err: any) {
+      showToast(`❌ ${err.message}`, 'error');
     } finally {
       setProcessingId(null);
       setGlobalLoading(false);
     }
   };
+
+  const isSuper = currentUser?.role === 'superadmin';
 
   return (
     <div>
@@ -123,7 +132,7 @@ export default function AdminSubmissionsPage() {
                     {new Date(sub.createdAt).toLocaleDateString()}
                   </td>
                   <td>
-                    {sub.status === 'pending' && (
+                    {sub.status === 'pending' ? (
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button
                           className="btn btn-primary btn-sm"
@@ -143,7 +152,17 @@ export default function AdminSubmissionsPage() {
                           Reject
                         </button>
                       </div>
-                    )}
+                    ) : sub.status === 'approved' && isSuper ? (
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => handleAction(sub._id, 'revoke')}
+                        disabled={processingId === sub._id}
+                        id={`revoke-btn-${sub._id}`}
+                        style={{ color: 'var(--brand-red)', border: '1px solid rgba(255,0,0,0.2)' }}
+                      >
+                        {processingId === sub._id ? '…' : '⚠️ Revoke'}
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}

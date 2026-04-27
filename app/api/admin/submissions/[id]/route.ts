@@ -24,30 +24,58 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await connectDB();
     const { id } = await params;
-    const { action } = await req.json(); // action can be 'approve' or 'reject'
+    const { action } = await req.json(); // action can be 'approve', 'reject', or 'revoke'
 
-    if (!action || !['approve', 'reject'].includes(action)) {
+    if (!action || !['approve', 'reject', 'revoke'].includes(action)) {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    }
+
+    if (action === 'revoke' && payload?.role !== 'superadmin') {
+      const dbUser = await User.findById(payload?.userId);
+      if (!dbUser || dbUser.role !== 'superadmin') {
+        return NextResponse.json({ error: 'Only superadmins can revoke' }, { status: 403 });
+      }
     }
 
     const submission = await Submission.findById(id).populate('challengeId');
     if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
 
-    if (submission.status !== 'pending') {
+    if (action !== 'revoke' && submission.status !== 'pending') {
       return NextResponse.json({ error: 'Submission is not pending' }, { status: 400 });
     }
 
-    if (action === 'reject') {
+    if (action === 'revoke' && submission.status !== 'approved') {
+      return NextResponse.json({ error: 'Only approved submissions can be revoked' }, { status: 400 });
+    }
+
+    if (action === 'reject' || (action === 'revoke' && submission.status === 'approved')) {
+      const wasApproved = submission.status === 'approved';
       submission.status = 'rejected';
       submission.processedBy = payload!.userId as any;
       submission.processedAt = new Date();
       await submission.save();
-      return NextResponse.json({ submission, message: 'Submission rejected' });
+
+      if (wasApproved) {
+        const user = await User.findById(submission.userId);
+        if (user && submission.challengeId) {
+          const challengeReward = (submission.challengeId as any).xpReward || 50;
+          const challengeDivision = (submission.challengeId as any).division;
+          
+          user.xp = Math.max(0, user.xp - challengeReward);
+          if (challengeDivision && challengeDivision !== 'global' && user.divisionXp) {
+            user.divisionXp[challengeDivision] = Math.max(0, (user.divisionXp[challengeDivision] || 0) - challengeReward);
+            user.markModified('divisionXp');
+          }
+          user.level = calculateLevel(user.xp);
+          await user.save();
+        }
+      }
+
+      return NextResponse.json({ submission, message: wasApproved ? 'Submission revoked' : 'Submission rejected' });
     }
 
     if (action === 'approve') {
       submission.status = 'approved';
-      submission.xpAwarded = true;
       submission.processedBy = payload!.userId as any;
       submission.processedAt = new Date();
       await submission.save();

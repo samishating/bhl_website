@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import styles from '@/app/(main)/challenges/page.module.css';
+import styles from './HomeChallenges.module.css';
 
 const divTagClass: Record<string, string> = {
   gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global',

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { getLevelTitle, BADGES } from '@/lib/xp';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import styles from '@/app/(main)/leaderboard/page.module.css';
+import styles from './HomeLeaderboard.module.css';
 
 const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
 const divTagClass: Record<string, string> = {

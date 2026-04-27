@@ -21,10 +21,10 @@ export default function Footer() {
           <div className={styles.links}>
             <h4>Platform</h4>
             <ul>
-              <li><Link href="/divisions">Divisions</Link></li>
-              <li><Link href="/leaderboard">Leaderboard</Link></li>
-              <li><Link href="/challenges">Challenges</Link></li>
-              <li><Link href="/community">Coming Soon</Link></li>
+              <li><Link href="/#divisions">Divisions</Link></li>
+              <li><Link href="/#leaderboard">Leaderboard</Link></li>
+              <li><Link href="/#challenges">Challenges</Link></li>
+              <li><Link href="/#hero">Join Us</Link></li>
             </ul>
           </div>
 

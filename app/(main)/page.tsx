@@ -1,6 +1,5 @@
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-const HeroThree = dynamic(() => import('@/components/HeroThree'), { ssr: false });
+import HeroWrapper from '@/components/HeroWrapper';
 import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
 
@@ -17,8 +16,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO (Client Side Canvas + Counters) */}
-      <HeroThree statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
+      {/* HERO (Three.js Wrapper) */}
+      <HeroWrapper statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
 
       {/* DIVISIONS PREVIEW (Server Side) */}
       <section className={styles.divisionsSection}>

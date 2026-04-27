@@ -66,3 +66,22 @@
 .successModal h3 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; }
 .successModal p { color: var(--text-secondary); }
 .empty { text-align: center; padding: 4rem; color: var(--text-muted); }
+
+/* Locked section */
+.locked { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 5rem 2rem; 
+  background: var(--bg-card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  text-align: center;
+  max-width: 600px;
+  margin: 2rem auto;
+  animation: fadeInUp 0.5s ease;
+}
+.lockedIcon { font-size: 3.5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(255,0,0,0.3)); }
+.lockedTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; margin-bottom: 0.5rem; }
+.lockedDesc { color: var(--text-secondary); max-width: 400px; margin-bottom: 2rem; line-height: 1.6; }

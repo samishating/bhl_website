@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 import styles from './page.module.css';
 
 interface Product {
@@ -17,6 +19,7 @@ interface Product {
 const CATEGORIES = ['all', 'apparel', 'accessories', 'gear', 'digital'];
 
 export default function MerchPage() {
+  const { user } = useAuth();
   const { addItem, items, count, total, removeItem, updateQuantity, clearCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +28,9 @@ export default function MerchPage() {
   const [checkout, setCheckout] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [orderDone, setOrderDone] = useState(false);
+
+  const REQUIRED_XP = 5000;
+  const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
 
   useEffect(() => {
     fetch('/api/products')
@@ -164,6 +170,26 @@ export default function MerchPage() {
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '4rem' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
+        ) : isLocked ? (
+          <div className={styles.locked}>
+            <div className={styles.lockedIcon}>🔐</div>
+            <h2 className={styles.lockedTitle}>Exclusive <span className="gradient-text">Access</span></h2>
+            <p className={styles.lockedDesc}>
+              Limited Drops are reserved for our most dedicated members. 
+              You need at least <strong>{REQUIRED_XP} XP</strong> to access this collection.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <div className="xp-bar-container" style={{ width: '200px' }}>
+                <div className="xp-bar-fill" style={{ width: `${Math.min(100, ((user?.xp || 0) / REQUIRED_XP) * 100)}%` }} />
+              </div>
+              <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--brand-red)' }}>
+                {user?.xp || 0} / {REQUIRED_XP} XP
+              </span>
+            </div>
+            <Link href="/challenges" className="btn btn-primary">
+              Earn XP Now ⚔️
+            </Link>
+          </div>
         ) : filtered.length === 0 ? (
           <div className={styles.empty}>No products in this category yet.</div>
         ) : (

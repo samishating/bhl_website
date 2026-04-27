@@ -1,13 +1,15 @@
-'use client';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { getServerUser } from '@/lib/auth';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({ children }: { children: React.ReactNode }) {
+  const user = await getServerUser();
+
   return (
-    <AuthProvider>
+    <AuthProvider initialUser={user}>
       <CartProvider>
         <ToastProvider>
           <Navbar />

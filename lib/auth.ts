@@ -36,3 +36,26 @@ export function getUserFromRequest(req: NextRequest): JWTPayload | null {
   if (!token) return null;
   return verifyToken(token);
 }
+
+// Helper for Server Components
+import { cookies } from 'next/headers';
+import { User } from '@/models/User';
+import { connectDB } from './db';
+
+export async function getServerUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('bhl_token')?.value;
+  if (!token) return null;
+  
+  const payload = verifyToken(token);
+  if (!payload) return null;
+  
+  try {
+    await connectDB();
+    const user = await User.findById(payload.userId).lean();
+    if (!user) return null;
+    return JSON.parse(JSON.stringify(user)); // ensure it's plain object
+  } catch {
+    return null;
+  }
+}

@@ -27,9 +27,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export function AuthProvider({ children, initialUser }: { children: React.ReactNode, initialUser?: User | null }) {
+  const [user, setUser] = useState<User | null>(initialUser || null);
+  const [loading, setLoading] = useState(!initialUser);
 
   const refreshUser = useCallback(async () => {
     try {

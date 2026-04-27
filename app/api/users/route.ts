@@ -8,7 +8,17 @@ export async function GET(req: NextRequest) {
     const payload = getUserFromRequest(req);
     console.log('[API/USERS] Auth Payload:', payload);
     
-    const isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin' || payload?.isAdmin === true;
+    let isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin' || payload?.isAdmin === true;
+    
+    // Fallback: If token doesn't have role, check the database
+    if (!isAuthorized && payload?.userId) {
+      await connectDB();
+      const user = await User.findById(payload.userId);
+      if (user && (user.role === 'admin' || user.role === 'superadmin' || (user as any).isAdmin)) {
+        isAuthorized = true;
+      }
+    }
+
     if (!isAuthorized) {
       console.log('[API/USERS] Access Denied for:', payload?.username);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

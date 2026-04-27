@@ -9,7 +9,18 @@ import { calculateLevel, BADGES } from '@/lib/xp';
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin' && payload?.isAdmin !== true) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    let isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin' || payload?.isAdmin === true;
+
+    // Fallback for old tokens
+    if (!isAuthorized && payload?.userId) {
+      await connectDB();
+      const user = await User.findById(payload.userId);
+      if (user && (user.role === 'admin' || user.role === 'superadmin' || (user as any).isAdmin)) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { id } = await params;

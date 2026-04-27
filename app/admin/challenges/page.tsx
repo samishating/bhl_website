@@ -6,7 +6,7 @@ import styles from './page.module.css';
 interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; }
 const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global' };
 
-const defaultForm = { title: '', description: '', xpReward: 50, division: 'global' };
+const defaultForm = { title: '', description: '', xpReward: 50, division: 'gaming' };
 
 export default function AdminChallengesPage() {
   const { user } = useAuth();
@@ -21,7 +21,7 @@ export default function AdminChallengesPage() {
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   const load = () => {
-    fetch('/api/challenges?division=global')
+    fetch('/api/challenges')
       .then(r => r.json())
       .then(d => { setChallenges(d.challenges || []); setLoading(false); });
   };
@@ -92,7 +92,7 @@ export default function AdminChallengesPage() {
             <div className="form-group">
               <label className="form-label">Division</label>
               <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))} id="challenge-division">
-                {['global', 'gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
+                {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
           </div>

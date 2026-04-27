@@ -20,6 +20,16 @@ export async function POST(req: NextRequest) {
     const challenge = await Challenge.findById(challengeId);
     if (!challenge) return NextResponse.json({ error: 'Challenge not found' }, { status: 404 });
 
+    const user = await User.findById(payload.userId);
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    // Enforce division membership
+    if (!user.divisions.includes(challenge.division)) {
+      return NextResponse.json({ 
+        error: `You must join the ${challenge.division} division to participate in this challenge.` 
+      }, { status: 403 });
+    }
+
     const existing = await Submission.findOne({ userId: payload.userId, challengeId });
     if (existing) {
       return NextResponse.json({ error: 'Already submitted for this challenge' }, { status: 409 });

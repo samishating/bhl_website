@@ -1,16 +1,12 @@
-import { connectDB } from '@/lib/db';
-import { User } from '@/models/User';
-import mongoose from 'mongoose';
+import { getGlobalStats } from '@/lib/stats';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AboutPage() {
-  await connectDB();
-  const totalMembers = await User.countDocuments();
-  const xpResult = await User.aggregate([{ $group: { _id: null, totalXP: { $sum: '$xp' } } }]);
-  const totalXP = xpResult[0]?.totalXP || 0;
-  const completedChallenges = await mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' });
+  const stats = await getGlobalStats();
+  const { totalMembers, completedChallenges, divisionLeaders } = stats;
 
   const divisions = [
     { id: 'gaming', role: 'Gaming Division Lead', defaultIcon: '🎮' },
@@ -19,19 +15,15 @@ export default async function AboutPage() {
     { id: 'content', role: 'Content Division Lead', defaultIcon: '🎬' },
   ];
 
-  const team = await Promise.all(divisions.map(async (d) => {
-    // Sort by division-specific XP
-    const leader = await User.findOne({ divisions: d.id })
-      .sort({ [`divisionXp.${d.id}`]: -1 })
-      .select('username avatar');
-    
+  const team = divisions.map(d => {
+    const leader = divisionLeaders[d.id];
     return {
       name: leader?.username || 'No contender yet',
       role: d.role,
       div: d.id,
       icon: (leader?.avatar && leader.avatar.trim() !== '') ? leader.avatar : d.defaultIcon
     };
-  }));
+  });
 
   const values = [
     { icon: '⚔️', title: 'Brotherhood', desc: 'We elevate each other. No member is left behind.' },
@@ -104,17 +96,22 @@ export default async function AboutPage() {
 
         {/* Stats */}
         <div className={styles.statsSection}>
-          {[
-            { num: `${totalMembers}+`, label: 'Active Members' },
-            { num: '4', label: 'Divisions' },
-            { num: `${completedChallenges}+`, label: 'Challenges Completed' },
-            { num: '∞', label: 'Potential' },
-          ].map(s => (
-            <div key={s.label} className={styles.statItem}>
-              <div className={styles.statNum}>{s.num}</div>
-              <div className={styles.statLabel}>{s.label}</div>
-            </div>
-          ))}
+          <div className={styles.statItem}>
+            <div className={styles.statNum}><AnimatedCounter value={totalMembers} formatter={v => `${v}+`} /></div>
+            <div className={styles.statLabel}>Active Members</div>
+          </div>
+          <div className={styles.statItem}>
+            <div className={styles.statNum}>4</div>
+            <div className={styles.statLabel}>Divisions</div>
+          </div>
+          <div className={styles.statItem}>
+            <div className={styles.statNum}><AnimatedCounter value={completedChallenges} formatter={v => `${v}+`} /></div>
+            <div className={styles.statLabel}>Challenges Completed</div>
+          </div>
+          <div className={styles.statItem}>
+            <div className={styles.statNum}>∞</div>
+            <div className={styles.statLabel}>Potential</div>
+          </div>
         </div>
       </div>
     </div>

@@ -101,9 +101,13 @@ export default function ApplicationsInbox() {
                 <div className={styles.appField}>
                   <label>Social / Portfolio</label>
                   {app.links ? (
-                    <a href={app.links.startsWith('http') ? app.links : `https://${app.links}`} target="_blank" rel="noreferrer" className={styles.link}>
-                      {app.links} ↗
-                    </a>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      {app.links.split(',').map(link => link.trim()).filter(Boolean).map((link, idx) => (
+                        <a key={idx} href={link.startsWith('http') ? link : `https://${link}`} target="_blank" rel="noreferrer" className={styles.link}>
+                          {link} ↗
+                        </a>
+                      ))}
+                    </div>
                   ) : <div>N/A</div>}
                 </div>
                 <div className={styles.appField} style={{ gridColumn: '1 / -1' }}>

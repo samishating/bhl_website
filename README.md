@@ -88,7 +88,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 
 ## 📡 Socials & Support
 - **GitHub**: [bhl_website](https://github.com/samishating/bhl_website)
-- **Discord**: [Join the Brotherhood](https://discord.gg/bhl)
+- **Discord**: [Join the Brotherhood](https://discord.gg/UJmwVv589E)
 
 ---
 © 2026 Brotherhood Legacy. All rights reserved.

@@ -54,7 +54,7 @@ export default function CommunityPage() {
             <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '1.1rem' }}>
               Join our Discord to stay updated on the launch.
             </p>
-            <a href="https://discord.gg/bhl" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
+            <a href="https://discord.gg/UJmwVv589E" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
               Join Discord
             </a>
           </div>

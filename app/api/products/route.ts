@@ -14,6 +14,7 @@ export async function GET() {
   }
 }
 
+
 export async function POST(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);

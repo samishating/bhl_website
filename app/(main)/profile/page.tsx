@@ -6,12 +6,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { xpForNextLevel, getLevelTitle, BADGES, calculateLevel } from '@/lib/xp';
 import styles from './page.module.css';
 
-const DIVISION_OPTIONS = [
-  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FF0000' },
-  { id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', color: '#FFFDBA' },
-  { id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', color: '#FF5050' },
-  { id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', color: '#CC0000' },
-];
+
 
 interface Submission { _id: string; challengeId: { title: string; xpReward: number; division: string }; proofUrl: string; status: string; createdAt: string; }
 
@@ -22,7 +17,6 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
   const [username, setUsername] = useState('');
-  const [divisions, setDivisions] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [claimingXp, setClaimingXp] = useState(false);
@@ -35,7 +29,6 @@ export default function ProfilePage() {
     setBio(user.bio || '');
     setAvatar(user.avatar || '');
     setUsername(user.username || '');
-    setDivisions(user.divisions || []);
 
     fetch(`/api/submissions?userId=${user.id}`)
       .then(r => r.json())
@@ -48,7 +41,7 @@ export default function ProfilePage() {
     const res = await fetch(`/api/users/${user.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bio, avatar, username, divisions }),
+      body: JSON.stringify({ bio, avatar, username }),
     });
     setSaving(false);
     if (res.ok) { await refreshUser(); setEditing(false); showToast('✅ Profile updated!'); }
@@ -181,27 +174,7 @@ export default function ProfilePage() {
                 <label className="form-label">Bio</label>
                 <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell the Brotherhood who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
               </div>
-              <div className="form-group">
-                <label className="form-label">Divisions</label>
-                <div className={styles.divisionPicker}>
-                  {DIVISION_OPTIONS.map(d => (
-                    <button
-                      key={d.id}
-                      type="button"
-                      className={`${styles.divPickBtn} ${divisions.includes(d.id) ? styles.divPickActive : ''}`}
-                      style={{ '--div-color': d.color } as React.CSSProperties}
-                      onClick={() => setDivisions(prev => prev.includes(d.id) ? prev.filter(x => x !== d.id) : [...prev, d.id])}
-                      id={`pick-division-${d.id}`}
-                    >
-                      {d.image ? (
-                      <img src={d.image} alt={d.label} style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
-                    ) : (
-                      <span>{d.icon}</span>
-                    )} {d.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+
               <button className="btn btn-primary" onClick={handleSave} disabled={saving} id="save-profile-btn">
                 {saving ? '…' : 'Save Changes'}
               </button>

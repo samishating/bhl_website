@@ -28,7 +28,7 @@ There are **30 elite ranks** in the Brotherhood. Reaching higher levels unlocks 
 | 30 | **Eternal Legacy** | 50,000 XP | The Ultimate Recognition |
 
 > [!IMPORTANT]
-> **Ultra Members Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **40,000+ XP**. You must reach Level 23 (Conqueror) to begin accessing these drops.
+> **Conqueror Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **40,000+ XP**. You must reach Level 23 (Conqueror) to begin accessing these drops.
 
 ### 🎖️ Badges
 Badges are displayed on your profile to showcase your achievements and loyalty.

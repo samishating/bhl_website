@@ -14,6 +14,9 @@ export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<PopulatedSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   useEffect(() => {
     fetchSubmissions();
@@ -27,7 +30,7 @@ export default function AdminSubmissionsPage() {
   };
 
   const handleAction = async (id: string, action: 'approve' | 'reject') => {
-    if (!confirm(`Are you sure you want to ${action} this submission?`)) return;
+    // Removing confirmation alert per user request, using toast for feedback
     setProcessingId(id);
     const res = await fetch(`/api/admin/submissions/${id}`, {
       method: 'PATCH',
@@ -39,13 +42,14 @@ export default function AdminSubmissionsPage() {
       setSubmissions(prev => prev.filter(s => s._id !== id));
     } else {
       const data = await res.json();
-      alert(`Error: ${data.error}`);
+      showToast(`❌ Error: ${data.error}`);
     }
     setProcessingId(null);
   };
 
   return (
     <div>
+      {toast && <div className="toast">{toast}</div>}
       <h1 className={styles.title}>Challenge Inbox</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
         Review pending challenge submissions and award XP manually.

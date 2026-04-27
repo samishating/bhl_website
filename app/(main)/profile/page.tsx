@@ -20,6 +20,7 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [username, setUsername] = useState('');
   const [divisions, setDivisions] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [claimingXp, setClaimingXp] = useState(false);
@@ -31,6 +32,7 @@ export default function ProfilePage() {
     if (!user) return;
     setBio(user.bio || '');
     setAvatar(user.avatar || '');
+    setUsername(user.username || '');
     setDivisions(user.divisions || []);
 
     fetch(`/api/submissions?userId=${user.id}`)
@@ -46,7 +48,7 @@ export default function ProfilePage() {
     const res = await fetch(`/api/users/${user.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bio, avatar, divisions }),
+      body: JSON.stringify({ bio, avatar, username, divisions }),
     });
     setSaving(false);
     if (res.ok) { await refreshUser(); setEditing(false); showToast('✅ Profile updated!'); }
@@ -144,8 +146,26 @@ export default function ProfilePage() {
             <h3 className={styles.sectionTitle}>Edit Profile</h3>
             <div className={styles.editForm}>
               <div className="form-group">
-                <label className="form-label">Avatar URL</label>
-                <input className="form-input" value={avatar} onChange={e => setAvatar(e.target.value)} placeholder="https://…" id="profile-avatar-input" />
+                <label className="form-label">Username</label>
+                <input className="form-input" value={username} onChange={e => setUsername(e.target.value)} placeholder="New username" id="profile-username-input" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Avatar URL or Upload</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input className="form-input" value={avatar} onChange={e => setAvatar(e.target.value)} placeholder="https://…" id="profile-avatar-input" />
+                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    📂 Upload
+                    <input type="file" style={{ display: 'none' }} onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                      const data = await res.json();
+                      if (data.url) setAvatar(data.url);
+                    }} />
+                  </label>
+                </div>
               </div>
               <div className="form-group">
                 <label className="form-label">Bio</label>
@@ -194,7 +214,7 @@ export default function ProfilePage() {
                   {submissions.map(s => (
                     <tr key={s._id}>
                       <td style={{ fontWeight: 600 }}>{s.challengeId?.title || 'Unknown'}</td>
-                      <td><span className={`division-tag tag-${s.challengeId?.division || 'all'}`}>{s.challengeId?.division || 'all'}</span></td>
+                      <td><span className={`division-tag tag-${s.challengeId?.division || 'global'}`}>{s.challengeId?.division || 'global'}</span></td>
                       <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{s.challengeId?.xpReward || 0}</span></td>
                       <td><span className={`badge ${s.status === 'approved' ? 'badge-green' : s.status === 'rejected' ? 'badge-red' : 'badge-blue'}`}>{s.status}</span></td>
                       <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(s.createdAt).toLocaleDateString()}</td>

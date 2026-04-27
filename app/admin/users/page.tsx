@@ -25,6 +25,9 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editForm, setEditForm] = useState({ username: '', role: '', divisions: [] as string[] });
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   useEffect(() => {
     fetch('/api/users')
@@ -70,7 +73,7 @@ export default function AdminUsersPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(`Error updating user: ${data.error}`);
+        showToast(`❌ Error updating user: ${data.error}`);
         return;
       }
 
@@ -83,7 +86,7 @@ export default function AdminUsersPage() {
         });
         if (!roleRes.ok) {
           const data = await roleRes.json();
-          alert(`Error updating role: ${data.error}`);
+          showToast(`❌ Error updating role: ${data.error}`);
         }
       }
 
@@ -92,9 +95,9 @@ export default function AdminUsersPage() {
       const fetchData = await fetchRes.json();
       setUsers(fetchData.users || []);
       setEditingUser(null);
-      alert('✅ User updated successfully!');
+      showToast('✅ User updated successfully!');
     } catch (err) {
-      alert('Network error');
+      showToast('❌ Network error');
     }
   };
 
@@ -109,6 +112,7 @@ export default function AdminUsersPage() {
 
   return (
     <div>
+      {toast && <div className="toast">{toast}</div>}
       <h1 className={styles.title}>User Management</h1>
       <p className={styles.sub}>{users.length} total members</p>
 

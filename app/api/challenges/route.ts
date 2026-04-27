@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const division = searchParams.get('division');
     const query: Record<string, unknown> = { active: true };
-    if (division && division !== 'all') query.division = division;
+    if (division && division !== 'global') query.division = division;
     
     const challenges = await Challenge.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ challenges });
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const { title, description, xpReward, division } = await req.json();
     if (!title || !description) return NextResponse.json({ error: 'Title and description required' }, { status: 400 });
 
-    const challenge = await Challenge.create({ title, description, xpReward: xpReward || 50, division: division || 'all' });
+    const challenge = await Challenge.create({ title, description, xpReward: xpReward || 50, division: division || 'global' });
     return NextResponse.json({ challenge }, { status: 201 });
   } catch (err) {
     console.error(err);

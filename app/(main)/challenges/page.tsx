@@ -13,14 +13,14 @@ interface Challenge {
 }
 
 const divTagClass: Record<string, string> = {
-  gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', all: 'tag-all',
+  gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global',
 };
 
 export default function ChallengesPage() {
   const { user, updateUser } = useAuth();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('global');
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [toast, setToast] = useState<string | null>(null);
@@ -76,7 +76,7 @@ export default function ChallengesPage() {
     }
   };
 
-  const DIVS = ['all', 'gaming', 'music', 'sport', 'content'];
+  const DIVS = ['global', 'gaming', 'music', 'sport', 'content'];
 
   return (
     <div className={styles.page}>
@@ -96,7 +96,7 @@ export default function ChallengesPage() {
           {DIVS.map(d => (
             <button key={d} className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
               onClick={() => setFilter(d)} id={`challenges-tab-${d}`}>
-              {d === 'all' ? '🌐 All' : d.charAt(0).toUpperCase() + d.slice(1)}
+              {d === 'global' ? '🌐 Global' : d.charAt(0).toUpperCase() + d.slice(1)}
             </button>
           ))}
         </div>
@@ -113,7 +113,7 @@ export default function ChallengesPage() {
               return (
                 <div key={c._id} className={`${styles.card} ${status === 'approved' ? styles.cardDone : ''}`} id={`challenge-${c._id}`}>
                   <div className={styles.cardTop}>
-                    <span className={`division-tag ${divTagClass[c.division] || 'tag-all'}`}>{c.division}</span>
+                    <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>
                     <span className={styles.xpBadge}>+{c.xpReward} XP</span>
                   </div>
                   <h3 className={styles.cardTitle}>{c.title}</h3>

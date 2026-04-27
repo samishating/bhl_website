@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 
 interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; }
-const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', all: 'tag-all' };
+const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global' };
 
-const defaultForm = { title: '', description: '', xpReward: 50, division: 'all' };
+const defaultForm = { title: '', description: '', xpReward: 50, division: 'global' };
 
 export default function AdminChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -18,7 +18,7 @@ export default function AdminChallengesPage() {
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   const load = () => {
-    fetch('/api/challenges?division=all')
+    fetch('/api/challenges?division=global')
       .then(r => r.json())
       .then(d => { setChallenges(d.challenges || []); setLoading(false); });
   };
@@ -46,7 +46,7 @@ export default function AdminChallengesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this challenge?')) return;
+    // Removing confirmation alert per user request, using toast for feedback
     await fetch(`/api/challenges/${id}`, { method: 'DELETE' });
     load();
     showToast('🗑 Challenge deleted');
@@ -80,7 +80,7 @@ export default function AdminChallengesPage() {
             <div className="form-group">
               <label className="form-label">Division</label>
               <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))} id="challenge-division">
-                {['all', 'gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
+                {['global', 'gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
           </div>

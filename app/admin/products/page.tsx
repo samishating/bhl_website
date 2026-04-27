@@ -27,7 +27,7 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this product?')) return;
+    // No confirmation alert per user request, using toast for feedback
     await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
     load(); showToast('🗑 Product deleted');
   };
@@ -70,8 +70,22 @@ export default function AdminProductsPage() {
               </select>
             </div>
             <div className="form-group" style={{ flex: 2 }}>
-              <label className="form-label">Image URL</label>
-              <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
+              <label className="form-label">Image URL or Upload</label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
+                <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  📂 Upload
+                  <input type="file" style={{ display: 'none' }} onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.url) setForm(p => ({ ...p, image: data.url }));
+                  }} />
+                </label>
+              </div>
             </div>
           </div>
           <div className="form-group">
@@ -80,7 +94,7 @@ export default function AdminProductsPage() {
           </div>
           <label className={styles.checkLabel}>
             <input type="checkbox" checked={form.isLimitedDrop} onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} id="product-limited" />
-            Limited Drop (🔥 badge)
+            Conqueror Drop (40k XP) 🔥
           </label>
           <button type="submit" className="btn btn-primary" disabled={creating} id="product-submit-btn">
             {creating ? <span className="spinner" /> : 'Add Product'}
@@ -98,7 +112,7 @@ export default function AdminProductsPage() {
               {products.map(p => (
                 <tr key={p._id}>
                   <td style={{ fontWeight: 600 }}>
-                    {p.name} {p.isLimitedDrop && <span style={{ color: '#FF0000', fontSize: '0.75rem' }}>🔥 Limited</span>}
+                    {p.name} {p.isLimitedDrop && <span style={{ color: '#FF0000', fontSize: '0.75rem' }}>🔥 Conqueror</span>}
                   </td>
                   <td><span className="division-tag tag-all">{p.category}</span></td>
                   <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>${p.price.toFixed(2)}</span></td>

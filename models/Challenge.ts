@@ -13,7 +13,7 @@ const ChallengeSchema = new Schema<IChallenge>({
   title: { type: String, required: true, trim: true },
   description: { type: String, required: true },
   xpReward: { type: Number, required: true, default: 50 },
-  division: { type: String, enum: ['gaming', 'music', 'sport', 'content', 'all'], default: 'all' },
+  division: { type: String, enum: ['gaming', 'music', 'sport', 'content', 'global'], default: 'global' },
   active: { type: Boolean, default: true },
 }, { timestamps: true });
 

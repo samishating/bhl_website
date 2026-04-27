@@ -46,7 +46,7 @@ async function seed() {
     { title: 'Collab with Another Member', description: 'Create and release a collab with another BHL Music member. Both must tag BHL.', xpReward: 100, division: 'music', active: true },
     { title: 'Viral Post (1K Views)', description: 'Create a post, reel, or video that reaches 1,000+ organic views. Screenshot analytics.', xpReward: 60, division: 'content', active: true },
     { title: 'Weekly BHL Meme Drop', description: 'Post 5 original BHL memes in a single week. Must be original content.', xpReward: 40, division: 'content', active: true },
-    { title: 'Brotherhood Introduction', description: 'Post a video introducing yourself to the Brotherhood on any platform.', xpReward: 30, division: 'all', active: true },
+    { title: 'Brotherhood Introduction', description: 'Post a video introducing yourself to the Brotherhood on any platform.', xpReward: 30, division: 'global', active: true },
   ];
 
   await mongoose.connection.db!.collection('challenges').insertMany(challengesData);

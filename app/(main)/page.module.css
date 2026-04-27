@@ -28,7 +28,7 @@
   display: block; font-family: var(--font-rajdhani), sans-serif; font-weight: 700; font-size: 2rem;
   background: linear-gradient(135deg, #FF0000, #CC0000);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  min-height: 2.4rem; min-width: 80px;
+  line-height: 1.2;
 }
 .statLabel { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 .scrollIndicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; animation: fadeInDown 1s ease 1s forwards; opacity: 0; }

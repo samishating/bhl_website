@@ -95,7 +95,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
         <div className={styles.statsRow}>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              {statsData.members ? <AnimatedCounter value={statsData.members} suffix="+" /> : '...'}
+              {typeof statsData.members === 'number' ? <AnimatedCounter value={statsData.members} suffix="+" /> : '...'}
             </span>
             <span className={styles.statLabel}>Members</span>
           </div>
@@ -105,7 +105,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              {statsData.xp ? <AnimatedCounter value={statsData.xp} suffix="+" /> : '...'}
+              {typeof statsData.xp === 'number' ? <AnimatedCounter value={statsData.xp} suffix="+" /> : '...'}
             </span>
             <span className={styles.statLabel}>XP Earned</span>
           </div>

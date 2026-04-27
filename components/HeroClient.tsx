@@ -95,7 +95,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
         <div className={styles.statsRow}>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              <AnimatedCounter value={statsData.members} formatter={v => `${v}+`} />
+              <AnimatedCounter value={statsData.members} suffix="+" />
             </span>
             <span className={styles.statLabel}>Members</span>
           </div>
@@ -105,10 +105,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              <AnimatedCounter 
-                value={statsData.xp} 
-                formatter={v => v >= 1000 ? `${(v / 1000).toFixed(1)}K+` : v.toString()} 
-              />
+              <AnimatedCounter value={statsData.xp} suffix="+" />
             </span>
             <span className={styles.statLabel}>XP Earned</span>
           </div>

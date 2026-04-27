@@ -97,7 +97,7 @@ export default async function AboutPage() {
         {/* Stats */}
         <div className={styles.statsSection}>
           <div className={styles.statItem}>
-            <div className={styles.statNum}><AnimatedCounter value={totalMembers} formatter={v => `${v}+`} /></div>
+            <div className={styles.statNum}><AnimatedCounter value={totalMembers} suffix="+" /></div>
             <div className={styles.statLabel}>Active Members</div>
           </div>
           <div className={styles.statItem}>
@@ -105,7 +105,7 @@ export default async function AboutPage() {
             <div className={styles.statLabel}>Divisions</div>
           </div>
           <div className={styles.statItem}>
-            <div className={styles.statNum}><AnimatedCounter value={completedChallenges} formatter={v => `${v}+`} /></div>
+            <div className={styles.statNum}><AnimatedCounter value={completedChallenges} suffix="+" /></div>
             <div className={styles.statLabel}>Challenges Completed</div>
           </div>
           <div className={styles.statItem}>

@@ -71,7 +71,7 @@ export default function LeaderboardPage() {
                   <div className={`avatar avatar-lg ${styles.podiumAvatar}`}>
                     {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
                   </div>
-                  <div className={styles.podiumName}>{u.username}</div>
+                  <a href={`/users/${u._id}`} className={styles.podiumName}>{u.username}</a>
                   <div className={styles.podiumXp}>{u.xp.toLocaleString()} XP</div>
                   <div className={styles.podiumBase} style={{ height: heightPct }}>
                     <span className={styles.podiumRank}>{rankIcons[rank - 1]}</span>
@@ -118,7 +118,7 @@ export default function LeaderboardPage() {
                             {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
                           </div>
                           <div>
-                            <div className={styles.memberName}>{u.username}</div>
+                            <a href={`/users/${u._id}`} className={styles.memberName}>{u.username}</a>
                             <div className={styles.memberTitle}>{getLevelTitle(u.level)}</div>
                           </div>
                         </div>

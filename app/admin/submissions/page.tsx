@@ -80,12 +80,12 @@ export default function AdminSubmissionsPage() {
               {submissions.map(sub => (
                 <tr key={sub._id}>
                   <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div className="avatar avatar-sm">
-                        {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="avatar" /> : sub.userId?.username?.[0]?.toUpperCase()}
-                      </div>
-                      <span style={{ fontWeight: 600 }}>{sub.userId?.username}</span>
-                    </div>
+                      <a href={`/users/${sub.userId?._id}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'inherit', textDecoration: 'none' }}>
+                        <div className="avatar avatar-sm">
+                          {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="avatar" /> : sub.userId?.username?.[0]?.toUpperCase()}
+                        </div>
+                        <span style={{ fontWeight: 600 }}>{sub.userId?.username}</span>
+                      </a>
                   </td>
                   <td style={{ fontWeight: 600 }}>{sub.challengeId?.title}</td>
                   <td><span className="badge badge-red">+{sub.challengeId?.xpReward} XP</span></td>

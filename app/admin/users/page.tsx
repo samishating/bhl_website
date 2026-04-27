@@ -5,7 +5,7 @@ import { getLevelTitle } from '@/lib/xp';
 import styles from './page.module.css';
 
 interface User {
-  _id: string; username: string; email: string; xp: number; level: number;
+  _id: string; username: string; email: string; avatar: string; xp: number; level: number;
   divisions: string[]; badges: string[]; role: string; isAdmin?: boolean; createdAt: string;
 }
 
@@ -138,9 +138,11 @@ export default function AdminUsersPage() {
                 <tr key={u._id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <div className="avatar" style={{ fontSize: '0.8rem' }}>{u.username[0].toUpperCase()}</div>
+                      <div className="avatar" style={{ fontSize: '0.8rem' }}>
+                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                      </div>
                       <div>
-                        <div style={{ fontWeight: 600 }}>{u.username}</div>
+                        <a href={`/users/${u._id}`} style={{ fontWeight: 600, color: 'inherit', textDecoration: 'none' }} className="hover-link">{u.username}</a>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{getLevelTitle(u.level)}</div>
                       </div>
                     </div>

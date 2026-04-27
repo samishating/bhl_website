@@ -13,10 +13,13 @@ export async function getGlobalStats() {
     return cachedStats;
   }
 
+  console.time('getGlobalStats');
   await connectDB();
   
   const [totalMembers, xpResult, divisionResult, completedChallenges] = await Promise.all([
     User.countDocuments(),
+    // Use a more targeted aggregation or just count if the collection is huge, 
+    // but for now, we'll keep it but monitor performance
     User.aggregate([{ $group: { _id: null, totalXP: { $sum: '$xp' } } }]),
     User.aggregate([
       { $unwind: '$divisions' },
@@ -24,6 +27,7 @@ export async function getGlobalStats() {
     ]),
     mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' })
   ]);
+  console.timeEnd('getGlobalStats');
 
   const totalXP = xpResult[0]?.totalXP || 0;
   const divisionCounts = { gaming: 0, music: 0, sport: 0, content: 0 };

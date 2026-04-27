@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Brotherhood Legacy (BHL) — Official Platform
 
-## Getting Started
+Brotherhood Legacy is a premier multi-division community platform designed for Gaming, Music, Sport, and Content creators. This platform integrates gamification, community management, and exclusive commerce into a unified experience for the Brotherhood.
 
-First, run the development server:
+## ⚔️ The Gamification System
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+BHL is built on a progression system where every action contributes to your legacy. Earn XP to climb the ranks, unlock exclusive content, and earn prestigious badges.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### How to Earn XP
+| Action | XP Reward | Description |
+| :--- | :--- | :--- |
+| **Daily Login** | +10 XP | Stay active and consistent with the Brotherhood. |
+| **Join Division** | +20 XP | Commit to a path: Gaming, Music, Sport, or Content. |
+| **Submit Challenge** | +50 XP | Complete community challenges and provide proof. |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🏆 Ranks & Progression
+There are **10 elite ranks** in the Brotherhood. Reaching higher levels unlocks exclusive features and store access.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Level | Title | XP Required | Unlocks |
+| :--- | :--- | :--- | :--- |
+| 1 | **Recruit** | 0 XP | Basic platform access |
+| 2 | **Initiate** | 100 XP | Profile customization |
+| 3 | **Member** | 250 XP | Forum posting permissions |
+| 4 | **Veteran** | 500 XP | Division-specific challenges |
+| 5 | **Elite** | 1,000 XP | **Ranked Badge** unlocked |
+| 6 | **Champion** | 1,750 XP | Priority challenge review |
+| 7 | **Legend** | 2,750 XP | Squad recruitment access |
+| 8 | **Icon** | 4,000 XP | High-tier badge access |
+| 9 | **Mythic** | 5,500 XP | **Ultra Members Drops** store access |
+| 10 | **Brotherhood Master** | 7,500 XP | Legendary status & admin visibility |
 
-## Learn More
+> [!IMPORTANT]
+> **Ultra Members Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **5,000+ XP**. You must reach Level 8 (Icon) to begin accessing these drops.
 
-To learn more about Next.js, take a look at the following resources:
+### 🎖️ Badges
+Badges are displayed on your profile to showcase your achievements and loyalty.
+- **Founder**: Joined the Brotherhood at launch.
+- **Challenger**: Completed your first verified challenge.
+- **Ranked**: Reached Level 5 (Elite).
+- **Division Elite**: Earned by joining a specific division (Gaming, Music, Sport, or Content).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Brotherhood Legacy GitHub repository](https://github.com/samishating/bhl_website) - your feedback and contributions are welcome!
+## 🌎 Divisions
+Choose your path and dominate your field:
+- **🎮 Gaming**: Competitive play, scrims, and tournament domination.
+- **🎵 Music**: Artist collaboration, track drops, and sound engineering.
+- **💪 Sport**: Physical excellence, fitness challenges, and athletic growth.
+- **🎬 Content**: Content creation, digital branding, and viral meta.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Technology Stack
+- **Frontend**: Next.js 15 (App Router), TypeScript, Vanilla CSS
+- **Backend**: Node.js, MongoDB (Mongoose)
+- **Authentication**: JWT-based secure sessions
+- **Styling**: Modern dark mode with neon accents & BHL branding
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- MongoDB instance (local or Atlas)
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/samishating/bhl_website.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables (`.env.local`):
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_secure_secret
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) to see the result.
+
+---
+
+## 📡 Socials & Support
+- **GitHub**: [bhl_website](https://github.com/samishating/bhl_website)
+- **Discord**: [Join the Brotherhood](https://discord.gg/bhl)
+
+---
+© 2026 Brotherhood Legacy. All rights reserved.

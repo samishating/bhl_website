@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId') || payload.userId;
 
-    if (userId !== payload.userId && !payload.isAdmin) {
+    if (userId !== payload.userId && payload.role !== 'admin' && payload.role !== 'superadmin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

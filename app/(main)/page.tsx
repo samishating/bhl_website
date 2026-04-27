@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './page.module.css';
 
 const divisions = [
-  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', desc: 'Competitive gaming at the highest level', color: '#FF0000', tag: 'tag-gaming' },
-  { id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', desc: 'Artists shaping the sound of the future', color: '#FFFDBA', tag: 'tag-music' },
-  { id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', desc: 'Global sports, fitness & physical excellence', color: '#FF5050', tag: 'tag-sport' },
-  { id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', desc: 'Creators dominating digital culture', color: '#CC0000', tag: 'tag-content' },
+  { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', desc: 'Competitive gaming at the highest level', color: '#FFD700', tag: 'tag-gaming' },
+  { id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', desc: 'Artists shaping the sound of the future', color: '#A855F7', tag: 'tag-music' },
+  { id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', desc: 'Global sports, fitness & physical excellence', color: '#06B6D4', tag: 'tag-sport' },
+  { id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', desc: 'Creators dominating digital culture', color: '#EF4444', tag: 'tag-content' },
 ];
 
 // Stats are now fetched dynamically
@@ -44,7 +44,7 @@ export default function HomePage() {
     canvas.height = window.innerHeight;
 
     const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number; color: string }[] = [];
-    const colors = ['#FF0000', '#CC0000', '#FFFDBA'];
+    const colors = ['#FF0000', '#FFD700', '#A855F7', '#06B6D4'];
 
     for (let i = 0; i < 80; i++) {
       particles.push({

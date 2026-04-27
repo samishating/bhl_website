@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
-    if (!payload?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { title, description, xpReward, division } = await req.json();

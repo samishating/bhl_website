@@ -70,7 +70,7 @@ export default function Navbar() {
                 <span className={styles.username}>{user.username}</span>
                 <span className={`badge badge-blue ${styles.levelBadge}`}>Lv.{user.level}</span>
               </Link>
-              {user.isAdmin && (
+              {(user.role === 'admin' || user.role === 'superadmin') && (
                 <Link href="/admin" className="btn btn-sm btn-ghost" id="nav-admin-btn">Admin</Link>
               )}
               <button onClick={handleLogout} className="btn btn-sm btn-ghost" id="nav-logout-btn">Logout</button>
@@ -110,7 +110,7 @@ export default function Navbar() {
           {user ? (
             <>
               <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Profile</Link>
-              {user.isAdmin && <Link href="/admin" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Admin</Link>}
+              {(user.role === 'admin' || user.role === 'superadmin') && <Link href="/admin" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Admin</Link>}
               <button onClick={() => { handleLogout(); setMenuOpen(false); }} className={styles.mobileLink}>Logout</button>
             </>
           ) : (

@@ -42,14 +42,14 @@
 .divCard:hover {
   border-color: var(--div-color, var(--neon-blue));
   transform: translateY(-4px);
-  box-shadow: 0 0 40px color-mix(in srgb, var(--div-color, #FF0000) 20%, transparent);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--div-color, #FF0000) 30%, transparent);
 }
 .divCardGlow {
   position: absolute;
-  top: -80px; right: -80px;
-  width: 200px; height: 200px;
+  top: -60px; left: -60px;
+  width: 180px; height: 180px;
   border-radius: 50%;
-  opacity: 0.08;
+  opacity: 0.15;
   filter: blur(60px);
   pointer-events: none;
   transition: opacity 0.3s;

@@ -7,25 +7,25 @@ import styles from './page.module.css';
 
 const divisions = [
   {
-    id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FF0000', tag: 'tag-gaming',
+    id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FFD700', tag: 'tag-gaming',
     desc: 'Our Gaming division is home to the most competitive gamers in the Brotherhood. We compete across titles like Valorant, League of Legends, FIFA, and more. If you have the skill and the drive to win, this is your home.',
     perks: ['Team scrimmages', 'Tournament entries', 'Coaching sessions', 'Exclusive gaming gear discounts'],
     members: 142,
   },
   {
-    id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', color: '#FFFDBA', tag: 'tag-music',
+    id: 'music', label: 'Music', icon: '🎵', image: '/brand/music.png', color: '#A855F7', tag: 'tag-music',
     desc: 'The Music division unites producers, artists, and audio engineers under one roof. From trap to electronic, from rap to lo-fi — we push the boundaries of sound and help each other grow as artists.',
     perks: ['Beat sharing sessions', 'Collab opportunities', 'Release promotion', 'Studio tips & resources'],
     members: 98,
   },
   {
-    id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', color: '#FF5050', tag: 'tag-sport',
+    id: 'sport', label: 'Sport', icon: '💪', image: '/brand/sport.png', color: '#06B6D4', tag: 'tag-sport',
     desc: 'The Sport division covers everything from intense physical discipline to global sports like Football, F1, and MMA. Stay active, discuss the latest matches, and crush your goals.',
     perks: ['Live match discussions', 'Fitness & nutrition tips', 'Fantasy leagues', 'Workout challenges'],
     members: 117,
   },
   {
-    id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', color: '#CC0000', tag: 'tag-content',
+    id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', color: '#EF4444', tag: 'tag-content',
     desc: 'The Content division is where memes, videos, and viral moments are born. We support streamers, editors, photographers, and memers who want to build their brand and dominate the digital world.',
     perks: ['Cross-promotion', 'Editing resources', 'Content calendars', 'Platform growth tips'],
     members: 143,
@@ -138,7 +138,7 @@ export default function DivisionsPage() {
                   onClick={() => handleToggleDivision(div.id)}
                   disabled={joining === div.id}
                   className={isMember ? "btn btn-secondary" : "btn btn-primary"}
-                  style={isMember ? { borderColor: div.color } : { background: `linear-gradient(135deg, ${div.color}, #880000)` }}
+                  style={isMember ? { borderColor: div.color } : { background: `linear-gradient(135deg, ${div.color}, color-mix(in srgb, ${div.color}, black 40%))` }}
                   id={`division-join-${div.id}`}
                 >
                   {joining === div.id ? <span className="spinner" /> : isMember ? `Leave ${div.label}` : `Join ${div.label}`}

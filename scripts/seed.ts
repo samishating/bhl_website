@@ -20,7 +20,8 @@ async function seed() {
 
   // Users
   const usersData = [
-    { email: 'admin@bhl.gg', password: adminPass, username: 'Admin', xp: 9999, divisions: ['gaming', 'music', 'sport', 'content'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'], isAdmin: true },
+    { email: 'superadmin@bhl.gg', password: adminPass, username: 'SuperAdmin', xp: 9999, divisions: ['gaming', 'music', 'sport', 'content'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'], role: 'superadmin' },
+    { email: 'admin@bhl.gg', password: adminPass, username: 'Admin', xp: 9999, divisions: ['gaming', 'music', 'sport', 'content'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'], role: 'admin' },
     { email: 'xenon@bhl.gg', password: hashedPass, username: 'XenonX', xp: 4200, divisions: ['gaming'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'] },
     { email: 'beatl@bhl.gg', password: hashedPass, username: 'BeatLord', xp: 3800, divisions: ['music'], badges: ['FOUNDER', 'RANKED', 'MUSIC_ARTIST'] },
     { email: 'iron@bhl.gg', password: hashedPass, username: 'IronWolf', xp: 3100, divisions: ['sport'], badges: ['FOUNDER', 'RANKED', 'SPORT_BEAST'] },
@@ -67,8 +68,9 @@ async function seed() {
   await mongoose.disconnect();
   console.log('\n🎉 Seed complete!');
   console.log('─────────────────────────────────');
-  console.log('Admin login:  admin@bhl.gg  /  admin123');
-  console.log('Member login: xenon@bhl.gg  /  password123');
+  console.log('Superadmin:   superadmin@bhl.gg / admin123');
+  console.log('Admin login:  admin@bhl.gg      / admin123');
+  console.log('Member login: xenon@bhl.gg      / password123');
   console.log('─────────────────────────────────');
 }
 

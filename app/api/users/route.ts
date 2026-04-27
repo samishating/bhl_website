@@ -6,7 +6,7 @@ import { getUserFromRequest } from '@/lib/auth';
 export async function GET(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
-    if (!payload?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (payload?.role !== 'admin' && payload?.role !== 'superadmin' && !payload?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const users = await User.find().select('-password').sort({ xp: -1 });

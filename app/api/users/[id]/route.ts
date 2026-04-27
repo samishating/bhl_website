@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
-    if (payload.userId !== id && !payload.isAdmin) {
+    if (payload.userId !== id && payload.role !== 'admin' && payload.role !== 'superadmin' && !payload.isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -32,8 +32,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
     const body = await req.json();
-    const { bio, avatar, divisions } = body;
+    const { bio, avatar, divisions, username } = body;
 
+    if (username !== undefined && username.trim() !== '') {
+      // Check if username is already taken
+      const existingUser = await User.findOne({ username, _id: { $ne: id } });
+      if (existingUser) {
+        return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
+      }
+      user.username = username;
+    }
     if (bio !== undefined) user.bio = bio;
     if (avatar !== undefined) user.avatar = avatar;
     if (divisions !== undefined) {

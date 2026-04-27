@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
-    if (!payload?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const body = await req.json();
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
-    if (!payload?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { searchParams } = new URL(req.url);

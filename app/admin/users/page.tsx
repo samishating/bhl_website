@@ -1,19 +1,30 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { getLevelTitle } from '@/lib/xp';
 import styles from './page.module.css';
 
 interface User {
   _id: string; username: string; email: string; xp: number; level: number;
-  divisions: string[]; badges: string[]; isAdmin: boolean; createdAt: string;
+  divisions: string[]; badges: string[]; role: string; createdAt: string;
 }
 
 const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content' };
 
+const DIVISION_OPTIONS = [
+  { id: 'gaming', label: 'Gaming' },
+  { id: 'music', label: 'Music' },
+  { id: 'sport', label: 'Sport' },
+  { id: 'content', label: 'Content' },
+];
+
 export default function AdminUsersPage() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editForm, setEditForm] = useState({ username: '', role: '', divisions: [] as string[] });
 
   useEffect(() => {
     fetch('/api/users')
@@ -25,6 +36,69 @@ export default function AdminUsersPage() {
     u.username.toLowerCase().includes(search.toLowerCase()) ||
     u.email.toLowerCase().includes(search.toLowerCase())
   );
+
+
+
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    setEditForm({
+      username: user.username,
+      role: user.role,
+      divisions: [...user.divisions]
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingUser) return;
+    try {
+      // 1. Update Username and Divisions
+      const res = await fetch(`/api/users/${editingUser._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: editForm.username,
+          divisions: editForm.divisions
+        })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(`Error updating user: ${data.error}`);
+        return;
+      }
+
+      // 2. Update Role (using the dedicated role endpoint)
+      if (editForm.role !== editingUser.role) {
+        const roleRes = await fetch(`/api/admin/users/${editingUser._id}/role`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: editForm.role })
+        });
+        if (!roleRes.ok) {
+          const data = await roleRes.json();
+          alert(`Error updating role: ${data.error}`);
+        }
+      }
+
+      // Refresh list
+      const fetchRes = await fetch('/api/users');
+      const fetchData = await fetchRes.json();
+      setUsers(fetchData.users || []);
+      setEditingUser(null);
+      alert('✅ User updated successfully!');
+    } catch (err) {
+      alert('Network error');
+    }
+  };
+
+  const toggleDivision = (divId: string) => {
+    setEditForm(prev => ({
+      ...prev,
+      divisions: prev.divisions.includes(divId)
+        ? prev.divisions.filter(d => d !== divId)
+        : [...prev.divisions, divId]
+    }));
+  };
 
   return (
     <div>
@@ -46,7 +120,7 @@ export default function AdminUsersPage() {
         <div className="table-container">
           <table>
             <thead>
-              <tr><th>User</th><th>Email</th><th>Level / XP</th><th>Divisions</th><th>Role</th><th>Joined</th></tr>
+              <tr><th>User</th><th>Email</th><th>Level / XP</th><th>Divisions</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {filtered.map(u => (
@@ -71,15 +145,76 @@ export default function AdminUsersPage() {
                     </div>
                   </td>
                   <td>
-                    <span className={`badge ${u.isAdmin ? 'badge-red' : 'badge-blue'}`}>
-                      {u.isAdmin ? 'Admin' : 'Member'}
+                    <span className={`badge ${u.role === 'superadmin' ? 'badge-red' : u.role === 'admin' ? 'badge-red' : 'badge-blue'}`} style={u.role === 'superadmin' ? { background: 'linear-gradient(90deg, #ff0055, #cc0000)' } : {}}>
+                      {u.role === 'superadmin' ? 'SUPERADMIN' : u.role === 'admin' ? 'Admin' : 'Member'}
                     </span>
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
+                      <button className="btn btn-xs btn-secondary" onClick={() => handleEdit(u)}>Edit</button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingUser && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h2>Edit User: {editingUser.username}</h2>
+              <button onClick={() => setEditingUser(null)} className={styles.closeBtn}>&times;</button>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <div className="form-group">
+                <label className="form-label">Username</label>
+                <input 
+                  className="form-input" 
+                  value={editForm.username} 
+                  onChange={e => setEditForm({ ...editForm, username: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Role</label>
+                <select 
+                  className="form-input" 
+                  value={editForm.role}
+                  onChange={e => setEditForm({ ...editForm, role: e.target.value })}
+                >
+                  <option value="user">Member</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Divisions</label>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                  {DIVISION_OPTIONS.map(div => (
+                    <button
+                      key={div.id}
+                      type="button"
+                      className={`btn btn-xs ${editForm.divisions.includes(div.id) ? 'btn-primary' : 'btn-ghost'}`}
+                      onClick={() => toggleDivision(div.id)}
+                    >
+                      {div.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button className="btn btn-ghost" onClick={() => setEditingUser(null)}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleSaveEdit}>Save Changes</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

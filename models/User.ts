@@ -10,7 +10,7 @@ export interface IUser extends Document {
   level: number;
   divisions: string[];
   badges: string[];
-  isAdmin: boolean;
+  role: 'user' | 'admin' | 'superadmin';
   lastLogin: Date;
   createdAt: Date;
 }
@@ -25,7 +25,7 @@ const UserSchema = new Schema<IUser>({
   level: { type: Number, default: 1 },
   divisions: [{ type: String, enum: ['gaming', 'music', 'sport', 'content'] }],
   badges: [{ type: String }],
-  isAdmin: { type: Boolean, default: false },
+  role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },
   lastLogin: { type: Date, default: null },
 }, { timestamps: true });
 

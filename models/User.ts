@@ -36,6 +36,12 @@ const UserSchema = new Schema<IUser>({
   lastLogin: { type: Date, default: null },
 }, { timestamps: true });
 
+UserSchema.index({ xp: -1 });
+UserSchema.index({ 'divisionXp.gaming': -1 });
+UserSchema.index({ 'divisionXp.music': -1 });
+UserSchema.index({ 'divisionXp.sport': -1 });
+UserSchema.index({ 'divisionXp.content': -1 });
+
 if (mongoose.models.User) {
   mongoose.deleteModel('User');
 }

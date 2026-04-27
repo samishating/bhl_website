@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { CartProvider } from '@/contexts/CartContext';
+import { ToastProvider } from '@/contexts/ToastContext';
+import { getServerUser } from '@/lib/auth';
 
 export const metadata: Metadata = {
   title: 'Brotherhood Legacy — BHL | Community Platform',
@@ -12,10 +16,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getServerUser();
+
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider initialUser={user}>
+          <CartProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </CartProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

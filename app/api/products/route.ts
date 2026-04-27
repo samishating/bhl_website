@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
     const body = await req.json();
-    const product = await Product.create(body);
+    const { name, description, price, image, images, stock, isLimitedDrop, category } = body;
+    const product = await Product.create({ name, description, price, image, images: images || [], stock, isLimitedDrop, category });
     return NextResponse.json({ product }, { status: 201 });
   } catch (err) {
     console.error(err);

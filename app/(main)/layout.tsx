@@ -3,6 +3,7 @@ import { CartProvider } from '@/contexts/CartContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import CartDrawer from '@/components/layout/CartDrawer';
 import { getServerUser } from '@/lib/auth';
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +14,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
       <CartProvider>
         <ToastProvider>
           <Navbar />
+          <CartDrawer />
           <main style={{ paddingTop: '70px', minHeight: '100vh' }}>
             {children}
           </main>

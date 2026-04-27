@@ -26,10 +26,7 @@ export default function MerchPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
-  const [cartOpen, setCartOpen] = useState(false);
-  const [checkout, setCheckout] = useState(false);
   const { showToast } = useToast();
-  const [orderDone, setOrderDone] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImg, setActiveImg] = useState(0);
 
@@ -61,80 +58,11 @@ export default function MerchPage() {
     showToast(`🛒 ${p.name} added to cart!`, 'success');
   };
 
-  const handleCheckout = () => {
-    setCheckout(false);
-    setOrderDone(true);
-    clearCart();
-  };
+
 
   return (
     <div className={styles.page}>
-      {/* Cart Sidebar */}
-      {cartOpen && (
-        <div className={styles.cartOverlay} onClick={() => setCartOpen(false)}>
-          <div className={styles.cart} onClick={e => e.stopPropagation()}>
-            <div className={styles.cartHeader}>
-              <h3>Your Cart ({count})</h3>
-              <button onClick={() => setCartOpen(false)} className={styles.cartClose}>✕</button>
-            </div>
-            {items.length === 0 ? (
-              <div className={styles.emptyCart}>Your cart is empty</div>
-            ) : (
-              <>
-                <div className={styles.cartItems}>
-                  {items.map(item => (
-                    <div key={item.id} className={styles.cartItem}>
-                      <div className={styles.cartItemImg}>{item.name[0]}</div>
-                      <div className={styles.cartItemInfo}>
-                        <div className={styles.cartItemName}>{item.name}</div>
-                        <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
-                      </div>
-                      <div className={styles.cartQty}>
-                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
-                        <span>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
-                      </div>
-                      <button className={styles.removeItem} onClick={() => removeItem(item.id)}>✕</button>
-                    </div>
-                  ))}
-                </div>
-                <div className={styles.cartFooter}>
-                  <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
-                  <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { setCartOpen(false); setCheckout(true); }} id="proceed-checkout-btn">
-                    Proceed to Checkout
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
 
-      {/* Checkout Modal */}
-      {checkout && (
-        <div className={styles.cartOverlay} onClick={() => setCheckout(false)}>
-          <div className={styles.checkoutModal} onClick={e => e.stopPropagation()}>
-            <h3>Checkout</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              This is a mock checkout. No real payment is processed.
-            </p>
-            <div className={styles.checkoutForm}>
-              <input className="form-input" placeholder="Full Name" id="checkout-name" />
-              <input className="form-input" placeholder="Email" id="checkout-email" />
-              <input className="form-input" placeholder="Shipping Address" id="checkout-address" />
-              <input className="form-input" placeholder="Card Number (mock)" id="checkout-card" />
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <input className="form-input" placeholder="MM/YY" id="checkout-expiry" />
-                <input className="form-input" placeholder="CVV" id="checkout-cvv" />
-              </div>
-              <div className={styles.checkoutTotal}>Order Total: <strong>${total.toFixed(2)}</strong></div>
-              <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleCheckout} id="place-order-btn">
-                Place Order (Mock)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Product Detail Modal */}
       {selectedProduct && (
@@ -181,17 +109,7 @@ export default function MerchPage() {
         </div>
       )}
 
-      {/* Order Success */}
-      {orderDone && (
-        <div className={styles.cartOverlay} onClick={() => setOrderDone(false)}>
-          <div className={styles.successModal} onClick={e => e.stopPropagation()}>
-            <div className={styles.successIcon}>🎉</div>
-            <h3>Order Placed!</h3>
-            <p>Your Brotherhood Legacy order is confirmed. You'll receive a confirmation (mock) shortly.</p>
-            <button className="btn btn-primary" onClick={() => setOrderDone(false)}>Continue Shopping</button>
-          </div>
-        </div>
-      )}
+
 
       <section className={styles.header}>
         <div className={styles.headerGlow} />
@@ -200,18 +118,7 @@ export default function MerchPage() {
           <h1>BHL <span className="gradient-text">Merch</span></h1>
           <p className={styles.headerSub}>Rep the Brotherhood. Premium drops, limited editions, streetwear culture.</p>
         </div>
-        <button
-          className={styles.floatingCart}
-          onClick={() => setCartOpen(true)}
-          id="open-cart-btn"
-          aria-label="Open shopping cart"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
-          {count > 0 && <span className={styles.floatBadge}>{count}</span>}
-        </button>
+
       </section>
 
       <div className="container">

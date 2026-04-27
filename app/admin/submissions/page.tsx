@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 import styles from '../admin.module.css';
 
 interface PopulatedSubmission {
@@ -14,9 +15,7 @@ export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<PopulatedSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchSubmissions();
@@ -30,26 +29,31 @@ export default function AdminSubmissionsPage() {
   };
 
   const handleAction = async (id: string, action: 'approve' | 'reject') => {
-    // Removing confirmation alert per user request, using toast for feedback
+    // Optimistic Update: Remove from list immediately
+    const subToMove = submissions.find(s => s._id === id);
+    const prevSubmissions = [...submissions];
+    setSubmissions(prev => prev.filter(s => s._id !== id));
+    
     setProcessingId(id);
-    const res = await fetch(`/api/admin/submissions/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action }),
-    });
-
-    if (res.ok) {
-      setSubmissions(prev => prev.filter(s => s._id !== id));
-    } else {
-      const data = await res.json();
-      showToast(`❌ Error: ${data.error}`);
+    try {
+      const res = await fetch(`/api/admin/submissions/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      
+      if (!res.ok) throw new Error('Failed');
+      showToast(`✅ Submission ${action}ed!`, 'success');
+    } catch (err) {
+      setSubmissions(prevSubmissions); // Rollback
+      showToast('❌ Failed to process submission', 'error');
+    } finally {
+      setProcessingId(null);
     }
-    setProcessingId(null);
   };
 
   return (
     <div>
-      {toast && <div className="toast">{toast}</div>}
       <h1 className={styles.title}>Challenge Inbox</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
         Review pending challenge submissions and award XP manually.

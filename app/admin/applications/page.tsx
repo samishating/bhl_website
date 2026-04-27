@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.css';
 
 interface Application {
@@ -18,10 +19,8 @@ interface Application {
 export default function ApplicationsInbox() {
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<string | null>(null);
   const [actioning, setActioning] = useState<string | null>(null);
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
+  const { showToast } = useToast();
 
   const load = () => {
     fetch('/api/applications')
@@ -32,25 +31,30 @@ export default function ApplicationsInbox() {
   useEffect(load, []);
 
   const handleAction = async (id: string, status: 'approved' | 'rejected') => {
+    // Optimistic Update
+    const prevApps = [...apps];
+    setApps(current => current.map(a => a._id === id ? { ...a, status } : a));
+    
     setActioning(id);
-    const res = await fetch(`/api/applications/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    setActioning(null);
-
-    if (res.ok) {
-      load();
-      showToast(`✅ Application ${status}!`);
-    } else {
-      showToast('❌ Action failed');
+    try {
+      const res = await fetch(`/api/applications/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!res.ok) throw new Error('Failed');
+      showToast(`✅ Application ${status}!`, 'success');
+    } catch (err) {
+      setApps(prevApps); // Rollback
+      showToast('❌ Action failed', 'error');
+    } finally {
+      setActioning(null);
     }
   };
 
   return (
     <div className={styles.page}>
-      {toast && <div className="toast">{toast}</div>}
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Applications Inbox</h1>

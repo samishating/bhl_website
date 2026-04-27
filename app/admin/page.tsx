@@ -1,11 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useAdmin } from './layout';
 import styles from './page.module.css';
 
 export default function AdminPage() {
   const [stats, setStats] = useState({ users: 0, challenges: 0, products: 0 });
+  const [pageLoading, setPageLoading] = useState(true);
+  const { setGlobalLoading } = useAdmin();
 
   useEffect(() => {
+    setGlobalLoading(true);
     Promise.all([
       fetch('/api/leaderboard').then(r => r.json()),
       fetch('/api/challenges').then(r => r.json()),
@@ -16,8 +20,13 @@ export default function AdminPage() {
         challenges: ch.challenges?.length || 0,
         products: pr.products?.length || 0,
       });
+    }).finally(() => {
+      setPageLoading(false);
+      setGlobalLoading(false);
     });
-  }, []);
+  }, [setGlobalLoading]);
+
+  if (pageLoading) return null; // Don't show partial content during first load
 
 
   const statCards = [

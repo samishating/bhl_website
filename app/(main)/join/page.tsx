@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.css';
 
 const DIVISIONS = [
@@ -10,6 +11,7 @@ const DIVISIONS = [
 ];
 
 export default function JoinPage() {
+  const { showToast } = useToast();
   const [selectedDivision, setSelectedDivision] = useState('');
   const [form, setForm] = useState({ name: '', email: '', discord: '', motivation: '', links: '' });
   const [submitted, setSubmitted] = useState(false);
@@ -19,10 +21,23 @@ export default function JoinPage() {
     e.preventDefault();
     if (!selectedDivision) return;
     setLoading(true);
-    // Simulate submission (no backend route for recruitment in MVP, just UI)
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+    
+    try {
+      const res = await fetch('/api/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, division: selectedDivision }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        showToast('Failed to submit application. Please try again.', 'error');
+      }
+    } catch (err) {
+      showToast('Network error. Please try again later.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {

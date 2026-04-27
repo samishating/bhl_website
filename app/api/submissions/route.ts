@@ -49,11 +49,17 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId') || payload.userId;
 
-    if (userId !== payload.userId && payload.role !== 'admin' && payload.role !== 'superadmin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const isOwnProfile = userId === payload.userId;
+    const isAdmin = payload.role === 'admin' || payload.role === 'superadmin';
+
+    let query: any = { userId };
+    
+    // If not admin and viewing someone else, only show approved submissions
+    if (!isOwnProfile && !isAdmin) {
+      query.status = 'approved';
     }
 
-    const submissions = await Submission.find({ userId })
+    const submissions = await Submission.find(query)
       .populate('challengeId', 'title xpReward division')
       .sort({ createdAt: -1 });
     return NextResponse.json({ submissions });

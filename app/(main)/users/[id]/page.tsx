@@ -18,6 +18,14 @@ interface UserProfile {
   createdAt: string;
 }
 
+interface Submission { 
+  _id: string; 
+  challengeId: { title: string; xpReward: number; division: string }; 
+  proofUrl: string; 
+  status: string; 
+  createdAt: string; 
+}
+
 export default function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { user: currentUser, refreshUser } = useAuth();
@@ -25,6 +33,7 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [adminAction, setAdminAction] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
@@ -37,6 +46,13 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
         setLoading(false);
       })
       .catch(() => setLoading(false));
+
+    fetch(`/api/submissions?userId=${id}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.submissions) setSubmissions(d.submissions);
+      })
+      .catch(console.error);
   }, [id]);
 
   const handleAdminAction = async (action: string) => {
@@ -128,6 +144,32 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
               })}
             </div>
           </div>
+        </div>
+
+        {/* Submission History */}
+        <div className={styles.historySection} style={{ marginTop: '2rem' }}>
+          <h3 className={styles.sectionTitle}>Challenge History</h3>
+          {submissions.length === 0 ? (
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No approved challenge submissions yet.</p>
+          ) : (
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr><th>Challenge</th><th>Division</th><th>XP</th><th>Date</th></tr>
+                </thead>
+                <tbody>
+                  {submissions.map(s => (
+                    <tr key={s._id}>
+                      <td style={{ fontWeight: 600 }}>{s.challengeId?.title || 'Unknown'}</td>
+                      <td><span className={`division-tag tag-${s.challengeId?.division || 'global'}`}>{s.challengeId?.division || 'global'}</span></td>
+                      <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{s.challengeId?.xpReward || 0}</span></td>
+                      <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(s.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Admin Controls */}

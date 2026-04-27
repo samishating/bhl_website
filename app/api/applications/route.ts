@@ -6,22 +6,24 @@ import { getUserFromRequest } from '@/lib/auth';
 export async function POST(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
-    if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // userId is optional now
 
     const body = await req.json();
-    const { fullName, email, socialLink, reason } = body;
+    const { division, name, email, discord, motivation, links } = body;
 
-    if (!fullName || !email || !socialLink || !reason) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
+    if (!division || !name || !email || !motivation) {
+      return NextResponse.json({ error: 'Please fill out all required fields' }, { status: 400 });
     }
 
     await connectDB();
     const application = await Application.create({
-      userId: payload.userId,
-      fullName,
+      userId: payload?.userId || undefined,
+      division,
+      name,
       email,
-      socialLink,
-      reason
+      discord,
+      motivation,
+      links
     });
 
     return NextResponse.json({ application, message: 'Application submitted successfully!' });

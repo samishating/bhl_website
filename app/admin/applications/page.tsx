@@ -4,11 +4,13 @@ import styles from './page.module.css';
 
 interface Application {
   _id: string;
-  userId: { _id: string; username: string; avatar: string; xp: number; level: number; };
-  fullName: string;
+  userId?: { _id: string; username: string; avatar: string; xp: number; level: number; };
+  division: string;
+  name: string;
   email: string;
-  socialLink: string;
-  reason: string;
+  discord: string;
+  motivation: string;
+  links: string;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
 }
@@ -82,21 +84,31 @@ export default function ApplicationsInbox() {
               <div className={styles.appBody}>
                 <div className={styles.appField}>
                   <label>Full Name</label>
-                  <div>{app.fullName}</div>
+                  <div>{app.name}</div>
                 </div>
                 <div className={styles.appField}>
                   <label>Email</label>
                   <div>{app.email}</div>
                 </div>
                 <div className={styles.appField}>
+                  <label>Discord</label>
+                  <div>{app.discord || 'N/A'}</div>
+                </div>
+                <div className={styles.appField}>
+                  <label>Division</label>
+                  <div><span className={`division-tag tag-${app.division}`}>{app.division}</span></div>
+                </div>
+                <div className={styles.appField}>
                   <label>Social / Portfolio</label>
-                  <a href={app.socialLink.startsWith('http') ? app.socialLink : `https://${app.socialLink}`} target="_blank" rel="noreferrer" className={styles.link}>
-                    {app.socialLink} ↗
-                  </a>
+                  {app.links ? (
+                    <a href={app.links.startsWith('http') ? app.links : `https://${app.links}`} target="_blank" rel="noreferrer" className={styles.link}>
+                      {app.links} ↗
+                    </a>
+                  ) : <div>N/A</div>}
                 </div>
                 <div className={styles.appField} style={{ gridColumn: '1 / -1' }}>
-                  <label>Reason for Joining</label>
-                  <div className={styles.reasonText}>{app.reason}</div>
+                  <label>Why do you want to join?</label>
+                  <div className={styles.reasonText}>{app.motivation}</div>
                 </div>
               </div>
 

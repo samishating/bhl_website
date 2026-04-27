@@ -10,3 +10,15 @@
 .backLink:hover { color: var(--brand-red); }
 .main { margin-left: 240px; flex: 1; padding: 2rem; }
 @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+.notificationBadge {
+  background-color: var(--brand-red);
+  color: white;
+  border-radius: 12px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: auto;
+  min-width: 1.5rem;
+  text-align: center;
+  line-height: 1.2;
+}

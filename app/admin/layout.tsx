@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,6 +17,23 @@ const links = [
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const [counts, setCounts] = useState({ pendingApplications: 0, pendingSubmissions: 0 });
+
+  useEffect(() => {
+    if (user?.role === 'admin' || user?.role === 'superadmin') {
+      fetch('/api/admin/notifications')
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) {
+            setCounts({
+              pendingApplications: data.pendingApplications || 0,
+              pendingSubmissions: data.pendingSubmissions || 0
+            });
+          }
+        })
+        .catch(console.error);
+    }
+  }, [user]);
 
   if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}><div className="spinner" /></div>;
   
@@ -38,11 +56,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
         </div>
         <nav className={styles.nav}>
-          {links.map(l => (
-            <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>
-              <span>{l.icon}</span> {l.label}
-            </Link>
-          ))}
+          {links.map(l => {
+            let badgeCount = 0;
+            if (l.label === 'Challenges Inbox') badgeCount = counts.pendingSubmissions;
+            if (l.label === 'Applications Inbox') badgeCount = counts.pendingApplications;
+            
+            return (
+              <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>
+                <span>{l.icon}</span> {l.label}
+                {badgeCount > 0 && <span className={styles.notificationBadge}>{badgeCount}</span>}
+              </Link>
+            );
+          })}
         </nav>
         <div className={styles.sidebarFooter}>
           <Link href="/" className={styles.backLink}>← Back to Site</Link>

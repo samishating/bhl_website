@@ -147,7 +147,7 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Submission History */}
-        <div className={styles.historySection} style={{ marginTop: '2rem' }}>
+        <div className={styles.historySection} style={{ marginBottom: '4rem' }}>
           <h3 className={styles.sectionTitle}>Challenge History</h3>
           {submissions.length === 0 ? (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No approved challenge submissions yet.</p>
@@ -177,9 +177,6 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
           <div className={styles.adminSection}>
             <h3 className={styles.sectionTitle}>🛡️ Admin Controls</h3>
             <div className={styles.adminButtons}>
-              <button className="btn btn-secondary btn-sm" onClick={() => handleAdminAction('reset_xp')} disabled={adminAction}>
-                Reset XP
-              </button>
               {isSuper && profile.role === 'user' && (
                 <button className="btn btn-primary btn-sm" onClick={() => handleAdminAction('promote')} disabled={adminAction}>
                   Promote to Admin

@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { xpForNextLevel, getLevelTitle, BADGES, calculateLevel } from '@/lib/xp';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '@/lib/image';
 import styles from './page.module.css';
 
 
@@ -21,6 +23,10 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [claimingXp, setClaimingXp] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -56,6 +62,36 @@ export default function ProfilePage() {
     if (res.ok) {
       await refreshUser();
       showToast(data.gained ? `🔥 +${data.gained} XP! Daily login reward claimed!` : '⏳ Already claimed today', 'success');
+    }
+  };
+
+  const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleCropSave = async () => {
+    if (!imageToCrop || !croppedAreaPixels) return;
+    try {
+      setUploading(true);
+      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
+      if (!croppedBlob) throw new Error('Failed to crop');
+      
+      const formData = new FormData();
+      formData.append('file', croppedBlob, 'avatar.jpg');
+      
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.url) {
+        setAvatar(data.url);
+        showToast('✅ Avatar uploaded!', 'success');
+        setImageToCrop(null);
+      } else {
+        showToast(`❌ Upload failed: ${data.error}`, 'error');
+      }
+    } catch (err) {
+      showToast('❌ Error processing image', 'error');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -131,6 +167,49 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Image Cropper Modal */}
+        {imageToCrop && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(10px)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <div style={{ position: 'relative', width: '100%', height: '70vh', maxWidth: '800px', background: '#000' }}>
+              <Cropper
+                image={imageToCrop}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+                cropShape="round"
+                showGrid={false}
+              />
+            </div>
+            <div style={{ padding: '2rem', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Zoom</label>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: 'var(--brand-red)' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setImageToCrop(null)}>Cancel</button>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleCropSave} disabled={uploading}>
+                  {uploading ? 'Processing...' : 'Apply Crop'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Edit Form */}
         {editing && (
           <div className={styles.editSection}>
@@ -151,26 +230,15 @@ export default function ProfilePage() {
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <input className="form-input" value={avatar} onChange={e => setAvatar(e.target.value)} placeholder="https://…" id="profile-avatar-input" />
                   <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    {uploading ? '⌛ Uploading...' : '📂 Upload'}
-                    <input type="file" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
+                    {uploading ? '⌛ Processing...' : '📂 Upload'}
+                    <input type="file" style={{ display: 'none' }} disabled={uploading} accept="image/*" onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (!file) return;
-                      setUploading(true);
-                      const formData = new FormData();
-                      formData.append('file', file);
-                      try {
-                        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                        const data = await res.json();
-                        if (data.url) {
-                          setAvatar(data.url);
-                          showToast('✅ Avatar uploaded!');
-                        } else {
-                          showToast(`❌ Upload failed: ${data.error}`);
-                        }
-                      } catch {
-                        showToast('❌ Upload error');
-                      } finally {
-                        setUploading(false);
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.addEventListener('load', () => {
+                          setImageToCrop(reader.result as string);
+                        });
+                        reader.readAsDataURL(file);
                       }
                     }} />
                   </label>

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
 
 interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; }
@@ -8,10 +9,12 @@ const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-
 const defaultForm = { title: '', description: '', xpReward: 50, division: 'global' };
 
 export default function AdminChallengesPage() {
+  const { user } = useAuth();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(defaultForm);
   const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -28,8 +31,10 @@ export default function AdminChallengesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
-    const res = await fetch('/api/challenges', {
-      method: 'POST',
+    const method = editingId ? 'PATCH' : 'POST';
+    const url = editingId ? `/api/challenges/${editingId}` : '/api/challenges';
+    const res = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
@@ -37,12 +42,19 @@ export default function AdminChallengesPage() {
     if (res.ok) {
       setForm(defaultForm);
       setShowForm(false);
+      setEditingId(null);
       load();
-      showToast('✅ Challenge created!');
+      showToast(editingId ? '✅ Challenge updated!' : '✅ Challenge created!');
     } else {
       const d = await res.json();
       showToast(`❌ ${d.error || 'Failed'}`);
     }
+  };
+
+  const handleEdit = (c: Challenge) => {
+    setEditingId(c._id);
+    setForm({ title: c.title, description: c.description, xpReward: c.xpReward, division: c.division });
+    setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -60,14 +72,14 @@ export default function AdminChallengesPage() {
           <h1 className={styles.title}>Challenges</h1>
           <p className={styles.sub}>{challenges.length} active challenges</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)} id="admin-create-challenge-btn">
+        <button className="btn btn-primary" onClick={() => { if(showForm) {setForm(defaultForm); setEditingId(null);} setShowForm(!showForm); }} id="admin-create-challenge-btn">
           {showForm ? 'Cancel' : '+ New Challenge'}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleCreate} className={styles.createForm}>
-          <h3 className={styles.formTitle}>Create Challenge</h3>
+          <h3 className={styles.formTitle}>{editingId ? 'Edit Challenge' : 'Create Challenge'}</h3>
           <div className={styles.formRow}>
             <div className="form-group" style={{ flex: 2 }}>
               <label className="form-label">Title *</label>
@@ -89,7 +101,7 @@ export default function AdminChallengesPage() {
             <textarea required className="form-input" rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe what members need to do…" id="challenge-desc" style={{ resize: 'vertical' }} />
           </div>
           <button type="submit" className="btn btn-primary" disabled={creating} id="challenge-submit-btn">
-            {creating ? <span className="spinner" /> : 'Create Challenge'}
+            {creating ? <span className="spinner" /> : editingId ? 'Update Challenge' : 'Create Challenge'}
           </button>
         </form>
       )}
@@ -113,10 +125,15 @@ export default function AdminChallengesPage() {
                   </td>
                   <td><span className={`division-tag ${divTagClass[c.division]}`}>{c.division}</span></td>
                   <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{c.xpReward} XP</span></td>
-                  <td>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)} id={`delete-challenge-${c._id}`}>
-                      Delete
+                  <td style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(c)} id={`edit-challenge-${c._id}`}>
+                      Edit
                     </button>
+                    {user?.role === 'superadmin' && (
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)} id={`delete-challenge-${c._id}`}>
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

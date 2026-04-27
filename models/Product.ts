@@ -5,6 +5,7 @@ export interface IProduct extends Document {
   description: string;
   price: number;
   image: string;
+  images: string[];
   stock: number;
   isLimitedDrop: boolean;
   category: string;
@@ -16,6 +17,7 @@ const ProductSchema = new Schema<IProduct>({
   description: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String, default: '' },
+  images: [{ type: String }],
   stock: { type: Number, default: 100 },
   isLimitedDrop: { type: Boolean, default: false },
   category: { type: String, enum: ['apparel', 'accessories', 'gear', 'digital'], default: 'apparel' },

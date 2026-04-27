@@ -8,7 +8,8 @@ const links = [
   { href: '/admin', label: 'Overview', icon: '📊' },
   { href: '/admin/users', label: 'Users', icon: '👥' },
   { href: '/admin/challenges', label: 'Challenges', icon: '🏆' },
-  { href: '/admin/submissions', label: 'Inbox', icon: '📥' },
+  { href: '/admin/submissions', label: 'Challenges Inbox', icon: '📥' },
+  { href: '/admin/applications', label: 'Applications Inbox', icon: '📝' },
   { href: '/admin/products', label: 'Products', icon: '👕' },
 ];
 

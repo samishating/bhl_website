@@ -101,3 +101,27 @@
 }
 .productCardLocked:hover .productImg::after { opacity: 0; }
 .productCardLocked:hover { filter: none; }
+
+/* Detail Modal */
+.detailModal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); width: min(900px, 95vw); margin: auto; align-self: center; position: relative; overflow: hidden; animation: zoomIn 0.3s ease; }
+@keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.detailClose { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; z-index: 10; }
+.detailGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; padding: 2.5rem; }
+@media (max-width: 768px) { .detailGrid { grid-template-columns: 1fr; padding: 1.5rem; gap: 1.5rem; } }
+
+.detailGallery { display: flex; flex-direction: column; gap: 1rem; }
+.mainDetailImg { aspect-ratio: 1; background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); }
+.mainDetailImg img { width: 100%; height: 100%; object-fit: cover; }
+
+.thumbGallery { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.thumb { width: 60px; height: 60px; border-radius: 4px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
+.thumbActive { border-color: var(--brand-red); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.detailInfo { display: flex; flex-direction: column; }
+.detailName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.2rem; margin: 0.5rem 0; line-height: 1.1; }
+.detailPrice { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; color: var(--brand-red); margin-bottom: 1.5rem; }
+.detailDescFull { color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; font-size: 0.95rem; }
+.detailMeta { display: flex; flex-direction: column; gap: 0.5rem; }
+.stockStatus { font-weight: 600; font-size: 0.9rem; font-family: 'Rajdhani', sans-serif; }
+.dropBadgeDetail { color: var(--brand-red); font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; }

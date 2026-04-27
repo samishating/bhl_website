@@ -14,6 +14,7 @@ interface Product {
   stock: number;
   isLimitedDrop: boolean;
   category: string;
+  images: string[];
 }
 
 const CATEGORIES = ['all', 'apparel', 'accessories', 'gear', 'digital'];
@@ -28,6 +29,8 @@ export default function MerchPage() {
   const [checkout, setCheckout] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [orderDone, setOrderDone] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [activeImg, setActiveImg] = useState(0);
 
   const REQUIRED_XP = 40000;
   const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
@@ -131,6 +134,51 @@ export default function MerchPage() {
         </div>
       )}
 
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div className={styles.cartOverlay} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>
+          <div className={styles.detailModal} onClick={e => e.stopPropagation()}>
+            <button className={styles.detailClose} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>✕</button>
+            <div className={styles.detailGrid}>
+              <div className={styles.detailGallery}>
+                <div className={styles.mainDetailImg}>
+                  <img src={[selectedProduct.image, ...(selectedProduct.images || [])][activeImg]} alt={selectedProduct.name} />
+                </div>
+                {selectedProduct.images && selectedProduct.images.length > 0 && (
+                  <div className={styles.thumbGallery}>
+                    {[selectedProduct.image, ...selectedProduct.images].map((img, idx) => (
+                      <div key={idx} className={`${styles.thumb} ${activeImg === idx ? styles.thumbActive : ''}`} onClick={() => setActiveImg(idx)}>
+                        <img src={img} alt="" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className={styles.detailInfo}>
+                <div className={styles.productCategory}>{selectedProduct.category}</div>
+                <h2 className={styles.detailName}>{selectedProduct.name}</h2>
+                <div className={styles.detailPrice}>${selectedProduct.price.toFixed(2)}</div>
+                <p className={styles.detailDescFull}>{selectedProduct.description}</p>
+                <div className={styles.detailMeta}>
+                  <span className={styles.stockStatus}>
+                    {selectedProduct.stock > 0 ? `✅ In Stock (${selectedProduct.stock} units)` : '❌ Out of Stock'}
+                  </span>
+                  {selectedProduct.isLimitedDrop && <span className={styles.dropBadgeDetail}>🔥 Conqueror Exclusive</span>}
+                </div>
+                <button
+                  className="btn btn-primary"
+                  style={{ width: '100%', marginTop: '2rem' }}
+                  onClick={() => { handleAddToCart(selectedProduct); setSelectedProduct(null); }}
+                  disabled={selectedProduct.stock === 0 || (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP)}
+                >
+                  {(selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Locked (Need 40k XP)' : 'Add to Cart 🛒'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Order Success */}
       {orderDone && (
         <div className={styles.cartOverlay} onClick={() => setOrderDone(false)}>
@@ -199,7 +247,11 @@ export default function MerchPage() {
             {filtered.map((p, i) => {
               const isItemLocked = p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
               return (
-                <div key={p._id} className={`${styles.productCard} ${isItemLocked ? styles.productCardLocked : ''}`} style={{ animationDelay: `${i * 0.06}s` }} id={`product-${p._id}`}>
+                <div key={p._id} className={`${styles.productCard} ${isItemLocked ? styles.productCardLocked : ''}`} 
+                  style={{ animationDelay: `${i * 0.06}s`, cursor: isItemLocked ? 'default' : 'pointer' }} 
+                  id={`product-${p._id}`}
+                  onClick={() => { if(!isItemLocked) setSelectedProduct(p); }}
+                >
                 <div className={styles.productImg}>
                   {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
                     <div className={styles.productImgPlaceholder}>{p.name[0]}</div>

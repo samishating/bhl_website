@@ -2,16 +2,18 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 
-interface Product { _id: string; name: string; price: number; category: string; stock: number; isLimitedDrop: boolean; }
-const defaultForm = { name: '', description: '', price: 29.99, image: '', stock: 100, isLimitedDrop: false, category: 'apparel' };
+interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; isLimitedDrop: boolean; }
+const defaultForm = { name: '', description: '', price: 29.99, image: '', images: [] as string[], stock: 100, isLimitedDrop: false, category: 'apparel' };
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(defaultForm);
   const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingSecondary, setUploadingSecondary] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
@@ -21,10 +23,24 @@ export default function AdminProductsPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
-    const res = await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+    const method = editingId ? 'PATCH' : 'POST';
+    const url = editingId ? `/api/products/${editingId}` : '/api/products';
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
     setCreating(false);
-    if (res.ok) { setForm(defaultForm); setShowForm(false); load(); showToast('✅ Product added!'); }
+    if (res.ok) { 
+      setForm(defaultForm); 
+      setShowForm(false); 
+      setEditingId(null);
+      load(); 
+      showToast(editingId ? '✅ Product updated!' : '✅ Product added!'); 
+    }
     else { const d = await res.json(); showToast(`❌ ${d.error || 'Failed'}`); }
+  };
+
+  const handleEdit = (p: Product) => {
+    setEditingId(p._id);
+    setForm({ ...p });
+    setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -41,7 +57,7 @@ export default function AdminProductsPage() {
           <h1 className={styles.title}>Products</h1>
           <p className={styles.sub}>{products.length} products listed</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)} id="admin-add-product-btn">
+        <button className="btn btn-primary" onClick={() => { if(showForm) {setForm(defaultForm); setEditingId(null);} setShowForm(!showForm); }} id="admin-add-product-btn">
           {showForm ? 'Cancel' : '+ Add Product'}
         </button>
       </div>
@@ -101,6 +117,35 @@ export default function AdminProductsPage() {
               </div>
             </div>
           </div>
+          <div className={styles.formRow}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Secondary Images</label>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                {form.images.map((img, idx) => (
+                  <div key={idx} style={{ position: 'relative', width: '60px', height: '60px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button type="button" onClick={() => setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== idx) }))} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '10px', padding: '2px 4px' }}>✕</button>
+                  </div>
+                ))}
+              </div>
+              <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-block' }}>
+                {uploadingSecondary ? '⌛...' : '+ Add Image'}
+                <input type="file" style={{ display: 'none' }} disabled={uploadingSecondary} onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploadingSecondary(true);
+                  const formData = new FormData();
+                  formData.append('file', file);
+                  try {
+                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.url) setForm(f => ({ ...f, images: [...f.images, data.url] }));
+                  } catch { showToast('❌ Upload error'); }
+                  finally { setUploadingSecondary(false); }
+                }} />
+              </label>
+            </div>
+          </div>
           <div className="form-group">
             <label className="form-label">Description *</label>
             <textarea required className="form-input" rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Product description…" id="product-desc" style={{ resize: 'vertical' }} />
@@ -110,7 +155,7 @@ export default function AdminProductsPage() {
             Conqueror Drop (40k XP) 🔥
           </label>
           <button type="submit" className="btn btn-primary" disabled={creating} id="product-submit-btn">
-            {creating ? <span className="spinner" /> : 'Add Product'}
+            {creating ? <span className="spinner" /> : editingId ? 'Update Product' : 'Add Product'}
           </button>
         </form>
       )}
@@ -130,7 +175,8 @@ export default function AdminProductsPage() {
                   <td><span className="division-tag tag-all">{p.category}</span></td>
                   <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>${p.price.toFixed(2)}</span></td>
                   <td style={{ color: p.stock < 10 ? 'var(--neon-red)' : 'var(--text-secondary)' }}>{p.stock}</td>
-                  <td>
+                  <td style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(p)} id={`edit-product-${p._id}`}>Edit</button>
                     <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p._id)} id={`delete-product-${p._id}`}>Delete</button>
                   </td>
                 </tr>

@@ -81,7 +81,7 @@ export default function AdminChallengesPage() {
         <form onSubmit={handleCreate} className={styles.createForm}>
           <h3 className={styles.formTitle}>{editingId ? 'Edit Challenge' : 'Create Challenge'}</h3>
           <div className={styles.formRow}>
-            <div className="form-group" style={{ flex: 2 }}>
+            <div className="form-group">
               <label className="form-label">Title *</label>
               <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" id="challenge-title" />
             </div>
@@ -95,15 +95,15 @@ export default function AdminChallengesPage() {
                 {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1.5rem' }}>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', paddingBottom: '0.6rem' }}>
               <input 
                 type="checkbox" 
                 id="challenge-repeats"
                 checked={form.allowRepeats} 
                 onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} 
-                style={{ width: '1.2rem', height: '1.2rem', cursor: 'pointer' }}
+                style={{ width: '1.1rem', height: '1.1rem', cursor: 'pointer' }}
               />
-              <label htmlFor="challenge-repeats" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>Allow Repeats</label>
+              <label htmlFor="challenge-repeats" className="form-label" style={{ marginBottom: 0, cursor: 'pointer', whiteSpace: 'nowrap' }}>Allow Repeats</label>
             </div>
           </div>
           <div className="form-group">

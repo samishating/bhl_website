@@ -22,11 +22,20 @@ export default function HomeChallenges() {
   const headerRef = useScrollReveal<HTMLDivElement>();
   const contentRef = useScrollReveal<HTMLDivElement>(true);
 
-  useEffect(() => {
+  const loadChallenges = () => {
     setLoading(true);
     fetch(`/api/challenges?division=${filter}`)
       .then(r => r.json())
       .then(d => { setChallenges(d.challenges || []); setLoading(false); });
+  };
+
+  useEffect(() => {
+    loadChallenges();
+  }, [filter]);
+
+  useEffect(() => {
+    window.addEventListener('stats-refresh', loadChallenges);
+    return () => window.removeEventListener('stats-refresh', loadChallenges);
   }, [filter]);
 
   useEffect(() => {

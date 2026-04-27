@@ -17,12 +17,21 @@ export default function HomeLeaderboard() {
   const headerRef = useScrollReveal<HTMLDivElement>();
   const contentRef = useScrollReveal<HTMLDivElement>();
 
-  useEffect(() => {
+  const loadLeaderboard = () => {
     setLoading(true);
     fetch(`/api/leaderboard?division=${filter}`)
       .then(r => r.json())
       .then(d => { setUsers(d.users || []); setLoading(false); });
+  };
+
+  useEffect(() => {
+    loadLeaderboard();
   }, [filter]);
+
+  useEffect(() => {
+    window.addEventListener('stats-refresh', loadLeaderboard);
+    return () => window.removeEventListener('stats-refresh', loadLeaderboard);
+  }, [filter]); // Re-bind with current filter context
 
   return (
     <section id="leaderboard" className="content-band" style={{ borderTop: 'none' }}>

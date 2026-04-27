@@ -82,6 +82,8 @@ export default function HomeDivisions() {
           refreshUser(),
           fetchStats()
         ]);
+        // Trigger global refresh for other components (Leaderboard, Challenges)
+        window.dispatchEvent(new Event('stats-refresh'));
         showToast(isMember ? '🚪 Left division' : '✅ Successfully joined division!');
       } else {
         showToast(isMember ? '❌ Failed to leave division' : '❌ Failed to join division', 'error');

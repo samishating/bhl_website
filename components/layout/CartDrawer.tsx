@@ -1,6 +1,6 @@
 'use client';
 import { useCart } from '@/contexts/CartContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '@/app/(main)/merch/page.module.css';
 
 export default function CartDrawer() {
@@ -8,12 +8,26 @@ export default function CartDrawer() {
   const [checkout, setCheckout] = useState(false);
   const [orderDone, setOrderDone] = useState(false);
 
-  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', address: '' });
+  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', address: '', phone: '' });
+  const [dialCode, setDialCode] = useState('+33');
+  const [countries, setCountries] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/countries')
+      .then(res => res.json())
+      .then(data => {
+        if (data.countries) setCountries(data.countries);
+      })
+      .catch(console.error);
+  }, []);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!customerInfo.phone) return;
     setLoading(true);
+    
+    const fullPhone = `${dialCode} ${customerInfo.phone}`;
     
     try {
       const res = await fetch('/api/orders', {
@@ -27,7 +41,7 @@ export default function CartDrawer() {
             price: i.price
           })),
           total,
-          customerInfo
+          customerInfo: { ...customerInfo, phone: fullPhone }
         })
       });
 
@@ -113,11 +127,34 @@ export default function CartDrawer() {
                 required 
                 className="form-input" 
                 placeholder="Shipping Address" 
-                rows={3}
+                rows={2}
                 style={{ resize: 'vertical' }}
                 value={customerInfo.address}
                 onChange={e => setCustomerInfo(p => ({ ...p, address: e.target.value }))}
               />
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <select 
+                  className="form-input" 
+                  style={{ width: '100px', cursor: 'pointer' }}
+                  value={dialCode}
+                  onChange={e => setDialCode(e.target.value)}
+                >
+                  {countries.map(c => (
+                    <option key={c.code} value={c.dial_code}>
+                      {c.code} ({c.dial_code})
+                    </option>
+                  ))}
+                </select>
+                <input 
+                  required 
+                  type="tel"
+                  className="form-input" 
+                  style={{ flex: 1 }}
+                  placeholder="Phone Number" 
+                  value={customerInfo.phone}
+                  onChange={e => setCustomerInfo(p => ({ ...p, phone: e.target.value }))}
+                />
+              </div>
               <div className={styles.checkoutTotal}>Order Total: <strong>${total.toFixed(2)}</strong></div>
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
                 {loading ? <span className="spinner" /> : 'Confirm Order'}

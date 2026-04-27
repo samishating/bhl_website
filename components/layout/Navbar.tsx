@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,7 +34,14 @@ export default function Navbar() {
       <div className={styles.inner}>
         {/* Logo */}
         <Link href="/" className={styles.logo}>
-          <img src="/brand/logo.png" alt="BHL" style={{ height: '40px', objectFit: 'contain' }} />
+          <Image 
+            src="/brand/logo.png" 
+            alt="BHL" 
+            width={120} 
+            height={40} 
+            style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
+            priority 
+          />
         </Link>
 
         {/* Desktop Nav */}

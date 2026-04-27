@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Optimized with next/font/google */
 
 /* ─── BHL Brand Design Tokens ────────────────────────── */
 :root {
@@ -56,7 +56,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
@@ -71,7 +71,7 @@ ul, ol { list-style: none; }
 
 /* ─── Typography ─────────────────────────────────────── */
 h1, h2, h3, h4, h5 {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-rajdhani), sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;

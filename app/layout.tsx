@@ -1,9 +1,24 @@
 import type { Metadata } from 'next';
+import { Rajdhani, Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { getServerUser } from '@/lib/auth';
+
+const rajdhani = Rajdhani({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-rajdhani',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Brotherhood Legacy — BHL | Community Platform',
@@ -20,7 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await getServerUser();
 
   return (
-    <html lang="en">
+    <html lang="en" className={`${rajdhani.variable} ${inter.variable}`}>
       <body>
         <AuthProvider initialUser={user}>
           <CartProvider>

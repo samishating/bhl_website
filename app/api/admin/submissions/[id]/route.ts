@@ -9,7 +9,7 @@ import { calculateLevel, BADGES } from '@/lib/xp';
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (payload?.role !== 'admin' && payload?.role !== 'superadmin' && payload?.isAdmin !== true) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { id } = await params;

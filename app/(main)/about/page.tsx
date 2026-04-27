@@ -12,12 +12,25 @@ export default async function AboutPage() {
   const totalXP = xpResult[0]?.totalXP || 0;
   const completedChallenges = await mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' });
 
-  const team = [
-    { name: 'Alpha', role: 'Founder & Gaming Lead', div: 'gaming', icon: '🎮' },
-    { name: 'Melody', role: 'Music Division Lead', div: 'music', icon: '🎵' },
-    { name: 'Iron', role: 'Sport Division Lead', div: 'sport', icon: '💪' },
-    { name: 'Clip', role: 'Content Division Lead', div: 'content', icon: '🎬' },
+  const divisions = [
+    { id: 'gaming', role: 'Gaming Division Lead', defaultIcon: '🎮' },
+    { id: 'music', role: 'Music Division Lead', defaultIcon: '🎵' },
+    { id: 'sport', role: 'Sport Division Lead', defaultIcon: '💪' },
+    { id: 'content', role: 'Content Division Lead', defaultIcon: '🎬' },
   ];
+
+  const team = await Promise.all(divisions.map(async (d) => {
+    const leader = await User.findOne({ divisions: d.id })
+      .sort({ xp: -1 })
+      .select('username avatar');
+    
+    return {
+      name: leader?.username || 'No contender yet',
+      role: d.role,
+      div: d.id,
+      icon: leader?.avatar || d.defaultIcon
+    };
+  }));
 
   const values = [
     { icon: '⚔️', title: 'Brotherhood', desc: 'We elevate each other. No member is left behind.' },

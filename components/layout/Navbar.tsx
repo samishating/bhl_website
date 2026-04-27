@@ -12,7 +12,7 @@ const navLinks = [
   { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/challenges', label: 'Challenges' },
   { href: '/merch', label: 'Merch' },
-  { href: '/community', label: 'Community' },
+  { href: '/community', label: 'Coming Soon' },
   { href: '/about', label: 'About' },
 ];
 

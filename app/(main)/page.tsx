@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import HomeParallaxBackground from '@/components/HomeParallaxBackground';
+import HomeFixedBackground from '@/components/HomeFixedBackground';
 const HeroClient = dynamic(() => import('@/components/HeroClient'), { ssr: true });
 import { getGlobalStats } from '@/lib/stats';
 import styles from './page.module.css';
@@ -17,16 +17,18 @@ export default async function HomePage() {
   const stats = await getGlobalStats();
 
   return (
-    <>
-      {/* Cinematic Parallax Background */}
-      <HomeParallaxBackground />
+    <div className="home-page">
+      {/* Cinematic Fixed Background */}
+      <HomeFixedBackground />
 
-      {/* HERO (Client Side Counters) */}
-      <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
+      {/* HERO SECTION */}
+      <div className="section-panel" style={{ marginTop: '80px' }}>
+        <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
+      </div>
 
-      {/* DIVISIONS PREVIEW (Server Side) */}
+      {/* DIVISIONS PREVIEW */}
       <section className={styles.divisionsSection}>
-        <div className="container">
+        <div className="section-panel">
           <div className={styles.sectionHeader}>
             <div className="section-tag">Our Divisions</div>
             <h2>Choose Your <span className="gradient-text">Path</span></h2>
@@ -59,9 +61,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* XP SECTION (Server Side) */}
+      {/* XP SECTION */}
       <section className={styles.xpSection}>
-        <div className="container">
+        <div className="section-panel">
           <div className={styles.xpGrid}>
             <div className={styles.xpLeft}>
               <div className="section-tag">Gamification</div>
@@ -116,10 +118,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA SECTION (Server Side) */}
+      {/* CTA SECTION */}
       <section className={styles.ctaSection}>
-        <div className={styles.ctaGlow} />
-        <div className="container">
+        <div className="section-panel">
           <div className={styles.ctaContent}>
             <h2>Ready to Write Your <span className="gradient-text">Legacy?</span></h2>
             <p>Join hundreds of members already building their story in the Brotherhood.</p>
@@ -134,6 +135,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

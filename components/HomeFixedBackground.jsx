@@ -1,47 +1,11 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-export default function HomeParallaxBackground() {
-  const containerRef = useRef(null);
-  const blurRef = useRef(null);
-  const mainRef = useRef(null);
-  const overlayRef = useRef(null);
-  const noiseRef = useRef(null);
+export default function HomeFixedBackground() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    // --- PARALLAX ENGINE ---
-    let ticking = false;
-
-    const updateParallax = () => {
-      const y = window.scrollY;
-      
-      if (blurRef.current) {
-        blurRef.current.style.transform = `translate3d(0, ${y * 0.12}px, 0) scale(1.08)`;
-      }
-      if (mainRef.current) {
-        mainRef.current.style.transform = `translate3d(0, ${y * 0.28}px, 0)`;
-      }
-      if (overlayRef.current) {
-        overlayRef.current.style.transform = `translate3d(0, ${y * 0.45}px, 0)`;
-      }
-      if (noiseRef.current) {
-        noiseRef.current.style.transform = `translate3d(0, ${y * 0.45}px, 0)`;
-      }
-
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', onScroll);
-
-    // --- PARTICLE SYSTEM ---
+    // --- OPTIONAL PARTICLE SYSTEM (FIXED) ---
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -62,10 +26,10 @@ export default function HomeParallaxBackground() {
         x: Math.random() * width,
         y: Math.random() * height,
         vx: (Math.random() - 0.5) * 0.2,
-        vy: -Math.random() * 0.5 - 0.1, // Slow upward drift
+        vy: -Math.random() * 0.4 - 0.1, // Very slow upward drift
         size: Math.random() * 2 + 1,
         color: colors[Math.floor(Math.random() * colors.length)],
-        opacity: Math.random() * 0.35 + 0.15
+        opacity: Math.random() * 0.3 + 0.1
       });
     }
 
@@ -103,19 +67,25 @@ export default function HomeParallaxBackground() {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animId);
     };
   }, []);
 
   return (
-    <div className="home-parallax-bg" ref={containerRef}>
-      <div className="bg-layer bg-blur" ref={blurRef}></div>
-      <div className="bg-layer bg-main" ref={mainRef}></div>
-      <div className="bg-layer bg-overlay" ref={overlayRef}></div>
-      <div className="bg-layer bg-noise" ref={noiseRef}></div>
-      <canvas className="bg-particles" ref={canvasRef}></canvas>
-    </div>
+    <>
+      <div className="home-fixed-bg" />
+      <canvas 
+        ref={canvasRef} 
+        style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: -5, 
+          width: '100%', 
+          height: '100%', 
+          pointerEvents: 'none' 
+        }} 
+      />
+    </>
   );
 }

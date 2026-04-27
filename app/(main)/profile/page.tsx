@@ -134,6 +134,12 @@ export default function ProfilePage() {
         {/* Edit Form */}
         {editing && (
           <div className={styles.editSection}>
+            {saving && (
+              <div className={styles.loadingOverlay}>
+                <div className="spinner" />
+                <span style={{ fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem' }}>Updating Profile...</span>
+              </div>
+            )}
             <h3 className={styles.sectionTitle}>Edit Profile</h3>
             <div className={styles.editForm}>
               <div className="form-group">
@@ -175,8 +181,24 @@ export default function ProfilePage() {
                 <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell the Brotherhood who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
               </div>
 
-              <button className="btn btn-primary" onClick={handleSave} disabled={saving || uploading} id="save-profile-btn" style={{ minWidth: '140px', justifyContent: 'center' }}>
-                {saving ? <span className="spinner" /> : 'Save Changes'}
+              <button 
+                className="btn btn-primary" 
+                onClick={handleSave} 
+                disabled={saving || uploading} 
+                id="save-profile-btn" 
+                style={{ 
+                  minWidth: '160px', 
+                  justifyContent: 'center',
+                  ...( (saving || uploading) ? { 
+                    background: '#333', 
+                    color: '#666', 
+                    border: '1px solid #444', 
+                    boxShadow: 'none', 
+                    cursor: 'not-allowed' 
+                  } : {} )
+                }}
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>

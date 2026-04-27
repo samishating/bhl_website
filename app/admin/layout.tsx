@@ -18,7 +18,7 @@ const links = [
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
-  const [counts, setCounts] = useState({ pendingApplications: 0, pendingSubmissions: 0 });
+  const [counts, setCounts] = useState({ pendingApplications: 0, pendingSubmissions: 0, pendingOrders: 0 });
 
   useEffect(() => {
     if (user?.role === 'admin' || user?.role === 'superadmin') {
@@ -28,7 +28,8 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           if (!data.error) {
             setCounts({
               pendingApplications: data.pendingApplications || 0,
-              pendingSubmissions: data.pendingSubmissions || 0
+              pendingSubmissions: data.pendingSubmissions || 0,
+              pendingOrders: data.pendingOrders || 0
             });
           }
         })
@@ -61,6 +62,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             let badgeCount = 0;
             if (l.label === 'Challenges Inbox') badgeCount = counts.pendingSubmissions;
             if (l.label === 'Applications Inbox') badgeCount = counts.pendingApplications;
+            if (l.label === 'Orders') badgeCount = counts.pendingOrders;
             
             return (
               <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>

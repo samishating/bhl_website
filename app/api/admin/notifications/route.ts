@@ -4,6 +4,8 @@ import { connectDB } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import { Application } from '@/models/Application';
 
+import { Order } from '@/models/Order';
+
 export async function GET(req: NextRequest) {
   try {
     const payload = getUserFromRequest(req);
@@ -15,8 +17,9 @@ export async function GET(req: NextRequest) {
 
     const pendingApplications = await Application.countDocuments({ status: 'pending' });
     const pendingSubmissions = await mongoose.connection.db!.collection('submissions').countDocuments({ status: 'pending' });
+    const pendingOrders = await Order.countDocuments({ status: 'pending' });
 
-    return NextResponse.json({ pendingApplications, pendingSubmissions });
+    return NextResponse.json({ pendingApplications, pendingSubmissions, pendingOrders });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

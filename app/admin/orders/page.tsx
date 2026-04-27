@@ -35,11 +35,32 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
+    // Optimistic update
+    setOrders(prev => prev.map(o => o._id === id ? { ...o, status: newStatus } : o));
+
+    try {
+      const res = await fetch(`/api/orders/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!res.ok) {
+        // Rollback on error
+        const r = await fetch('/api/orders');
+        const d = await r.json();
+        setOrders(d.orders || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="container">
       <div className={styles.header}>
         <h1 className={styles.title}>Customer Orders</h1>
-        <p className={styles.sub}>{orders.length} total orders</p>
+        <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} pending orders</p>
       </div>
 
       {loading ? (
@@ -59,6 +80,7 @@ export default function AdminOrdersPage() {
                 <th>Total</th>
                 <th>Status</th>
                 <th>Date</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -92,6 +114,16 @@ export default function AdminOrdersPage() {
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                     {new Date(o.createdAt).toLocaleDateString()}
+                  </td>
+                  <td>
+                    {o.status === 'pending' && (
+                      <button 
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleStatusUpdate(o._id, 'shipped')}
+                      >
+                        Process
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

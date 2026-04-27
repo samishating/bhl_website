@@ -85,3 +85,19 @@
 .lockedIcon { font-size: 3.5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(255,0,0,0.3)); }
 .lockedTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; margin-bottom: 0.5rem; }
 .lockedDesc { color: var(--text-secondary); max-width: 400px; margin-bottom: 2rem; line-height: 1.6; }
+
+.productCardLocked { filter: grayscale(0.4); }
+.productCardLocked .productImg::after {
+  content: '🔒';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+.productCardLocked:hover .productImg::after { opacity: 0; }
+.productCardLocked:hover { filter: none; }

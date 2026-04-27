@@ -44,9 +44,9 @@ export default function MerchPage() {
   };
 
   const filtered = products.filter(p => {
-    if (filter === 'all') return !p.isLimitedDrop;
+    if (filter === 'all') return true;
     if (filter === 'drop') return p.isLimitedDrop;
-    return p.category === filter && !p.isLimitedDrop;
+    return p.category === filter;
   });
 
   const handleAddToCart = (p: Product) => {
@@ -162,15 +162,12 @@ export default function MerchPage() {
 
       <div className="container">
         <div className={styles.tabs}>
-          {['all', ...CATEGORIES.slice(1), 'drop'].map(c => {
-            if (c === 'drop' && (user?.xp || 0) < REQUIRED_XP) return null;
-            return (
-              <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
-                onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
-                {c === 'drop' ? '🔥 Conqueror drops' : c.charAt(0).toUpperCase() + c.slice(1)}
-              </button>
-            );
-          })}
+          {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
+            <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
+              onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
+              {c === 'drop' ? '🔥 Conqueror drops' : c.charAt(0).toUpperCase() + c.slice(1)}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -199,8 +196,10 @@ export default function MerchPage() {
           <div className={styles.empty}>No products in this category yet.</div>
         ) : (
           <div className={styles.grid}>
-            {filtered.map((p, i) => (
-              <div key={p._id} className={styles.productCard} style={{ animationDelay: `${i * 0.06}s` }} id={`product-${p._id}`}>
+            {filtered.map((p, i) => {
+              const isItemLocked = p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
+              return (
+                <div key={p._id} className={`${styles.productCard} ${isItemLocked ? styles.productCardLocked : ''}`} style={{ animationDelay: `${i * 0.06}s` }} id={`product-${p._id}`}>
                 <div className={styles.productImg}>
                   {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
                     <div className={styles.productImgPlaceholder}>{p.name[0]}</div>
@@ -217,15 +216,16 @@ export default function MerchPage() {
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={() => handleAddToCart(p)}
-                      disabled={p.stock === 0}
+                      disabled={p.stock === 0 || (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP)}
                       id={`add-to-cart-${p._id}`}
                     >
-                      {p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
+                      {p.stock === 0 ? 'Sold Out' : (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Need 40k XP 🔐' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

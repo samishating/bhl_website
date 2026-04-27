@@ -35,21 +35,26 @@ export default function HomeDivisions() {
   const router = useRouter();
   const { showToast } = useToast();
   const [divisionCounts, setDivisionCounts] = useState<Record<string, number> | null>(null);
-  const [joining, setJoining] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [leaders, setLeaders] = useState<Record<string, any> | null>(null);
 
   // Scroll-reveal refs
   const headerRef = useScrollReveal<HTMLDivElement>();
   const gridRef = useScrollReveal<HTMLDivElement>(true); // stagger cards
 
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/stats');
+      const data = await res.json();
+      if (data.divisionCounts) setDivisionCounts(data.divisionCounts);
+      if (data.divisionLeaders) setLeaders(data.divisionLeaders);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    fetch('/api/stats')
-      .then(res => res.json())
-      .then(data => {
-        if (data.divisionCounts) setDivisionCounts(data.divisionCounts);
-        if (data.divisionLeaders) setLeaders(data.divisionLeaders);
-      })
-      .catch(console.error);
+    fetchStats();
   }, []);
 
   const handleToggleDivision = async (divId: string) => {
@@ -58,7 +63,7 @@ export default function HomeDivisions() {
       return;
     }
 
-    setJoining(divId);
+    setIsProcessing(true);
     const isMember = user.divisions?.includes(divId);
     const newDivisions = isMember
       ? user.divisions.filter(d => d !== divId)
@@ -72,7 +77,11 @@ export default function HomeDivisions() {
       });
 
       if (res.ok) {
-        await refreshUser();
+        // Parallel refresh of user data and global stats
+        await Promise.all([
+          refreshUser(),
+          fetchStats()
+        ]);
         showToast(isMember ? '🚪 Left division' : '✅ Successfully joined division!');
       } else {
         showToast(isMember ? '❌ Failed to leave division' : '❌ Failed to join division', 'error');
@@ -80,7 +89,7 @@ export default function HomeDivisions() {
     } catch (e) {
       showToast('❌ Error updating division', 'error');
     }
-    setJoining(null);
+    setIsProcessing(false);
   };
 
   return (
@@ -168,12 +177,10 @@ export default function HomeDivisions() {
 
                 <button
                   onClick={() => handleToggleDivision(div.id)}
-                  disabled={joining === div.id || divisionCounts === null}
-                  className={`${styles.joinBtn} ${isMember ? styles.leaveBtn : ''} ${divisionCounts === null ? styles.joinBtnLoading : ''}`}
+                  disabled={isProcessing || divisionCounts === null}
+                  className={`${styles.joinBtn} ${isMember ? styles.leaveBtn : ''}`}
                 >
-                  {divisionCounts === null
-                    ? <span className="spinner" />
-                    : joining === div.id
+                  {isProcessing || divisionCounts === null
                     ? <span className="spinner" />
                     : isMember ? `Leave ${div.label}` : `Join ${div.label}`}
                 </button>

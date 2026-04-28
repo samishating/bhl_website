@@ -5,6 +5,8 @@ import { useToast } from '@/contexts/ToastContext';
 import { useAdmin } from '../layout';
 import styles from '../admin.module.css';
 
+import ConfirmationModal from '@/components/ConfirmationModal';
+
 interface PopulatedSubmission {
   _id: string;
   userId: { _id: string; username: string; avatar: string; divisions: string[] };
@@ -19,6 +21,7 @@ export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<PopulatedSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [confirmData, setConfirmData] = useState<{ id: string; action: 'revoke' } | null>(null);
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   const { refreshCounts, setGlobalLoading } = useAdmin();
@@ -35,8 +38,15 @@ export default function AdminSubmissionsPage() {
   };
 
   const handleAction = async (id: string, action: 'approve' | 'reject' | 'revoke') => {
-    if (action === 'revoke' && !window.confirm('Are you sure you want to revoke this approval? This will deduct the XP from the user.')) return;
+    if (action === 'revoke') {
+      setConfirmData({ id, action });
+      return;
+    }
     
+    executeAction(id, action);
+  };
+
+  const executeAction = async (id: string, action: 'approve' | 'reject' | 'revoke') => {
     setGlobalLoading(true);
     setProcessingId(id);
     try {
@@ -60,6 +70,7 @@ export default function AdminSubmissionsPage() {
     } finally {
       setProcessingId(null);
       setGlobalLoading(false);
+      setConfirmData(null);
     }
   };
 
@@ -171,6 +182,16 @@ export default function AdminSubmissionsPage() {
           </table>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={!!confirmData}
+        title="Revoke Approval?"
+        message="Are you sure you want to revoke this approval? This will deduct the XP from the user."
+        confirmLabel="Revoke"
+        variant="danger"
+        onConfirm={() => confirmData && executeAction(confirmData.id, confirmData.action)}
+        onCancel={() => setConfirmData(null)}
+      />
     </div>
   );
 }

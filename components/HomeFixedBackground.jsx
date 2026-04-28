@@ -74,7 +74,20 @@ export default function HomeFixedBackground() {
 
   return (
     <>
-      <div className="home-fixed-bg" />
+      <div className="home-fixed-bg">
+        <picture>
+          <source srcSet="/backgrounds/hero-mobile.webp" media="(max-width: 768px)" />
+          <img 
+            src="/backgrounds/hero-ultra.webp" 
+            alt="Brotherhood Legacy" 
+            className="home-bg-image"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
+        <div className="home-bg-overlay" />
+      </div>
       <canvas 
         ref={canvasRef} 
         style={{ 

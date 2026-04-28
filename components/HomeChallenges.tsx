@@ -57,8 +57,39 @@ export default function HomeChallenges() {
 
   const handleSubmit = async (challengeId: string) => {
     if (!user) return showToast('Please login to submit a challenge', 'error');
+    
+    const challenge = challenges.find(c => c._id === challengeId);
+    if (!challenge) return;
+
+    // Check division membership
+    if (challenge.division !== 'global' && !user.divisions.includes(challenge.division)) {
+      const confirmJoin = window.confirm(`This challenge requires the ${challenge.division.toUpperCase()} division. Would you like to join it now?`);
+      if (!confirmJoin) return;
+
+      try {
+        const joinRes = await fetch('/api/divisions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ division: challenge.division, action: 'join' }),
+        });
+        if (joinRes.ok) {
+          showToast(`Joined ${challenge.division}!`, 'success');
+          // Update user state locally so the submission proceeds
+          user.divisions.push(challenge.division);
+          window.dispatchEvent(new Event('stats-refresh'));
+        } else {
+          showToast('Failed to join division', 'error');
+          return;
+        }
+      } catch (e) {
+        showToast('Error joining division', 'error');
+        return;
+      }
+    }
+
     const proof = proofUrls[challengeId]?.trim();
     if (!proof) return showToast('Please enter a proof URL', 'error');
+
 
     setSubmitting(challengeId);
     const res = await fetch('/api/submissions', {

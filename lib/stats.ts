@@ -5,7 +5,7 @@ import '@/models/Challenge'; // Ensure models are registered
 
 export async function getGlobalStats() {
   try {
-    console.time('getGlobalStats');
+
     await connectDB();
     
     const [totalMembers, xpResult, divisionResult, completedChallenges] = await Promise.all([
@@ -17,7 +17,7 @@ export async function getGlobalStats() {
       ]),
       mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' })
     ]);
-    console.timeEnd('getGlobalStats');
+
 
     const totalXP = xpResult[0]?.totalXP || 0;
     const divisionCounts = { gaming: 0, music: 0, sport: 0, content: 0 };

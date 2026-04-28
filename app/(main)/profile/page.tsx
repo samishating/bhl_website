@@ -36,7 +36,7 @@ export default function ProfilePage() {
     setAvatar(user.avatar || '');
     setUsername(user.username || '');
 
-    fetch(`/api/submissions?userId=${user.id}`)
+    fetch(`/api/submissions?userId=${user.id}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => setSubmissions(d.submissions || []));
   }, [user, loading, router]);

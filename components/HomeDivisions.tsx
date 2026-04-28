@@ -44,7 +44,7 @@ export default function HomeDivisions() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/stats');
+      const res = await fetch('/api/stats', { cache: 'no-store' });
       const data = await res.json();
       if (data.divisionCounts) setDivisionCounts(data.divisionCounts);
       if (data.divisionLeaders) setLeaders(data.divisionLeaders);

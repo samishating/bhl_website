@@ -20,7 +20,7 @@ export default function HomeLeaderboard() {
 
   const loadLeaderboard = () => {
     setLoading(true);
-    fetch(`/api/leaderboard?division=${filter}`)
+    fetch(`/api/leaderboard?division=${filter}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setUsers(d.users || []); setLoading(false); });
   };

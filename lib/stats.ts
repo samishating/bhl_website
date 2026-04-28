@@ -3,16 +3,7 @@ import { User } from '@/models/User';
 import { connectDB } from '@/lib/db';
 import '@/models/Challenge'; // Ensure models are registered
 
-let cachedStats: any = null;
-let lastFetch = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
 export async function getGlobalStats() {
-  const now = Date.now();
-  if (cachedStats && (now - lastFetch < CACHE_TTL)) {
-    return cachedStats;
-  }
-
   console.time('getGlobalStats');
   await connectDB();
   
@@ -67,9 +58,6 @@ export async function getGlobalStats() {
     completedChallenges,
     divisionLeaders
   };
-
-  cachedStats = stats;
-  lastFetch = now;
 
   return stats;
 }

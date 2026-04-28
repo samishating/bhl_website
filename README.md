@@ -11,7 +11,7 @@ BHL is built on a progression system where every action contributes to your lega
 | :--- | :--- | :--- |
 | **Daily Login** | +10 XP | Stay active and consistent with the Brotherhood. |
 | **Join Division** | +20 XP | Commit to a path: Gaming, Music, Sport, or Content. |
-| **Submit Challenge** | +50 XP | Complete community challenges and provide proof. |
+| **Submit Challenge** | +50-500 XP | Complete community challenges and provide proof. |
 
 ### 🏆 Ranks & Progression
 There are **30 elite ranks** in the Brotherhood. Reaching higher levels unlocks exclusive features and store access.
@@ -23,19 +23,12 @@ There are **30 elite ranks** in the Brotherhood. Reaching higher levels unlocks 
 | 10 | **Warrior** | 7,500 XP | Division-specific challenges |
 | 15 | **Legend** | 20,000 XP | **Ranked Badge** unlocked |
 | 20 | **Guardian** | 32,500 XP | Priority challenge review |
+| 23 | **Conqueror** | 40,000 XP | **Exclusive Drop Access** |
 | 25 | **Immortal** | 44,000 XP | Squad recruitment access |
-| 29 | **Brotherhood Master** | 49,500 XP | Legendary status |
 | 30 | **Eternal Legacy** | 50,000 XP | The Ultimate Recognition |
 
 > [!IMPORTANT]
-> **Conqueror Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **40,000+ XP**. You must reach Level 23 (Conqueror) to begin accessing these drops.
-
-### 🎖️ Badges
-Badges are displayed on your profile to showcase your achievements and loyalty.
-- **Founder**: Joined the Brotherhood at launch.
-- **Challenger**: Completed your first verified challenge.
-- **Ranked**: Reached Level 5 (Elite).
-- **Division Elite**: Earned by joining a specific division (Gaming, Music, Sport, or Content).
+> **Conqueror Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **40,000+ XP**.
 
 ---
 
@@ -49,10 +42,20 @@ Choose your path and dominate your field:
 ---
 
 ## 🛠️ Technology Stack
-- **Frontend**: Next.js 15 (App Router), TypeScript, Vanilla CSS
+- **Frontend**: Next.js 16 (App Router), TypeScript, Vanilla CSS
 - **Backend**: Node.js, MongoDB (Mongoose)
-- **Authentication**: JWT-based secure sessions
-- **Styling**: Modern dark mode with neon accents & BHL branding
+- **Authentication**: JWT-based secure sessions with Bcrypt hashing
+- **Email Service**: Gmail SMTP via Nodemailer for secure password resets
+- **Styling**: Premium "Rich Aesthetics" with Glassmorphism, Rajdhani typography, and scroll-reveal animations.
+
+---
+
+## 🛡️ Administrative Infrastructure
+The platform includes a robust Admin Panel for community management:
+- **Challenge Inbox**: Review and approve member submissions in real-time.
+- **User Management**: Search, promote, or manage member profiles.
+- **Product Management**: Multi-image support, stock tracking, and XP-locking for exclusive drops.
+- **Division Control**: Manage division leads and community stats.
 
 ---
 
@@ -61,6 +64,7 @@ Choose your path and dominate your field:
 ### Prerequisites
 - Node.js 18+
 - MongoDB instance (local or Atlas)
+- Gmail Account (for SMTP)
 
 ### Installation
 1. Clone the repository:
@@ -73,16 +77,23 @@ Choose your path and dominate your field:
    ```
 3. Set up environment variables (`.env.local`):
    ```env
+   # Database
    MONGODB_URI=your_mongodb_connection_string
+   
+   # Security
    JWT_SECRET=your_secure_secret
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   
+   # Email (Gmail SMTP)
+   GMAIL_USER=your_email@gmail.com
+   GMAIL_PASS=your_google_app_password
+   
+   # App URL
+   NEXT_PUBLIC_APP_URL=https://brotherhoodlegacy.com
    ```
 4. Run the development server:
    ```bash
    npm run dev
    ```
-
-Open [http://localhost:3000](http://localhost:3000) to see the result.
 
 ---
 

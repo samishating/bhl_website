@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
+import styles from '../auth.module.css';
+
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -35,8 +37,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="auth-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', padding: '2rem' }}>
-      <div className="card" style={{ maxWidth: '400px', width: '100%', padding: '2.5rem' }}>
+    <div className={styles.page}>
+      <div className={styles.glow} />
+      <div className={styles.card} style={{ maxWidth: '440px' }}>
+
         <h2 style={{ fontFamily: 'Rajdhani', fontSize: '2rem', marginBottom: '0.5rem', textAlign: 'center' }}>Forgot <span className="gradient-text">Password</span></h2>
         <p style={{ color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '2rem', fontSize: '0.9rem' }}>
           Enter your email and we&apos;ll send you a link to reset your password.

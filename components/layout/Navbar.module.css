@@ -102,9 +102,22 @@
 .burger span::before, .burger span::after { content: ''; position: absolute; width: 18px; height: 2px; background: white; transition: all 0.3s ease; }
 .burger span::before { top: -6px; }
 .burger span::after  { top:  6px; }
+.burgerOpen { background: transparent !important; }
+.burgerOpen::before { transform: rotate(45deg); top: 0 !important; }
+.burgerOpen::after { transform: rotate(-45deg); top: 0 !important; }
 
 /* Mobile Menu */
-.mobileMenu { display: flex; flex-direction: column; padding: 1rem 1.5rem; background: var(--bg-secondary); border-top: 1px solid var(--border); gap: 0.25rem; }
+.mobileMenu { 
+  display: flex; 
+  flex-direction: column; 
+  padding: 1rem 1.5rem; 
+  background: rgba(14, 13, 13, 0.98); 
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border); 
+  gap: 0.25rem; 
+  max-height: calc(100vh - 70px); 
+  overflow-y: auto; 
+}
 .mobileLink {
   padding: 0.75rem 1rem; border-radius: 8px;
   font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1rem;
@@ -123,5 +136,22 @@
   50% { opacity: 1; }
 }
 
-@media (max-width: 900px) { .navLinks { display: none; } .burger { display: flex; } .userMenu .btn, .authButtons .btn { display: none; } }
-@media (max-width: 500px)  { .username, .levelBadge { display: none; } }
+@media (max-width: 900px) {
+  .navLinks { display: none; }
+  .burger { display: flex; }
+  .actions { gap: 0.5rem; }
+  /* Target global btn class inside userMenu and authButtons */
+  .userMenu :global(.btn), 
+  .authButtons :global(.btn) { 
+    display: none; 
+  }
+}
+
+@media (max-width: 500px) {
+  .username, 
+  .levelBadge { 
+    display: none; 
+  }
+  .inner { padding: 0 1rem; height: 64px; }
+  .logo img { height: 32px !important; }
+}

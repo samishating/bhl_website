@@ -92,25 +92,28 @@ export default function HomeChallenges() {
     if (!confirmJoin || !user) return;
     const challenge = confirmJoin;
     const challengeId = challenge._id;
+    const divId = challenge.division;
     
     setConfirmJoin(null);
     setSubmitting(challengeId);
 
     try {
-      const joinRes = await fetch('/api/divisions', {
-        method: 'POST',
+      // Correct API endpoint as used in HomeDivisions.tsx
+      const newDivisions = [...(user.divisions || []), divId];
+      const joinRes = await fetch(`/api/users/${user.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ division: challenge.division, action: 'join' }),
+        body: JSON.stringify({ divisions: newDivisions }),
       });
 
       if (joinRes.ok) {
-        user.divisions.push(challenge.division);
+        user.divisions.push(divId); // Optimistic update
         window.dispatchEvent(new Event('stats-refresh'));
         
         // Now proceed with submission
         const proof = proofUrls[challengeId]?.trim();
         if (!proof) {
-          showToast(`Joined ${challenge.division}! Please enter a proof URL and submit again.`, 'success');
+          showToast(`Joined ${divId}! Enter proof and submit again.`, 'success');
           setSubmitting(null);
           return;
         }
@@ -125,7 +128,7 @@ export default function HomeChallenges() {
           setSubmissionStatus(prev => ({ ...prev, [challengeId]: 'pending' }));
           showToast(`Joined & Submitted successfully!`, 'success');
         } else {
-          showToast(`Joined ${challenge.division}, but submission failed`, 'error');
+          showToast(`Joined ${divId}, but submission failed`, 'error');
         }
       } else {
         showToast('Failed to join division', 'error');
@@ -135,6 +138,7 @@ export default function HomeChallenges() {
     } finally {
       setSubmitting(null);
     }
+
   };
 
 

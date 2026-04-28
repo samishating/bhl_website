@@ -26,9 +26,10 @@ export async function sendResetPasswordEmail(email: string, token: string) {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
 
   try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
     const data = await client.emails.send({
+      from: `Brotherhood Legacy <${fromEmail}>`,
 
-      from: 'Brotherhood Legacy <noreply@brotherhoodlegacy.com>',
       to: email,
       subject: 'Reset your Brotherhood Legacy password',
       html: `

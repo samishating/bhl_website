@@ -1,6 +1,15 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+
+function getResendClient() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
+
 
 export async function sendResetPasswordEmail(email: string, token: string) {
   if (!process.env.RESEND_API_KEY) {
@@ -8,10 +17,17 @@ export async function sendResetPasswordEmail(email: string, token: string) {
     return { success: false, error: 'RESEND_API_KEY is missing' };
   }
 
+  const client = getResendClient();
+  if (!client) {
+    console.error('[Mail] Resend client could not be initialized.');
+    return { success: false, error: 'Resend initialization failed' };
+  }
+
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
 
   try {
-    const data = await resend.emails.send({
+    const data = await client.emails.send({
+
       from: 'Brotherhood Legacy <noreply@brotherhoodlegacy.com>',
       to: email,
       subject: 'Reset your Brotherhood Legacy password',

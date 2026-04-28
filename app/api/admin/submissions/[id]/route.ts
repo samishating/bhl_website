@@ -109,6 +109,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
         await user.save();
       }
+
       return NextResponse.json({ submission, message: 'Submission approved and XP awarded' });
     }
 

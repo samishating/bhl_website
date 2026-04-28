@@ -72,6 +72,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     await user.save();
+    
     const updated = await User.findById(id).select('-password');
     return NextResponse.json({ user: updated });
   } catch (err) {

@@ -54,6 +54,7 @@ export default function AdminSubmissionsPage() {
       refreshCounts();
       fetchSubmissions();
       showToast(`✅ Submission ${action === 'revoke' ? 'revoked' : action + 'ed'}!`, 'success');
+      window.dispatchEvent(new Event('stats-refresh'));
     } catch (err: any) {
       showToast(`❌ ${err.message}`, 'error');
     } finally {

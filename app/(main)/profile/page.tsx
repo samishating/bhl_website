@@ -50,7 +50,12 @@ export default function ProfilePage() {
       body: JSON.stringify({ bio, avatar, username }),
     });
     setSaving(false);
-    if (res.ok) { await refreshUser(); setEditing(false); showToast('✅ Profile updated!'); }
+    if (res.ok) { 
+      await refreshUser(); 
+      setEditing(false); 
+      showToast('✅ Profile updated!'); 
+      window.dispatchEvent(new Event('stats-refresh'));
+    }
     else showToast('❌ Failed to save');
   };
 
@@ -62,6 +67,7 @@ export default function ProfilePage() {
     if (res.ok) {
       await refreshUser();
       showToast(data.gained ? `🔥 +${data.gained} XP! Daily login reward claimed!` : '⏳ Already claimed today', 'success');
+      window.dispatchEvent(new Event('stats-refresh'));
     }
   };
 

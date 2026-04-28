@@ -3,6 +3,11 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendResetPasswordEmail(email: string, token: string) {
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[Mail] RESEND_API_KEY is not defined. Email will not be sent.');
+    return { success: false, error: 'RESEND_API_KEY is missing' };
+  }
+
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
 
   try {

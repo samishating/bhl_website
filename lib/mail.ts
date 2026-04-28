@@ -18,7 +18,10 @@ export async function sendResetPasswordEmail(email: string, token: string) {
     },
   });
 
-  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+
 
   const mailOptions = {
     from: `"Brotherhood Legacy" <${user}>`,

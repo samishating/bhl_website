@@ -51,10 +51,10 @@ export default function ApplicationsInbox() {
       
       refreshCounts();
       load(); // Reload to get attribution
-      showToast(`✅ Application ${status}!`, 'success');
+      showToast(`Application ${status}!`, 'success');
     } catch (err) {
       setApps(prevApps); // Rollback
-      showToast('❌ Action failed', 'error');
+      showToast('Action failed', 'error');
     } finally {
       setActioning(null);
       setGlobalLoading(false);

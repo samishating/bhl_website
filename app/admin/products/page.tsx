@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
+import { useToast } from '@/contexts/ToastContext';
+
 
 interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; isLimitedDrop: boolean; }
 const defaultForm = { name: '', description: '', price: 29.99, image: '', images: [] as string[], stock: 100, isLimitedDrop: false, category: 'apparel' };
@@ -33,9 +35,8 @@ export default function AdminProductsPage() {
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingSecondary, setUploadingSecondary] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const { showToast } = useToast();
 
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
   const load = () => { fetch('/api/products').then(r => r.json()).then(d => { setProducts(d.products || []); setLoading(false); }); };
   useEffect(load, []);
 
@@ -51,9 +52,9 @@ export default function AdminProductsPage() {
       setShowForm(false); 
       setEditingId(null);
       load(); 
-      showToast(editingId ? '✅ Product updated!' : '✅ Product added!'); 
+      showToast(editingId ? 'Product updated!' : 'Product added!', 'success'); 
     }
-    else { const d = await res.json(); showToast(`❌ ${d.error || 'Failed'}`); }
+    else { const d = await res.json(); showToast(`${d.error || 'Failed'}`, 'error'); }
   };
 
   const handleEdit = (p: Product) => {
@@ -65,12 +66,12 @@ export default function AdminProductsPage() {
   const handleDelete = async (id: string) => {
     // No confirmation alert per user request, using toast for feedback
     await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
-    load(); showToast('🗑 Product deleted');
+    load(); showToast('Product deleted', 'info');
   };
 
   return (
     <div>
-      {toast && <div className="toast">{toast}</div>}
+
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Products</h1>
@@ -123,15 +124,16 @@ export default function AdminProductsPage() {
                       const data = await res.json();
                       if (data.url) {
                         setForm(p => ({ ...p, image: data.url }));
-                        showToast('✅ Image uploaded!');
+                        showToast('Image uploaded!', 'success');
                       } else {
-                        showToast(`❌ Upload failed: ${data.error}`);
+                        showToast(`Upload failed: ${data.error}`, 'error');
                       }
                     } catch {
-                      showToast('❌ Upload error');
+                      showToast('Upload error', 'error');
                     } finally {
                       setUploading(false);
                     }
+
                   }} />
                 </label>
               </div>
@@ -161,8 +163,8 @@ export default function AdminProductsPage() {
                     const res = await fetch('/api/upload', { method: 'POST', body: formData });
                     const data = await res.json();
                     if (data.url) setForm(f => ({ ...f, images: [...f.images, data.url] }));
-                    else showToast(`❌ Upload failed: ${data.error}`);
-                  } catch { showToast('❌ Upload error'); }
+                    else showToast(`Upload failed: ${data.error}`, 'error');
+                  } catch { showToast('Upload error', 'error'); }
                   finally { setUploadingSecondary(false); }
                 }} />
               </label>

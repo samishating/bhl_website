@@ -53,10 +53,10 @@ export default function ProfilePage() {
     if (res.ok) { 
       await refreshUser(); 
       setEditing(false); 
-      showToast('✅ Profile updated!'); 
+      showToast('Profile updated!', 'success'); 
       window.dispatchEvent(new Event('stats-refresh'));
     }
-    else showToast('❌ Failed to save');
+    else showToast('Failed to save', 'error');
   };
 
   const handleDailyXp = async () => {
@@ -66,7 +66,7 @@ export default function ProfilePage() {
     setClaimingXp(false);
     if (res.ok) {
       await refreshUser();
-      showToast(data.gained ? `🔥 +${data.gained} XP! Daily login reward claimed!` : '⏳ Already claimed today', 'success');
+      showToast(data.gained ? `+${data.gained} XP! Daily login reward claimed!` : 'Already claimed today', 'success');
       window.dispatchEvent(new Event('stats-refresh'));
     }
   };
@@ -89,13 +89,13 @@ export default function ProfilePage() {
       const data = await res.json();
       if (data.url) {
         setAvatar(data.url);
-        showToast('✅ Avatar uploaded!', 'success');
+        showToast('Avatar uploaded!', 'success');
         setImageToCrop(null);
       } else {
-        showToast(`❌ Upload failed: ${data.error}`, 'error');
+        showToast(`Upload failed: ${data.error}`, 'error');
       }
     } catch (err) {
-      showToast('❌ Error processing image', 'error');
+      showToast('Error processing image', 'error');
     } finally {
       setUploading(false);
     }

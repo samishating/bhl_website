@@ -84,12 +84,12 @@ export default function HomeDivisions() {
         ]);
         // Trigger global refresh for other components (Leaderboard, Challenges)
         window.dispatchEvent(new Event('stats-refresh'));
-        showToast(isMember ? '🚪 Left division' : '✅ Successfully joined division!');
+        showToast(isMember ? 'Left division' : 'Successfully joined division!', isMember ? 'info' : 'success');
       } else {
-        showToast(isMember ? '❌ Failed to leave division' : '❌ Failed to join division', 'error');
+        showToast(isMember ? 'Failed to leave division' : 'Failed to join division', 'error');
       }
     } catch (e) {
-      showToast('❌ Error updating division', 'error');
+      showToast('Error updating division', 'error');
     }
     setIsProcessing(false);
   };

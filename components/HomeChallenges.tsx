@@ -70,9 +70,9 @@ export default function HomeChallenges() {
 
     if (res.ok) {
       setSubmissionStatus(prev => ({ ...prev, [challengeId]: 'pending' }));
-      showToast(`✅ Submitted! Pending approval.`);
+      showToast(`Submitted! Pending approval.`, 'success');
     } else {
-      showToast(`❌ Submission failed`, 'error');
+      showToast(`Submission failed`, 'error');
     }
   };
 

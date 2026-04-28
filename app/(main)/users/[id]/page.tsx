@@ -2,6 +2,8 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+
 import { getLevelTitle, BADGES } from '@/lib/xp';
 import styles from './page.module.css';
 
@@ -29,14 +31,12 @@ interface Submission {
 export default function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { user: currentUser, refreshUser } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<string | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [adminAction, setAdminAction] = useState(false);
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   useEffect(() => {
     fetch(`/api/users/${id}`)
@@ -84,9 +84,9 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
     if (res?.ok) {
       const d = await res.json();
       setProfile(prev => prev ? { ...prev, ...d.user } : null);
-      showToast('✅ Admin action successful!');
+      showToast('Admin action successful!', 'success');
     } else {
-      showToast('❌ Admin action failed');
+      showToast('Admin action failed', 'error');
     }
   };
 
@@ -99,7 +99,7 @@ export default function UserProfilePage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className={styles.page}>
-      {toast && <div className="toast">{toast}</div>}
+
       
       <div className="container">
         <div className={styles.profileHeader}>

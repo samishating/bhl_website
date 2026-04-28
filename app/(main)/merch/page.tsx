@@ -53,11 +53,11 @@ export default function MerchPage() {
       return;
     }
     if (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) {
-      showToast('🔐 You need 40k XP to buy this item', 'error');
+      showToast('You need 40k XP to buy this item', 'error');
       return;
     }
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
-    showToast(`🛒 ${p.name} added to cart!`, 'success');
+    showToast(`${p.name} added to cart!`, 'success');
   };
 
 

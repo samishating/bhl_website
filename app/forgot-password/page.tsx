@@ -24,13 +24,13 @@ export default function ForgotPasswordPage() {
 
       if (res.ok) {
         setSubmitted(true);
-        showToast('✅ If an account exists, a link has been sent.', 'success');
+        showToast('If an account exists, a link has been sent.', 'success');
       } else {
         const data = await res.json();
-        showToast(`❌ ${data.error || 'Something went wrong'}`, 'error');
+        showToast(`${data.error || 'Something went wrong'}`, 'error');
       }
     } catch (err) {
-      showToast('❌ Network error', 'error');
+      showToast('Network error', 'error');
     } finally {
       setLoading(false);
     }

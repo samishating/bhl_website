@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
+import { useToast } from '@/contexts/ToastContext';
+
 
 interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; allowRepeats: boolean; }
 const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global' };
@@ -16,9 +18,8 @@ export default function AdminChallengesPage() {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const { showToast } = useToast();
 
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   const load = () => {
     fetch('/api/challenges')
@@ -44,10 +45,10 @@ export default function AdminChallengesPage() {
       setShowForm(false);
       setEditingId(null);
       load();
-      showToast(editingId ? '✅ Challenge updated!' : '✅ Challenge created!');
+      showToast(editingId ? 'Challenge updated!' : 'Challenge created!', 'success');
     } else {
       const d = await res.json();
-      showToast(`❌ ${d.error || 'Failed'}`);
+      showToast(`${d.error || 'Failed'}`, 'error');
     }
   };
 
@@ -61,12 +62,12 @@ export default function AdminChallengesPage() {
     // Removing confirmation alert per user request, using toast for feedback
     await fetch(`/api/challenges/${id}`, { method: 'DELETE' });
     load();
-    showToast('🗑 Challenge deleted');
+    showToast('Challenge deleted', 'info');
   };
 
   return (
     <div>
-      {toast && <div className="toast">{toast}</div>}
+
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Challenges</h1>

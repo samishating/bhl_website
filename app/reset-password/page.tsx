@@ -18,7 +18,7 @@ function ResetPasswordForm() {
 
   useEffect(() => {
     if (!token) {
-      showToast('❌ Invalid reset link', 'error');
+      showToast('Invalid reset link', 'error');
       router.push('/login');
     }
   }, [token, router, showToast]);
@@ -26,11 +26,11 @@ function ResetPasswordForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      showToast('❌ Passwords do not match', 'error');
+      showToast('Passwords do not match', 'error');
       return;
     }
     if (password.length < 6) {
-      showToast('❌ Password must be at least 6 characters', 'error');
+      showToast('Password must be at least 6 characters', 'error');
       return;
     }
 
@@ -43,14 +43,14 @@ function ResetPasswordForm() {
       });
 
       if (res.ok) {
-        showToast('✅ Password reset successful! Please login.', 'success');
+        showToast('Password reset successful! Please login.', 'success');
         router.push('/login');
       } else {
         const data = await res.json();
-        showToast(`❌ ${data.error || 'Reset failed'}`, 'error');
+        showToast(`${data.error || 'Reset failed'}`, 'error');
       }
     } catch (err) {
-      showToast('❌ Network error', 'error');
+      showToast('Network error', 'error');
     } finally {
       setLoading(false);
     }

@@ -13,8 +13,11 @@ export interface IUser extends Document {
   badges: string[];
   role: 'user' | 'admin' | 'superadmin';
   lastLogin: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
 }
+
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -34,7 +37,10 @@ const UserSchema = new Schema<IUser>({
   badges: [{ type: String }],
   role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },
   lastLogin: { type: Date, default: null },
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Date, default: null },
 }, { timestamps: true });
+
 
 UserSchema.index({ xp: -1 });
 UserSchema.index({ 'divisionXp.gaming': -1 });

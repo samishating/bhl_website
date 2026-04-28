@@ -48,9 +48,13 @@ function LoginForm() {
             <input className="form-input" required value={identifier} onChange={e => setIdentifier(e.target.value)} placeholder="Username or Email" id="login-identifier" />
           </div>
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <label className="form-label" style={{ marginBottom: 0 }}>Password</label>
+              <Link href="/forgot-password" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'none' }} className="hover-link">Forgot?</Link>
+            </div>
             <input className="form-input" type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" id="login-password" />
           </div>
+
           <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={loading} id="login-submit-btn">
             {loading ? <span className="spinner" /> : 'Login to BHL'}
           </button>

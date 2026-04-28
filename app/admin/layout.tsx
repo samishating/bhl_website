@@ -47,11 +47,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   useEffect(() => {
     if (user?.role === 'admin' || user?.role === 'superadmin') {
       fetchCounts();
     }
   }, [user, fetchCounts]);
+
+  // Close mobile nav on route change
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   if (authLoading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}><div className="spinner" /></div>;
   
@@ -76,10 +83,23 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             <p style={{ marginTop: '1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Loading Dashboard...</p>
           </div>
         )}
-        <aside className={styles.sidebar}>
-          <Link href="/" className={styles.sidebarLogo}>
-            <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
-          </Link>
+
+        {/* Mobile Top Bar */}
+        <div className={styles.mobileTopBar}>
+          <button className={styles.menuToggle} onClick={() => setMobileNavOpen(true)}>☰</button>
+          <div className={styles.mobileTitle}>{links.find(l => l.href === pathname)?.label || 'Admin'}</div>
+        </div>
+
+        {/* Sidebar Overlay */}
+        {mobileNavOpen && <div className={styles.sidebarOverlay} onClick={() => setMobileNavOpen(false)} />}
+
+        <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''}`}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
+            <Link href="/" className={styles.sidebarLogo}>
+              <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
+            </Link>
+            <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
+          </div>
           <nav className={styles.nav}>
             {links.map(l => {
               let badgeCount = 0;

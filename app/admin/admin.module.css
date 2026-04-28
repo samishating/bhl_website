@@ -30,7 +30,41 @@
   backdrop-filter: blur(8px);
 }
 
-@media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+.mobileTopBar { display: none; }
+.sidebarOverlay { display: none; }
+.closeSidebar { display: none; }
+
+@media (max-width: 768px) {
+  .mobileTopBar { 
+    display: flex; 
+    position: fixed; top: 0; left: 0; right: 0; 
+    height: 60px; background: var(--bg-secondary); 
+    border-bottom: 1px solid var(--border); 
+    align-items: center; padding: 0 1.25rem; z-index: 1000;
+    gap: 1rem;
+  }
+  .menuToggle { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+  .mobileTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brand-red); font-size: 1.1rem; }
+  
+  .sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    width: 280px; z-index: 1100;
+    box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+  }
+  .sidebarOpen { transform: translateX(0); }
+  .sidebarOverlay { 
+    display: block; position: fixed; inset: 0; 
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1050; 
+  }
+  .closeSidebar { 
+    display: block; background: none; border: none; 
+    color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 1.5rem;
+  }
+  .sidebarLogo { border-bottom: none !important; }
+
+  .main { margin-left: 0; padding: 1rem; padding-top: 5rem; }
+}
 .notificationBadge {
   background-color: var(--brand-red);
   color: white;

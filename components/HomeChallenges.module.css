@@ -13,3 +13,14 @@
 .submitForm { display: flex; flex-direction: column; gap: 0.6rem; }
 .doneState { text-align: center; padding: 0.75rem; background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.2); border-radius: var(--radius-sm); color: var(--neon-green); font-family: 'Rajdhani', sans-serif; font-weight: 600; }
 .empty { text-align: center; padding: 4rem; color: var(--text-muted); }
+
+.modalOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100000; animation: fadeIn 0.3s ease; }
+.modal { background: #0f0f0f; border: 1px solid var(--border-hover); border-radius: var(--radius-md); padding: 2.5rem; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.modalIcon { font-size: 3rem; margin-bottom: 1.5rem; }
+.modalTitle { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; color: white; }
+.modalText { color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; font-size: 0.95rem; }
+.modalButtons { display: flex; gap: 1rem; justify-content: center; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleUp { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+

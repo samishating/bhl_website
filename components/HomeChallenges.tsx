@@ -19,7 +19,9 @@ export default function HomeChallenges() {
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
+  const [confirmJoin, setConfirmJoin] = useState<any | null>(null);
   const headerRef = useScrollReveal<HTMLDivElement>();
+
   const contentRef = useScrollReveal<HTMLDivElement>(true);
 
   const loadChallenges = () => {
@@ -63,33 +65,12 @@ export default function HomeChallenges() {
 
     // Check division membership
     if (challenge.division !== 'global' && !user.divisions.includes(challenge.division)) {
-      const confirmJoin = window.confirm(`This challenge requires the ${challenge.division.toUpperCase()} division. Would you like to join it now?`);
-      if (!confirmJoin) return;
-
-      try {
-        const joinRes = await fetch('/api/divisions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ division: challenge.division, action: 'join' }),
-        });
-        if (joinRes.ok) {
-          showToast(`Joined ${challenge.division}!`, 'success');
-          // Update user state locally so the submission proceeds
-          user.divisions.push(challenge.division);
-          window.dispatchEvent(new Event('stats-refresh'));
-        } else {
-          showToast('Failed to join division', 'error');
-          return;
-        }
-      } catch (e) {
-        showToast('Error joining division', 'error');
-        return;
-      }
+      setConfirmJoin(challenge);
+      return;
     }
 
     const proof = proofUrls[challengeId]?.trim();
     if (!proof) return showToast('Please enter a proof URL', 'error');
-
 
     setSubmitting(challengeId);
     const res = await fetch('/api/submissions', {
@@ -106,6 +87,56 @@ export default function HomeChallenges() {
       showToast(`Submission failed`, 'error');
     }
   };
+
+  const handleJoinAndSubmit = async () => {
+    if (!confirmJoin || !user) return;
+    const challenge = confirmJoin;
+    const challengeId = challenge._id;
+    
+    setConfirmJoin(null);
+    setSubmitting(challengeId);
+
+    try {
+      const joinRes = await fetch('/api/divisions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ division: challenge.division, action: 'join' }),
+      });
+
+      if (joinRes.ok) {
+        user.divisions.push(challenge.division);
+        window.dispatchEvent(new Event('stats-refresh'));
+        
+        // Now proceed with submission
+        const proof = proofUrls[challengeId]?.trim();
+        if (!proof) {
+          showToast(`Joined ${challenge.division}! Please enter a proof URL and submit again.`, 'success');
+          setSubmitting(null);
+          return;
+        }
+
+        const res = await fetch('/api/submissions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ challengeId, proofUrl: proof }),
+        });
+
+        if (res.ok) {
+          setSubmissionStatus(prev => ({ ...prev, [challengeId]: 'pending' }));
+          showToast(`Joined & Submitted successfully!`, 'success');
+        } else {
+          showToast(`Joined ${challenge.division}, but submission failed`, 'error');
+        }
+      } else {
+        showToast('Failed to join division', 'error');
+      }
+    } catch (e) {
+      showToast('Error processing request', 'error');
+    } finally {
+      setSubmitting(null);
+    }
+  };
+
 
   return (
     <section id="challenges" className="content-band" style={{ borderTop: 'none' }}>
@@ -181,6 +212,25 @@ export default function HomeChallenges() {
         )}
         </div> {/* close contentRef */}
       </div>
+
+      {/* Custom Join Modal */}
+      {confirmJoin && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalIcon}>🛡️</div>
+            <h3 className={styles.modalTitle}>Join Required</h3>
+            <p className={styles.modalText}>
+              This challenge requires the <strong style={{ color: 'var(--neon-blue)' }}>{confirmJoin.division.toUpperCase()}</strong> division. 
+              Join now to complete this challenge?
+            </p>
+            <div className={styles.modalButtons}>
+              <button className="btn btn-ghost" onClick={() => setConfirmJoin(null)}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleJoinAndSubmit}>Join & Submit</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
+
   );
 }

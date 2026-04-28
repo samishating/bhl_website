@@ -34,7 +34,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const body = await req.json();
     const { bio, avatar, divisions, username } = body;
 
-    if (username !== undefined && username.trim() !== '') {
+    if (username !== undefined && username.trim() !== '' && username !== user.username) {
+      if (payload.role !== 'superadmin') {
+        return NextResponse.json({ error: 'Only superadmins can change usernames' }, { status: 403 });
+      }
       // Check if username is already taken
       const existingUser = await User.findOne({ username, _id: { $ne: id } });
       if (existingUser) {
@@ -42,6 +45,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }
       user.username = username;
     }
+
     if (bio !== undefined) user.bio = bio;
     if (avatar !== undefined) user.avatar = avatar;
     if (divisions !== undefined) {

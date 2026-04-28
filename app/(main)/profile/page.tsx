@@ -228,9 +228,18 @@ export default function ProfilePage() {
             <h3 className={styles.sectionTitle}>Edit Profile</h3>
             <div className={styles.editForm}>
               <div className="form-group">
-                <label className="form-label">Username</label>
-                <input className="form-input" value={username} onChange={e => setUsername(e.target.value)} placeholder="New username" id="profile-username-input" />
+                <label className="form-label">Username {user.role !== 'superadmin' && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: '0.5rem', fontWeight: 400 }}>(Permanent)</span>}</label>
+                <input 
+                  className="form-input" 
+                  value={username} 
+                  onChange={e => setUsername(e.target.value)} 
+                  placeholder="New username" 
+                  id="profile-username-input" 
+                  disabled={user.role !== 'superadmin'}
+                  style={user.role !== 'superadmin' ? { opacity: 0.6, cursor: 'not-allowed', backgroundColor: 'rgba(255,255,255,0.05)' } : {}}
+                />
               </div>
+
               <div className="form-group">
                 <label className="form-label">Avatar URL or Upload</label>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>

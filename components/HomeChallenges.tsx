@@ -107,8 +107,11 @@ export default function HomeChallenges() {
       });
 
       if (joinRes.ok) {
-        user.divisions.push(divId); // Optimistic update
+        // Trigger global refresh (AuthContext now listens to this)
         window.dispatchEvent(new Event('stats-refresh'));
+        
+        // Wait a tiny bit for the context to update or just proceed
+        // Since the server now knows we are in the division, the submission will succeed.
         
         // Now proceed with submission
         const proof = proofUrls[challengeId]?.trim();

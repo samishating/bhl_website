@@ -49,6 +49,12 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
 
   useEffect(() => { refreshUser(); }, [refreshUser]);
 
+  useEffect(() => {
+    window.addEventListener('stats-refresh', refreshUser);
+    return () => window.removeEventListener('stats-refresh', refreshUser);
+  }, [refreshUser]);
+
+
   const login = async (identifier: string, password: string) => {
     try {
       const res = await fetch('/api/auth/login', {

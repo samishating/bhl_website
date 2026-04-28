@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { getLevelTitle, BADGES } from '@/lib/xp';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import styles from './HomeLeaderboard.module.css';
@@ -67,10 +68,10 @@ export default function HomeLeaderboard() {
               const heightPct = rank === 1 ? '100%' : rank === 2 ? '80%' : '65%';
               return (
                 <div key={u._id} className={`${styles.podiumItem} ${rank === 1 ? styles.podiumFirst : ''}`}>
-                  <div className={`avatar avatar-lg ${styles.podiumAvatar}`}>
+                  <Link href={`/users/${u._id}`} className={`avatar avatar-lg ${styles.podiumAvatar}`}>
                     {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                  </div>
-                  <span className={styles.podiumName}>{u.username}</span>
+                  </Link>
+                  <Link href={`/users/${u._id}`} className={styles.podiumName}>{u.username}</Link>
                   <div className={styles.podiumXp}>{u.xp.toLocaleString()} XP</div>
                   <div className={styles.podiumBase} style={{ height: heightPct }}>
                     <span className={styles.podiumRank}>{rankIcons[rank - 1]}</span>
@@ -105,11 +106,11 @@ export default function HomeLeaderboard() {
                       <td><span className={styles.rank}>{i < 3 ? rankIcons[i] : i + 1}</span></td>
                       <td>
                         <div className={styles.memberCell}>
-                          <div className="avatar">
+                          <Link href={`/users/${u._id}`} className="avatar">
                             {u.avatar ? <img src={u.avatar} alt="" /> : u.username[0]}
-                          </div>
+                          </Link>
                           <div>
-                            <span className={styles.memberName}>{u.username}</span>
+                            <Link href={`/users/${u._id}`} className={styles.memberName}>{u.username}</Link>
                             <div className={styles.memberTitle}>{getLevelTitle(u.level)}</div>
                           </div>
                         </div>

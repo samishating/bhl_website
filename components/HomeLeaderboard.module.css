@@ -20,7 +20,8 @@
 .rank { font-size: 1.2rem; }
 .rankNum { color: var(--text-muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; }
 .memberCell { display: flex; align-items: center; gap: 0.75rem; }
-.memberName { font-weight: 600; font-size: 0.9rem; }
+.memberName { font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: color 0.2s; }
+.memberName:hover, .podiumName:hover { color: var(--brand-red); text-decoration: underline; }
 .memberTitle { font-size: 0.75rem; color: var(--text-muted); }
 .badgePill { font-size: 0.7rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 .xpValue { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; color: var(--brand-red); }

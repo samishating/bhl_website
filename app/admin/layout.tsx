@@ -14,12 +14,12 @@ export const useAdmin = () => useContext(AdminContext);
 
 const links = [
   { href: '/admin', label: 'Overview', icon: '📊' },
-  { href: '/admin/users', label: 'Users', icon: '👥' },
-  { href: '/admin/challenges', label: 'Challenges', icon: '🏆' },
-  { href: '/admin/submissions', label: 'Challenges Inbox', icon: '📥' },
-  { href: '/admin/applications', label: 'Applications Inbox', icon: '📝' },
-  { href: '/admin/products', label: 'Products', icon: '👕' },
-  { href: '/admin/orders', label: 'Orders', icon: '📦' },
+  { href: '/admin/users', label: 'Users', icon: '/ICONS/USER.svg' },
+  { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
+  { href: '/admin/submissions', label: 'Challenges Inbox', icon: '/ICONS/INBOX.svg' },
+  { href: '/admin/applications', label: 'Applications Inbox', icon: '/ICONS/INBOX.svg' },
+  { href: '/admin/products', label: 'Products', icon: '/ICONS/PRODUCTS.svg' },
+  { href: '/admin/orders', label: 'Orders', icon: '/ICONS/LIST PRODUCTS.svg' },
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
@@ -96,7 +96,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''}`}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
             <Link href="/" className={styles.sidebarLogo}>
-              <img src="/brand/logo.png" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
+              <img src="/brand/logo.webp" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
             </Link>
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
           </div>
@@ -109,7 +109,14 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               
               return (
                 <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>
-                  <span>{l.icon}</span> {l.label}
+                  <span className={styles.navIcon}>
+                    {l.icon.endsWith('.svg') ? (
+                      <img src={l.icon} alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)', opacity: 0.8 }} />
+                    ) : (
+                      l.icon
+                    )}
+                  </span> 
+                  {l.label}
                   {badgeCount > 0 && <span className={styles.notificationBadge}>{badgeCount}</span>}
                 </Link>
               );

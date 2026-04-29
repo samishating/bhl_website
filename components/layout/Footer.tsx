@@ -9,7 +9,7 @@ export default function Footer() {
         <div className={styles.grid}>
           <div className={styles.brand}>
             <Link href="/" className={styles.logo}>
-              <img src="/brand/logo.png" alt="BHL" style={{ height: '48px', objectFit: 'contain' }} />
+              <img src="/brand/logo.webp" alt="BHL" style={{ height: '48px', objectFit: 'contain' }} />
             </Link>
             <p className={styles.tagline}>Rise. Compete. Dominate.</p>
             <p className={styles.desc}>

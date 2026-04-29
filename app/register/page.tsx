@@ -31,7 +31,7 @@ function RegisterForm() {
       <div className={styles.glow} />
       <div className={styles.card}>
         <Link href="/" className={styles.logo}>
-          <img src="/brand/logo.png" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
+          <img src="/brand/logo.webp" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
         </Link>
         <h2 className={styles.title}>Join the Brotherhood</h2>
         <p className={styles.sub}>Create your account and start your legacy</p>

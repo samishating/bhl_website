@@ -84,7 +84,7 @@ The platform includes a robust Admin Panel for community management:
    JWT_SECRET=your_secure_secret
    
    # Email (Gmail SMTP)
-   GMAIL_USER=your_email@gmail.com
+   GMAIL_USER=bhlsupportmail@gmail.com
    GMAIL_PASS=your_google_app_password
    
    # App URL

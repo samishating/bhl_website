@@ -81,7 +81,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className={styles.logo} onClick={handleLogoClick}>
           <Image 
-            src="/brand/logo.png" 
+            src="/brand/logo.webp" 
             alt="BHL" 
             width={120} 
             height={40} 

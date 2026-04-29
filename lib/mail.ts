@@ -24,7 +24,7 @@ export async function sendResetPasswordEmail(email: string, token: string) {
 
 
   const mailOptions = {
-    from: `"Brotherhood Legacy" <${user}>`,
+    from: `"Brotherhood Legacy" <bhlsupportmail@gmail.com>`,
     to: email,
     subject: 'Reset your Brotherhood Legacy password',
     html: `

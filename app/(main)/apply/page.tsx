@@ -7,7 +7,7 @@ const DIVISIONS = [
   { id: 'gaming', label: 'Gaming', icon: '🎮', image: '/brand/gaming.png', color: '#FFFDBA' },
   { id: 'music',  label: 'Music',  icon: '🎵', image: '/brand/music.png',  color: '#A855F7' },
   { id: 'sport',  label: 'Sport',  icon: '💪', image: '/brand/sport.png',  color: '#06B6D4' },
-  { id: 'content',label: 'Content',icon: '🎬', image: '/brand/logo.png',   color: '#EF4444' },
+  { id: 'content',label: 'Content',icon: '🎬', image: '/brand/logo.webp',   color: '#EF4444' },
 ];
 
 export default function JoinPage() {

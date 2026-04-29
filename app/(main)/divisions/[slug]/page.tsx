@@ -62,7 +62,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
       <div className="container">
         <div className="grid-2">
           {/* Leader Card */}
-          <div className="card">
+          <div className="card card-static">
             <h3 className={styles.cardTitle}>Division Leader</h3>
             {data.leader ? (
               <div className={styles.leaderRow}>
@@ -80,7 +80,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
           </div>
 
           {/* Stats Card */}
-          <div className="card">
+          <div className="card card-static">
             <h3 className={styles.cardTitle}>Unit Strength</h3>
             <div className={styles.statLarge}>{data.memberCount.toLocaleString()}</div>
             <p style={{ color: 'var(--text-secondary)' }}>Active members committed to the {title} legacy.</p>

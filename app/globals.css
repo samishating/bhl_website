@@ -196,6 +196,13 @@ h4 { font-size: 1.2rem; }
 }
 .card:hover::before { opacity: 1; }
 
+.card-static:hover {
+  border-color: var(--border);
+  transform: none;
+  box-shadow: none;
+}
+.card-static:hover::before { opacity: 0; }
+
 /* ─── Forms ──────────────────────────────────────────── */
 .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
 .form-label {

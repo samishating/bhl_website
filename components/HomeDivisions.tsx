@@ -60,6 +60,9 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
     if (!initialStats) {
       fetchStats();
     }
+
+    window.addEventListener('stats-refresh', fetchStats);
+    return () => window.removeEventListener('stats-refresh', fetchStats);
   }, []);
 
   const handleToggleDivision = async (divId: string) => {

@@ -67,7 +67,11 @@ export default function HeroClient({ statsData: initialStats }: HeroClientProps)
         <div className={styles.statsRow}>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              {typeof stats.members === 'number' ? <AnimatedCounter value={stats.members} suffix="+" /> : '...'}
+              {typeof stats.members === 'number' ? (
+                <AnimatedCounter value={stats.members} suffix="+" />
+              ) : (
+                <div className="skeleton" style={{ width: '80px', height: '2.5rem', margin: '0 auto' }} />
+              )}
             </span>
             <span className={styles.statLabel}>Members</span>
           </div>
@@ -77,7 +81,11 @@ export default function HeroClient({ statsData: initialStats }: HeroClientProps)
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              {typeof stats.xp === 'number' ? <AnimatedCounter value={stats.xp} suffix="+" /> : '...'}
+              {typeof stats.xp === 'number' ? (
+                <AnimatedCounter value={stats.xp} suffix="+" />
+              ) : (
+                <div className="skeleton" style={{ width: '120px', height: '2.5rem', margin: '0 auto' }} />
+              )}
             </span>
             <span className={styles.statLabel}>XP Earned</span>
           </div>

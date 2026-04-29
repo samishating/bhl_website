@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, models, model } from 'mongoose';
+import { Schema, Document, models, model } from 'mongoose';
 
 export interface IChallenge extends Document {
   title: string;
@@ -19,7 +19,4 @@ const ChallengeSchema = new Schema<IChallenge>({
   allowRepeats: { type: Boolean, default: false },
 }, { timestamps: true });
 
-if (mongoose.models.Challenge) {
-  mongoose.deleteModel('Challenge');
-}
-export const Challenge = model<IChallenge>('Challenge', ChallengeSchema);
+export const Challenge = models.Challenge || model<IChallenge>('Challenge', ChallengeSchema);

@@ -13,8 +13,8 @@ export default function SyncListener() {
 
       refreshTimeoutRef.current = setTimeout(() => {
         refreshTimeoutRef.current = null;
-        router.refresh();
         window.dispatchEvent(new Event('stats-refresh'));
+        router.refresh();
       }, 150);
     };
 
@@ -24,9 +24,19 @@ export default function SyncListener() {
         if (!res.ok) return;
 
         const data = await res.json();
-        // Unconditionally trigger full refresh every 10s to keep user profile, 
-        // challenges, and division stats completely synced as requested.
-        triggerRefresh();
+        
+        // Always dispatch stats-refresh to update client state (AuthContext, Cards, Leaderboard)
+        window.dispatchEvent(new Event('stats-refresh'));
+
+        // Only do a heavy server-side rebuild if the actual global stats changed
+        if (lastUpdatedRef.current !== null && data.lastUpdated > lastUpdatedRef.current) {
+          if (!refreshTimeoutRef.current) {
+            refreshTimeoutRef.current = setTimeout(() => {
+              refreshTimeoutRef.current = null;
+              router.refresh();
+            }, 150);
+          }
+        }
 
         lastUpdatedRef.current = data.lastUpdated;
       } catch {

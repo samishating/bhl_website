@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, models, model } from 'mongoose';
+import { Schema, Document, models, model } from 'mongoose';
 
 export interface IUser extends Document {
   email: string;
@@ -17,7 +17,6 @@ export interface IUser extends Document {
   resetPasswordExpires?: Date;
   createdAt: Date;
 }
-
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -41,14 +40,10 @@ const UserSchema = new Schema<IUser>({
   resetPasswordExpires: { type: Date, default: null },
 }, { timestamps: true });
 
-
 UserSchema.index({ xp: -1 });
 UserSchema.index({ 'divisionXp.gaming': -1 });
 UserSchema.index({ 'divisionXp.music': -1 });
 UserSchema.index({ 'divisionXp.sport': -1 });
 UserSchema.index({ 'divisionXp.content': -1 });
 
-if (mongoose.models.User) {
-  mongoose.deleteModel('User');
-}
-export const User = model<IUser>('User', UserSchema);
+export const User = models.User || model<IUser>('User', UserSchema);

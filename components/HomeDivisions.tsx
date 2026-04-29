@@ -130,12 +130,19 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
                 id={`home-division-${div.id}`}
               >
                 <div className={styles.divCardGlow} />
-                <Link href={`/divisions/${div.id}`} className={styles.divCardTop}>
-                  {div.image ? (
-                    <img src={div.image} alt={div.label} style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
-                  ) : (
-                    <span className={styles.divIcon}>{div.icon}</span>
-                  )}
+                <div className={styles.divCardTop}>
+                  <div className={styles.iconWrapper}>
+                    {div.image ? (
+                      <img 
+                        src={div.image} 
+                        alt={div.label} 
+                        onLoad={(e) => (e.currentTarget.parentElement!.style.background = 'transparent')}
+                        style={{ width: '44px', height: '44px', objectFit: 'contain' }} 
+                      />
+                    ) : (
+                      <span className={styles.divIcon}>{div.icon}</span>
+                    )}
+                  </div>
                   <div>
                     <div className={`division-tag ${div.tag}`}>{div.label}</div>
                     <div className={styles.memberCount}>
@@ -144,7 +151,7 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
                         : <span className="skeleton" style={{ display: 'inline-block', width: '70px', height: '14px' }} />}
                     </div>
                   </div>
-                </Link>
+                </div>
 
                 <p className={styles.divDesc}>{div.desc}</p>
 

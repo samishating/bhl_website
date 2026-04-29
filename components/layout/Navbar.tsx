@@ -14,6 +14,7 @@ const navLinks = [
   { href: '/#challenges', label: 'Challenges' },
   { href: '/merch', label: 'Merch' },
   { href: '/about', label: 'About' },
+  { href: '/coming-soon', label: 'Coming Soon' },
 ];
 
 export default function Navbar() {

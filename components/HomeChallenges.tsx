@@ -200,8 +200,19 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
         </div>
 
         {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}>
-            <div className="spinner" />
+          <div className={styles.grid}>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className={styles.card}>
+                <div className={styles.cardTop}>
+                  <div className="skeleton" style={{ width: '80px', height: '1.5rem', borderRadius: '4px' }} />
+                  <div className="skeleton" style={{ width: '60px', height: '1.5rem', borderRadius: '4px' }} />
+                </div>
+                <div className="skeleton" style={{ width: '80%', height: '1.5rem', marginBottom: '1rem' }} />
+                <div className="skeleton" style={{ width: '100%', height: '1rem', marginBottom: '0.5rem' }} />
+                <div className="skeleton" style={{ width: '90%', height: '1rem', marginBottom: '1.5rem' }} />
+                <div className="skeleton" style={{ width: '100%', height: '46px', borderRadius: 'var(--radius-sm)' }} />
+              </div>
+            ))}
           </div>
         ) : (
           <div className={styles.grid}>

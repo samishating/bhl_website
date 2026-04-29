@@ -1,7 +1,7 @@
 import { connectDB } from './db';
-import { User } from '@/models/User';
+import { User, IUser } from '@/models/User';
 import { DivisionStat } from '@/models/DivisionStat';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 
 export async function syncDivisionStats(divisionId: string) {
   try {
@@ -11,7 +11,7 @@ export async function syncDivisionStats(divisionId: string) {
     const leader = await User.findOne({ divisions: divisionId })
       .sort({ [`divisionXp.${divisionId}`]: -1, xp: -1 })
       .select('username avatar divisionXp')
-      .lean();
+      .lean<IUser>();
 
     // 2. Compute member count
     const memberCount = await User.countDocuments({ divisions: divisionId });
@@ -22,10 +22,10 @@ export async function syncDivisionStats(divisionId: string) {
       {
         divisionId,
         leader: leader ? {
-          userId: (leader as any)._id,
-          username: (leader as any).username,
-          avatar: (leader as any).avatar,
-          xp: (leader as any).divisionXp?.[divisionId] || 0
+          userId: (leader as any)._id.toString(),
+          username: leader.username,
+          avatar: leader.avatar,
+          xp: leader.divisionXp?.[divisionId as keyof typeof leader.divisionXp] || 0
         } : null,
         memberCount,
         lastUpdated: new Date()
@@ -33,10 +33,7 @@ export async function syncDivisionStats(divisionId: string) {
       { upsert: true, new: true }
     );
 
-    console.log(`Synced stats for division: ${divisionId}`);
-    revalidateTag('stats', 'stats');
-    revalidatePath('/', 'layout');
-    revalidatePath(`/divisions/${divisionId}`);
+    revalidateTag('stats');
   } catch (error) {
     console.error(`Failed to sync stats for division ${divisionId}:`, error);
   }

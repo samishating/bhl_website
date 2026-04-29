@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { calculateLevel, getDivisionBadge, BADGES } from '../lib/xp';
+import { calculateLevel } from '../lib/xp';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/brotherhood-legacy';
 

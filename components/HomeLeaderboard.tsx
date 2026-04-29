@@ -85,7 +85,18 @@ export default function HomeLeaderboard() {
         </div>
 
         {/* Podium */}
-        {!loading && users.length >= 3 && (
+        {loading ? (
+          <div className={styles.podium}>
+            {[1, 0, 2].map((i) => (
+              <div key={i} className={styles.podiumItem}>
+                <div className="avatar avatar-lg skeleton" style={{ marginBottom: '1rem' }} />
+                <div className="skeleton" style={{ width: '80px', height: '1.2rem', marginBottom: '0.5rem' }} />
+                <div className="skeleton" style={{ width: '60px', height: '1rem' }} />
+                <div className={styles.podiumBase} style={{ height: i === 0 ? '100%' : i === 1 ? '80%' : '65%' }} />
+              </div>
+            ))}
+          </div>
+        ) : users.length >= 3 && (
           <div className={styles.podium}>
             {[users[1], users[0], users[2]].map((u, idx) => {
               const podiumOrder = [2, 1, 3];
@@ -110,8 +121,37 @@ export default function HomeLeaderboard() {
         {/* Table */}
         <div className={styles.tableSection}>
           {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}>
-              <div className="spinner" />
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Member</th>
+                    <th>Level</th>
+                    <th>Division</th>
+                    <th>XP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                      <td><div className="skeleton" style={{ width: '20px', height: '1rem' }} /></td>
+                      <td>
+                        <div className={styles.memberCell}>
+                          <div className="avatar skeleton" />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div className="skeleton" style={{ width: '100px', height: '1rem' }} />
+                            <div className="skeleton" style={{ width: '60px', height: '0.75rem' }} />
+                          </div>
+                        </div>
+                      </td>
+                      <td><div className="skeleton" style={{ width: '50px', height: '1.5rem', borderRadius: '999px' }} /></td>
+                      <td><div className="skeleton" style={{ width: '80px', height: '1.5rem', borderRadius: '4px' }} /></td>
+                      <td><div className="skeleton" style={{ width: '60px', height: '1rem' }} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : users.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>No members yet in this division.</div>

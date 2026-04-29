@@ -23,13 +23,27 @@ export default function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     // Scroll spy logic
     const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Visibility logic
+      if (currentScrollY < 10 || menuOpen) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+
       if (pathname !== '/') return;
       const sections = ['hero', 'divisions', 'leaderboard', 'challenges'];
-      const scrollPos = window.scrollY + 100;
+      const scrollPos = currentScrollY + 100;
 
       for (const section of sections) {
         const el = document.getElementById(section);
@@ -43,10 +57,10 @@ export default function Navbar() {
         }
       }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [pathname]);
+  }, [pathname, lastScrollY, menuOpen]);
 
   const handleLogout = async () => {
     await logout();
@@ -61,7 +75,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={styles.navbar}>
+    <nav className={`${styles.navbar} ${!isVisible ? styles.hidden : ''}`}>
       <div className={styles.inner}>
         {/* Logo */}
         <Link href="/" className={styles.logo} onClick={handleLogoClick}>

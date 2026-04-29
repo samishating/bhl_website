@@ -48,8 +48,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (bio !== undefined) user.bio = bio;
     if (avatar !== undefined) user.avatar = avatar;
+    const oldDivisions = [...(user.divisions || [])];
+
     if (divisions !== undefined) {
-      const oldDivisions = user.divisions || [];
       user.divisions = divisions;
 
       // Award XP and badges for new divisions
@@ -80,7 +81,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // Sync division stats for any affected divisions
     if (divisions !== undefined) {
       const { syncDivisionStats } = await import('@/lib/leader-sync');
-      const affectedDivs = [...new Set([...(divisions || []), ...(user.divisions || [])])];
+      const affectedDivs = [...new Set([...(divisions || []), ...oldDivisions])];
       for (const divId of affectedDivs) {
         await syncDivisionStats(divId);
       }

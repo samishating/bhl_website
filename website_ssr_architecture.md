@@ -23,8 +23,8 @@ The BHL platform uses a multi-layered rendering approach. Public-facing pages ar
 *   **Tag**: `stats` (Purged on major updates).
 
 ### C. Division Pages (`/divisions/[slug]`)
-*   **Strategy**: Long-Term ISR (`revalidate = 300`).
-*   **Behavior**: These pages are cached for 5 minutes. They are proactively revalidated whenever a leaderboard change occurs for that specific division.
+*   **Strategy**: Pure Dynamic SSR (`revalidate = 0`).
+*   **Behavior**: These pages render fresh on every request. This ensures that when a user clicks 'join' or 'leave', the member count and leadership stats are updated instantly within seconds.
 
 ### D. User Dashboard & Private Areas
 *   **Strategy**: Pure Dynamic SSR (`revalidate = 0`).
@@ -55,7 +55,7 @@ The system uses a **Targeted Invalidation** model to maintain accuracy:
 | Action | Rendering Path | DB Impact |
 | :--- | :--- | :--- |
 | **Browsing Home** | ISR (60s) | Extremely Low |
-| **Viewing Divisions** | ISR (300s) | Extremely Low |
+| **Viewing Divisions** | Pure SSR | Medium |
 | **Checking Stats** | Dynamic API (60s Cache) | Low |
 | **XP Claim / Profile** | Direct API | Medium |
 

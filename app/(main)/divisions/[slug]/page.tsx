@@ -5,7 +5,7 @@ import { Challenge } from '@/models/Challenge';
 import mongoose from 'mongoose';
 import styles from './page.module.css';
 
-export const revalidate = 300; // ISR: 5 minutes
+export const revalidate = 0; // Pure SSR: Instant updates for highly competitive divisions
 
 const DIVISIONS = ['gaming', 'music', 'sport', 'content'];
 

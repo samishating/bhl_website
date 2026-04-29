@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
+import { unstable_cache } from 'next/cache';
 
-export async function GET(req: NextRequest) {
-  try {
+const getCachedLeaderboard = unstable_cache(
+  async (division: string | null) => {
     await connectDB();
-    const { searchParams } = new URL(req.url);
-    const division = searchParams.get('division');
-
     const query = division && division !== 'all' ? { divisions: division } : {};
     const sortField = division && division !== 'all' ? `divisionXp.${division}` : 'xp';
     
-    const users = await User.find(query)
+    return User.find(query)
       .select('username avatar xp level divisionXp divisions badges')
       .sort({ [sortField]: -1 })
-      .limit(50);
+      .limit(50)
+      .lean();
+  },
+  ['leaderboard-data'],
+  { tags: ['leaderboard', 'global-stats'], revalidate: 60 }
+);
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const division = searchParams.get('division');
+
+    const users = await getCachedLeaderboard(division);
 
     return NextResponse.json({ users });
   } catch (err) {
@@ -22,3 +32,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
+

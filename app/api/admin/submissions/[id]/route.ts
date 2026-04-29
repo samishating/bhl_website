@@ -5,6 +5,8 @@ import { User } from '@/models/User';
 import { Challenge } from '@/models/Challenge';
 import { getUserFromRequest } from '@/lib/auth';
 import { calculateLevel, BADGES } from '@/lib/xp';
+import { revalidateTag } from 'next/cache';
+
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -71,6 +73,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
       }
 
+      revalidateTag('global-stats', 'page');
       return NextResponse.json({ submission, message: wasApproved ? 'Submission revoked' : 'Submission rejected' });
     }
 
@@ -110,6 +113,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         await user.save();
       }
 
+      revalidateTag('global-stats', 'page');
       return NextResponse.json({ submission, message: 'Submission approved and XP awarded' });
     }
 

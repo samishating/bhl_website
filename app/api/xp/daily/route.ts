@@ -3,6 +3,8 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { getUserFromRequest } from '@/lib/auth';
 import { XP_ACTIONS, calculateLevel } from '@/lib/xp';
+import { revalidateTag } from 'next/cache';
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,6 +28,8 @@ export async function POST(req: NextRequest) {
     user.level = calculateLevel(user.xp);
     user.lastLogin = today;
     await user.save();
+
+    revalidateTag('global-stats', 'page');
 
     return NextResponse.json({ message: `+${XP_ACTIONS.DAILY_LOGIN} XP claimed!`, xp: user.xp, level: user.level, gained: XP_ACTIONS.DAILY_LOGIN });
   } catch (err) {

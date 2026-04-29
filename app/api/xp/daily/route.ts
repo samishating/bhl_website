@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { getUserFromRequest } from '@/lib/auth';
 import { XP_ACTIONS, calculateLevel } from '@/lib/xp';
+import { publishRealtimeUpdate } from '@/lib/realtime-updates';
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +35,13 @@ export async function POST(req: NextRequest) {
         await syncDivisionStats(divId);
       }
     }
+
+    publishRealtimeUpdate({
+      type: 'division-xp-update',
+      reason: 'daily-xp-claimed',
+      userId: String(user._id),
+      divisions: user.divisions || [],
+    });
 
     return NextResponse.json({ message: `+${XP_ACTIONS.DAILY_LOGIN} XP claimed!`, xp: user.xp, level: user.level, gained: XP_ACTIONS.DAILY_LOGIN });
   } catch (err) {

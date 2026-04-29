@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { getUserFromRequest } from '@/lib/auth';
 import { calculateLevel, getDivisionBadge, XP_ACTIONS } from '@/lib/xp';
+import { publishRealtimeUpdate } from '@/lib/realtime-updates';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -85,6 +86,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       for (const divId of affectedDivs) {
         await syncDivisionStats(divId);
       }
+
+      publishRealtimeUpdate({
+        type: 'division-xp-update',
+        reason: 'user-divisions-updated',
+        userId: id,
+        divisions: affectedDivs,
+      });
     }
 
     const updated = await User.findById(id).select('-password');

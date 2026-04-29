@@ -5,6 +5,7 @@ import { User } from '@/models/User';
 import { Challenge } from '@/models/Challenge';
 import { getUserFromRequest, verifyAdmin } from '@/lib/auth';
 import { calculateLevel, BADGES } from '@/lib/xp';
+import { publishRealtimeUpdate } from '@/lib/realtime-updates';
 
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -65,6 +66,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       const { syncDivisionStats } = await import('@/lib/leader-sync');
       await syncDivisionStats((submission.challengeId as any).division);
 
+      publishRealtimeUpdate({
+        type: 'division-xp-update',
+        reason: wasApproved ? 'submission-revoked' : 'submission-rejected',
+        userId: String(submission.userId),
+        divisions: [(submission.challengeId as any).division].filter(Boolean),
+      });
+
       return NextResponse.json({ submission, message: wasApproved ? 'Submission revoked' : 'Submission rejected' });
     }
 
@@ -106,6 +114,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         // Sync division stats
         const { syncDivisionStats } = await import('@/lib/leader-sync');
         await syncDivisionStats(submission.challengeId.division);
+
+        publishRealtimeUpdate({
+          type: 'division-xp-update',
+          reason: 'submission-approved',
+          userId: String(submission.userId),
+          divisions: [submission.challengeId.division].filter(Boolean),
+        });
       }
 
       return NextResponse.json({ submission, message: 'Submission approved and XP awarded' });

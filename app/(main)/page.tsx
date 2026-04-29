@@ -8,7 +8,7 @@ import { connectDB } from '@/lib/db';
 import { Challenge } from '@/models/Challenge';
 import styles from './page.module.css';
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 0; // Pure SSR: Always fresh
 
 async function getInitialChallenges() {
   await connectDB();

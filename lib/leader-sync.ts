@@ -1,7 +1,7 @@
 import { connectDB } from './db';
 import { User } from '@/models/User';
 import { DivisionStat } from '@/models/DivisionStat';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 
 export async function syncDivisionStats(divisionId: string) {
   try {
@@ -34,7 +34,6 @@ export async function syncDivisionStats(divisionId: string) {
     );
 
     console.log(`Synced stats for division: ${divisionId}`);
-    revalidateTag('stats', 'stats');
     revalidatePath('/', 'layout');
   } catch (error) {
     console.error(`Failed to sync stats for division ${divisionId}:`, error);

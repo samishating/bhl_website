@@ -42,8 +42,7 @@ export default function Footer() {
             <h4>Join</h4>
             <ul>
               <li><Link href="/register">Create Account</Link></li>
-              <li><Link href="/join">Apply to BHL</Link></li>
-              <li><Link href="/about">About Us</Link></li>
+              <li><Link href="/apply">Apply to BHL</Link></li>
             </ul>
           </div>
         </div>

@@ -13,7 +13,7 @@ const navLinks = [
   { href: '/#leaderboard', label: 'Leaderboard' },
   { href: '/#challenges', label: 'Challenges' },
   { href: '/merch', label: 'Merch' },
-  { href: '/about', label: 'About' },
+  { href: '/apply', label: 'Apply to Us' },
   { href: '/coming-soon', label: 'Coming Soon' },
 ];
 

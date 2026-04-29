@@ -53,8 +53,8 @@ export default async function HomePage() {
               <a href="/register" className="btn btn-primary btn-lg" id="home-cta-join-btn">
                 Create Account — It's Free
               </a>
-              <a href="/about" className="btn btn-ghost btn-lg" id="home-cta-about-btn">
-                Learn More
+              <a href="/apply" className="btn btn-ghost btn-lg" id="home-cta-apply-btn">
+                Apply to Join
               </a>
             </div>
           </div>

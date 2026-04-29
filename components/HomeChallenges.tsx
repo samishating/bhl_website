@@ -10,11 +10,11 @@ const divTagClass: Record<string, string> = {
 };
 const DIVS = ['global', 'gaming', 'music', 'sport', 'content'];
 
-export default function HomeChallenges() {
+export default function HomeChallenges({ initialChallenges }: { initialChallenges?: any[] }) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [challenges, setChallenges] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [challenges, setChallenges] = useState<any[]>(initialChallenges || []);
+  const [loading, setLoading] = useState(initialChallenges ? false : true);
   const [filter, setFilter] = useState('global');
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
@@ -36,7 +36,11 @@ export default function HomeChallenges() {
 
   useEffect(() => {
     setHasMounted(true);
-    loadChallenges();
+    if (filter === 'global' && initialChallenges) {
+      // Skip initial load as we have ISR data
+    } else {
+      loadChallenges();
+    }
   }, [filter]);
 
   useEffect(() => {

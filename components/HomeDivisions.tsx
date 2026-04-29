@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -30,13 +31,13 @@ const divisions = [
   },
 ];
 
-export default function HomeDivisions() {
+export default function HomeDivisions({ initialStats }: { initialStats?: any }) {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
-  const [divisionCounts, setDivisionCounts] = useState<Record<string, number> | null>(null);
+  const [divisionCounts, setDivisionCounts] = useState<Record<string, number> | null>(initialStats?.divisionCounts || null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [leaders, setLeaders] = useState<Record<string, any> | null>(null);
+  const [leaders, setLeaders] = useState<Record<string, any> | null>(initialStats?.divisionLeaders || null);
   const [hasMounted, setHasMounted] = useState(false);
 
   // Scroll-reveal refs
@@ -56,7 +57,9 @@ export default function HomeDivisions() {
 
   useEffect(() => {
     setHasMounted(true);
-    fetchStats();
+    if (!initialStats) {
+      fetchStats();
+    }
   }, []);
 
   const handleToggleDivision = async (divId: string) => {
@@ -124,7 +127,7 @@ export default function HomeDivisions() {
                 id={`home-division-${div.id}`}
               >
                 <div className={styles.divCardGlow} />
-                <div className={styles.divCardTop}>
+                <Link href={`/divisions/${div.id}`} className={styles.divCardTop}>
                   {div.image ? (
                     <img src={div.image} alt={div.label} style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
                   ) : (
@@ -138,7 +141,7 @@ export default function HomeDivisions() {
                         : <span className="skeleton" style={{ display: 'inline-block', width: '70px', height: '14px' }} />}
                     </div>
                   </div>
-                </div>
+                </Link>
 
                 <p className={styles.divDesc}>{div.desc}</p>
 

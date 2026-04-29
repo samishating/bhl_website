@@ -2,8 +2,6 @@ import { getGlobalStats } from '@/lib/stats';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import styles from './page.module.css';
 
-export const revalidate = 60; // Revalidate every minute
-
 export default async function AboutPage() {
   const stats = await getGlobalStats();
   const { totalMembers, completedChallenges, divisionLeaders } = stats;

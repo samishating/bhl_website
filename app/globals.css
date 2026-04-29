@@ -345,7 +345,6 @@ select.form-input option { background: var(--bg-card); }
     opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: calc(var(--reveal-i, 0) * 80ms);
-  will-change: opacity, transform;
 }
 
 [data-reveal].reveal-in {
@@ -408,6 +407,16 @@ select.form-input option { background: var(--bg-card); }
   border-radius: 50%;
   animation: spin 0.6s linear infinite reverse;
   opacity: 0.6;
+}
+
+/* White spinner variant for buttons */
+.btn .spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: #FFFFFF;
+}
+.btn .spinner::after {
+  border-color: rgba(255, 255, 255, 0.05);
+  border-bottom-color: #FFFFFF;
 }
 
 /* ─── Toast ──────────────────────────────────────────── */

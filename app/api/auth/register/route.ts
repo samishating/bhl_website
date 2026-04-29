@@ -4,7 +4,6 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { signToken } from '@/lib/auth';
 import { XP_ACTIONS, calculateLevel, BADGES } from '@/lib/xp';
-import { revalidateTag } from 'next/cache';
 
 
 export async function POST(req: NextRequest) {
@@ -57,10 +56,6 @@ export async function POST(req: NextRequest) {
     }, { status: 201 });
 
     response.cookies.set('bhl_token', token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
-    
-    // Revalidate global stats on new registration
-    revalidateTag('global-stats', 'page');
-    
     return response;
   } catch (err) {
     console.error(err);

@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectDB } from '@/lib/db';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest, verifyAdmin } from '@/lib/auth';
 import { Application } from '@/models/Application';
 
 import { Order } from '@/models/Order';
 
 export async function GET(req: NextRequest) {
   try {
-    const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') {
+    const admin = await verifyAdmin(req);
+    if (!admin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

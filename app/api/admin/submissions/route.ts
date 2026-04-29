@@ -2,25 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Submission } from '@/models/Submission';
 import { User } from '@/models/User';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest, verifyAdmin } from '@/lib/auth';
 import '@/models/User';
 import '@/models/Challenge';
 
 export async function GET(req: NextRequest) {
   try {
-    const payload = getUserFromRequest(req);
-    let isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin';
-
-    // Fallback for old tokens
-    if (!isAuthorized && payload?.userId) {
-      await connectDB();
-      const user = await User.findById(payload.userId);
-      if (user && (user.role === 'admin' || user.role === 'superadmin')) {
-        isAuthorized = true;
-      }
-    }
-
-    if (!isAuthorized) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifyAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     

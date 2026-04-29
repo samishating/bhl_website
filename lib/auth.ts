@@ -60,3 +60,38 @@ export const getServerUser = cache(async () => {
     return null;
   }
 });
+
+// Admin Authorization with Live DB Check (avoids stale cookie role bug)
+import { unstable_cache } from 'next/cache';
+
+const getCachedUserRole = unstable_cache(
+  async (userId: string) => {
+    await connectDB();
+    const user = await User.findById(userId).select('role').lean();
+    return user?.role || 'user';
+  },
+  ['user-role-check'],
+  { revalidate: 30, tags: ['auth'] } // Cache role for 30s
+);
+
+export async function verifyAdmin(req: NextRequest): Promise<{ userId: string; role: string } | null> {
+  const payload = getUserFromRequest(req);
+  if (!payload) return null;
+
+  // Fetch the LATEST role from DB to avoid stale cookie issues
+  const currentRole = await getCachedUserRole(payload.userId);
+  
+  if (currentRole === 'admin' || currentRole === 'superadmin') {
+    return { userId: payload.userId, role: currentRole };
+  }
+
+  return null;
+}
+
+export async function verifySuperAdmin(req: NextRequest): Promise<{ userId: string; role: string } | null> {
+  const admin = await verifyAdmin(req);
+  if (admin?.role === 'superadmin') {
+    return admin;
+  }
+  return null;
+}

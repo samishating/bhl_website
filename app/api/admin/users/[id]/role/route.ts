@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest, verifySuperAdmin } from '@/lib/auth';
+import { revalidateTag } from 'next/cache';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const payload = getUserFromRequest(req);
-    // Only superadmins can change roles
-    if (payload?.role !== 'superadmin') {
+    const admin = await verifySuperAdmin(req);
+    if (!admin) {
       return NextResponse.json({ error: 'Forbidden. Superadmin only.' }, { status: 403 });
     }
 
@@ -25,12 +25,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     // Prevent demoting/changing other superadmins or oneself
-    if (targetUser.role === 'superadmin' || targetUser._id.toString() === payload.userId) {
+    if (targetUser.role === 'superadmin' || targetUser._id.toString() === admin.userId) {
       return NextResponse.json({ error: 'Cannot change role of a superadmin or yourself' }, { status: 403 });
     }
 
     targetUser.role = role;
     await targetUser.save();
+
+    // Clear auth cache to apply changes immediately
+    revalidateTag('auth', 'auth');
 
     return NextResponse.json({ message: `User role updated to ${role}`, user: targetUser });
   } catch (err) {

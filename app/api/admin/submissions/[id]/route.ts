@@ -3,25 +3,14 @@ import { connectDB } from '@/lib/db';
 import { Submission } from '@/models/Submission';
 import { User } from '@/models/User';
 import { Challenge } from '@/models/Challenge';
-import { getUserFromRequest } from '@/lib/auth';
+import { getUserFromRequest, verifyAdmin } from '@/lib/auth';
 import { calculateLevel, BADGES } from '@/lib/xp';
 
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const payload = getUserFromRequest(req);
-    let isAuthorized = payload?.role === 'admin' || payload?.role === 'superadmin';
-
-    // Fallback for old tokens
-    if (!isAuthorized && payload?.userId) {
-      await connectDB();
-      const user = await User.findById(payload.userId);
-      if (user && (user.role === 'admin' || user.role === 'superadmin')) {
-        isAuthorized = true;
-      }
-    }
-
-    if (!isAuthorized) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifyAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { id } = await params;
@@ -31,8 +20,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
-    if (action === 'revoke' && payload?.role !== 'superadmin') {
-      const dbUser = await User.findById(payload?.userId);
+    if (action === 'revoke' && admin.role !== 'superadmin') {
+      const dbUser = await User.findById(admin.userId);
       if (!dbUser || dbUser.role !== 'superadmin') {
         return NextResponse.json({ error: 'Only superadmins can revoke' }, { status: 403 });
       }
@@ -52,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (action === 'reject' || (action === 'revoke' && submission.status === 'approved')) {
       const wasApproved = submission.status === 'approved';
       submission.status = 'rejected';
-      submission.processedBy = payload!.userId as any;
+      submission.processedBy = admin.userId as any;
       submission.processedAt = new Date();
       await submission.save();
 
@@ -81,7 +70,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (action === 'approve') {
       submission.status = 'approved';
-      submission.processedBy = payload!.userId as any;
+      submission.processedBy = admin.userId as any;
       submission.processedAt = new Date();
       await submission.save();
 

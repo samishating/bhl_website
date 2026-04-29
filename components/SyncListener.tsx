@@ -24,9 +24,9 @@ export default function SyncListener() {
         if (!res.ok) return;
 
         const data = await res.json();
-        if (lastUpdatedRef.current !== null && data.lastUpdated > lastUpdatedRef.current) {
-          triggerRefresh();
-        }
+        // Unconditionally trigger full refresh every 10s to keep user profile, 
+        // challenges, and division stats completely synced as requested.
+        triggerRefresh();
 
         lastUpdatedRef.current = data.lastUpdated;
       } catch {

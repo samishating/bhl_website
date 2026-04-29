@@ -141,7 +141,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
               {user?.xp || 0} / {REQUIRED_XP} XP
             </span>
           </div>
-          <Link href="/join" className="btn btn-primary">
+          <Link href="/#challenges" className="btn btn-primary">
             Earn XP Now ⚔️
           </Link>
         </div>

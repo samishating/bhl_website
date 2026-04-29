@@ -101,7 +101,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
                   <div className="section-tag" style={{ fontSize: '0.7rem' }}>{c.xpReward} XP</div>
                   <h4 style={{ marginBottom: '0.5rem' }}>{c.title}</h4>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>{c.description}</p>
-                  <a href={`/join`} className="btn btn-primary btn-sm">Join Challenge</a>
+                  <a href="/#challenges" className="btn btn-primary btn-sm">Join Challenge</a>
                 </div>
               ))
             )}

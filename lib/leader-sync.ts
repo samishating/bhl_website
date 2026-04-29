@@ -33,7 +33,7 @@ export async function syncDivisionStats(divisionId: string) {
       { upsert: true, new: true }
     );
 
-    revalidateTag('stats');
+    revalidateTag('stats', 'stats');
   } catch (error) {
     console.error(`Failed to sync stats for division ${divisionId}:`, error);
   }

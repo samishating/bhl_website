@@ -14,7 +14,7 @@ interface HeroClientProps {
 export default function HeroClient({ statsData }: HeroClientProps) {
   return (
     <section className={styles.hero}>
-      <div className={styles.heroContent}>
+      <div className={`${styles.heroContent} animate-fade-up`}>
         <div className={styles.heroPill}>
           <span className={styles.pillDot} />
           Brotherhood Legacy Platform

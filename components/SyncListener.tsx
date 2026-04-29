@@ -25,11 +25,12 @@ export default function SyncListener() {
 
         const data = await res.json();
         
-        // Always dispatch stats-refresh to update client state (AuthContext, Cards, Leaderboard)
-        window.dispatchEvent(new Event('stats-refresh'));
-
-        // Only do a heavy server-side rebuild if the actual global stats changed
+        // Only trigger updates if the database timestamp has moved forward
         if (lastUpdatedRef.current !== null && data.lastUpdated > lastUpdatedRef.current) {
+          // Dispatch event to update client-side components (Leaderboard, Cards)
+          window.dispatchEvent(new Event('stats-refresh'));
+
+          // Trigger Next.js router.refresh() for server-side components (Hero stats)
           if (!refreshTimeoutRef.current) {
             refreshTimeoutRef.current = setTimeout(() => {
               refreshTimeoutRef.current = null;

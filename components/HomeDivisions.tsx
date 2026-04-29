@@ -131,24 +131,17 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
               >
                 <div className={styles.divCardGlow} />
                 <div className={styles.divCardTop}>
-                  <div className={styles.iconWrapper}>
-                    {div.image ? (
-                      <img 
-                        src={div.image} 
-                        alt={div.label} 
-                        onLoad={(e) => (e.currentTarget.parentElement!.style.background = 'transparent')}
-                        style={{ width: '44px', height: '44px', objectFit: 'contain' }} 
-                      />
-                    ) : (
-                      <span className={styles.divIcon}>{div.icon}</span>
-                    )}
-                  </div>
+                  {div.image ? (
+                    <img src={div.image} alt={div.label} style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
+                  ) : (
+                    <span className={styles.divIcon}>{div.icon}</span>
+                  )}
                   <div>
                     <div className={`division-tag ${div.tag}`}>{div.label}</div>
                     <div className={styles.memberCount}>
                       {count !== undefined
                         ? <><AnimatedCounter value={count} /> members</>
-                        : <span className="skeleton" style={{ display: 'inline-block', width: '70px', height: '14px' }} />}
+                        : '...'}
                     </div>
                   </div>
                 </div>

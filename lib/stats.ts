@@ -29,12 +29,17 @@ export const getGlobalStats = unstable_cache(
         }
       });
 
+      const lastUpdated = divisionStats.length > 0 
+        ? Math.max(...divisionStats.map((s: any) => new Date(s.lastUpdated || Date.now()).getTime()))
+        : Date.now();
+
       return {
         totalMembers,
         totalXP,
         divisionCounts,
         completedChallenges,
-        divisionLeaders
+        divisionLeaders,
+        lastUpdated
       };
     } catch (error) {
       console.error('Failed to fetch global stats:', error);
@@ -48,7 +53,7 @@ export const getGlobalStats = unstable_cache(
     }
   },
   ['global-stats-low-freq'],
-  { revalidate: 3600 } // Revalidate every hour
+  { revalidate: 3600, tags: ['stats'] } // Revalidate every hour or via tag
 );
 
 

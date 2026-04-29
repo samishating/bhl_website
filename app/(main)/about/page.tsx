@@ -4,7 +4,7 @@ import styles from './page.module.css';
 
 export default async function AboutPage() {
   const stats = await getGlobalStats();
-  const { totalMembers, completedChallenges, divisionLeaders } = stats;
+  const { totalMembers, completedChallenges, divisionLeaders } = stats as any;
 
   const divisions = [
     { id: 'gaming', role: 'Gaming Division Lead', defaultIcon: '🎮' },

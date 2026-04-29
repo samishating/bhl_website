@@ -5,6 +5,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { getServerUser } from '@/lib/auth';
+import SyncListener from '@/components/SyncListener';
 
 const rajdhani = Rajdhani({
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <CartProvider>
             <ToastProvider>
+              <SyncListener />
               {children}
             </ToastProvider>
           </CartProvider>

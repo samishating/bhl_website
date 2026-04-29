@@ -97,7 +97,7 @@ export default function Navbar() {
               <Link
                 href={link.href}
                 className={`${styles.navLink} ${
-                  (link.href.startsWith('/#') && activeSection === link.href.slice(2)) || 
+                  (pathname === '/' && link.href.startsWith('/#') && activeSection === link.href.slice(2)) || 
                   (!link.href.startsWith('/#') && pathname === link.href) 
                   ? styles.active : ''
                 }`}

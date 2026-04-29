@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AnimatedCounter from './AnimatedCounter';
 import styles from '@/app/(main)/page.module.css';
@@ -11,7 +11,34 @@ interface HeroClientProps {
   };
 }
 
-export default function HeroClient({ statsData }: HeroClientProps) {
+export default function HeroClient({ statsData: initialStats }: HeroClientProps) {
+  const [stats, setStats] = useState(initialStats);
+
+  useEffect(() => {
+    // Fetch live stats on mount to bypass ISR cache
+    const fetchLiveStats = async () => {
+      try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+          const data = await res.json();
+          setStats({
+            members: data.totalMembers,
+            xp: data.totalXP
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch live stats:', err);
+      }
+    };
+    
+    fetchLiveStats();
+
+    // Listen for global refresh events (e.g. after joining a division)
+    const handleRefresh = () => fetchLiveStats();
+    window.addEventListener('stats-refresh', handleRefresh);
+    return () => window.removeEventListener('stats-refresh', handleRefresh);
+  }, []);
+
   return (
     <section className={styles.hero}>
       <div className={`${styles.heroContent} animate-fade-up`}>
@@ -40,7 +67,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
         <div className={styles.statsRow}>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              {typeof statsData.members === 'number' ? <AnimatedCounter value={statsData.members} suffix="+" /> : '...'}
+              {typeof stats.members === 'number' ? <AnimatedCounter value={stats.members} suffix="+" /> : '...'}
             </span>
             <span className={styles.statLabel}>Members</span>
           </div>
@@ -50,7 +77,7 @@ export default function HeroClient({ statsData }: HeroClientProps) {
           </div>
           <div className={styles.stat}>
             <span className={styles.statValue}>
-              {typeof statsData.xp === 'number' ? <AnimatedCounter value={statsData.xp} suffix="+" /> : '...'}
+              {typeof stats.xp === 'number' ? <AnimatedCounter value={stats.xp} suffix="+" /> : '...'}
             </span>
             <span className={styles.statLabel}>XP Earned</span>
           </div>

@@ -5,7 +5,7 @@ import { Challenge } from '@/models/Challenge';
 import mongoose from 'mongoose';
 import styles from './page.module.css';
 
-export const revalidate = 3600; // ISR: 1 hour
+export const revalidate = 300; // ISR: 5 minutes
 
 const DIVISIONS = ['gaming', 'music', 'sport', 'content'];
 

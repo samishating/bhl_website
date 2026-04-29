@@ -1,7 +1,45 @@
-.tabs { display: flex; gap: 0.5rem; margin-bottom: 2.5rem; flex-wrap: wrap; justify-content: center; }
-.tab { padding: 0.5rem 1.25rem; border-radius: 999px; font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); cursor: pointer; transition: all 0.2s ease; }
-.tab:hover { border-color: var(--border-hover); color: white; }
-.tabActive { background: rgba(255,0,0,0.1); border-color: var(--brand-red); color: var(--brand-red); }
+.tabs { 
+  display: flex; 
+  width: fit-content;
+  margin: 0 auto 4rem auto;
+  gap: 0; 
+  padding: 4px;
+  background: rgba(14, 13, 13, 0.8);
+  border: 1px solid rgba(255, 0, 0, 0.15);
+  border-radius: 100px;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+.indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  background: var(--brand-red);
+  border-radius: 100px;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5), 0 0 40px rgba(255, 0, 0, 0.2);
+  z-index: 1;
+}
+.tab { 
+  padding: 0.6rem 1.75rem; 
+  border-radius: 100px; 
+  font-family: 'Rajdhani', sans-serif; 
+  font-weight: 700; 
+  font-size: 0.9rem; 
+  letter-spacing: 0.08em; 
+  text-transform: uppercase; 
+  background: transparent; 
+  border: none; 
+  color: var(--text-secondary); 
+  cursor: pointer; 
+  transition: color 0.3s ease; 
+  position: relative;
+  z-index: 2;
+}
+.tab:hover { color: white; }
+.tabActive { 
+  color: white !important; 
+}
 
 /* Podium */
 .podium { display: flex; align-items: flex-end; justify-content: center; gap: 1rem; margin-bottom: 3rem; height: 200px; }

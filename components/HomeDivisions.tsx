@@ -37,6 +37,7 @@ export default function HomeDivisions() {
   const [divisionCounts, setDivisionCounts] = useState<Record<string, number> | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [leaders, setLeaders] = useState<Record<string, any> | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
 
   // Scroll-reveal refs
   const headerRef = useScrollReveal<HTMLDivElement>();
@@ -54,6 +55,7 @@ export default function HomeDivisions() {
   };
 
   useEffect(() => {
+    setHasMounted(true);
     fetchStats();
   }, []);
 
@@ -179,7 +181,7 @@ export default function HomeDivisions() {
 
                 <button
                   onClick={() => handleToggleDivision(div.id)}
-                  disabled={isProcessing || divisionCounts === null}
+                  disabled={hasMounted ? (isProcessing || divisionCounts === null) : undefined}
                   className={`${styles.joinBtn} ${isMember ? styles.leaveBtn : ''}`}
                 >
                   {isProcessing || divisionCounts === null

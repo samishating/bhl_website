@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import styles from './Navbar.module.css';
@@ -22,6 +22,31 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+
+  useEffect(() => {
+    // Scroll spy logic
+    const handleScroll = () => {
+      if (pathname !== '/') return;
+      const sections = ['hero', 'divisions', 'leaderboard', 'challenges'];
+      const scrollPos = window.scrollY + 100;
+
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el) {
+          const offset = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= offset && scrollPos < offset + height) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -56,7 +81,11 @@ export default function Navbar() {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className={`${styles.navLink} ${pathname === link.href ? styles.active : ''}`}
+                className={`${styles.navLink} ${
+                  (link.href.startsWith('/#') && activeSection === link.href.slice(2)) || 
+                  (!link.href.startsWith('/#') && pathname === link.href) 
+                  ? styles.active : ''
+                }`}
               >
                 {link.label}
               </Link>

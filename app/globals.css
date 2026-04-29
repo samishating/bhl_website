@@ -390,11 +390,24 @@ select.form-input option { background: var(--bg-card); }
 
 /* ─── Spinner ────────────────────────────────────────── */
 .spinner {
-  width: 24px; height: 24px;
-  border: 2px solid rgba(255, 0, 0, 0.2);
-  border-top-color: var(--brand-red);
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 0, 0, 0.1);
+  border-top: 3px solid var(--brand-red);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  position: relative;
+  animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+}
+.spinner::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2px solid rgba(255, 0, 0, 0.05);
+  border-bottom: 2px solid var(--brand-red);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite reverse;
+  opacity: 0.6;
 }
 
 /* ─── Toast ──────────────────────────────────────────── */

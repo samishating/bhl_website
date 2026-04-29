@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -20,6 +20,9 @@ export default function HomeChallenges() {
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
   const [confirmJoin, setConfirmJoin] = useState<any | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const tabsRef = useRef<HTMLDivElement>(null);
   const headerRef = useScrollReveal<HTMLDivElement>();
 
   const contentRef = useScrollReveal<HTMLDivElement>(true);
@@ -32,13 +35,21 @@ export default function HomeChallenges() {
   };
 
   useEffect(() => {
+    setHasMounted(true);
     loadChallenges();
   }, [filter]);
 
   useEffect(() => {
-    window.addEventListener('stats-refresh', loadChallenges);
-    return () => window.removeEventListener('stats-refresh', loadChallenges);
-  }, [filter]);
+    if (hasMounted) {
+      const activeTab = tabsRef.current?.querySelector(`.${styles.tabActive}`) as HTMLElement;
+      if (activeTab) {
+        setIndicatorStyle({
+          left: activeTab.offsetLeft,
+          width: activeTab.offsetWidth
+        });
+      }
+    }
+  }, [filter, hasMounted]);
 
   useEffect(() => {
     if (user) {
@@ -158,17 +169,28 @@ export default function HomeChallenges() {
 
         <div ref={contentRef}>
 
-        <div className={styles.tabs} style={{ justifyContent: 'center', marginBottom: '4rem' }}>
+        <div className={styles.tabs} ref={tabsRef}>
+          {hasMounted && (
+            <div 
+              className={styles.indicator} 
+              style={{ 
+                left: `${indicatorStyle.left}px`, 
+                width: `${indicatorStyle.width}px` 
+              }} 
+            />
+          )}
           {DIVS.map(d => (
             <button key={d} className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
               onClick={() => setFilter(d)}>
-              {d === 'global' ? '🌐 Global' : d.charAt(0).toUpperCase() + d.slice(1)}
+              {d === 'global' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
             </button>
           ))}
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem' }}><div className="spinner" /></div>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}>
+            <div className="spinner" />
+          </div>
         ) : (
           <div className={styles.grid}>
             {challenges.map(c => {
@@ -206,7 +228,7 @@ export default function HomeChallenges() {
                       <button
                         className="btn btn-primary"
                         onClick={() => handleSubmit(c._id)}
-                        disabled={submitting === c._id}
+                        disabled={hasMounted ? submitting === c._id : undefined}
                       >
                         {submitting === c._id ? <span className="spinner" /> : 'Submit'}
                       </button>

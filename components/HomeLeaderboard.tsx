@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getLevelTitle, BADGES } from '@/lib/xp';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -15,6 +15,9 @@ export default function HomeLeaderboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const tabsRef = useRef<HTMLDivElement>(null);
   const headerRef = useScrollReveal<HTMLDivElement>();
   const contentRef = useScrollReveal<HTMLDivElement>();
 
@@ -26,8 +29,21 @@ export default function HomeLeaderboard() {
   };
 
   useEffect(() => {
+    setHasMounted(true);
     loadLeaderboard();
   }, [filter]);
+
+  useEffect(() => {
+    if (hasMounted) {
+      const activeTab = tabsRef.current?.querySelector(`.${styles.tabActive}`) as HTMLElement;
+      if (activeTab) {
+        setIndicatorStyle({
+          left: activeTab.offsetLeft,
+          width: activeTab.offsetWidth
+        });
+      }
+    }
+  }, [filter, hasMounted]);
 
   useEffect(() => {
     window.addEventListener('stats-refresh', loadLeaderboard);
@@ -47,14 +63,23 @@ export default function HomeLeaderboard() {
 
         {/* Tabs */}
         <div ref={contentRef}>
-        <div data-reveal className={styles.tabs} style={{ justifyContent: 'center', marginBottom: '4rem' }}>
+        <div data-reveal className={styles.tabs} ref={tabsRef}>
+          {hasMounted && (
+            <div 
+              className={styles.indicator} 
+              style={{ 
+                left: `${indicatorStyle.left}px`, 
+                width: `${indicatorStyle.width}px` 
+              }} 
+            />
+          )}
           {DIVISIONS.map(d => (
             <button
               key={d}
               className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
               onClick={() => setFilter(d)}
             >
-              {d === 'all' ? '🌐 Global' : d.charAt(0).toUpperCase() + d.slice(1)}
+              {d === 'all' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
             </button>
           ))}
         </div>
@@ -85,7 +110,9 @@ export default function HomeLeaderboard() {
         {/* Table */}
         <div className={styles.tableSection}>
           {loading ? (
-            <div className={styles.loadingState}><div className="spinner" /></div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}>
+              <div className="spinner" />
+            </div>
           ) : users.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>No members yet in this division.</div>
           ) : (

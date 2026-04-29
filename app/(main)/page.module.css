@@ -33,9 +33,34 @@
 .statLabel { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* ─── Divisions ─────────────────────────────────────── */
-.sectionHeader { text-align: center; margin-bottom: 3.5rem; }
-.sectionDesc { color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.75rem; max-width: 600px; margin-left: auto; margin-right: auto; }
-.divisionsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+.divisionsSection {
+  min-height: calc(100vh - 80px);
+  padding: clamp(32px, 5vh, 64px) clamp(24px, 4vw, 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sectionHeader { text-align: center; margin-bottom: clamp(1.5rem, 3vh, 2.5rem); }
+.sectionDesc { 
+  color: var(--text-secondary); 
+  font-size: clamp(0.9rem, 1vw, 1rem); 
+  margin-top: 0.5rem; 
+  max-width: 600px; 
+  margin-left: auto; 
+  margin-right: auto; 
+}
+
+.divisionsGrid { 
+  display: grid; 
+  grid-template-columns: repeat(2, minmax(300px, 420px)); 
+  gap: clamp(16px, 2vh, 24px); 
+  justify-content: center;
+  align-items: stretch;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
 
 .divCard {
   position: relative; 
@@ -43,8 +68,8 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-lg); 
-  padding: 2.5rem;
-  display: flex; flex-direction: column; gap: 1.5rem; 
+  padding: clamp(16px, 2vh, 24px);
+  display: flex; flex-direction: column; gap: clamp(0.75rem, 1.5vh, 1.25rem); 
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInUp 0.6s ease both;
@@ -58,11 +83,8 @@
 
 .divCard:hover { 
   border-color: var(--div-color); 
-  transform: translateY(-8px); 
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.4),
-    0 0 24px color-mix(in srgb, var(--div-color) 30%, transparent),
-    inset 0 0 15px color-mix(in srgb, var(--div-color) 8%, transparent);
+  transform: translateY(-5px); 
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
 .divCardGlow { 
@@ -72,63 +94,57 @@
 }
 .divCard:hover .divCardGlow { opacity: 1; }
 
-.divCardTop { display: flex; align-items: center; gap: 1.25rem; }
-.divIcon { font-size: 2.5rem; }
-.memberCount { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem; }
-.divDesc { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; flex: 1; }
+.divCardTop { display: flex; align-items: center; gap: 0.85rem; }
+.divIcon { font-size: clamp(1.5rem, 2vh, 2rem); }
+.memberCount { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.1rem; }
+.divDesc { color: var(--text-secondary); font-size: clamp(0.8rem, 0.85vw, 0.85rem); line-height: 1.45; flex: 1; }
 
 .divPerks {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
-  padding: 1.25rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-md);
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding: 0.65rem 0.85rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-md);
 }
-.perk { font-size: 0.85rem; color: var(--text-secondary); display: flex; gap: 0.6rem; align-items: center; }
+.perk { font-size: 0.75rem; color: var(--text-secondary); display: flex; gap: 0.5rem; align-items: center; }
 .perkBullet { color: var(--div-color); font-weight: bold; }
 
 .divLeader {
   background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-md); padding: 1rem 1.25rem;
+  border-radius: var(--radius-md); padding: 0.65rem 0.85rem;
 }
-.perksTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; }
-.leaderRow { display: flex; align-items: center; gap: 1rem; }
+.perksTitle { 
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; 
+  font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; 
+  color: var(--text-muted); margin-bottom: 0.35rem; 
+}
+.leaderRow { display: flex; align-items: center; gap: 0.75rem; }
 .leaderInfo { display: flex; flex-direction: column; }
-.leaderName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-primary); }
-.leaderXp { font-size: 0.8rem; color: var(--div-color); font-weight: 600; }
+.leaderName { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+.leaderXp { font-size: 0.7rem; color: var(--div-color); font-weight: 600; }
 
 /* Join/Leave Buttons — per-division logo color */
 .joinBtn {
-  width: 100%; padding: 1.1rem;
+  width: 100%; height: 44px; min-height: 44px;
   background: var(--div-color);
   color: #0a0a0a;
   border-radius: var(--radius-md);
-  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem;
-  text-transform: uppercase; letter-spacing: 0.15em;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem;
+  text-transform: uppercase; letter-spacing: 0.12em;
   transition: all 0.3s ease;
   border: 1px solid transparent;
-  box-shadow: 0 4px 15px color-mix(in srgb, var(--div-color) 30%, transparent);
   display: flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
 .joinBtn:hover:not(:disabled) {
-  filter: brightness(1.15);
-  box-shadow: 0 0 28px color-mix(in srgb, var(--div-color) 60%, transparent);
-  transform: scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--div-color) 40%, transparent);
 }
 .joinBtn:disabled {
   cursor: not-allowed;
   opacity: 0.45;
   filter: grayscale(0.4);
-  box-shadow: none;
-  transform: none;
 }
 .leaveBtn {
   background: color-mix(in srgb, var(--div-color) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--div-color) 50%, transparent);
   color: var(--div-color);
-  box-shadow: none;
-}
-.leaveBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--div-color) 15%, transparent);
-  border-color: var(--div-color);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--div-color) 25%, transparent);
 }
 
 /* ─── XP / CTA ─────────────────────────────────────── */

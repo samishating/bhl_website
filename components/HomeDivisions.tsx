@@ -100,7 +100,7 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
   };
 
   return (
-    <section id="divisions" className="content-band">
+    <section id="divisions" className={styles.divisionsSection}>
       <div className="content-inner">
         {/* Header — own reveal element */}
         <div ref={headerRef}>

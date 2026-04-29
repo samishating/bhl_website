@@ -389,34 +389,38 @@ select.form-input option { background: var(--bg-card); }
 
 /* ─── Spinner ────────────────────────────────────────── */
 .spinner {
-  width: 44px;
-  height: 44px;
-  border: 3px solid rgba(255, 0, 0, 0.1);
-  border-top: 3px solid var(--brand-red);
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid #FFFFFF;
   border-radius: 50%;
   position: relative;
-  animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
-}
-.spinner::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border: 2px solid rgba(255, 0, 0, 0.05);
-  border-bottom: 2px solid var(--brand-red);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite reverse;
-  opacity: 0.6;
+  animation: spin 0.8s linear infinite;
 }
 
-/* White spinner variant for buttons */
+/* Base Button Stability */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 46px;
+  height: 46px;
+  padding: 0 1.75rem;
+  border-radius: var(--radius-sm);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* White spinner variant for buttons is now default for .spinner */
 .btn .spinner {
   border-color: rgba(255, 255, 255, 0.1);
   border-top-color: #FFFFFF;
-}
-.btn .spinner::after {
-  border-color: rgba(255, 255, 255, 0.05);
-  border-bottom-color: #FFFFFF;
 }
 
 /* ─── Toast ──────────────────────────────────────────── */

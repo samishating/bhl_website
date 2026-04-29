@@ -36,12 +36,13 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
 
   useEffect(() => {
     setHasMounted(true);
-    if (filter === 'global' && initialChallenges) {
-      // Skip initial load as we have ISR data
+    // Only skip initial load if we have non-empty ISR data for the global filter
+    if (filter === 'global' && initialChallenges && initialChallenges.length > 0) {
+      // Keep ISR data
     } else {
       loadChallenges();
     }
-  }, [filter]);
+  }, [filter, initialChallenges]);
 
   useEffect(() => {
     if (hasMounted) {
@@ -56,6 +57,11 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   }, [filter, hasMounted]);
 
   useEffect(() => {
+    const handleRefresh = () => {
+      loadChallenges();
+    };
+    window.addEventListener('stats-refresh', handleRefresh);
+    
     if (user) {
       fetch(`/api/submissions?userId=${user.id}`)
         .then(r => r.json())
@@ -70,6 +76,8 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           }
         });
     }
+    
+    return () => window.removeEventListener('stats-refresh', handleRefresh);
   }, [user]);
 
   const handleSubmit = async (challengeId: string) => {

@@ -72,6 +72,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
       }
 
+      // Sync division stats
+      const { syncDivisionStats } = await import('@/lib/leader-sync');
+      await syncDivisionStats((submission.challengeId as any).division);
+
       return NextResponse.json({ submission, message: wasApproved ? 'Submission revoked' : 'Submission rejected' });
     }
 
@@ -109,6 +113,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           user.badges.push(BADGES.RANKED.id);
         }
         await user.save();
+
+        // Sync division stats
+        const { syncDivisionStats } = await import('@/lib/leader-sync');
+        await syncDivisionStats(submission.challengeId.division);
       }
 
       return NextResponse.json({ submission, message: 'Submission approved and XP awarded' });

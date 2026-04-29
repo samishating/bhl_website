@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { Challenge } from '@/models/Challenge';
+import mongoose from 'mongoose';
 import styles from './page.module.css';
 
 export const revalidate = 3600; // ISR: 1 hour
@@ -14,15 +15,15 @@ export async function generateStaticParams() {
 
 async function getDivisionData(slug: string) {
   await connectDB();
+  const { syncDivisionStats } = await import('@/lib/leader-sync');
   
-  // Get leader
-  const leader = await User.findOne({ divisions: slug })
-    .sort({ [`divisionXp.${slug}`]: -1, xp: -1 })
-    .select('username avatar xp divisionXp')
-    .lean();
-
-  // Get active members count
-  const memberCount = await User.countDocuments({ divisions: slug });
+  let stat = await mongoose.connection.db!.collection('divisionstats').findOne({ divisionId: slug });
+  
+  if (!stat) {
+    // If not found, sync it now (first time)
+    await syncDivisionStats(slug);
+    stat = await mongoose.connection.db!.collection('divisionstats').findOne({ divisionId: slug });
+  }
 
   // Get active challenges
   const challenges = await Challenge.find({ division: slug, active: true })
@@ -31,15 +32,12 @@ async function getDivisionData(slug: string) {
     .lean();
 
   return {
-    leader: leader ? {
-      username: (leader as any).username,
-      avatar: (leader as any).avatar,
-      xp: (leader as any).divisionXp?.[slug] || 0
-    } : null,
-    memberCount,
+    leader: stat?.leader || null,
+    memberCount: stat?.memberCount || 0,
     challenges: JSON.parse(JSON.stringify(challenges))
   };
 }
+
 
 export default async function DivisionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

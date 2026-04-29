@@ -77,6 +77,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await user.save();
     
+    // Sync division stats for any affected divisions
+    if (divisions !== undefined) {
+      const { syncDivisionStats } = await import('@/lib/leader-sync');
+      const affectedDivs = [...new Set([...(divisions || []), ...(user.divisions || [])])];
+      for (const divId of affectedDivs) {
+        await syncDivisionStats(divId);
+      }
+    }
+
     const updated = await User.findById(id).select('-password');
     return NextResponse.json({ user: updated });
   } catch (err) {

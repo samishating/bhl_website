@@ -27,6 +27,14 @@ export async function POST(req: NextRequest) {
     user.lastLogin = today;
     await user.save();
 
+    // Sync division stats if user belongs to any
+    if (user.divisions && user.divisions.length > 0) {
+      const { syncDivisionStats } = await import('@/lib/leader-sync');
+      for (const divId of user.divisions) {
+        await syncDivisionStats(divId);
+      }
+    }
+
     return NextResponse.json({ message: `+${XP_ACTIONS.DAILY_LOGIN} XP claimed!`, xp: user.xp, level: user.level, gained: XP_ACTIONS.DAILY_LOGIN });
   } catch (err) {
     console.error(err);

@@ -55,7 +55,39 @@ export const getGlobalStats = unstable_cache(
   ['global-stats'],
   { revalidate: 60, tags: ['stats'] }
 );
+export const getLiveStats = async () => {
+  try {
+    await connectDB();
+    const divisionStats = await mongoose.connection.db!.collection('divisionstats').find({}).toArray();
+    
+    const divisionCounts = { gaming: 0, music: 0, sport: 0, content: 0 };
+    const divisionLeaders: Record<string, any> = {};
 
+    divisionStats.forEach((stat: any) => {
+      if (divisionCounts[stat.divisionId as keyof typeof divisionCounts] !== undefined) {
+        divisionCounts[stat.divisionId as keyof typeof divisionCounts] = stat.memberCount || 0;
+      }
+      if (stat.leader) {
+        divisionLeaders[stat.divisionId] = stat.leader;
+      }
+    });
 
+    const lastUpdated = divisionStats.length > 0 
+      ? Math.max(...divisionStats.map((s: any) => new Date(s.lastUpdated || Date.now()).getTime()))
+      : Date.now();
 
+    // Get the cached global stats for the heavy numbers (members, xp)
+    const globalStats = await getGlobalStats();
+
+    return {
+      ...globalStats,
+      divisionCounts,
+      divisionLeaders,
+      lastUpdated
+    };
+  } catch (error) {
+    console.error('Failed to fetch live stats:', error);
+    return getGlobalStats();
+  }
+};
 

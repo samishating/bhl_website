@@ -67,58 +67,60 @@ export default function AdminChallengesPage() {
   };
 
   return (
-    <div className="animate-fade-up">
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Challenges</h1>
-          <p className={styles.sub}>{challenges.length} active challenges available</p>
-        </div>
-        <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
-          + Create Challenge
-        </button>
-      </div>
-
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '10rem' }}>
-          <div className="loader-visual" style={{ margin: '0 auto' }}>
-            <div className="loader-arc" />
-            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+    <>
+      <div className="animate-fade-up">
+        <div className={styles.header}>
+          <div>
+            <h1 className={styles.title}>Challenges</h1>
+            <p className={styles.sub}>{challenges.length} active challenges available</p>
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Challenges...</p>
+          <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
+            + Create Challenge
+          </button>
         </div>
-      ) : challenges.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No active challenges available</p>
-        </div>
-      ) : (
-        <div className={styles.challengeGrid}>
-          {challenges.map(c => (
-            <div key={c._id} className={styles.challengeCard}>
-              <div className={styles.cardHeader}>
-                <div className={styles.challengeTitle}>{c.title}</div>
-                <div className={styles.xpBadge}>+{c.xpReward} XP</div>
-              </div>
-              
-              <div className={styles.challengeDesc}>{c.description}</div>
 
-              <div className={styles.cardFooter}>
-                <div className={styles.divisionLabel} style={{ '--dot-color': dotColors[c.division] || '#fff' } as any}>
-                  <span className={styles.divisionDot} />
-                  {c.division} Division
-                  {c.allowRepeats && <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>(Repeatable)</span>}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '10rem' }}>
+            <div className="loader-visual" style={{ margin: '0 auto' }}>
+              <div className="loader-arc" />
+              <img src="/brand/logo.webp" alt="" className="loader-logo" />
+            </div>
+            <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Challenges...</p>
+          </div>
+        ) : challenges.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
+            <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No active challenges available</p>
+          </div>
+        ) : (
+          <div className={styles.challengeGrid}>
+            {challenges.map(c => (
+              <div key={c._id} className={styles.challengeCard}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.challengeTitle}>{c.title}</div>
+                  <div className={styles.xpBadge}>+{c.xpReward} XP</div>
                 </div>
                 
-                <div className={styles.cardActions}>
-                  <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(c)} title="Edit Params">⚙️</button>
-                  {user?.role === 'superadmin' && (
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)} title="Purge Mission">🗑️</button>
-                  )}
+                <div className={styles.challengeDesc}>{c.description}</div>
+
+                <div className={styles.cardFooter}>
+                  <div className={styles.divisionLabel} style={{ '--dot-color': dotColors[c.division] || '#fff' } as any}>
+                    <span className={styles.divisionDot} />
+                    {c.division} Division
+                    {c.allowRepeats && <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>(Repeatable)</span>}
+                  </div>
+                  
+                  <div className={styles.cardActions}>
+                    <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(c)} title="Edit Params">⚙️</button>
+                    {user?.role === 'superadmin' && (
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)} title="Purge Mission">🗑️</button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
 
       {showForm && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
@@ -173,6 +175,6 @@ export default function AdminChallengesPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -76,109 +76,111 @@ export default function AdminSubmissionsPage() {
   const isSuper = currentUser?.role === 'superadmin';
 
   return (
-    <div className="animate-fade-up">
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Challenge Submissions</h1>
-          <p className={styles.sub}>Review submissions and award XP</p>
-        </div>
-      </div>
-
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '10rem' }}>
-          <div className="loader-visual" style={{ margin: '0 auto' }}>
-            <div className="loader-arc" />
-            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+    <>
+      <div className="animate-fade-up">
+        <div className={styles.header}>
+          <div>
+            <h1 className={styles.title}>Challenge Submissions</h1>
+            <p className={styles.sub}>Review submissions and award XP</p>
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Submissions...</p>
         </div>
-      ) : submissions.length === 0 ? (
-        <div className={styles.empty}>
-          <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🛡️</span>
-          <h3 className={styles.title} style={{ fontSize: '1.2rem' }}>All Caught Up</h3>
-          <p style={{ color: 'var(--text-muted)' }}>No pending submissions to review.</p>
-        </div>
-      ) : (
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Challenge Details</th>
-                <th>Status</th>
-                <th>Proof</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {submissions.map(sub => (
-                <tr key={sub._id}>
-                  <td>
-                    <a href={`/users/${sub.userId?._id}`} className={styles.userCell}>
-                      <div className={styles.avatar}>
-                        {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="" /> : sub.userId?.username?.[0]?.toUpperCase()}
-                      </div>
-                      <span style={{ fontWeight: 600, color: 'white' }}>{sub.userId?.username}</span>
-                    </a>
-                  </td>
-                  <td>
-                    <div style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{sub.challengeId?.title}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--brand-red)', fontWeight: 800 }}>+{sub.challengeId?.xpReward} XP</div>
-                  </td>
-                  <td>
-                    <span className={`${styles.statusBadge} ${styles[sub.status]}`}>
-                      {sub.status}
-                    </span>
-                    {sub.processedBy && (
-                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-                        Reviewed by: {sub.processedBy.username}
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className={styles.proofLink}>
-                      VIEW PROOF ↗
-                    </a>
-                  </td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                    {new Date(sub.createdAt).toLocaleDateString()}
-                  </td>
-                  <td>
-                    {sub.status === 'pending' ? (
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleAction(sub._id, 'approve')}
-                          disabled={processingId === sub._id}
-                        >
-                          {processingId === sub._id ? '…' : 'APPROVE'}
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleAction(sub._id, 'reject')}
-                          disabled={processingId === sub._id}
-                        >
-                          REJECT
-                        </button>
-                      </div>
-                    ) : sub.status === 'approved' && isSuper ? (
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => handleAction(sub._id, 'revoke')}
-                        disabled={processingId === sub._id}
-                        style={{ color: 'var(--brand-red)', borderColor: 'rgba(255,0,0,0.2)' }}
-                      >
-                        {processingId === sub._id ? '…' : '⚠️ REVOKE'}
-                      </button>
-                    ) : <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Reviewed</span>}
-                  </td>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '10rem' }}>
+            <div className="loader-visual" style={{ margin: '0 auto' }}>
+              <div className="loader-arc" />
+              <img src="/brand/logo.webp" alt="" className="loader-logo" />
+            </div>
+            <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Submissions...</p>
+          </div>
+        ) : submissions.length === 0 ? (
+          <div className={styles.empty}>
+            <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🛡️</span>
+            <h3 className={styles.title} style={{ fontSize: '1.2rem' }}>All Caught Up</h3>
+            <p style={{ color: 'var(--text-muted)' }}>No pending submissions to review.</p>
+          </div>
+        ) : (
+          <div className={styles.tableContainer}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Challenge Details</th>
+                  <th>Status</th>
+                  <th>Proof</th>
+                  <th>Date</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {submissions.map(sub => (
+                  <tr key={sub._id}>
+                    <td>
+                      <a href={`/users/${sub.userId?._id}`} className={styles.userCell}>
+                        <div className={styles.avatar}>
+                          {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="" /> : sub.userId?.username?.[0]?.toUpperCase()}
+                        </div>
+                        <span style={{ fontWeight: 600, color: 'white' }}>{sub.userId?.username}</span>
+                      </a>
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{sub.challengeId?.title}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--brand-red)', fontWeight: 800 }}>+{sub.challengeId?.xpReward} XP</div>
+                    </td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[sub.status]}`}>
+                        {sub.status}
+                      </span>
+                      {sub.processedBy && (
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                          Reviewed by: {sub.processedBy.username}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className={styles.proofLink}>
+                        VIEW PROOF ↗
+                      </a>
+                    </td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                      {new Date(sub.createdAt).toLocaleDateString()}
+                    </td>
+                    <td>
+                      {sub.status === 'pending' ? (
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleAction(sub._id, 'approve')}
+                            disabled={processingId === sub._id}
+                          >
+                            {processingId === sub._id ? '…' : 'APPROVE'}
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleAction(sub._id, 'reject')}
+                            disabled={processingId === sub._id}
+                          >
+                            REJECT
+                          </button>
+                        </div>
+                      ) : sub.status === 'approved' && isSuper ? (
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleAction(sub._id, 'revoke')}
+                          disabled={processingId === sub._id}
+                          style={{ color: 'var(--brand-red)', borderColor: 'rgba(255,0,0,0.2)' }}
+                        >
+                          {processingId === sub._id ? '…' : '⚠️ REVOKE'}
+                        </button>
+                      ) : <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Reviewed</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       <ConfirmationModal
         isOpen={!!confirmData}
@@ -189,6 +191,6 @@ export default function AdminSubmissionsPage() {
         onConfirm={() => confirmData && executeAction(confirmData.id, confirmData.action)}
         onCancel={() => setConfirmData(null)}
       />
-    </div>
+    </>
   );
 }

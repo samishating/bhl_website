@@ -92,63 +92,115 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="animate-fade-up">
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Product Management</h1>
-          <p className={styles.sub}>Manage and configure platform products</p>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <input 
-              className="form-input" 
-              placeholder="Search products..." 
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ width: '240px', minHeight: '42px' }}
-            />
+    <>
+      <div className="animate-fade-up">
+        <div className={styles.header}>
+          <div>
+            <h1 className={styles.title}>Product Management</h1>
+            <p className={styles.sub}>Manage and configure platform products</p>
           </div>
-          <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
-            + Create Product
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <input 
+                className="form-input" 
+                placeholder="Search products..." 
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{ width: '240px', minHeight: '42px' }}
+              />
+            </div>
+            <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
+              + Create Product
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className={styles.statsRow}>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Total Products</div>
-          <div className={styles.statValue}><span>#</span>{stats.total}</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Exclusive Drops</div>
-          <div className={styles.statValue}>
-            <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
-            {stats.conqueror}
+        <div className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <div className={styles.statLabel}>Total Products</div>
+            <div className={styles.statValue}><span>#</span>{stats.total}</div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statLabel}>Exclusive Drops</div>
+            <div className={styles.statValue}>
+              <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
+              {stats.conqueror}
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statLabel}>Low Stock Alert</div>
+            <div className={styles.statValue} style={{ color: stats.lowStock > 0 ? 'var(--brand-red)' : 'white' }}>
+              <span>⚠️</span>{stats.lowStock}
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statLabel}>Inventory Value</div>
+            <div className={styles.statValue}><span>$</span>{stats.totalValue.toLocaleString()}</div>
           </div>
         </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Low Stock Alert</div>
-          <div className={styles.statValue} style={{ color: stats.lowStock > 0 ? 'var(--brand-red)' : 'white' }}>
-            <span>⚠️</span>{stats.lowStock}
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '10rem' }}>
+            <div className="loader-visual" style={{ margin: '0 auto' }}>
+              <div className="loader-arc" />
+              <img src="/brand/logo.webp" alt="" className="loader-logo" />
+            </div>
+            <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Products...</p>
           </div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statLabel}>Inventory Value</div>
-          <div className={styles.statValue}><span>$</span>{stats.totalValue.toLocaleString()}</div>
-        </div>
+        ) : (
+          <div className={styles.productGrid}>
+            {filteredProducts.map(p => (
+              <div key={p._id} className={styles.productCard}>
+                <div className={styles.imageWrapper}>
+                  <img src={p.image} alt={p.name} />
+                  {p.isLimitedDrop && (
+                    <div className={`${styles.cardBadge} ${styles.conquerorBadge}`}>
+                      <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} />
+                      Premium
+                    </div>
+                  )}
+                  <div className={styles.cardBadge} style={{ top: 'auto', bottom: '1rem' }}>
+                    {p.category}
+                  </div>
+                </div>
+                
+                <div className={styles.cardContent}>
+                  <div className={styles.cardName}>{p.name}</div>
+                  <div className={`${styles.cardStock} ${p.stock < 10 ? styles.lowStock : ''}`}>
+                    <span className="status-dot" style={{ background: p.stock < 10 ? 'var(--brand-red)' : '#22c55e' }} />
+                    {p.stock} units in reserve
+                  </div>
+                  
+                  <div className={styles.cardFooter}>
+                    <div className={styles.cardPrice}>${p.price.toFixed(2)}</div>
+                    <div className={styles.cardActions}>
+                      <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(p)} title="Edit Config">⚙️</button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p._id)} title="Purge Asset">🗑️</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {filteredProducts.length === 0 && (
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
+                <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No products found</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {showForm && (
-        <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
+          <div className="modal-content" style={{ maxWidth: '1000px' }}>
+            <div className="modal-header">
               <h3 className={styles.title} style={{ fontSize: '1.2rem', marginBottom: 0 }}>
                 {editingId ? 'Edit Product' : 'Create New Product'}
               </h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}>✕</button>
             </div>
             
-            <div className={styles.modalBody}>
+            <div className="modal-body">
               <form onSubmit={handleCreate} className={styles.splitForm}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div className="form-group">
@@ -250,56 +302,6 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
-
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '10rem' }}>
-          <div className="loader-visual" style={{ margin: '0 auto' }}>
-            <div className="loader-arc" />
-            <img src="/brand/logo.webp" alt="" className="loader-logo" />
-          </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Products...</p>
-        </div>
-      ) : (
-        <div className={styles.productGrid}>
-          {filteredProducts.map(p => (
-            <div key={p._id} className={styles.productCard}>
-              <div className={styles.imageWrapper}>
-                <img src={p.image} alt={p.name} />
-                {p.isLimitedDrop && (
-                  <div className={`${styles.cardBadge} ${styles.conquerorBadge}`}>
-                    <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} />
-                    Premium
-                  </div>
-                )}
-                <div className={styles.cardBadge} style={{ top: 'auto', bottom: '1rem' }}>
-                  {p.category}
-                </div>
-              </div>
-              
-              <div className={styles.cardContent}>
-                <div className={styles.cardName}>{p.name}</div>
-                <div className={`${styles.cardStock} ${p.stock < 10 ? styles.lowStock : ''}`}>
-                  <span className="status-dot" style={{ background: p.stock < 10 ? 'var(--brand-red)' : '#22c55e' }} />
-                  {p.stock} units in reserve
-                </div>
-                
-                <div className={styles.cardFooter}>
-                  <div className={styles.cardPrice}>${p.price.toFixed(2)}</div>
-                  <div className={styles.cardActions}>
-                    <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(p)} title="Edit Config">⚙️</button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p._id)} title="Purge Asset">🗑️</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          {filteredProducts.length === 0 && (
-            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
-              <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No products found</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    </>
   );
 }

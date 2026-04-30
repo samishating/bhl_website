@@ -108,8 +108,8 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
           <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px' }}>
             <Link href="/" className={styles.sidebarLogo}>
-              <img src="/brand/logo.webp" alt="BHL ADMIN" style={{ height: '32px', objectFit: 'contain' }} />
-              <span>BHL ADMIN</span>
+              <img src="/brand/logo.webp" alt="BHL" style={{ height: '32px', objectFit: 'contain' }} />
+              <span>BHL <span style={{ color: '#FFFDBA' }}>ADMIN</span></span>
             </Link>
             
             <button 

@@ -106,78 +106,80 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="animate-fade-up">
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>User Management</h1>
-          <p className={styles.sub}>Manage and configure platform users and roles</p>
-        </div>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <input
-            className="form-input"
-            style={{ width: '320px', minHeight: '46px' }}
-            placeholder="Search personnel by intel..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '10rem' }}>
-          <div className="loader-visual" style={{ margin: '0 auto' }}>
-            <div className="loader-arc" />
-            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+    <>
+      <div className="animate-fade-up">
+        <div className={styles.header}>
+          <div>
+            <h1 className={styles.title}>User Management</h1>
+            <p className={styles.sub}>Manage and configure platform users and roles</p>
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning users...</p>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <input
+              className="form-input"
+              style={{ width: '320px', minHeight: '46px' }}
+              placeholder="Search personnel by intel..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
         </div>
-      ) : (
-        <div className={styles.userGrid}>
-          {filtered.map(u => (
-            <div key={u._id} className={styles.userCard}>
-              <div className={styles.userHeader}>
-                <div className={styles.avatarWrapper}>
-                  <div className={styles.avatar}>
-                    {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                  </div>
-                  <div className={styles.levelBadge}>Lv.{u.level}</div>
-                </div>
-                <div className={styles.userInfo}>
-                  <div className={styles.username}>{u.username}</div>
-                  <div className={styles.email}>{u.email}</div>
-                  <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
-                    {u.role === 'superadmin' ? 'Superadmin' : u.role === 'admin' ? 'Admin' : 'User'}
-                  </div>
-                </div>
-              </div>
 
-              <div className={styles.statsRow}>
-                <div className={styles.statItem}>
-                  <div className={styles.statLabel}>User XP</div>
-                  <div className={styles.statValue}>{u.xp.toLocaleString()}</div>
-                </div>
-                <div className={styles.statItem}>
-                  <div className={styles.statLabel}>Joined</div>
-                  <div className={styles.statValue}>{new Date(u.createdAt).toLocaleDateString()}</div>
-                </div>
-              </div>
-
-              <div className={styles.divisionsRow}>
-                {u.divisions.length > 0 ? u.divisions.map(d => (
-                  <span key={d} className={`division-tag ${divTagClass[d] || ''}`}>{d}</span>
-                )) : <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>No Division Assigned</span>}
-              </div>
-
-              <div className={styles.cardActions}>
-                <a href={`/users/${u._id}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>View Profile</a>
-                {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
-                  <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Edit</button>
-                )}
-              </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '10rem' }}>
+            <div className="loader-visual" style={{ margin: '0 auto' }}>
+              <div className="loader-arc" />
+              <img src="/brand/logo.webp" alt="" className="loader-logo" />
             </div>
-          ))}
-        </div>
-      )}
+            <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning users...</p>
+          </div>
+        ) : (
+          <div className={styles.userGrid}>
+            {filtered.map(u => (
+              <div key={u._id} className={styles.userCard}>
+                <div className={styles.userHeader}>
+                  <div className={styles.avatarWrapper}>
+                    <div className={styles.avatar}>
+                      {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                    </div>
+                    <div className={styles.levelBadge}>Lv.{u.level}</div>
+                  </div>
+                  <div className={styles.userInfo}>
+                    <div className={styles.username}>{u.username}</div>
+                    <div className={styles.email}>{u.email}</div>
+                    <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
+                      {u.role === 'superadmin' ? 'Superadmin' : u.role === 'admin' ? 'Admin' : 'User'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.statsRow}>
+                  <div className={styles.statItem}>
+                    <div className={styles.statLabel}>User XP</div>
+                    <div className={styles.statValue}>{u.xp.toLocaleString()}</div>
+                  </div>
+                  <div className={styles.statItem}>
+                    <div className={styles.statLabel}>Joined</div>
+                    <div className={styles.statValue}>{new Date(u.createdAt).toLocaleDateString()}</div>
+                  </div>
+                </div>
+
+                <div className={styles.divisionsRow}>
+                  {u.divisions.length > 0 ? u.divisions.map(d => (
+                    <span key={d} className={`division-tag ${divTagClass[d] || ''}`}>{d}</span>
+                  )) : <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>No Division Assigned</span>}
+                </div>
+
+                <div className={styles.cardActions}>
+                  <a href={`/users/${u._id}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>View Profile</a>
+                  {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
+                    <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Edit</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {editingUser && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
@@ -190,12 +192,25 @@ export default function AdminUsersPage() {
             <div className="modal-body">
               <div className="form-group">
                 <label className="form-label">Username</label>
-                <input className="form-input" value={editForm.username} onChange={e => setEditForm({ ...editForm, username: e.target.value })} />
+                <input 
+                  className="form-input" 
+                  value={editForm.username} 
+                  onChange={e => setEditForm({ ...editForm, username: e.target.value })} 
+                  readOnly={currentUser?.role !== 'superadmin'}
+                  style={{ opacity: currentUser?.role !== 'superadmin' ? 0.6 : 1, cursor: currentUser?.role !== 'superadmin' ? 'not-allowed' : 'text' }}
+                />
+                {currentUser?.role !== 'superadmin' && <p style={{ fontSize: '0.7rem', color: 'var(--brand-red)', marginTop: '0.2rem' }}>Only superadmins can change usernames</p>}
               </div>
 
               <div className="form-group">
                 <label className="form-label">User Role</label>
-                <select className="form-input" value={editForm.role} onChange={e => setEditForm({ ...editForm, role: e.target.value })}>
+                <select 
+                  className="form-input" 
+                  value={editForm.role} 
+                  onChange={e => setEditForm({ ...editForm, role: e.target.value })}
+                  disabled={currentUser?.role !== 'superadmin'}
+                  style={{ opacity: currentUser?.role !== 'superadmin' ? 0.6 : 1, cursor: currentUser?.role !== 'superadmin' ? 'not-allowed' : 'pointer' }}
+                >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -226,6 +241,7 @@ export default function AdminUsersPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
+

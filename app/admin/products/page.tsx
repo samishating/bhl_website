@@ -83,105 +83,138 @@ export default function AdminProductsPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className={styles.createForm}>
-          <h3 className={styles.formTitle}>Add Product</h3>
-          <div className={styles.formRow}>
-            <div className="form-group" style={{ flex: 2 }}>
-              <label className="form-label">Name *</label>
-              <input required className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Product name" id="product-name" />
+        <div className={styles.splitLayout}>
+          <form onSubmit={handleCreate} className={styles.createForm}>
+            <h3 className={styles.formTitle}>{editingId ? 'Edit Product' : 'Add Product'}</h3>
+            
+            <div className={styles.formRow}>
+              <div className="form-group" style={{ flex: 2 }}>
+                <label className="form-label">Name *</label>
+                <input required className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Product name" id="product-name" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Price ($)</label>
+                <input type="number" step="0.01" className="form-input" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} id="product-price" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Stock</label>
+                <input type="number" className="form-input" value={form.stock} onChange={e => setForm(p => ({ ...p, stock: Number(e.target.value) }))} id="product-stock" />
+              </div>
             </div>
+
+            <div className={styles.formRow}>
+              <div className="form-group">
+                <label className="form-label">Category</label>
+                <select className="form-input" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} id="product-category">
+                  {['apparel', 'accessories', 'gear', 'digital'].map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="form-group" style={{ flex: 2 }}>
+                <label className="form-label">Featured Image URL</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
+                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {uploading ? '⌛' : '📂'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setUploading(true);
+                      try {
+                        const compressed = await compressImage(file);
+                        const formData = new FormData();
+                        formData.append('file', compressed, 'image.jpg');
+                        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.url) {
+                          setForm(p => ({ ...p, image: data.url }));
+                          showToast('Image uploaded!', 'success');
+                        } else {
+                          showToast(`Upload failed: ${data.error}`, 'error');
+                        }
+                      } catch {
+                        showToast('Upload error', 'error');
+                      } finally {
+                        setUploading(false);
+                      }
+                    }} />
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div className="form-group">
-              <label className="form-label">Price ($)</label>
-              <input type="number" step="0.01" className="form-input" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} id="product-price" />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Stock</label>
-              <input type="number" className="form-input" value={form.stock} onChange={e => setForm(p => ({ ...p, stock: Number(e.target.value) }))} id="product-stock" />
-            </div>
-          </div>
-          <div className={styles.formRow}>
-            <div className="form-group">
-              <label className="form-label">Category</label>
-              <select className="form-input" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} id="product-category">
-                {['apparel', 'accessories', 'gear', 'digital'].map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div className="form-group" style={{ flex: 2 }}>
-              <label className="form-label">Image URL or Upload</label>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
-                <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  {uploading ? '⌛ Uploading...' : '📂 Upload'}
-                  <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
+              <label className="form-label">Secondary Images</label>
+              <div className={styles.imageGrid}>
+                {form.images.map((img, idx) => (
+                  <div key={idx} className={styles.imageThumb}>
+                    <img src={img} alt="" />
+                    <button type="button" className={styles.removeImg} onClick={() => setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== idx) }))}>✕</button>
+                  </div>
+                ))}
+                
+                <label className={styles.uploadBox}>
+                  <span>{uploadingSecondary ? '⌛' : '+'}</span>
+                  <label>{uploadingSecondary ? 'Uploading' : 'Add Image'}</label>
+                  <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploadingSecondary} onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    setUploading(true);
+                    setUploadingSecondary(true);
                     try {
                       const compressed = await compressImage(file);
                       const formData = new FormData();
                       formData.append('file', compressed, 'image.jpg');
                       const res = await fetch('/api/upload', { method: 'POST', body: formData });
                       const data = await res.json();
-                      if (data.url) {
-                        setForm(p => ({ ...p, image: data.url }));
-                        showToast('Image uploaded!', 'success');
-                      } else {
-                        showToast(`Upload failed: ${data.error}`, 'error');
-                      }
-                    } catch {
-                      showToast('Upload error', 'error');
-                    } finally {
-                      setUploading(false);
-                    }
-
+                      if (data.url) setForm(f => ({ ...f, images: [...f.images, data.url] }));
+                      else showToast(`Upload failed: ${data.error}`, 'error');
+                    } catch { showToast('Upload error', 'error'); }
+                    finally { setUploadingSecondary(false); }
                   }} />
                 </label>
               </div>
             </div>
-          </div>
-          <div className={styles.formRow}>
-            <div className="form-group" style={{ flex: 1 }}>
-              <label className="form-label">Secondary Images</label>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-                {form.images.map((img, idx) => (
-                  <div key={idx} style={{ position: 'relative', width: '60px', height: '60px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button type="button" onClick={() => setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== idx) }))} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '10px', padding: '2px 4px' }}>✕</button>
-                  </div>
-                ))}
-              </div>
-              <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-block' }}>
-                {uploadingSecondary ? '⌛...' : '+ Add Image'}
-                <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploadingSecondary} onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  setUploadingSecondary(true);
-                  try {
-                    const compressed = await compressImage(file);
-                    const formData = new FormData();
-                    formData.append('file', compressed, 'image.jpg');
-                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.url) setForm(f => ({ ...f, images: [...f.images, data.url] }));
-                    else showToast(`Upload failed: ${data.error}`, 'error');
-                  } catch { showToast('Upload error', 'error'); }
-                  finally { setUploadingSecondary(false); }
-                }} />
+
+            <div className="form-group">
+              <label className="form-label">Description *</label>
+              <textarea required className="form-input" rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Product description…" id="product-desc" style={{ resize: 'vertical' }} />
+            </div>
+
+            <div className={styles.formRow}>
+              <label className={styles.checkLabel}>
+                <input type="checkbox" checked={form.isLimitedDrop} onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} id="product-limited" />
+                Conqueror Drop (40k XP) 🔥
               </label>
             </div>
+
+            <button type="submit" className="btn btn-primary" disabled={creating} id="product-submit-btn" style={{ marginTop: '1rem' }}>
+              {creating ? <span className="spinner" /> : editingId ? 'Update Product' : 'Add Product'}
+            </button>
+          </form>
+
+          <div className={styles.previewSection}>
+            <div className={styles.formTitle} style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Live Preview</div>
+            <div className={styles.previewCard}>
+              <img src={form.image || 'https://placehold.co/600x600/111/white?text=No+Image'} alt="" className={styles.previewImage} />
+              <div className={styles.previewInfo}>
+                <div className={styles.previewPrice}>${form.price.toFixed(2)}</div>
+                <div className={styles.previewName}>{form.name || 'Product Title'}</div>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                  {form.description || 'Description will appear here...'}
+                </p>
+                {form.images.length > 0 && (
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                    {form.images.slice(0, 4).map((img, i) => (
+                      <div key={i} style={{ width: '40px', height: '40px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                        <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ))}
+                    {form.images.length > 4 && <div style={{ fontSize: '0.7rem', alignSelf: 'center', color: 'var(--text-muted)' }}>+{form.images.length - 4}</div>}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label className="form-label">Description *</label>
-            <textarea required className="form-input" rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Product description…" id="product-desc" style={{ resize: 'vertical' }} />
-          </div>
-          <label className={styles.checkLabel}>
-            <input type="checkbox" checked={form.isLimitedDrop} onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} id="product-limited" />
-            Conqueror Drop (40k XP) 🔥
-          </label>
-          <button type="submit" className="btn btn-primary" disabled={creating} id="product-submit-btn">
-            {creating ? <span className="spinner" /> : editingId ? 'Update Product' : 'Add Product'}
-          </button>
-        </form>
+        </div>
       )}
 
       {loading ? (

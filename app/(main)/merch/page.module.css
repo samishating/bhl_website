@@ -121,8 +121,24 @@
 .stockStatus { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: #22c55e; text-transform: uppercase; font-size: 0.8rem; }
 .dropBadgeDetail { display: flex; align-items: center; gap: 0.5rem; color: var(--brand-red); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
-.locked { text-align: center; padding: 8rem 2rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-top: 2rem; }
-.lockedIcon { font-size: 4rem; margin-bottom: 2rem; }
+.locked { 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; 
+  padding: 8rem 2rem; 
+  background: var(--bg-card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  margin-top: 2rem; 
+}
+.lockedIcon { 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2rem; 
+}
 .lockedTitle { font-family: 'Rajdhani', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
 .lockedDesc { color: var(--text-secondary); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.6; }
 

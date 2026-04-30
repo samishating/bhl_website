@@ -36,50 +36,50 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {/* Toast Widget */}
       <div style={{
         position: 'fixed',
-        top: '2rem',
-        right: '2rem',
+        bottom: '2rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
         zIndex: 99999,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'column-reverse',
         gap: '0.6rem',
         pointerEvents: 'none',
+        alignItems: 'center',
       }}>
         {toasts.map(t => (
           <div
             key={t.id}
             style={{
-              background: 'var(--bg-card)',
+              background: 'rgba(26, 26, 26, 0.85)',
               border: `1px solid ${
-                t.type === 'success' ? 'var(--neon-green)' :
-                t.type === 'error' ? 'var(--brand-red)' :
-                t.type === 'warning' ? '#FFFDBA' :
-                'rgba(255,255,255,0.15)'
+                t.type === 'success' ? 'rgba(34, 197, 94, 0.5)' :
+                t.type === 'error' ? 'rgba(255, 0, 0, 0.5)' :
+                t.type === 'warning' ? 'rgba(255, 253, 186, 0.5)' :
+                'rgba(255, 255, 255, 0.15)'
               }`,
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.85rem 1.25rem',
-              fontSize: '0.9rem',
+              borderRadius: '999px', // Pill shape for bottom-center
+              padding: '0.65rem 1.5rem',
+              fontSize: '0.85rem',
               color: 'var(--text-primary)',
-              boxShadow: t.type === 'success'
-                ? '0 0 20px rgba(34,197,94,0.25)'
-                : t.type === 'error'
-                ? 'var(--glow-red)'
-                : '0 4px 24px rgba(0,0,0,0.5)',
-              backdropFilter: 'blur(12px)',
-              animation: 'fadeInUp 0.3s ease forwards',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), var(--glow-red)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              animation: 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               pointerEvents: 'auto',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.6rem',
-              minWidth: '220px',
-              maxWidth: '380px',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              minWidth: '280px',
+              textAlign: 'center',
             }}
           >
-            <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>
-              {t.type === 'success' ? '✅' :
-               t.type === 'error' ? '❌' :
-               t.type === 'warning' ? '⚠️' : 'ℹ️'}
+            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>
+              {t.type === 'success' ? '🛡️' :
+               t.type === 'error' ? '🚫' :
+               t.type === 'warning' ? '⚠️' : '🔔'}
             </span>
-            <span>{t.message}</span>
+            <span style={{ fontFamily: 'Rajdhani', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t.message}</span>
           </div>
         ))}
       </div>

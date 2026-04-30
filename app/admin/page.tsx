@@ -31,15 +31,15 @@ export default function AdminPage() {
   const statCards = [
     { label: 'Total Members', value: stats.users, icon: '/ICONS/USER.svg', color: '#FF0000' },
     { label: 'Active Challenges', value: stats.challenges, icon: '/ICONS/trophy_1.svg', color: '#FF4444' },
-    { label: 'Armory Assets', value: stats.products, icon: '/ICONS/PRODUCTS.svg', color: '#FFFDBA' },
+    { label: 'Total Products', value: stats.products, icon: '/ICONS/PRODUCTS.svg', color: '#FFFDBA' },
   ];
 
   return (
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Command Center</h1>
-          <p className={styles.sub}>High-level synchronization of brotherhood operations</p>
+          <h1 className={styles.title}>Admin Dashboard</h1>
+          <p className={styles.sub}>Manage platform users, products, and community data</p>
         </div>
       </div>
 
@@ -54,31 +54,31 @@ export default function AdminPage() {
       </div>
 
       <div className={styles.quickLinks}>
-        <h3 className={styles.sectionTitle}>Tactical Operations</h3>
+        <h3 className={styles.sectionTitle}>Management</h3>
         <div className={styles.qGrid}>
           <a href="/admin/users" className={styles.qCard}>
             <img src="/ICONS/USER.svg" alt="" />
-            Member Directory
+            User Management
           </a>
           <a href="/admin/challenges" className={styles.qCard}>
             <img src="/ICONS/trophy_1.svg" alt="" />
-            Combat Challenges
+            Challenges
           </a>
           <a href="/admin/submissions" className={styles.qCard}>
             <img src="/ICONS/INBOX.svg" alt="" />
-            Submission Inbox
+            Submissions
           </a>
           <a href="/admin/applications" className={styles.qCard}>
             <img src="/ICONS/INBOX.svg" alt="" />
-            Recruitment Desk
+            Applications
           </a>
           <a href="/admin/products" className={styles.qCard}>
             <img src="/ICONS/PRODUCTS.svg" alt="" />
-            Armory Management
+            Products
           </a>
           <a href="/admin/orders" className={styles.qCard}>
             <img src="/ICONS/LIST PRODUCTS.svg" alt="" />
-            Supply Orders
+            Orders
           </a>
         </div>
       </div>

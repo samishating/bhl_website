@@ -70,11 +70,11 @@ export default function AdminChallengesPage() {
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Combat Challenges</h1>
-          <p className={styles.sub}>{challenges.length} active missions available</p>
+          <h1 className={styles.title}>Challenges</h1>
+          <p className={styles.sub}>{challenges.length} active challenges available</p>
         </div>
         <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
-          + Deploy New Mission
+          + Create Challenge
         </button>
       </div>
 
@@ -84,11 +84,11 @@ export default function AdminChallengesPage() {
             <div className="loader-arc" />
             <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Missions...</p>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Challenges...</p>
         </div>
       ) : challenges.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No active challenges in this sector</p>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No active challenges available</p>
         </div>
       ) : (
         <div className={styles.challengeGrid}>
@@ -125,7 +125,7 @@ export default function AdminChallengesPage() {
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
               <h3 className={styles.challengeTitle} style={{ margin: 0 }}>
-                {editingId ? 'Modify Mission' : 'Deploy New Mission'}
+                {editingId ? 'Edit Challenge' : 'Create New Challenge'}
               </h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}>✕</button>
             </div>
@@ -133,7 +133,7 @@ export default function AdminChallengesPage() {
             <form onSubmit={handleCreate}>
               <div className={styles.modalBody}>
                 <div className="form-group">
-                  <label className="form-label">Mission Title *</label>
+                  <label className="form-label">Challenge Title *</label>
                   <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" />
                 </div>
 
@@ -143,7 +143,7 @@ export default function AdminChallengesPage() {
                     <input type="number" className="form-input" value={form.xpReward} onChange={e => setForm(p => ({ ...p, xpReward: Number(e.target.value) }))} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Tactical Division</label>
+                    <label className="form-label">Division</label>
                     <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))}>
                       {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
@@ -151,14 +151,14 @@ export default function AdminChallengesPage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Mission Intel *</label>
+                  <label className="form-label">Challenge Description *</label>
                   <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide clear objectives..." style={{ resize: 'none' }} />
                 </div>
 
                 <div className="form-group">
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', fontSize: '0.85rem' }}>
                     <input type="checkbox" checked={form.allowRepeats} onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} />
-                    Allow Multiple Deployments (Repeatable)
+                    Allow Multiple Completions (Repeatable)
                   </label>
                 </div>
               </div>
@@ -166,7 +166,7 @@ export default function AdminChallengesPage() {
               <div className={styles.modalFooter}>
                 <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                  {creating ? <span className="spinner" /> : editingId ? 'Sync Mission' : 'Deploy Mission'}
+                  {creating ? <span className="spinner" /> : editingId ? 'Save Changes' : 'Create Challenge'}
                 </button>
               </div>
             </form>

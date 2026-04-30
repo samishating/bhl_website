@@ -64,10 +64,10 @@ export default function JoinPage() {
       <section className={styles.header}>
         <div className={styles.headerGlow} />
         <div className="container">
-          <div className="section-tag">Recruitment</div>
+          <div className="section-tag">Membership</div>
           <h1>Join the <span className="gradient-text">Brotherhood</span></h1>
           <p className={styles.headerSub}>
-            Apply to become a member of Brotherhood Legacy. Choose your division and prove your worth.
+            Apply to become a member of Brotherhood Legacy. Choose your division and share your story.
           </p>
         </div>
       </section>

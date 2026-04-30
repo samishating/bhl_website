@@ -57,12 +57,12 @@ export default function AdminSubmissionsPage() {
       
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Tactical failure');
+        throw new Error(errorData.error || 'Request failed');
       }
       
       refreshCounts();
       fetchSubmissions();
-      showToast(`Tactical decision: ${action === 'revoke' ? 'Revoked' : action.toUpperCase() + 'ED'}`, 'success');
+      showToast(`Submission ${action === 'revoke' ? 'Revoked' : action.toUpperCase() + 'ED'}`, 'success');
       window.dispatchEvent(new Event('stats-refresh'));
     } catch (err: any) {
       showToast(`${err.message}`, 'error');
@@ -79,8 +79,8 @@ export default function AdminSubmissionsPage() {
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Mission Intelligence</h1>
-          <p className={styles.sub}>Verifying field reports and awarding combat XP</p>
+          <h1 className={styles.title}>Challenge Submissions</h1>
+          <p className={styles.sub}>Review submissions and award XP</p>
         </div>
       </div>
 
@@ -90,25 +90,25 @@ export default function AdminSubmissionsPage() {
             <div className="loader-arc" />
             <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Decrypting Reports...</p>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Submissions...</p>
         </div>
       ) : submissions.length === 0 ? (
         <div className={styles.empty}>
           <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🛡️</span>
-          <h3 className={styles.title} style={{ fontSize: '1.2rem' }}>Sector Secure</h3>
-          <p style={{ color: 'var(--text-muted)' }}>No pending field reports to verify.</p>
+          <h3 className={styles.title} style={{ fontSize: '1.2rem' }}>All Caught Up</h3>
+          <p style={{ color: 'var(--text-muted)' }}>No pending submissions to review.</p>
         </div>
       ) : (
         <div className={styles.tableContainer}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Operative</th>
-                <th>Mission Details</th>
+                <th>User</th>
+                <th>Challenge Details</th>
                 <th>Status</th>
-                <th>Intel Proof</th>
-                <th>Date Received</th>
-                <th>Tactical Actions</th>
+                <th>Proof</th>
+                <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -132,13 +132,13 @@ export default function AdminSubmissionsPage() {
                     </span>
                     {sub.processedBy && (
                       <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-                        Verified by: {sub.processedBy.username}
+                        Reviewed by: {sub.processedBy.username}
                       </div>
                     )}
                   </td>
                   <td>
                     <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className={styles.proofLink}>
-                      VIEW INTEL ↗
+                      VIEW PROOF ↗
                     </a>
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -152,7 +152,7 @@ export default function AdminSubmissionsPage() {
                           onClick={() => handleAction(sub._id, 'approve')}
                           disabled={processingId === sub._id}
                         >
-                          {processingId === sub._id ? '…' : 'CONFIRM'}
+                          {processingId === sub._id ? '…' : 'APPROVE'}
                         </button>
                         <button
                           className="btn btn-secondary btn-sm"
@@ -171,7 +171,7 @@ export default function AdminSubmissionsPage() {
                       >
                         {processingId === sub._id ? '…' : '⚠️ REVOKE'}
                       </button>
-                    ) : <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>SECURE</span>}
+                    ) : <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Reviewed</span>}
                   </td>
                 </tr>
               ))}
@@ -182,9 +182,9 @@ export default function AdminSubmissionsPage() {
 
       <ConfirmationModal
         isOpen={!!confirmData}
-        title="Revoke Intel Approval?"
-        message="Are you sure you want to revoke this approval? Combat XP will be deducted from the operative."
-        confirmLabel="Revoke XP"
+        title="Revoke Submission?"
+        message="Are you sure you want to revoke this submission? XP will be deducted from the user."
+        confirmLabel="Revoke"
         variant="danger"
         onConfirm={() => confirmData && executeAction(confirmData.id, confirmData.action)}
         onCancel={() => setConfirmData(null)}

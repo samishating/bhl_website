@@ -267,7 +267,7 @@ export default function ProfilePage() {
               </div>
               <div className="form-group">
                 <label className="form-label">Bio</label>
-                <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell the Brotherhood who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
+                <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
               </div>
 
               <button 

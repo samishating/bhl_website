@@ -58,8 +58,8 @@ export default function AdminOrdersPage() {
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Logistics Control</h1>
-          <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} tactical shipments pending</p>
+          <h1 className={styles.title}>Order Management</h1>
+          <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} orders pending processing</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export default function AdminOrdersPage() {
             <div className="loader-arc" />
             <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Inventory Systems...</p>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Orders...</p>
         </div>
       ) : orders.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
@@ -80,12 +80,12 @@ export default function AdminOrdersPage() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Manifest ID</th>
-                <th>Recipient</th>
-                <th>Cargo</th>
-                <th>Valuation</th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
                 <th>Status</th>
-                <th>Timeline</th>
+                <th>Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -141,13 +141,13 @@ export default function AdminOrdersPage() {
         <div className={styles.modalOverlay} onClick={() => setSelectedOrder(null)}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.title} style={{ fontSize: '1.2rem', margin: 0 }}>Manifest Details: #{selectedOrder._id.slice(-8).toUpperCase()}</h3>
+              <h3 className={styles.title} style={{ fontSize: '1.2rem', margin: 0 }}>Order Details: #{selectedOrder._id.slice(-8).toUpperCase()}</h3>
               <button onClick={() => setSelectedOrder(null)} className="btn btn-ghost btn-sm">✕</button>
             </div>
 
             <div className={styles.modalBody}>
               <div className={styles.infoBlock}>
-                <div className={styles.infoLabel}>Shipping Intel</div>
+                <div className={styles.infoLabel}>Shipping Information</div>
                 <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
                 <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '0.9rem' }}>
                   {selectedOrder.customerInfo.address}
@@ -159,7 +159,7 @@ export default function AdminOrdersPage() {
               </div>
 
               <div>
-                <div className={styles.infoLabel}>Cargo Manifest</div>
+                <div className={styles.infoLabel}>Order Items</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {selectedOrder.items.map((item, idx) => (
                     <div key={idx} className={styles.itemCard}>
@@ -196,7 +196,7 @@ export default function AdminOrdersPage() {
                     setSelectedOrder(null);
                   }}
                 >
-                  AUTHORIZE SHIPMENT
+                  MARK AS SHIPPED
                 </button>
               )}
             </div>

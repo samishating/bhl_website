@@ -75,7 +75,7 @@ export default function AdminProductsPage() {
       setShowForm(false); 
       setEditingId(null);
       load(); 
-      showToast(editingId ? 'Product synchronized!' : 'New product deployed!', 'success'); 
+      showToast(editingId ? 'Product updated!' : 'New product created!', 'success'); 
     }
     else { const d = await res.json(); showToast(`${d.error || 'Sync failed'}`, 'error'); }
   };
@@ -88,39 +88,39 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
-    load(); showToast('Product purged from database', 'info');
+    load(); showToast('Product deleted', 'info');
   };
 
   return (
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Armory Management</h1>
-          <p className={styles.sub}>Configure and deploy brotherhood merchandise</p>
+          <h1 className={styles.title}>Product Management</h1>
+          <p className={styles.sub}>Manage and configure platform products</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <div className="form-group" style={{ marginBottom: 0 }}>
             <input 
               className="form-input" 
-              placeholder="Search assets..." 
+              placeholder="Search products..." 
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{ width: '240px', minHeight: '42px' }}
             />
           </div>
           <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
-            + Deploy New Asset
+            + Create Product
           </button>
         </div>
       </div>
 
       <div className={styles.statsRow}>
         <div className={styles.statCard}>
-          <div className={styles.statLabel}>Total Assets</div>
+          <div className={styles.statLabel}>Total Products</div>
           <div className={styles.statValue}><span>#</span>{stats.total}</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statLabel}>Conqueror Drops</div>
+          <div className={styles.statLabel}>Exclusive Drops</div>
           <div className={styles.statValue}>
             <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
             {stats.conqueror}
@@ -143,7 +143,7 @@ export default function AdminProductsPage() {
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
               <h3 className={styles.title} style={{ fontSize: '1.2rem', marginBottom: 0 }}>
-                {editingId ? 'Edit Configuration' : 'Deploy New Asset'}
+                {editingId ? 'Edit Product' : 'Create New Product'}
               </h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}>✕</button>
             </div>
@@ -152,8 +152,8 @@ export default function AdminProductsPage() {
               <form onSubmit={handleCreate} className={styles.splitForm}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div className="form-group">
-                    <label className="form-label">Asset Name *</label>
-                    <input required className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Conqueror Hoodie v1" />
+                    <label className="form-label">Product Name *</label>
+                    <input required className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Premium Hoodie v1" />
                   </div>
 
                   <div className={styles.formRow}>
@@ -174,27 +174,27 @@ export default function AdminProductsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Intel / Description *</label>
+                    <label className="form-label">Description *</label>
                     <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide detailed specs..." style={{ resize: 'none' }} />
                   </div>
 
                   <div className="form-group">
                     <label className={styles.checkLabel}>
                       <input type="checkbox" checked={form.isLimitedDrop} onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} />
-                      Conqueror Class Asset (Requires 40k XP) <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginLeft: '0.4rem', verticalAlign: 'middle' }} />
+                      Premium Drop (Requires 40k XP) <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginLeft: '0.4rem', verticalAlign: 'middle' }} />
                     </label>
                   </div>
 
                   <div style={{ marginTop: 'auto', display: 'flex', gap: '1rem' }}>
                     <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                      {creating ? <span className="spinner" /> : editingId ? 'Update Asset' : 'Deploy Asset'}
+                      {creating ? <span className="spinner" /> : editingId ? 'Update Product' : 'Create Product'}
                     </button>
                     <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
                   </div>
                 </div>
 
                 <div className={styles.previewSection}>
-                  <label className="form-label">Visual Assets</label>
+                  <label className="form-label">Images</label>
                   
                   <div style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)', background: '#000' }}>
                     <img src={form.image || 'https://placehold.co/600x600/111/white?text=No+Preview'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -257,7 +257,7 @@ export default function AdminProductsPage() {
             <div className="loader-arc" />
             <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Inventory...</p>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Products...</p>
         </div>
       ) : (
         <div className={styles.productGrid}>
@@ -268,7 +268,7 @@ export default function AdminProductsPage() {
                 {p.isLimitedDrop && (
                   <div className={`${styles.cardBadge} ${styles.conquerorBadge}`}>
                     <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} />
-                    Conqueror
+                    Premium
                   </div>
                 )}
                 <div className={styles.cardBadge} style={{ top: 'auto', bottom: '1rem' }}>
@@ -295,7 +295,7 @@ export default function AdminProductsPage() {
           ))}
           {filteredProducts.length === 0 && (
             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
-              <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No assets found in current sector</p>
+              <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No products found</p>
             </div>
           )}
         </div>

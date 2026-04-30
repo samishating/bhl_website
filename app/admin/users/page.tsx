@@ -109,8 +109,8 @@ export default function AdminUsersPage() {
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Member Directory</h1>
-          <p className={styles.sub}>High-level administration of brotherhood personnel</p>
+          <h1 className={styles.title}>User Management</h1>
+          <p className={styles.sub}>Manage and configure platform users and roles</p>
         </div>
         <div className="form-group" style={{ marginBottom: 0 }}>
           <input
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
             <div className="loader-arc" />
             <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Database...</p>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning users...</p>
         </div>
       ) : (
         <div className={styles.userGrid}>
@@ -146,18 +146,18 @@ export default function AdminUsersPage() {
                   <div className={styles.username}>{u.username}</div>
                   <div className={styles.email}>{u.email}</div>
                   <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
-                    {u.role === 'superadmin' ? 'Superadmin' : u.role === 'admin' ? 'Staff' : 'Operative'}
+                    {u.role === 'superadmin' ? 'Superadmin' : u.role === 'admin' ? 'Admin' : 'User'}
                   </div>
                 </div>
               </div>
 
               <div className={styles.statsRow}>
                 <div className={styles.statItem}>
-                  <div className={styles.statLabel}>Combat XP</div>
+                  <div className={styles.statLabel}>User XP</div>
                   <div className={styles.statValue}>{u.xp.toLocaleString()}</div>
                 </div>
                 <div className={styles.statItem}>
-                  <div className={styles.statLabel}>Enlisted</div>
+                  <div className={styles.statLabel}>Joined</div>
                   <div className={styles.statValue}>{new Date(u.createdAt).toLocaleDateString()}</div>
                 </div>
               </div>
@@ -169,9 +169,9 @@ export default function AdminUsersPage() {
               </div>
 
               <div className={styles.cardActions}>
-                <a href={`/users/${u._id}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>View Dossier</a>
+                <a href={`/users/${u._id}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>View Profile</a>
                 {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
-                  <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Configure</button>
+                  <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Edit</button>
                 )}
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function AdminUsersPage() {
         <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.username} style={{ margin: 0 }}>Configure Member: {editingUser.username}</h3>
+              <h3 className={styles.username} style={{ margin: 0 }}>Edit User: {editingUser.username}</h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setEditingUser(null)}>✕</button>
             </div>
             
@@ -194,10 +194,10 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Tactical Role</label>
+                <label className="form-label">User Role</label>
                 <select className="form-input" value={editForm.role} onChange={e => setEditForm({ ...editForm, role: e.target.value })}>
-                  <option value="user">Operative (Member)</option>
-                  <option value="admin">Staff (Admin)</option>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
                 </select>
               </div>
 
@@ -221,7 +221,7 @@ export default function AdminUsersPage() {
 
             <div className={styles.modalFooter}>
               <button className="btn btn-ghost" onClick={() => setEditingUser(null)} style={{ flex: 1 }}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSaveEdit} style={{ flex: 1 }}>Sync Configuration</button>
+              <button className="btn btn-primary" onClick={handleSaveEdit} style={{ flex: 1 }}>Save Changes</button>
             </div>
           </div>
         </div>

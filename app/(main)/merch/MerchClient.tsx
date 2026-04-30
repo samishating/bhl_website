@@ -41,11 +41,11 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
 
   const handleAddToCart = (p: Product) => {
     if (!user) {
-      showToast('Authentication required for acquisition', 'error');
+      showToast('Please login to add items to your cart', 'error');
       return;
     }
     if (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) {
-      showToast('Insufficient XP for exclusive gear', 'error');
+      showToast('Insufficient XP for premium items', 'error');
       return;
     }
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
@@ -100,12 +100,12 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                 <div className={styles.detailMeta}>
                   <div className={styles.stockStatus}>
                     <span className="status-dot" style={{ background: selectedProduct.stock > 0 ? '#22c55e' : 'var(--brand-red)' }} />
-                    {selectedProduct.stock > 0 ? `DEPLOYMENT READY (${selectedProduct.stock} UNITS)` : 'OUT OF STOCK'}
+                    {selectedProduct.stock > 0 ? `IN STOCK (${selectedProduct.stock} UNITS)` : 'OUT OF STOCK'}
                   </div>
                   {selectedProduct.isLimitedDrop && (
                     <div className={styles.dropBadgeDetail}>
                       <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px' }} />
-                      CONQUEROR EXCLUSIVE (40K XP REQ)
+                      PREMIUM EXCLUSIVE (40K XP REQ)
                     </div>
                   )}
                 </div>
@@ -116,7 +116,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   onClick={() => { handleAddToCart(selectedProduct); if(user) setSelectedProduct(null); }}
                   disabled={selectedProduct.stock === 0}
                 >
-                  {!user ? 'LOGIN TO ACQUIRE' : (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'LOCKED (INSUFFICIENT XP)' : (
+                  {!user ? 'LOGIN TO BUY' : (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'LOCKED (INSUFFICIENT XP)' : (
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
                       ADD TO CART <img src="/ICONS/CART.svg" alt="" style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)' }} />
                     </span>
@@ -135,7 +135,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
             {c === 'drop' ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px', filter: filter === 'drop' ? 'none' : 'grayscale(1) opacity(0.5)' }} />
-                CONQUEROR DROPS
+                PREMIUM DROPS
               </span>
             ) : c.toUpperCase()}
           </button>
@@ -149,8 +149,8 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           </div>
           <h2 className={styles.lockedTitle}>ACCESS <span className="gradient-text">DENIED</span></h2>
           <p className={styles.lockedDesc}>
-            Conqueror drops are reserved for our most dedicated operatives. 
-            You need at least <strong>{REQUIRED_XP} XP</strong> to access this specialized gear.
+            Premium drops are reserved for our most dedicated members. 
+            You need at least <strong>{REQUIRED_XP} XP</strong> to access this exclusive collection.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
             <div className="xp-bar-container" style={{ width: '300px', height: '12px' }}>
@@ -166,7 +166,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
         </div>
       ) : filtered.length === 0 ? (
         <div className={styles.empty}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No assets found in this sector</p>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No items found</p>
         </div>
       ) : (
         <div className={styles.grid}>
@@ -185,7 +185,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                 {p.isLimitedDrop && (
                   <span className={styles.dropBadge}>
                     <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px' }} />
-                    Conqueror
+                    Premium
                   </span>
                 )}
                 {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>ONLY {p.stock} REMAINING</span>}

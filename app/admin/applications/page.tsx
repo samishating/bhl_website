@@ -47,11 +47,11 @@ export default function ApplicationsInbox() {
         body: JSON.stringify({ status }),
       });
       
-      if (!res.ok) throw new Error('Tactical failure');
+      if (!res.ok) throw new Error('Request failed');
       
       refreshCounts();
       load();
-      showToast(`Personnel ${status === 'approved' ? 'ENLISTED' : 'NEUTRALIZED'}`, 'success');
+      showToast(`Application ${status === 'approved' ? 'APPROVED' : 'REJECTED'}`, 'success');
     } catch (err) {
       setApps(prevApps);
       showToast('Action failed', 'error');
@@ -65,8 +65,8 @@ export default function ApplicationsInbox() {
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Recruitment Desk</h1>
-          <p className={styles.sub}>Reviewing prospective operatives for division enlistment</p>
+          <h1 className={styles.title}>Applications</h1>
+          <p className={styles.sub}>Review applications for platform membership</p>
         </div>
       </div>
 
@@ -76,11 +76,11 @@ export default function ApplicationsInbox() {
             <div className="loader-arc" />
             <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Dossiers...</p>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Applications...</p>
         </div>
       ) : apps.length === 0 ? (
         <div className={styles.empty}>
-          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Recruitment queue empty</p>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No pending applications</p>
         </div>
       ) : (
         <div className={styles.appList}>
@@ -96,9 +96,9 @@ export default function ApplicationsInbox() {
                     {app.userId?.avatar ? <img src={app.userId.avatar} alt="" /> : app.userId?.username?.[0].toUpperCase() || 'G'}
                   </div>
                   <div>
-                    <div className={styles.username}>{app.userId?.username || 'Guest Candidate'}</div>
+                    <div className={styles.username}>{app.userId?.username || 'Guest Applicant'}</div>
                     <div className={styles.userMeta}>
-                      {app.userId ? `Operative Level ${app.userId.level} • ${app.userId.xp} XP` : 'External Recruitment Phase'}
+                      {app.userId ? `User Level ${app.userId.level} • ${app.userId.xp} XP` : 'External Application'}
                     </div>
                   </div>
                 </div>
@@ -120,7 +120,7 @@ export default function ApplicationsInbox() {
                   <div>{app.name}</div>
                 </div>
                 <div className={styles.appField}>
-                  <label>Tactical Contact</label>
+                  <label>Contact Email</label>
                   <div style={{ fontSize: '0.85rem' }}>
                     {app.email}<br/>
                     {app.discord && <span style={{ color: 'var(--brand-red)' }}>DISCORD: {app.discord}</span>}
@@ -131,7 +131,7 @@ export default function ApplicationsInbox() {
                   <div><span className={`division-tag tag-${app.division}`}>{app.division}</span></div>
                 </div>
                 <div className={styles.appField}>
-                  <label>Social Intelligence / Intel</label>
+                  <label>Links</label>
                   {app.links ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                       {app.links.split(',').map(link => link.trim()).filter(Boolean).map((link, idx) => (
@@ -143,7 +143,7 @@ export default function ApplicationsInbox() {
                   ) : <div>N/A</div>}
                 </div>
                 <div className={styles.appField} style={{ gridColumn: '1 / -1' }}>
-                  <label>Personnel Motivation</label>
+                  <label>Motivation</label>
                   <div className={styles.reasonText}>{app.motivation}</div>
                 </div>
               </div>
@@ -151,10 +151,10 @@ export default function ApplicationsInbox() {
               {app.status === 'pending' && (
                 <div className={styles.appActions}>
                   <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved')} disabled={actioning === app._id} style={{ flex: 1 }}>
-                    ENLIST OPERATIVE
+                    APPROVE APPLICATION
                   </button>
                   <button className="btn btn-ghost" onClick={() => handleAction(app._id, 'rejected')} disabled={actioning === app._id} style={{ flex: 1, color: 'var(--brand-red)' }}>
-                    REJECT DOSSIER
+                    REJECT APPLICATION
                   </button>
                 </div>
               )}

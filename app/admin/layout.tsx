@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './admin.module.css';
+import LoadingScreen from '@/components/LoadingScreen';
 
 const AdminContext = createContext({
   refreshCounts: () => {},
@@ -60,7 +61,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     setMobileNavOpen(false);
   }, [pathname]);
 
-  if (authLoading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}><div className="spinner" /></div>;
+  if (authLoading) return <LoadingScreen message="Verifying Identity..." />;
   
   const isAuthorized = user?.role === 'admin' || user?.role === 'superadmin';
   
@@ -78,10 +79,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     <AdminContext.Provider value={{ refreshCounts: fetchCounts, setGlobalLoading }}>
       <div className={styles.layout}>
         {(globalLoading || countsLoading) && (
-          <div className={styles.globalOverlay}>
-            <div className="spinner" />
-            <p style={{ marginTop: '1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Loading Dashboard...</p>
-          </div>
+          <LoadingScreen message="Syncing Dashboard..." />
         )}
 
         {/* Mobile Top Bar */}

@@ -1,5 +1,6 @@
 'use client';
 import { useState, Suspense } from 'react';
+import LoadingScreen from '@/components/LoadingScreen';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -68,9 +69,10 @@ function LoginForm() {
   );
 }
 
+
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className={styles.page} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
+    <Suspense fallback={<LoadingScreen message="Securing Connection..." />}>
       <LoginForm />
     </Suspense>
   );

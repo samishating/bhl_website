@@ -65,7 +65,7 @@ export default function CartDrawer() {
   return (
     <>
       {isCartOpen && (
-        <div className={styles.cartOverlay} onClick={() => setCartOpen(false)}>
+        <div className="modal-overlay" style={{ justifyContent: 'flex-end', padding: 0 }} onClick={() => setCartOpen(false)}>
           <div className={styles.cart} onClick={e => e.stopPropagation()}>
             <div className={styles.cartHeader}>
               <h3>Your Cart ({count})</h3>
@@ -114,13 +114,17 @@ export default function CartDrawer() {
 
       {/* Checkout Modal */}
       {checkout && (
-        <div className={styles.cartOverlay} onClick={() => setCheckout(false)}>
-          <div className={styles.checkoutModal} onClick={e => e.stopPropagation()}>
-            <h3>Checkout</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Confirm your shipping details to place your order.
-            </p>
-            <form onSubmit={handleCheckout} className={styles.checkoutForm}>
+        <div className="modal-overlay" onClick={() => setCheckout(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Checkout</h3>
+              <button onClick={() => setCheckout(false)} className="btn btn-ghost btn-sm">✕</button>
+            </div>
+            <div className="modal-body">
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                Confirm your shipping details to place your order.
+              </p>
+            <form onSubmit={handleCheckout} className={styles.checkoutForm} id="checkout-form">
               <input 
                 required 
                 className="form-input" 
@@ -169,22 +173,29 @@ export default function CartDrawer() {
                 />
               </div>
               <div className={styles.checkoutTotal}>Order Total: <strong>${total.toFixed(2)}</strong></div>
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+            </form>
+            </div>
+            <div className="modal-footer">
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading} form="checkout-form">
                 {loading ? <span className="spinner" /> : 'Confirm Order'}
               </button>
-            </form>
+            </div>
           </div>
         </div>
       )}
 
       {/* Order Success */}
       {orderDone && (
-        <div className={styles.cartOverlay} onClick={() => setOrderDone(false)}>
-          <div className={styles.successModal} onClick={e => e.stopPropagation()}>
-            <div className={styles.successIcon}>🎉</div>
-            <h3>Order Placed!</h3>
-            <p>Your Brotherhood Legacy order is confirmed. You can view your orders in your dashboard.</p>
-            <button className="btn btn-primary" onClick={() => setOrderDone(false)}>Continue Shopping</button>
+        <div className="modal-overlay" onClick={() => setOrderDone(false)}>
+          <div className="modal-content" style={{ maxWidth: '400px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-body">
+              <div className={styles.successIcon}>🎉</div>
+              <h3>Order Placed!</h3>
+              <p>Your Brotherhood Legacy order is confirmed. You can view your orders in your dashboard.</p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setOrderDone(false)}>Continue Shopping</button>
+            </div>
           </div>
         </div>
       )}

@@ -138,14 +138,14 @@ export default function AdminOrdersPage() {
       )}
 
       {selectedOrder && (
-        <div className={styles.modalOverlay} onClick={() => setSelectedOrder(null)}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
+        <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
               <h3 className={styles.title} style={{ fontSize: '1.2rem', margin: 0 }}>Order Details: #{selectedOrder._id.slice(-8).toUpperCase()}</h3>
               <button onClick={() => setSelectedOrder(null)} className="btn btn-ghost btn-sm">✕</button>
             </div>
 
-            <div className={styles.modalBody}>
+            <div className="modal-body">
               <div className={styles.infoBlock}>
                 <div className={styles.infoLabel}>Shipping Information</div>
                 <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
@@ -185,7 +185,7 @@ export default function AdminOrdersPage() {
               </div>
             </div>
             
-            <div className={styles.modalFooter}>
+            <div className="modal-footer">
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>CLOSE</button>
               {selectedOrder.status === 'pending' && (
                 <button 

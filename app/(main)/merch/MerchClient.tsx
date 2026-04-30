@@ -55,8 +55,8 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
     <div className="animate-fade-up">
       {/* Product Detail Modal */}
       {selectedProduct && (
-        <div className={styles.cartOverlay} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>
-          <div className={styles.detailModal} onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>
+          <div className="modal-content" style={{ maxWidth: '1000px' }} onClick={e => e.stopPropagation()}>
             <button className={styles.detailClose} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>✕</button>
             <div className={styles.detailGrid}>
               <div className={styles.detailGallery}>

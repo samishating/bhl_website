@@ -180,14 +180,14 @@ export default function AdminUsersPage() {
       )}
 
       {editingUser && (
-        <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
+          <div className="modal-content">
+            <div className="modal-header">
               <h3 className={styles.username} style={{ margin: 0 }}>Edit User: {editingUser.username}</h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setEditingUser(null)}>✕</button>
             </div>
             
-            <div className={styles.modalBody}>
+            <div className="modal-body">
               <div className="form-group">
                 <label className="form-label">Username</label>
                 <input className="form-input" value={editForm.username} onChange={e => setEditForm({ ...editForm, username: e.target.value })} />
@@ -219,7 +219,7 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            <div className={styles.modalFooter}>
+            <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setEditingUser(null)} style={{ flex: 1 }}>Cancel</button>
               <button className="btn btn-primary" onClick={handleSaveEdit} style={{ flex: 1 }}>Save Changes</button>
             </div>

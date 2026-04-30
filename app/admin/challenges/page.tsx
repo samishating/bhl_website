@@ -121,9 +121,9 @@ export default function AdminChallengesPage() {
       )}
 
       {showForm && (
-        <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
+          <div className="modal-content">
+            <div className="modal-header">
               <h3 className={styles.challengeTitle} style={{ margin: 0 }}>
                 {editingId ? 'Edit Challenge' : 'Create New Challenge'}
               </h3>
@@ -131,7 +131,7 @@ export default function AdminChallengesPage() {
             </div>
             
             <form onSubmit={handleCreate}>
-              <div className={styles.modalBody}>
+              <div className="modal-body">
                 <div className="form-group">
                   <label className="form-label">Challenge Title *</label>
                   <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" />
@@ -163,7 +163,7 @@ export default function AdminChallengesPage() {
                 </div>
               </div>
 
-              <div className={styles.modalFooter}>
+              <div className="modal-footer">
                 <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
                   {creating ? <span className="spinner" /> : editingId ? 'Save Changes' : 'Create Challenge'}

@@ -50,36 +50,41 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={t.id}
             style={{
-              background: 'rgba(26, 26, 26, 0.85)',
-              border: `1px solid ${
-                t.type === 'success' ? 'rgba(34, 197, 94, 0.5)' :
-                t.type === 'error' ? 'rgba(255, 0, 0, 0.5)' :
-                t.type === 'warning' ? 'rgba(255, 253, 186, 0.5)' :
-                'rgba(255, 255, 255, 0.15)'
+              background: 'rgba(26, 26, 26, 0.95)',
+              border: `2px solid ${
+                t.type === 'success' ? '#22c55e' :
+                t.type === 'error' ? '#ff0000' :
+                t.type === 'warning' ? '#FFFDBA' :
+                '#ffffff33'
               }`,
-              borderRadius: '999px', // Pill shape for bottom-center
-              padding: '0.65rem 1.5rem',
-              fontSize: '0.85rem',
-              color: 'var(--text-primary)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), var(--glow-red)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
+              borderRadius: '14px',
+              padding: '1rem 2rem',
+              fontSize: '0.95rem',
+              color: 'white',
+              boxShadow: `0 10px 40px rgba(0, 0, 0, 0.6), ${
+                t.type === 'success' ? '0 0 20px rgba(34, 197, 94, 0.4)' :
+                t.type === 'error' ? '0 0 20px rgba(255, 0, 0, 0.4)' :
+                t.type === 'warning' ? '0 0 20px rgba(255, 253, 186, 0.4)' :
+                '0 0 15px rgba(255, 255, 255, 0.15)'
+              }`,
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
               animation: 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               pointerEvents: 'auto',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.75rem',
-              minWidth: '280px',
+              gap: '1rem',
+              minWidth: '350px',
               textAlign: 'center',
             }}
           >
-            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>
+            <span style={{ fontSize: '1.4rem', flexShrink: 0 }}>
               {t.type === 'success' ? '🛡️' :
                t.type === 'error' ? '🚫' :
                t.type === 'warning' ? '⚠️' : '🔔'}
             </span>
-            <span style={{ fontFamily: 'Rajdhani', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t.message}</span>
+            <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.message}</span>
           </div>
         ))}
       </div>

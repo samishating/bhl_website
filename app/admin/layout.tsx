@@ -136,8 +136,8 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           <nav className={styles.nav}>
             {links.map(l => {
               let badgeCount = 0;
-              if (l.label === 'Challenges Inbox') badgeCount = counts.pendingSubmissions;
-              if (l.label === 'Applications Inbox') badgeCount = counts.pendingApplications;
+              if (l.label === 'Submissions') badgeCount = counts.pendingSubmissions;
+              if (l.label === 'Applications') badgeCount = counts.pendingApplications;
               if (l.label === 'Orders') badgeCount = counts.pendingOrders;
               
               return (

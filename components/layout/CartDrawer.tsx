@@ -1,10 +1,12 @@
 'use client';
 import { useCart } from '@/contexts/CartContext';
 import { useState, useEffect } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 import styles from '@/app/(main)/merch/page.module.css';
 
 export default function CartDrawer() {
   const { isCartOpen, setCartOpen, items, count, total, removeItem, updateQuantity, clearCart } = useCart();
+  const { clearToasts } = useToast();
   const [checkout, setCheckout] = useState(false);
   const [orderDone, setOrderDone] = useState(false);
 
@@ -91,7 +93,7 @@ export default function CartDrawer() {
                 </div>
                 <div className={styles.cartFooter}>
                   <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
-                  <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { setCartOpen(false); setCheckout(true); }}>
+                  <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { clearToasts(); setCartOpen(false); setCheckout(true); }}>
                     Proceed to Checkout
                   </button>
                 </div>

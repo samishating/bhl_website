@@ -11,6 +11,7 @@ interface Toast {
 
 interface ToastContextType {
   showToast: (message: string, type?: ToastType) => void;
+  clearToasts: () => void;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -27,13 +28,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, 3500);
   }, []);
 
+  const clearToasts = useCallback(() => setToasts([]), []);
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ showToast, clearToasts }}>
       {children}
       {/* Toast Widget */}
       <div style={{
         position: 'fixed',
-        bottom: '2rem',
+        top: '2rem',
         right: '2rem',
         zIndex: 99999,
         display: 'flex',

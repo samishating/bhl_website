@@ -49,7 +49,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
       return;
     }
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
-    showToast(`${p.name} added to cart!`, 'success');
+    // Removed toast since cart opens automatically (better UX)
   };
 
   return (

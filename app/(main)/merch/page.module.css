@@ -41,58 +41,95 @@
   z-index: 1;
   max-width: 900px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroBgText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15vw;
+  font-weight: 900;
+  white-space: nowrap;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.04);
+  color: transparent;
+  pointer-events: none;
+  z-index: -1;
+  letter-spacing: -0.02em;
+}
+
+.heroTechTag {
+  color: var(--brand-red);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
 }
 
 .heroTitle { 
-  font-size: clamp(3.5rem, 10vw, 7rem); 
-  margin: 1.5rem 0; 
-  letter-spacing: 0.05em;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  font-size: clamp(4rem, 12vw, 8.5rem); 
+  margin: 0.5rem 0; 
+  letter-spacing: -0.04em;
+  font-weight: 900;
+  line-height: 0.9;
+  text-shadow: 0 0 40px rgba(255, 0, 0, 0.15);
 }
 
 .heroSub { 
   color: var(--text-secondary); 
-  font-size: 1.1rem; 
+  font-size: 0.95rem; 
   max-width: 600px; 
   margin: 0 auto; 
   line-height: 1.8; 
-  letter-spacing: 0.15em; 
-  font-weight: 600;
+  letter-spacing: 0.25em; 
+  font-weight: 700;
   font-family: 'Rajdhani', sans-serif;
   text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .tabs { 
   display: flex; 
   justify-content: center; 
-  gap: 0.75rem; 
+  gap: 0.5rem; 
   margin-bottom: 5rem; 
   flex-wrap: wrap; 
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border);
+  padding: 0.4rem;
+  background: #080808;
+  border: 1px solid rgba(255, 0, 0, 0.1);
   border-radius: 999px;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
 }
 .tab { 
   background: transparent; 
   border: none;
-  padding: 0.6rem 1.5rem; 
+  padding: 0.5rem 1.4rem; 
   border-radius: 999px; 
   font-family: 'Rajdhani', sans-serif; 
-  font-weight: 700; 
+  font-weight: 800; 
   text-transform: uppercase; 
-  letter-spacing: 0.12em; 
-  color: var(--text-muted); 
-  transition: var(--transition);
+  letter-spacing: 0.1em; 
+  color: #555; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
-.tab:hover { color: white; background: rgba(255, 255, 255, 0.05); }
-.tabActive { background: var(--brand-red); color: white; box-shadow: var(--glow-red); }
+.tab:hover { color: #888; }
+.tabActive { 
+  background: var(--brand-red); 
+  color: white; 
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.6), 0 0 45px rgba(255, 0, 0, 0.2); 
+}
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.5rem; padding-bottom: 5rem; }
 

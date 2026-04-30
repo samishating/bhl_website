@@ -23,12 +23,15 @@ export default async function MerchPage() {
         </div>
         <div className="container">
           <div className={styles.heroContent}>
-            <div className="section-tag animate-fade-down" style={{ justifyContent: 'center' }}>Official Store</div>
+            <div className={styles.heroBgText}>BHL // STORE</div>
+            <div className={`${styles.heroTechTag} animate-fade-down`}>
+              [ COLLECTION // 2026 ]
+            </div>
             <h1 className={`${styles.heroTitle} animate-fade-up`}>
               BHL <span className="gradient-text">MERCH</span>
             </h1>
             <p className={`${styles.heroSub} animate-fade-up`} style={{ animationDelay: '0.2s' }}>
-              REPRESENT THE BROTHERHOOD. PREMIUM APPAREL, LIMITED DROPS, AND EXCLUSIVE GEAR.
+              PREMIUM APPAREL & EXCLUSIVE GEAR
             </p>
           </div>
         </div>

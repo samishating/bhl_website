@@ -73,7 +73,9 @@ export default function CartDrawer() {
                 <div className={styles.cartItems}>
                   {items.map(item => (
                     <div key={item.id} className={styles.cartItem}>
-                      <div className={styles.cartItemImg}>{item.name[0]}</div>
+                      <div className={styles.cartItemImg}>
+                        {item.image ? <img src={item.image} alt="" /> : item.name[0]}
+                      </div>
                       <div className={styles.cartItemInfo}>
                         <div className={styles.cartItemName}>{item.name}</div>
                         <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>

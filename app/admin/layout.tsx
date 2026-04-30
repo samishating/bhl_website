@@ -109,7 +109,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                 <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>
                   <span className={styles.navIcon}>
                     {l.icon.endsWith('.svg') ? (
-                      <img src={l.icon} alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)', opacity: 0.8 }} />
+                      <img src={l.icon} alt="" style={{ width: '18px', height: '18px' }} />
                     ) : (
                       l.icon
                     )}

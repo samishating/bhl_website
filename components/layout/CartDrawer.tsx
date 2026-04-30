@@ -2,11 +2,14 @@
 import { useCart } from '@/contexts/CartContext';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from '@/app/(main)/merch/page.module.css';
+import Link from 'next/link';
 
 export default function CartDrawer() {
   const { isCartOpen, setCartOpen, items, count, total, removeItem, updateQuantity, clearCart } = useCart();
   const { clearToasts } = useToast();
+  const { user } = useAuth();
   const [checkout, setCheckout] = useState(false);
   const [orderDone, setOrderDone] = useState(false);
 
@@ -93,9 +96,15 @@ export default function CartDrawer() {
                 </div>
                 <div className={styles.cartFooter}>
                   <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
-                  <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { clearToasts(); setCartOpen(false); setCheckout(true); }}>
-                    Proceed to Checkout
-                  </button>
+                  {user ? (
+                    <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { clearToasts(); setCartOpen(false); setCheckout(true); }}>
+                      Proceed to Checkout
+                    </button>
+                  ) : (
+                    <Link href="/login" className="btn btn-primary" style={{ width: '100%' }} onClick={() => setCartOpen(false)}>
+                      Login to Checkout 🔐
+                    </Link>
+                  )}
                 </div>
               </>
             )}

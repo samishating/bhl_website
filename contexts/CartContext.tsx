@@ -1,5 +1,6 @@
 'use client';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 interface CartItem {
   id: string;
@@ -24,8 +25,14 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setCartOpen] = useState(false);
+
+  // Clear cart on logout
+  useEffect(() => {
+    if (!user) setItems([]);
+  }, [user]);
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {

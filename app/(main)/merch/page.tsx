@@ -17,11 +17,10 @@ export default async function MerchPage() {
   return (
     <div className={styles.page}>
       <section className={styles.header}>
-        <div className={styles.headerGlow} />
         <div className="container">
           <div className="section-tag">Official Store</div>
-          <h1>BHL <span className="gradient-text">Merch</span></h1>
-          <p className={styles.headerSub}>Rep the Brotherhood. Premium drops, limited editions, streetwear culture.</p>
+          <h1 className={styles.heroTitle}>BHL <span className="gradient-text">Merch</span></h1>
+          <p className={styles.heroSub}>Rep the Brotherhood. Premium drops, limited editions, streetwear culture.</p>
         </div>
       </section>
 

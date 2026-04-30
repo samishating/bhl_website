@@ -141,48 +141,59 @@ export default function AdminOrdersPage() {
 
       {selectedOrder && (
         <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" style={{ maxWidth: '700px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className={styles.title} style={{ fontSize: '1.2rem', margin: 0 }}>Order Details: #{selectedOrder._id.slice(-8).toUpperCase()}</h3>
+              <div>
+                <h3 className={styles.modalTitle}>Order Details</h3>
+                <p className={styles.modalSub}>#{selectedOrder._id.slice(-8).toUpperCase()} • {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+              </div>
               <button onClick={() => setSelectedOrder(null)} className="btn btn-ghost btn-sm">✕</button>
             </div>
 
-            <div className="modal-body">
-              <div className={styles.infoBlock}>
-                <div className={styles.infoLabel}>Shipping Information</div>
-                <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
-                <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '0.9rem' }}>
-                  {selectedOrder.customerInfo.address}
-                </div>
-                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  <div style={{ color: 'var(--neon-blue)', fontSize: '0.85rem', fontWeight: 600 }}>📧 {selectedOrder.customerInfo.email}</div>
-                  <div style={{ color: 'var(--neon-green)', fontSize: '0.85rem', fontWeight: 600 }}>📞 {selectedOrder.customerInfo.phone}</div>
+            <div className="modal-body" style={{ gap: '2.5rem' }}>
+              <div className={styles.detailSection}>
+                <div className={styles.sectionLabel}>Customer & Shipping</div>
+                <div className={styles.shippingGrid}>
+                  <div className={styles.customerCard}>
+                    <div className={styles.avatarPlaceholder}>{selectedOrder.customerInfo.name[0].toUpperCase()}</div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{selectedOrder.customerInfo.email}</div>
+                    </div>
+                  </div>
+                  <div className={styles.addressBlock}>
+                    <div className={styles.infoLabel}>Delivery Address</div>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>{selectedOrder.customerInfo.address}</p>
+                    <div style={{ marginTop: '0.75rem', fontWeight: 600, color: 'var(--brand-red)', fontSize: '0.85rem' }}>
+                      📞 {selectedOrder.customerInfo.phone}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <div className={styles.infoLabel}>Order Items</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div className={styles.detailSection}>
+                <div className={styles.sectionLabel}>Manifest ({selectedOrder.items.length} items)</div>
+                <div className={styles.itemList}>
                   {selectedOrder.items.map((item, idx) => (
-                    <div key={idx} className={styles.itemCard}>
-                      <div>
-                        <div style={{ fontWeight: 700, color: 'white' }}>{item.name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Quantity: {item.quantity}</div>
+                    <div key={idx} className={styles.orderItemRow}>
+                      <div className={styles.itemMain}>
+                        <div className={styles.itemQty}>x{item.quantity}</div>
+                        <div className={styles.itemName}>{item.name}</div>
                       </div>
-                      <div style={{ fontWeight: 800, color: 'var(--neon-blue)', fontFamily: 'Rajdhani' }}>${(item.price * item.quantity).toFixed(2)}</div>
+                      <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-                <div>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Current Status: </span>
+              <div className={styles.summarySection}>
+                <div className={styles.statusGroup}>
+                  <div className={styles.infoLabel}>Logistics Status</div>
                   <span className={`${styles.statusBadge} ${styles[selectedOrder.status]}`}>{selectedOrder.status}</span>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                   <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Total Valuation</div>
-                   <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--neon-blue)', fontFamily: 'Rajdhani' }}>${selectedOrder.total.toFixed(2)}</div>
+                <div className={styles.totalGroup}>
+                   <div className={styles.infoLabel}>Total Valuation</div>
+                   <div className={styles.grandTotal}>${selectedOrder.total.toFixed(2)}</div>
                 </div>
               </div>
             </div>

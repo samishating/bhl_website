@@ -23,7 +23,6 @@ export default async function MerchPage() {
         </div>
         <div className="container">
           <div className={styles.heroContent}>
-            <div className={styles.heroBgText}>BHL // STORE</div>
             <div className={`${styles.heroTechTag} animate-fade-down`}>
               [ COLLECTION // 2026 ]
             </div>

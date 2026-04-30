@@ -25,10 +25,6 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const { addItem } = useCart();
   const [filter, setFilter] = useState('all');
   const { showToast } = useToast();
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [activeImg, setActiveImg] = useState(0);
-  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
-  const [isZooming, setIsZooming] = useState(false);
 
   const REQUIRED_XP = 40000;
   const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
@@ -99,10 +95,10 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
             {filtered.map((p, i) => {
               const isItemLocked = p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
               return (
-                <div key={p._id} className={styles.productCard} 
+                <Link key={p._id} href={isItemLocked ? '#' : `/merch/${p._id}`}
+                  className={styles.productCard} 
                   style={{ animationDelay: `${i * 0.05}s`, cursor: isItemLocked ? 'default' : 'pointer' }} 
                   id={`product-${p._id}`}
-                  onClick={() => { if(!isItemLocked) setSelectedProduct(p); }}
                 >
                 <div className={styles.productImg}>
                   {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
@@ -129,7 +125,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     <span className={styles.productPrice}>${p.price.toFixed(2)}</span>
                     <button
                       className="btn btn-primary btn-sm"
-                      onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(p); }}
                       disabled={p.stock === 0 || isItemLocked}
                       id={`add-to-cart-${p._id}`}
                     >
@@ -139,87 +135,12 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     </button>
                   </div>
                 </div>
-                </div>
+                </Link>
               );
             })}
           </div>
         )}
       </div>
-
-      {/* Product Detail Modal */}
-      {selectedProduct && (
-        <div className="modal-overlay" onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>
-          <div className="modal-content" style={{ maxWidth: '1000px' }} onClick={e => e.stopPropagation()}>
-            <button className={styles.detailClose} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>✕</button>
-            <div className={styles.detailGrid}>
-              <div className={styles.detailGallery}>
-                <div 
-                  className={styles.mainDetailImg}
-                  onMouseMove={(e) => {
-                    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-                    const x = ((e.clientX - left) / width) * 100;
-                    const y = ((e.clientY - top) / height) * 100;
-                    setZoomPos({ x, y });
-                  }}
-                  onMouseEnter={() => setIsZooming(true)}
-                  onMouseLeave={() => setIsZooming(false)}
-                >
-                  <img 
-                    src={[selectedProduct.image, ...(selectedProduct.images || [])][activeImg]} 
-                    alt={selectedProduct.name} 
-                    style={{ 
-                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                      transform: isZooming ? 'scale(2)' : 'scale(1)',
-                      transition: isZooming ? 'none' : 'transform 0.3s ease'
-                    }}
-                  />
-                </div>
-                {selectedProduct.images && selectedProduct.images.length > 0 && (
-                  <div className={styles.thumbGallery}>
-                    {[selectedProduct.image, ...selectedProduct.images].map((img, idx) => (
-                      <div key={idx} className={`${styles.thumb} ${activeImg === idx ? styles.thumbActive : ''}`} onClick={() => setActiveImg(idx)}>
-                        <img src={img} alt="" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className={styles.detailInfo}>
-                <div className={styles.productCategory}>{selectedProduct.category}</div>
-                <h2 className={styles.detailName}>{selectedProduct.name}</h2>
-                <div className={styles.detailPrice}>${selectedProduct.price.toFixed(2)}</div>
-                <p className={styles.detailDescFull}>{selectedProduct.description}</p>
-                
-                <div className={styles.detailMeta}>
-                  <div className={styles.stockStatus}>
-                    <span className="status-dot" style={{ background: selectedProduct.stock > 0 ? '#22c55e' : 'var(--brand-red)' }} />
-                    {selectedProduct.stock > 0 ? `IN STOCK (${selectedProduct.stock} UNITS)` : 'OUT OF STOCK'}
-                  </div>
-                  {selectedProduct.isLimitedDrop && (
-                    <div className={styles.dropBadgeDetail}>
-                      <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px' }} />
-                      PREMIUM EXCLUSIVE (40K XP REQ)
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  className="btn btn-primary btn-lg"
-                  style={{ width: '100%' }}
-                  onClick={() => { handleAddToCart(selectedProduct); if(user) setSelectedProduct(null); }}
-                  disabled={selectedProduct.stock === 0}
-                >
-                  {!user ? 'LOGIN TO BUY' : (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'LOCKED (INSUFFICIENT XP)' : (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
-                      ADD TO CART <img src="/ICONS/CART.svg" alt="" style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)' }} />
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

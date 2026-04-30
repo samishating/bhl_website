@@ -1,0 +1,213 @@
+.productPage {
+  padding-top: 120px;
+  padding-bottom: 120px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 3rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.backLink:hover {
+  color: var(--brand-red);
+  transform: translateX(-5px);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+/* GALLERY */
+.gallerySection {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.thumb {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+  background: #000;
+}
+.thumb:hover { border-color: var(--brand-red); }
+.thumbActive { border-color: var(--brand-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.mainImageContainer {
+  flex: 1;
+  aspect-ratio: 1;
+  background: #000;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  cursor: crosshair;
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.1s ease-out;
+}
+
+.lockedOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+/* INFO SECTION */
+.infoSection {
+  position: sticky;
+  top: 120px;
+}
+
+.categoryTag {
+  color: var(--brand-red);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.productName {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.price {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 2.5rem;
+}
+
+.descriptionSection {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 3rem;
+}
+
+.actions {
+  margin-bottom: 3rem;
+}
+
+.buyBtn {
+  width: 100%;
+  padding: 1.25rem;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.lockInfo {
+  font-size: 0.85rem;
+  color: var(--brand-red);
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* SPECS ACCORDION */
+.specs {
+  border-top: 1px solid var(--border);
+}
+
+.specDetail {
+  border-bottom: 1px solid var(--border);
+}
+
+.specDetail summary {
+  padding: 1.5rem 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  transition: var(--transition);
+}
+.specDetail summary:hover { color: var(--brand-red); }
+
+.specDetail summary::after {
+  content: '+';
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.specDetail[open] summary::after {
+  content: '−';
+}
+
+.specContent {
+  padding-bottom: 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.specContent ul {
+  padding-left: 1.2rem;
+}
+
+.specContent li {
+  margin-bottom: 0.5rem;
+  list-style: disc;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .infoSection {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .productPage { padding-top: 80px; }
+  .gallerySection { flex-direction: column-reverse; }
+  .thumbnails { flex-direction: row; justify-content: center; }
+  .thumb { width: 70px; height: 70px; }
+}

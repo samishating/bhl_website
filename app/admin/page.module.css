@@ -1,23 +1,79 @@
-.title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.25rem; }
-.sub { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 2rem; }
-.statsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
-.statCard { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.75rem; transition: var(--transition); border-top: 2px solid var(--card-color, var(--brand-red)); }
-.statCard:hover { transform: translateY(-3px); box-shadow: 0 0 20px color-mix(in srgb, var(--card-color, #FF0000) 20%, transparent); }
-.statIcon { font-size: 2rem; display: block; margin-bottom: 0.75rem; }
-.statValue { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.5rem; color: var(--card-color, var(--brand-red)); }
-.statLabel { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
-.quickLinks h3 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 1rem; }
-.qGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-.qCard { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); transition: all 0.2s ease; cursor: pointer; }
-.qCard:hover { border-color: var(--brand-red); color: white; background: rgba(255,0,0,0.04); }
-@media (max-width: 600px) { .statsGrid { grid-template-columns: 1fr; } .qGrid { grid-template-columns: 1fr; } }
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2.5rem; }
+.title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.2rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sub { color: var(--text-secondary); font-size: 0.95rem; letter-spacing: 0.02em; }
 
-.staticCard {
-  background: var(--bg-card);
-  border: 1px solid var(--brand-red);
-  border-radius: var(--radius-md);
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
+.statsGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+
+.statCard { 
+  background: var(--bg-card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  padding: 2rem; 
+  position: relative; 
+  overflow: hidden; 
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  backdrop-filter: blur(10px);
+}
+.statCard::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--card-color, var(--brand-red));
+  box-shadow: 0 0 15px var(--card-color, var(--brand-red));
+}
+.statCard:hover { border-color: var(--card-color, var(--brand-red)); transform: translateY(-5px); box-shadow: var(--glow-red); }
+
+.statIcon { 
+  position: absolute; 
+  top: 1rem; right: 1rem; 
+  opacity: 0.08; 
+  width: 80px; height: 80px; 
+  filter: grayscale(1) invert(1);
+  pointer-events: none;
+}
+
+.statValue { font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 800; color: white; line-height: 1; }
+.statLabel { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); font-weight: 700; margin-top: 0.5rem; }
+
+.sectionTitle { 
+  font-family: 'Rajdhani', sans-serif; 
+  font-size: 1.1rem; 
+  text-transform: uppercase; 
+  letter-spacing: 0.15em; 
+  color: var(--brand-red); 
+  margin-bottom: 1.5rem; 
+  display: flex; 
+  align-items: center; 
+  gap: 0.75rem; 
+}
+.sectionTitle::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.qGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.qCard { 
+  display: flex; 
+  align-items: center; 
+  gap: 1rem; 
+  padding: 1.5rem; 
+  background: rgba(255,255,255,0.02); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-md); 
+  font-family: 'Rajdhani', sans-serif; 
+  font-weight: 600; 
+  font-size: 1rem; 
+  letter-spacing: 0.08em; 
+  text-transform: uppercase; 
+  color: var(--text-secondary); 
+  transition: all 0.3s ease; 
+  cursor: pointer; 
+}
+.qCard:hover { border-color: var(--brand-red); color: white; background: rgba(255,0,0,0.06); transform: translateX(8px); }
+.qCard img { width: 22px; height: 22px; filter: grayscale(1) brightness(2); }
+.qCard:hover img { filter: none; }
+
+@media (max-width: 768px) {
+  .statsGrid { grid-template-columns: 1fr; }
+  .qGrid { grid-template-columns: 1fr; }
 }

@@ -26,6 +26,7 @@ export default function ApplicationsInbox() {
   const { refreshCounts, setGlobalLoading } = useAdmin();
 
   const load = () => {
+    setLoading(true);
     fetch('/api/applications')
       .then(r => r.json())
       .then(d => { setApps(d.applications || []); setLoading(false); });
@@ -35,7 +36,6 @@ export default function ApplicationsInbox() {
 
   const handleAction = async (id: string, status: 'approved' | 'rejected') => {
     setGlobalLoading(true);
-    // Optimistic Update
     const prevApps = [...apps];
     setApps(current => current.map(a => a._id === id ? { ...a, status } : a));
     
@@ -47,13 +47,13 @@ export default function ApplicationsInbox() {
         body: JSON.stringify({ status }),
       });
       
-      if (!res.ok) throw new Error('Failed');
+      if (!res.ok) throw new Error('Tactical failure');
       
       refreshCounts();
-      load(); // Reload to get attribution
-      showToast(`Application ${status}!`, 'success');
+      load();
+      showToast(`Personnel ${status === 'approved' ? 'ENLISTED' : 'NEUTRALIZED'}`, 'success');
     } catch (err) {
-      setApps(prevApps); // Rollback
+      setApps(prevApps);
       showToast('Action failed', 'error');
     } finally {
       setActioning(null);
@@ -62,39 +62,53 @@ export default function ApplicationsInbox() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Applications Inbox</h1>
-          <p className={styles.sub}>{apps.filter(a => a.status === 'pending').length} pending applications</p>
+          <h1 className={styles.title}>Recruitment Desk</h1>
+          <p className={styles.sub}>Reviewing prospective operatives for division enlistment</p>
         </div>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
+        <div style={{ textAlign: 'center', padding: '10rem' }}>
+          <div className="loader-visual" style={{ margin: '0 auto' }}>
+            <div className="loader-arc" />
+            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+          </div>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Dossiers...</p>
+        </div>
       ) : apps.length === 0 ? (
-        <div className={styles.empty}>No applications received yet.</div>
+        <div className={styles.empty}>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Recruitment queue empty</p>
+        </div>
       ) : (
         <div className={styles.appList}>
           {apps.map(app => (
-            <div key={app._id} className={`${styles.appCard} ${styles[app.status]}`}>
+            <div key={app._id} className={styles.appCard}>
+              <div className={styles.appDate}>
+                RECEIVED: {new Date(app.createdAt).toLocaleString()}
+              </div>
+
               <div className={styles.appHeader}>
                 <div className={styles.userInfo}>
-                  <div className={`avatar ${styles.appAvatar}`}>
-                    {app.userId?.avatar ? <img src={app.userId.avatar} alt="" /> : app.userId?.username?.[0].toUpperCase()}
+                  <div className={styles.appAvatar}>
+                    {app.userId?.avatar ? <img src={app.userId.avatar} alt="" /> : app.userId?.username?.[0].toUpperCase() || 'G'}
                   </div>
                   <div>
-                    <div className={styles.username}>{app.userId?.username || 'Guest'}</div>
-                    <div className={styles.userMeta}>{app.userId ? `Lv.${app.userId.level} • ${app.userId.xp} XP` : 'New Member Application'}</div>
+                    <div className={styles.username}>{app.userId?.username || 'Guest Candidate'}</div>
+                    <div className={styles.userMeta}>
+                      {app.userId ? `Operative Level ${app.userId.level} • ${app.userId.xp} XP` : 'External Recruitment Phase'}
+                    </div>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div className={`badge ${app.status === 'pending' ? 'badge-blue' : app.status === 'approved' ? 'badge-green' : 'badge-red'}`}>
-                    {app.status.toUpperCase()}
-                  </div>
+                  <span className={`${styles.statusBadge} ${styles[app.status + 'Badge']}`}>
+                    {app.status}
+                  </span>
                   {app.processedBy && (
-                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-                      by {app.processedBy.username}
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.5rem', fontWeight: 700 }}>
+                      REVIEWED BY: {app.processedBy.username.toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -106,49 +120,44 @@ export default function ApplicationsInbox() {
                   <div>{app.name}</div>
                 </div>
                 <div className={styles.appField}>
-                  <label>Email</label>
-                  <div>{app.email}</div>
+                  <label>Tactical Contact</label>
+                  <div style={{ fontSize: '0.85rem' }}>
+                    {app.email}<br/>
+                    {app.discord && <span style={{ color: 'var(--brand-red)' }}>DISCORD: {app.discord}</span>}
+                  </div>
                 </div>
                 <div className={styles.appField}>
-                  <label>Discord</label>
-                  <div>{app.discord || 'N/A'}</div>
-                </div>
-                <div className={styles.appField}>
-                  <label>Division</label>
+                  <label>Target Division</label>
                   <div><span className={`division-tag tag-${app.division}`}>{app.division}</span></div>
                 </div>
                 <div className={styles.appField}>
-                  <label>Social / Portfolio</label>
+                  <label>Social Intelligence / Intel</label>
                   {app.links ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                       {app.links.split(',').map(link => link.trim()).filter(Boolean).map((link, idx) => (
                         <a key={idx} href={link.startsWith('http') ? link : `https://${link}`} target="_blank" rel="noreferrer" className={styles.link}>
-                          {link} ↗
+                          {link.length > 30 ? link.slice(0, 30) + '...' : link} ↗
                         </a>
                       ))}
                     </div>
                   ) : <div>N/A</div>}
                 </div>
                 <div className={styles.appField} style={{ gridColumn: '1 / -1' }}>
-                  <label>Why do you want to join?</label>
+                  <label>Personnel Motivation</label>
                   <div className={styles.reasonText}>{app.motivation}</div>
                 </div>
               </div>
 
               {app.status === 'pending' && (
                 <div className={styles.appActions}>
-                  <button className="btn btn-primary btn-sm" onClick={() => handleAction(app._id, 'approved')} disabled={actioning === app._id}>
-                    Approve
+                  <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved')} disabled={actioning === app._id} style={{ flex: 1 }}>
+                    ENLIST OPERATIVE
                   </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleAction(app._id, 'rejected')} disabled={actioning === app._id}>
-                    Reject
+                  <button className="btn btn-ghost" onClick={() => handleAction(app._id, 'rejected')} disabled={actioning === app._id} style={{ flex: 1, color: 'var(--brand-red)' }}>
+                    REJECT DOSSIER
                   </button>
                 </div>
               )}
-              
-              <div className={styles.appDate}>
-                Submitted {new Date(app.createdAt).toLocaleString()}
-              </div>
             </div>
           ))}
         </div>

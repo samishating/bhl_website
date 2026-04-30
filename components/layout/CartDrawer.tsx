@@ -101,8 +101,8 @@ export default function CartDrawer() {
                       Proceed to Checkout
                     </button>
                   ) : (
-                    <Link href="/login" className="btn btn-primary" style={{ width: '100%' }} onClick={() => setCartOpen(false)}>
-                      Login to Checkout 🔐
+                    <Link href="/login" className="btn btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} onClick={() => setCartOpen(false)}>
+                      Login to Checkout <img src="/ICONS/CART.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} />
                     </Link>
                   )}
                 </div>

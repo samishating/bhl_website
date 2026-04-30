@@ -41,19 +41,18 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
 
   const handleAddToCart = (p: Product) => {
     if (!user) {
-      showToast('Please login to add items to cart', 'error');
+      showToast('Authentication required for acquisition', 'error');
       return;
     }
     if (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) {
-      showToast('You need 40k XP to buy this item', 'error');
+      showToast('Insufficient XP for exclusive gear', 'error');
       return;
     }
     addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
-    // Removed toast since cart opens automatically (better UX)
   };
 
   return (
-    <>
+    <div className="animate-fade-up">
       {/* Product Detail Modal */}
       {selectedProduct && (
         <div className={styles.cartOverlay} onClick={() => { setSelectedProduct(null); setActiveImg(0); }}>
@@ -77,7 +76,8 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     alt={selectedProduct.name} 
                     style={{ 
                       transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                      transform: isZooming ? 'scale(2)' : 'scale(1)'
+                      transform: isZooming ? 'scale(2)' : 'scale(1)',
+                      transition: isZooming ? 'none' : 'transform 0.3s ease'
                     }}
                   />
                 </div>
@@ -96,19 +96,31 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                 <h2 className={styles.detailName}>{selectedProduct.name}</h2>
                 <div className={styles.detailPrice}>${selectedProduct.price.toFixed(2)}</div>
                 <p className={styles.detailDescFull}>{selectedProduct.description}</p>
+                
                 <div className={styles.detailMeta}>
-                  <span className={styles.stockStatus}>
-                    {selectedProduct.stock > 0 ? `✅ In Stock (${selectedProduct.stock} units)` : '❌ Out of Stock'}
-                  </span>
-                  {selectedProduct.isLimitedDrop && <span className={styles.dropBadgeDetail}>🔥 Conqueror Exclusive</span>}
+                  <div className={styles.stockStatus}>
+                    <span className="status-dot" style={{ background: selectedProduct.stock > 0 ? '#22c55e' : 'var(--brand-red)' }} />
+                    {selectedProduct.stock > 0 ? `DEPLOYMENT READY (${selectedProduct.stock} UNITS)` : 'OUT OF STOCK'}
+                  </div>
+                  {selectedProduct.isLimitedDrop && (
+                    <div className={styles.dropBadgeDetail}>
+                      <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px' }} />
+                      CONQUEROR EXCLUSIVE (40K XP REQ)
+                    </div>
+                  )}
                 </div>
+
                 <button
-                  className="btn btn-primary"
-                  style={{ width: '100%', marginTop: '2rem' }}
+                  className="btn btn-primary btn-lg"
+                  style={{ width: '100%' }}
                   onClick={() => { handleAddToCart(selectedProduct); if(user) setSelectedProduct(null); }}
                   disabled={selectedProduct.stock === 0}
                 >
-                  {!user ? 'Login to Buy' : (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Locked (Need 40k XP)' : 'Add to Cart 🛒'}
+                  {!user ? 'LOGIN TO ACQUIRE' : (selectedProduct.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'LOCKED (INSUFFICIENT XP)' : (
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+                      ADD TO CART <img src="/ICONS/CART.svg" alt="" style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)' }} />
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -120,40 +132,49 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
         {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
           <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
             onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
-            {c === 'drop' ? '🔥 Conqueror drops' : c.charAt(0).toUpperCase() + c.slice(1)}
+            {c === 'drop' ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px', filter: filter === 'drop' ? 'none' : 'grayscale(1) opacity(0.5)' }} />
+                CONQUEROR DROPS
+              </span>
+            ) : c.toUpperCase()}
           </button>
         ))}
       </div>
 
       {isLocked ? (
         <div className={styles.locked}>
-          <div className={styles.lockedIcon}>🔐</div>
-          <h2 className={styles.lockedTitle}>Exclusive <span className="gradient-text">Access</span></h2>
+          <div className={styles.lockedIcon}>
+            <img src="/ICONS/trophy_1.svg" alt="Locked" style={{ width: '80px', height: '80px' }} />
+          </div>
+          <h2 className={styles.lockedTitle}>ACCESS <span className="gradient-text">DENIED</span></h2>
           <p className={styles.lockedDesc}>
-            Conqueror drops are reserved for our most dedicated members. 
-            You need at least <strong>{REQUIRED_XP} XP</strong> to access this collection.
+            Conqueror drops are reserved for our most dedicated operatives. 
+            You need at least <strong>{REQUIRED_XP} XP</strong> to access this specialized gear.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <div className="xp-bar-container" style={{ width: '200px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
+            <div className="xp-bar-container" style={{ width: '300px', height: '12px' }}>
               <div className="xp-bar-fill" style={{ width: `${Math.min(100, ((user?.xp || 0) / REQUIRED_XP) * 100)}%` }} />
             </div>
-            <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--brand-red)' }}>
-              {user?.xp || 0} / {REQUIRED_XP} XP
+            <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--brand-red)', fontSize: '1.2rem' }}>
+              {user?.xp?.toLocaleString() || 0} / {REQUIRED_XP.toLocaleString()} XP
             </span>
           </div>
-          <Link href="/#challenges" className="btn btn-primary">
-            Earn XP Now ⚔️
+          <Link href="/#challenges" className="btn btn-primary btn-lg">
+            EARN XP NOW
           </Link>
         </div>
       ) : filtered.length === 0 ? (
-        <div className={styles.empty}>No products in this category yet.</div>
+        <div className={styles.empty}>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No assets found in this sector</p>
+        </div>
       ) : (
         <div className={styles.grid}>
           {filtered.map((p, i) => {
             const isItemLocked = p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
             return (
-              <div key={p._id} className={`${styles.productCard} ${isItemLocked ? styles.productCardLocked : ''}`} 
-                style={{ animationDelay: `${i * 0.06}s`, cursor: isItemLocked ? 'default' : 'pointer' }} 
+              <div key={p._id} className={styles.productCard} 
+                style={{ animationDelay: `${i * 0.05}s`, cursor: isItemLocked ? 'default' : 'pointer' }} 
                 id={`product-${p._id}`}
                 onClick={() => { if(!isItemLocked) setSelectedProduct(p); }}
               >
@@ -161,8 +182,18 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                 {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
                   <div className={styles.productImgPlaceholder}>{p.name[0]}</div>
                 )}
-                {p.isLimitedDrop && <span className={styles.dropBadge}>🔥 Conqueror</span>}
-                {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>Only {p.stock} left</span>}
+                {p.isLimitedDrop && (
+                  <span className={styles.dropBadge}>
+                    <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px' }} />
+                    Conqueror
+                  </span>
+                )}
+                {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>ONLY {p.stock} REMAINING</span>}
+                {isItemLocked && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontFamily: 'Rajdhani', letterSpacing: '0.1em' }}>
+                    LOCKED (INSUFFICIENT XP)
+                  </div>
+                )}
               </div>
               <div className={styles.productInfo}>
                 <div className={styles.productCategory}>{p.category}</div>
@@ -173,10 +204,12 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   <button
                     className="btn btn-primary btn-sm"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(p); }}
-                    disabled={p.stock === 0}
+                    disabled={p.stock === 0 || isItemLocked}
                     id={`add-to-cart-${p._id}`}
                   >
-                    {p.stock === 0 ? 'Sold Out' : !user ? 'Login to Buy' : (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) ? 'Need 40k XP 🔐' : 'Add to Cart'}
+                    {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : (
+                      <img src="/ICONS/CART.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} />
+                    )}
                   </button>
                 </div>
               </div>
@@ -185,6 +218,6 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           })}
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -26,26 +26,27 @@ export default function AdminPage() {
     });
   }, [setGlobalLoading]);
 
-  if (pageLoading) return null; // Don't show partial content during first load
-
+  if (pageLoading) return null;
 
   const statCards = [
     { label: 'Total Members', value: stats.users, icon: '/ICONS/USER.svg', color: '#FF0000' },
-    { label: 'Active Challenges', value: stats.challenges, icon: '/ICONS/trophy_1.svg', color: '#CC0000' },
-    { label: 'Products Listed', value: stats.products, icon: '/ICONS/PRODUCTS.svg', color: '#FFFDBA' },
+    { label: 'Active Challenges', value: stats.challenges, icon: '/ICONS/trophy_1.svg', color: '#FF4444' },
+    { label: 'Armory Assets', value: stats.products, icon: '/ICONS/PRODUCTS.svg', color: '#FFFDBA' },
   ];
 
   return (
-    <div>
-      <h1 className={styles.title}>Admin Overview</h1>
-      <p className={styles.sub}>Brotherhood Legacy control panel</p>
+    <div className="animate-fade-up">
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Command Center</h1>
+          <p className={styles.sub}>High-level synchronization of brotherhood operations</p>
+        </div>
+      </div>
 
       <div className={styles.statsGrid}>
         {statCards.map(s => (
           <div key={s.label} className={styles.statCard} style={{ '--card-color': s.color } as React.CSSProperties}>
-            <span className={styles.statIcon}>
-              <img src={s.icon} alt="" style={{ width: '32px', height: '32px' }} />
-            </span>
+            <img src={s.icon} className={styles.statIcon} alt="" />
             <div className={styles.statValue}>{s.value}</div>
             <div className={styles.statLabel}>{s.label}</div>
           </div>
@@ -53,23 +54,31 @@ export default function AdminPage() {
       </div>
 
       <div className={styles.quickLinks}>
-        <h3>Quick Actions</h3>
+        <h3 className={styles.sectionTitle}>Tactical Operations</h3>
         <div className={styles.qGrid}>
-          <a href="/admin/challenges" className={styles.qCard} id="admin-quick-challenges">
-            <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px' }} />
-            Manage Challenges
+          <a href="/admin/users" className={styles.qCard}>
+            <img src="/ICONS/USER.svg" alt="" />
+            Member Directory
           </a>
-          <a href="/admin/products" className={styles.qCard} id="admin-quick-products">
-            <img src="/ICONS/PRODUCTS.svg" alt="" style={{ width: '20px', height: '20px' }} />
-            Manage Products
+          <a href="/admin/challenges" className={styles.qCard}>
+            <img src="/ICONS/trophy_1.svg" alt="" />
+            Combat Challenges
           </a>
-          <a href="/admin/users" className={styles.qCard} id="admin-quick-users">
-            <img src="/ICONS/USER.svg" alt="" style={{ width: '20px', height: '20px' }} />
-            View Users
+          <a href="/admin/submissions" className={styles.qCard}>
+            <img src="/ICONS/INBOX.svg" alt="" />
+            Submission Inbox
           </a>
-          <a href="/leaderboard" className={styles.qCard} id="admin-quick-leaderboard">
-            <img src="/ICONS/OVERVIEW.svg" alt="" style={{ width: '20px', height: '20px' }} />
-            View Leaderboard
+          <a href="/admin/applications" className={styles.qCard}>
+            <img src="/ICONS/INBOX.svg" alt="" />
+            Recruitment Desk
+          </a>
+          <a href="/admin/products" className={styles.qCard}>
+            <img src="/ICONS/PRODUCTS.svg" alt="" />
+            Armory Management
+          </a>
+          <a href="/admin/orders" className={styles.qCard}>
+            <img src="/ICONS/LIST PRODUCTS.svg" alt="" />
+            Supply Orders
           </a>
         </div>
       </div>

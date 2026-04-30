@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useAdmin } from '../layout';
-import styles from '../admin.module.css';
+import styles from './page.module.css';
 
 import ConfirmationModal from '@/components/ConfirmationModal';
 
@@ -42,7 +42,6 @@ export default function AdminSubmissionsPage() {
       setConfirmData({ id, action });
       return;
     }
-    
     executeAction(id, action);
   };
 
@@ -58,12 +57,12 @@ export default function AdminSubmissionsPage() {
       
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed');
+        throw new Error(errorData.error || 'Tactical failure');
       }
       
       refreshCounts();
       fetchSubmissions();
-      showToast(`Submission ${action === 'revoke' ? 'revoked' : action + 'ed'}!`, 'success');
+      showToast(`Tactical decision: ${action === 'revoke' ? 'Revoked' : action.toUpperCase() + 'ED'}`, 'success');
       window.dispatchEvent(new Event('stats-refresh'));
     } catch (err: any) {
       showToast(`${err.message}`, 'error');
@@ -77,67 +76,69 @@ export default function AdminSubmissionsPage() {
   const isSuper = currentUser?.role === 'superadmin';
 
   return (
-    <div>
-      <h1 className={styles.title}>Challenge Inbox</h1>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
-        Review pending challenge submissions and award XP manually.
-      </p>
+    <div className="animate-fade-up">
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Mission Intelligence</h1>
+          <p className={styles.sub}>Verifying field reports and awarding combat XP</p>
+        </div>
+      </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '2rem' }}><div className="spinner" /></div>
+        <div style={{ textAlign: 'center', padding: '10rem' }}>
+          <div className="loader-visual" style={{ margin: '0 auto' }}>
+            <div className="loader-arc" />
+            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+          </div>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Decrypting Reports...</p>
+        </div>
       ) : submissions.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <span style={{ fontSize: '2rem', display: 'block', marginBottom: '1rem' }}>🎉</span>
-          <h3>Inbox Zero</h3>
-          <p style={{ color: 'var(--text-muted)' }}>No pending submissions right now.</p>
+        <div className={styles.empty}>
+          <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🛡️</span>
+          <h3 className={styles.title} style={{ fontSize: '1.2rem' }}>Sector Secure</h3>
+          <p style={{ color: 'var(--text-muted)' }}>No pending field reports to verify.</p>
         </div>
       ) : (
-        <div className="table-container">
-          <table>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
             <thead>
               <tr>
-                <th>User</th>
-                <th>Challenge</th>
+                <th>Operative</th>
+                <th>Mission Details</th>
                 <th>Status</th>
-                <th>Proof</th>
-                <th>Submitted</th>
-                <th>Actions</th>
+                <th>Intel Proof</th>
+                <th>Date Received</th>
+                <th>Tactical Actions</th>
               </tr>
             </thead>
             <tbody>
               {submissions.map(sub => (
                 <tr key={sub._id}>
                   <td>
-                      <a href={`/users/${sub.userId?._id}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'inherit', textDecoration: 'none' }}>
-                        <div className="avatar avatar-sm">
-                          {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="avatar" /> : sub.userId?.username?.[0]?.toUpperCase()}
-                        </div>
-                        <span style={{ fontWeight: 600 }}>{sub.userId?.username}</span>
-                      </a>
+                    <a href={`/users/${sub.userId?._id}`} className={styles.userCell}>
+                      <div className={styles.avatar}>
+                        {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="" /> : sub.userId?.username?.[0]?.toUpperCase()}
+                      </div>
+                      <span style={{ fontWeight: 600, color: 'white' }}>{sub.userId?.username}</span>
+                    </a>
                   </td>
                   <td>
-                    <div style={{ fontWeight: 600 }}>{sub.challengeId?.title}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--brand-red)' }}>+{sub.challengeId?.xpReward} XP</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{sub.challengeId?.title}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--brand-red)', fontWeight: 800 }}>+{sub.challengeId?.xpReward} XP</div>
                   </td>
                   <td>
-                    <div style={{ 
-                      color: sub.status === 'approved' ? 'var(--neon-green)' : sub.status === 'rejected' ? 'var(--brand-red)' : 'var(--neon-blue)',
-                      textTransform: 'uppercase',
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      letterSpacing: '1px'
-                    }}>
+                    <span className={`${styles.statusBadge} ${styles[sub.status]}`}>
                       {sub.status}
-                    </div>
+                    </span>
                     {sub.processedBy && (
-                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                        by {sub.processedBy.username}
+                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                        Verified by: {sub.processedBy.username}
                       </div>
                     )}
                   </td>
                   <td>
-                    <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--neon-blue)', textDecoration: 'underline' }}>
-                      View Proof ↗
+                    <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className={styles.proofLink}>
+                      VIEW INTEL ↗
                     </a>
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -150,18 +151,15 @@ export default function AdminSubmissionsPage() {
                           className="btn btn-primary btn-sm"
                           onClick={() => handleAction(sub._id, 'approve')}
                           disabled={processingId === sub._id}
-                          id={`approve-btn-${sub._id}`}
                         >
-                          {processingId === sub._id ? '…' : 'Approve'}
+                          {processingId === sub._id ? '…' : 'CONFIRM'}
                         </button>
                         <button
                           className="btn btn-secondary btn-sm"
                           onClick={() => handleAction(sub._id, 'reject')}
                           disabled={processingId === sub._id}
-                          id={`reject-btn-${sub._id}`}
-                          style={{ border: '1px solid var(--text-muted)' }}
                         >
-                          Reject
+                          REJECT
                         </button>
                       </div>
                     ) : sub.status === 'approved' && isSuper ? (
@@ -169,12 +167,11 @@ export default function AdminSubmissionsPage() {
                         className="btn btn-ghost btn-sm"
                         onClick={() => handleAction(sub._id, 'revoke')}
                         disabled={processingId === sub._id}
-                        id={`revoke-btn-${sub._id}`}
-                        style={{ color: 'var(--brand-red)', border: '1px solid rgba(255,0,0,0.2)' }}
+                        style={{ color: 'var(--brand-red)', borderColor: 'rgba(255,0,0,0.2)' }}
                       >
-                        {processingId === sub._id ? '…' : '⚠️ Revoke'}
+                        {processingId === sub._id ? '…' : '⚠️ REVOKE'}
                       </button>
-                    ) : null}
+                    ) : <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>SECURE</span>}
                   </td>
                 </tr>
               ))}
@@ -185,9 +182,9 @@ export default function AdminSubmissionsPage() {
 
       <ConfirmationModal
         isOpen={!!confirmData}
-        title="Revoke Approval?"
-        message="Are you sure you want to revoke this approval? This will deduct the XP from the user."
-        confirmLabel="Revoke"
+        title="Revoke Intel Approval?"
+        message="Are you sure you want to revoke this approval? Combat XP will be deducted from the operative."
+        confirmLabel="Revoke XP"
         variant="danger"
         onConfirm={() => confirmData && executeAction(confirmData.id, confirmData.action)}
         onCancel={() => setConfirmData(null)}

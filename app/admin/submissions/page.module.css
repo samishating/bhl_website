@@ -1,0 +1,64 @@
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; }
+.title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.2rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sub { color: var(--text-secondary); font-size: 0.95rem; letter-spacing: 0.02em; }
+
+.tableContainer {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.table { width: 100%; border-collapse: collapse; }
+.table th { 
+  background: rgba(255,255,255,0.03); 
+  padding: 1.25rem 1.5rem; 
+  text-align: left; 
+  font-family: 'Rajdhani', sans-serif; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 0.1em; 
+  font-size: 0.85rem; 
+  color: var(--text-muted); 
+  border-bottom: 1px solid var(--border);
+}
+.table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: rgba(255,255,255,0.01); }
+
+.userCell { display: flex; align-items: center; gap: 0.75rem; }
+.avatar { 
+  width: 36px; height: 36px; 
+  border-radius: 50%; 
+  background: var(--bg-secondary); 
+  display: flex; align-items: center; justify-content: center; 
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.9rem; 
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.statusBadge { 
+  display: inline-block; 
+  padding: 0.25rem 0.75rem; 
+  border-radius: 4px; 
+  font-size: 0.65rem; 
+  font-weight: 800; 
+  text-transform: uppercase; 
+  letter-spacing: 0.1em; 
+}
+.pending { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
+.approved { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); box-shadow: 0 0 10px rgba(34,197,94,0.1); }
+.rejected { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+
+.proofLink { color: var(--neon-blue); font-size: 0.85rem; font-weight: 600; transition: color 0.2s; }
+.proofLink:hover { color: white; text-decoration: underline; }
+
+.empty { 
+  text-align: center; 
+  padding: 5rem; 
+  background: var(--bg-card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+}

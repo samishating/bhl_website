@@ -14,7 +14,7 @@ const AdminContext = createContext({
 export const useAdmin = () => useContext(AdminContext);
 
 const links = [
-  { href: '/admin', label: 'Overview', icon: '/ICONS/OVERVIEW.svg' },
+  { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
   { href: '/admin/users', label: 'Users', icon: '/ICONS/USER.svg' },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Challenges Inbox', icon: '/ICONS/INBOX.svg' },

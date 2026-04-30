@@ -141,9 +141,16 @@ export default function ProfilePage() {
               <button className="btn btn-secondary btn-sm" onClick={() => setEditing(!editing)} id="edit-profile-btn">
                 {editing ? 'Cancel' : 'Edit Profile'}
               </button>
-              <button className="btn btn-primary btn-sm" onClick={handleDailyXp} disabled={claimingXp} id="claim-daily-xp-btn">
-                {claimingXp ? '…' : '🔥 Claim Daily XP'}
-              </button>
+                <button className="btn btn-primary btn-sm" onClick={handleDailyXp} disabled={claimingXp} id="claim-daily-xp-btn">
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    {claimingXp ? '…' : (
+                      <>
+                        <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px', filter: 'brightness(0) invert(1)' }} />
+                        Claim Daily XP
+                      </>
+                    )}
+                  </span>
+                </button>
             </div>
           </div>
 

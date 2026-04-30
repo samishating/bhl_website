@@ -121,7 +121,10 @@ export default function AdminProductsPage() {
         </div>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Conqueror Drops</div>
-          <div className={styles.statValue}><span>🔥</span>{stats.conqueror}</div>
+          <div className={styles.statValue}>
+            <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
+            {stats.conqueror}
+          </div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Low Stock Alert</div>
@@ -178,7 +181,7 @@ export default function AdminProductsPage() {
                   <div className="form-group">
                     <label className={styles.checkLabel}>
                       <input type="checkbox" checked={form.isLimitedDrop} onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} />
-                      Conqueror Class Asset (Requires 40k XP) 🔥
+                      Conqueror Class Asset (Requires 40k XP) <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginLeft: '0.4rem', verticalAlign: 'middle' }} />
                     </label>
                   </div>
 
@@ -264,7 +267,8 @@ export default function AdminProductsPage() {
                 <img src={p.image} alt={p.name} />
                 {p.isLimitedDrop && (
                   <div className={`${styles.cardBadge} ${styles.conquerorBadge}`}>
-                    🔥 Conqueror
+                    <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginRight: '0.4rem' }} />
+                    Conqueror
                   </div>
                 )}
                 <div className={styles.cardBadge} style={{ top: 'auto', bottom: '1rem' }}>

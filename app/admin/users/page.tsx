@@ -47,8 +47,6 @@ export default function AdminUsersPage() {
     u.email.toLowerCase().includes(search.toLowerCase())
   );
 
-
-
   const handleEdit = (user: User) => {
     setEditingUser(user);
     setEditForm({
@@ -61,7 +59,6 @@ export default function AdminUsersPage() {
   const handleSaveEdit = async () => {
     if (!editingUser) return;
     try {
-      // 1. Update Username and Divisions
       const res = await fetch(`/api/users/${editingUser._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -77,7 +74,6 @@ export default function AdminUsersPage() {
         return;
       }
 
-      // 2. Update Role (using the dedicated role endpoint)
       if (editForm.role !== editingUser.role) {
         const roleRes = await fetch(`/api/admin/users/${editingUser._id}/role`, {
           method: 'PATCH',
@@ -90,14 +86,13 @@ export default function AdminUsersPage() {
         }
       }
 
-      // Refresh list
       const fetchRes = await fetch('/api/users');
       const fetchData = await fetchRes.json();
       setUsers(fetchData.users || []);
       setEditingUser(null);
-      showToast('User updated successfully!', 'success');
+      showToast('Member configuration synchronized!', 'success');
     } catch (err) {
-      showToast('Network error', 'error');
+      showToast('Synchronization error', 'error');
     }
   };
 
@@ -111,98 +106,98 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div>
-
-      <h1 className={styles.title}>User Management</h1>
-      <p className={styles.sub}>{users.length} total members</p>
-
-      <input
-        className="form-input"
-        style={{ maxWidth: '360px', marginBottom: '1.5rem' }}
-        placeholder="Search by username or email…"
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        id="admin-users-search"
-      />
+    <div className="animate-fade-up">
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Member Directory</h1>
+          <p className={styles.sub}>High-level administration of brotherhood personnel</p>
+        </div>
+        <div className="form-group" style={{ marginBottom: 0 }}>
+          <input
+            className="form-input"
+            style={{ width: '320px', minHeight: '46px' }}
+            placeholder="Search personnel by intel..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
+        <div style={{ textAlign: 'center', padding: '10rem' }}>
+          <div className="loader-visual" style={{ margin: '0 auto' }}>
+            <div className="loader-arc" />
+            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+          </div>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Database...</p>
+        </div>
       ) : (
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr><th>User</th><th>Email</th><th>Level / XP</th><th>Divisions</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
-            </thead>
-            <tbody>
-              {filtered.map(u => (
-                <tr key={u._id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <div className="avatar" style={{ fontSize: '0.8rem' }}>
-                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                      </div>
-                      <div>
-                        <a href={`/users/${u._id}`} style={{ fontWeight: 600, color: 'inherit', textDecoration: 'none' }} className="hover-link">{u.username}</a>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{getLevelTitle(u.level)}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>{u.email}</td>
-                  <td>
-                    <span className="badge badge-violet" style={{ marginRight: '0.4rem' }}>Lv.{u.level}</span>
-                    <span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700, fontSize: '0.9rem' }}>{u.xp} XP</span>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                      {u.divisions.map(d => <span key={d} className={`division-tag ${divTagClass[d] || ''}`}>{d}</span>)}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`badge ${u.role === 'superadmin' ? 'badge-red' : u.role === 'admin' ? 'badge-red' : 'badge-blue'}`} style={u.role === 'superadmin' ? { background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' } : {}}>
-                      {u.role === 'superadmin' ? 'SUPERADMIN' : u.role === 'admin' ? 'Admin' : 'Member'}
-                    </span>
-                  </td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
-                      <button className="btn btn-xs btn-secondary" onClick={() => handleEdit(u)}>Edit</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className={styles.userGrid}>
+          {filtered.map(u => (
+            <div key={u._id} className={styles.userCard}>
+              <div className={styles.userHeader}>
+                <div className={styles.avatarWrapper}>
+                  <div className={styles.avatar}>
+                    {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                  </div>
+                  <div className={styles.levelBadge}>Lv.{u.level}</div>
+                </div>
+                <div className={styles.userInfo}>
+                  <div className={styles.username}>{u.username}</div>
+                  <div className={styles.email}>{u.email}</div>
+                  <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
+                    {u.role === 'superadmin' ? 'Superadmin' : u.role === 'admin' ? 'Staff' : 'Operative'}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.statsRow}>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Combat XP</div>
+                  <div className={styles.statValue}>{u.xp.toLocaleString()}</div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Enlisted</div>
+                  <div className={styles.statValue}>{new Date(u.createdAt).toLocaleDateString()}</div>
+                </div>
+              </div>
+
+              <div className={styles.divisionsRow}>
+                {u.divisions.length > 0 ? u.divisions.map(d => (
+                  <span key={d} className={`division-tag ${divTagClass[d] || ''}`}>{d}</span>
+                )) : <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>No Division Assigned</span>}
+              </div>
+
+              <div className={styles.cardActions}>
+                <a href={`/users/${u._id}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>View Dossier</a>
+                {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
+                  <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Configure</button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Edit Modal */}
       {editingUser && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
+        <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
+          <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h2>Edit User: {editingUser.username}</h2>
-              <button onClick={() => setEditingUser(null)} className={styles.closeBtn}>&times;</button>
+              <h3 className={styles.username} style={{ margin: 0 }}>Configure Member: {editingUser.username}</h3>
+              <button className="btn btn-ghost btn-sm" onClick={() => setEditingUser(null)}>✕</button>
             </div>
             
             <div className={styles.modalBody}>
               <div className="form-group">
                 <label className="form-label">Username</label>
-                <input 
-                  className="form-input" 
-                  value={editForm.username} 
-                  onChange={e => setEditForm({ ...editForm, username: e.target.value })}
-                />
+                <input className="form-input" value={editForm.username} onChange={e => setEditForm({ ...editForm, username: e.target.value })} />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Role</label>
-                <select 
-                  className="form-input" 
-                  value={editForm.role}
-                  onChange={e => setEditForm({ ...editForm, role: e.target.value })}
-                >
-                  <option value="user">Member</option>
-                  <option value="admin">Admin</option>
+                <label className="form-label">Tactical Role</label>
+                <select className="form-input" value={editForm.role} onChange={e => setEditForm({ ...editForm, role: e.target.value })}>
+                  <option value="user">Operative (Member)</option>
+                  <option value="admin">Staff (Admin)</option>
                 </select>
               </div>
 
@@ -213,8 +208,9 @@ export default function AdminUsersPage() {
                     <button
                       key={div.id}
                       type="button"
-                      className={`btn btn-xs ${editForm.divisions.includes(div.id) ? 'btn-primary' : 'btn-ghost'}`}
+                      className={`btn btn-sm ${editForm.divisions.includes(div.id) ? 'btn-primary' : 'btn-ghost'}`}
                       onClick={() => toggleDivision(div.id)}
+                      style={{ flex: 1, minWidth: '100px' }}
                     >
                       {div.label}
                     </button>
@@ -224,8 +220,8 @@ export default function AdminUsersPage() {
             </div>
 
             <div className={styles.modalFooter}>
-              <button className="btn btn-ghost" onClick={() => setEditingUser(null)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSaveEdit}>Save Changes</button>
+              <button className="btn btn-ghost" onClick={() => setEditingUser(null)} style={{ flex: 1 }}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleSaveEdit} style={{ flex: 1 }}>Sync Configuration</button>
             </div>
           </div>
         </div>

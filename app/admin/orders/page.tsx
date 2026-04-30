@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAdmin } from '../layout';
-import styles from '../page.module.css';
+import styles from './page.module.css';
 
 interface Order {
   _id: string;
@@ -30,19 +30,8 @@ export default function AdminOrdersPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'var(--neon-blue)';
-      case 'shipped': return 'var(--neon-green)';
-      case 'delivered': return 'var(--neon-green)';
-      case 'cancelled': return 'var(--brand-red)';
-      default: return 'var(--text-muted)';
-    }
-  };
-
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     setGlobalLoading(true);
-    // Optimistic update
     setOrders(prev => prev.map(o => o._id === id ? { ...o, status: newStatus } : o));
 
     try {
@@ -52,7 +41,6 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ status: newStatus })
       });
       if (!res.ok) {
-        // Rollback on error
         const r = await fetch('/api/orders');
         const d = await r.json();
         setOrders(d.orders || []);
@@ -67,30 +55,38 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="container">
+    <div className="animate-fade-up">
       <div className={styles.header}>
-        <h1 className={styles.title}>Customer Orders</h1>
-        <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} pending orders</p>
+        <div>
+          <h1 className={styles.title}>Logistics Control</h1>
+          <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} tactical shipments pending</p>
+        </div>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem' }}><div className="spinner" /></div>
+        <div style={{ textAlign: 'center', padding: '10rem' }}>
+          <div className="loader-visual" style={{ margin: '0 auto' }}>
+            <div className="loader-arc" />
+            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+          </div>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Inventory Systems...</p>
+        </div>
       ) : orders.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', background: 'rgba(255,255,255,0.03)', borderRadius: '20px' }}>
-          No orders found.
+        <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No logistics data found</p>
         </div>
       ) : (
-        <div className="table-container">
-          <table>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
             <thead>
               <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Items</th>
-                <th>Total</th>
+                <th>Manifest ID</th>
+                <th>Recipient</th>
+                <th>Cargo</th>
+                <th>Valuation</th>
                 <th>Status</th>
-                <th>Date</th>
-                <th>Action</th>
+                <th>Timeline</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -100,31 +96,26 @@ export default function AdminOrdersPage() {
                     {o._id.slice(-8).toUpperCase()}
                   </td>
                   <td>
-                    <div style={{ fontWeight: 600 }}>{o.customerInfo.name}</div>
+                    <div style={{ fontWeight: 700, color: 'white' }}>{o.customerInfo.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.customerInfo.email}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--neon-blue)', fontWeight: 600 }}>{o.customerInfo.phone}</div>
                   </td>
                   <td>
-                    <div style={{ fontSize: '0.85rem' }}>
-                      {o.items.length} items
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      {o.items.length} Units
                     </div>
                   </td>
                   <td>
-                    <span style={{ fontWeight: 700, color: 'var(--neon-blue)' }}>${o.total.toFixed(2)}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontSize: '1.1rem' }}>
+                      ${o.total.toFixed(2)}
+                    </span>
                   </td>
                   <td>
-                    <div style={{ 
-                      color: getStatusColor(o.status),
-                      textTransform: 'uppercase',
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      letterSpacing: '1px'
-                    }}>
+                    <span className={`${styles.statusBadge} ${styles[o.status]}`}>
                       {o.status}
-                    </div>
+                    </span>
                     {o.processedBy && (
-                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                        by {o.processedBy.username}
+                      <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '0.3rem', fontWeight: 700 }}>
+                        BY: {o.processedBy.username.toUpperCase()}
                       </div>
                     )}
                   </td>
@@ -133,20 +124,9 @@ export default function AdminOrdersPage() {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button 
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => setSelectedOrder(o)}
-                        style={{ border: '1px solid rgba(255,255,255,0.1)' }}
-                      >
-                        Details
-                      </button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setSelectedOrder(o)}>DETAILS</button>
                       {o.status === 'pending' && (
-                        <button 
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleStatusUpdate(o._id, 'shipped')}
-                        >
-                          Process
-                        </button>
+                        <button className="btn btn-primary btn-sm" onClick={() => handleStatusUpdate(o._id, 'shipped')}>SHIP</button>
                       )}
                     </div>
                   </td>
@@ -157,56 +137,56 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      {/* Order Details Modal */}
       {selectedOrder && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 100,
-          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '2rem'
-        }} onClick={() => setSelectedOrder(null)}>
-          <div className={styles.staticCard} style={{ maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <h3>Order Details</h3>
+        <div className={styles.modalOverlay} onClick={() => setSelectedOrder(null)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.title} style={{ fontSize: '1.2rem', margin: 0 }}>Manifest Details: #{selectedOrder._id.slice(-8).toUpperCase()}</h3>
               <button onClick={() => setSelectedOrder(null)} className="btn btn-ghost btn-sm">✕</button>
             </div>
 
-            <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.5rem', letterSpacing: '1px' }}>Shipping / Billing Address</div>
-              <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.25rem' }}>{selectedOrder.customerInfo.name}</div>
-              <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
-                {selectedOrder.customerInfo.address}
+            <div className={styles.modalBody}>
+              <div className={styles.infoBlock}>
+                <div className={styles.infoLabel}>Shipping Intel</div>
+                <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
+                <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '0.9rem' }}>
+                  {selectedOrder.customerInfo.address}
+                </div>
+                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <div style={{ color: 'var(--neon-blue)', fontSize: '0.85rem', fontWeight: 600 }}>📧 {selectedOrder.customerInfo.email}</div>
+                  <div style={{ color: 'var(--neon-green)', fontSize: '0.85rem', fontWeight: 600 }}>📞 {selectedOrder.customerInfo.phone}</div>
+                </div>
               </div>
-              <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                <div style={{ color: 'var(--neon-blue)', fontSize: '0.9rem' }}>📧 {selectedOrder.customerInfo.email}</div>
-                <div style={{ color: 'var(--neon-green)', fontSize: '0.9rem', fontWeight: 600 }}>📞 {selectedOrder.customerInfo.phone}</div>
-              </div>
-            </div>
 
-            <div style={{ marginBottom: '2rem' }}>
-              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '1rem', letterSpacing: '1px' }}>Order Items</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {selectedOrder.items.map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border)', borderRadius: '8px' }}>
-                    <div>
-                      <div style={{ fontWeight: 600 }}>{item.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Qty: {item.quantity}</div>
-                    </div>
-                    <div style={{ fontWeight: 700 }}>${(item.price * item.quantity).toFixed(2)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
               <div>
-                <span style={{ color: 'var(--text-muted)' }}>Status: </span>
-                <span style={{ color: getStatusColor(selectedOrder.status), fontWeight: 700, textTransform: 'uppercase' }}>{selectedOrder.status}</span>
+                <div className={styles.infoLabel}>Cargo Manifest</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {selectedOrder.items.map((item, idx) => (
+                    <div key={idx} className={styles.itemCard}>
+                      <div>
+                        <div style={{ fontWeight: 700, color: 'white' }}>{item.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Quantity: {item.quantity}</div>
+                      </div>
+                      <div style={{ fontWeight: 800, color: 'var(--neon-blue)', fontFamily: 'Rajdhani' }}>${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--neon-blue)' }}>Total: ${selectedOrder.total.toFixed(2)}</div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+                <div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Current Status: </span>
+                  <span className={`${styles.statusBadge} ${styles[selectedOrder.status]}`}>{selectedOrder.status}</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                   <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Total Valuation</div>
+                   <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--neon-blue)', fontFamily: 'Rajdhani' }}>${selectedOrder.total.toFixed(2)}</div>
+                </div>
+              </div>
             </div>
             
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+            <div className={styles.modalFooter}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>CLOSE</button>
               {selectedOrder.status === 'pending' && (
                 <button 
                   className="btn btn-primary" 
@@ -216,10 +196,9 @@ export default function AdminOrdersPage() {
                     setSelectedOrder(null);
                   }}
                 >
-                  Process & Ship
+                  AUTHORIZE SHIPMENT
                 </button>
               )}
-              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>Close</button>
             </div>
           </div>
         </div>

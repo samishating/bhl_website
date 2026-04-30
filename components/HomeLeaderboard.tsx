@@ -9,7 +9,11 @@ const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
 const divTagClass: Record<string, string> = {
   gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content',
 };
-const rankIcons = ['🥇', '🥈', '🥉'];
+const rankIcons = [
+  '/ICONS/MEDAL 1.svg',
+  '/ICONS/MEDAL 2.svg',
+  '/ICONS/MEDAL 3.svg'
+];
 
 export default function HomeLeaderboard() {
   const [users, setUsers] = useState<any[]>([]);
@@ -103,7 +107,9 @@ export default function HomeLeaderboard() {
                   <Link href={`/users/${u._id}`} className={styles.podiumName}>{u.username}</Link>
                   <div className={styles.podiumXp}>{u.xp.toLocaleString()} XP</div>
                   <div className={styles.podiumBase} style={{ height: heightPct }}>
-                    <span className={styles.podiumRank}>{rankIcons[rank - 1]}</span>
+                    <span className={styles.podiumRank}>
+                      <img src={rankIcons[rank - 1]} alt={`Rank ${rank}`} style={{ width: '40px', height: '40px' }} />
+                    </span>
                   </div>
                 </div>
               );
@@ -134,7 +140,15 @@ export default function HomeLeaderboard() {
                 <tbody>
                   {users.map((u, i) => (
                     <tr key={u._id} className={i < 3 ? styles.topRow : ''}>
-                      <td><span className={styles.rank}>{i < 3 ? rankIcons[i] : i + 1}</span></td>
+                      <td>
+                        <span className={styles.rank}>
+                          {i < 3 ? (
+                            <img src={rankIcons[i]} alt={`Rank ${i+1}`} style={{ width: '24px', height: '24px' }} />
+                          ) : (
+                            i + 1
+                          )}
+                        </span>
+                      </td>
                       <td>
                         <div className={styles.memberCell}>
                           <Link href={`/users/${u._id}`} className="avatar">

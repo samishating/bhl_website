@@ -44,7 +44,9 @@ export default function JoinPage() {
     return (
       <div className={styles.successPage}>
         <div className={styles.successCard}>
-          <div className={styles.successIcon}>⚔️</div>
+          <div className={styles.successIcon}>
+            <img src="/ICONS/trophy_1.svg" alt="Success" style={{ width: '80px', height: '80px' }} />
+          </div>
           <h2>Application Received!</h2>
           <p>
             Welcome, <strong>{form.name}</strong>. Your application to the{' '}
@@ -122,12 +124,16 @@ export default function JoinPage() {
             </div>
             <button
               type="submit"
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary"
               disabled={!selectedDivision || loading}
               id="join-submit-btn"
-              style={{ width: '100%' }}
+              style={{ width: '100%', minHeight: '50px' }}
             >
-              {loading ? <><span className="spinner" /> Submitting…</> : 'Submit Application ⚔'}
+              {loading ? <><span className="spinner" /> Submitting…</> : (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  Submit Application <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} />
+                </span>
+              )}
             </button>
             {!selectedDivision && <p className={styles.hint}>Please select a division above</p>}
           </form>

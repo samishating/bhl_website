@@ -1,72 +1,102 @@
-.title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.25rem; }
-.sub { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; }
+.title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 2.2rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sub { color: var(--text-secondary); font-size: 0.95rem; letter-spacing: 0.02em; }
+
+/* User Grid */
+.userGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+
+.userCard { 
+  background: var(--bg-card); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  padding: 1.5rem; 
+  position: relative; 
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  backdrop-filter: blur(10px);
+}
+.userCard:hover { border-color: var(--border-hover); transform: translateY(-5px); box-shadow: var(--glow-red); }
+
+.userHeader { display: flex; align-items: center; gap: 1.25rem; }
+.avatarWrapper { position: relative; }
+.avatar { 
+  width: 64px; height: 64px; 
+  border-radius: 50%; 
+  border: 2px solid var(--brand-red); 
+  background: var(--bg-secondary); 
+  display: flex; align-items: center; justify-content: center; 
+  overflow: hidden; 
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.5rem; 
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.levelBadge { 
+  position: absolute; bottom: -5px; right: -5px; 
+  background: var(--brand-red); 
+  color: white; 
+  padding: 0.1rem 0.5rem; 
+  border-radius: 4px; 
+  font-size: 0.65rem; 
+  font-weight: 800; 
+  font-family: 'Rajdhani', sans-serif; 
+  border: 2px solid var(--bg-card);
+}
+
+.userInfo { flex: 1; min-width: 0; }
+.username { font-family: 'Rajdhani', sans-serif; font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 0.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.email { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.roleBadge { 
+  display: inline-block; 
+  padding: 0.1rem 0.6rem; 
+  border-radius: 4px; 
+  font-size: 0.6rem; 
+  font-weight: 800; 
+  letter-spacing: 0.1em; 
+  text-transform: uppercase; 
+}
+.superadmin { background: linear-gradient(90deg, #ff0055, #cc0000); color: white; box-shadow: 0 0 10px rgba(255,0,85,0.3); }
+.admin { background: rgba(255,0,0,0.1); color: var(--brand-red); border: 1px solid rgba(255,0,0,0.3); }
+.user { background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.1); }
+
+.statsRow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-md); }
+.statItem { display: flex; flex-direction: column; gap: 0.2rem; }
+.statLabel { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+.statValue { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; color: white; }
+
+.divisionsRow { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.cardActions { display: flex; gap: 0.5rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+/* Modal */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
 }
-
-.modal {
-  background: #111;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+.modalContent {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   width: 100%;
   max-width: 500px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  animation: modalIn 0.3s ease-out;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
+.modalHeader { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modalBody { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.modalFooter { padding: 1.5rem 2rem; background: rgba(255,255,255,0.01); border-top: 1px solid var(--border); display: flex; gap: 1rem; }
 
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.modalHeader {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modalHeader h2 {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1.25rem;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.closeBtn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  line-height: 1;
-}
-
-.modalBody {
-  padding: 1.5rem;
-  overflow-y: auto;
-}
-
-.modalFooter {
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+@media (max-width: 768px) {
+  .header { flex-direction: column; gap: 1.5rem; }
+  .userGrid { grid-template-columns: 1fr; }
 }

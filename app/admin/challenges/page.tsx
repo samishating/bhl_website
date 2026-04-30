@@ -10,6 +10,8 @@ const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-
 
 const defaultForm = { title: '', description: '', xpReward: 50, division: 'gaming', allowRepeats: false };
 
+const dotColors: Record<string, string> = { gaming: '#FFFDBA', music: '#A855F7', sport: '#06B6D4', content: '#EF4444' };
+
 export default function AdminChallengesPage() {
   const { user } = useAuth();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -20,8 +22,8 @@ export default function AdminChallengesPage() {
   const [showForm, setShowForm] = useState(false);
   const { showToast } = useToast();
 
-
   const load = () => {
+    setLoading(true);
     fetch('/api/challenges')
       .then(r => r.json())
       .then(d => { setChallenges(d.challenges || []); setLoading(false); });
@@ -45,7 +47,7 @@ export default function AdminChallengesPage() {
       setShowForm(false);
       setEditingId(null);
       load();
-      showToast(editingId ? 'Challenge updated!' : 'Challenge created!', 'success');
+      showToast(editingId ? 'Mission parameters updated!' : 'New mission deployed!', 'success');
     } else {
       const d = await res.json();
       showToast(`${d.error || 'Failed'}`, 'error');
@@ -59,113 +61,116 @@ export default function AdminChallengesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    // Removing confirmation alert per user request, using toast for feedback
     await fetch(`/api/challenges/${id}`, { method: 'DELETE' });
     load();
-    showToast('Challenge deleted', 'info');
+    showToast('Mission neutralized', 'info');
   };
 
   return (
-    <div>
-
+    <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Challenges</h1>
-          <p className={styles.sub}>{challenges.length} active challenges</p>
+          <h1 className={styles.title}>Combat Challenges</h1>
+          <p className={styles.sub}>{challenges.length} active missions available</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { if(showForm) {setForm(defaultForm); setEditingId(null);} setShowForm(!showForm); }} id="admin-create-challenge-btn">
-          {showForm ? 'Cancel' : '+ New Challenge'}
+        <button className="btn btn-primary" onClick={() => { setForm(defaultForm); setEditingId(null); setShowForm(true); }}>
+          + Deploy New Mission
         </button>
       </div>
 
-      {showForm && (
-        <form onSubmit={handleCreate} className={styles.createForm}>
-          <h3 className={styles.formTitle}>{editingId ? 'Edit Challenge' : 'Create Challenge'}</h3>
-          
-          <div className="form-group">
-            <label className="form-label">Title *</label>
-            <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" id="challenge-title" />
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '10rem' }}>
+          <div className="loader-visual" style={{ margin: '0 auto' }}>
+            <div className="loader-arc" />
+            <img src="/brand/logo.webp" alt="" className="loader-logo" />
           </div>
+          <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Missions...</p>
+        </div>
+      ) : challenges.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
+          <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No active challenges in this sector</p>
+        </div>
+      ) : (
+        <div className={styles.challengeGrid}>
+          {challenges.map(c => (
+            <div key={c._id} className={styles.challengeCard}>
+              <div className={styles.cardHeader}>
+                <div className={styles.challengeTitle}>{c.title}</div>
+                <div className={styles.xpBadge}>+{c.xpReward} XP</div>
+              </div>
+              
+              <div className={styles.challengeDesc}>{c.description}</div>
 
-          <div className={styles.formRow}>
-            <div className="form-group">
-              <label className="form-label">XP Reward</label>
-              <input type="number" className="form-input" value={form.xpReward} onChange={e => setForm(p => ({ ...p, xpReward: Number(e.target.value) }))} id="challenge-xp" />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Division</label>
-              <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))} id="challenge-division">
-                {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <div className="form-group">
-              <label className={styles.toggleLabel}>Allow Repeats</label>
-              <div className={styles.segmentedToggle}>
-                <button 
-                  type="button" 
-                  className={`${styles.toggleBtn} ${!form.allowRepeats ? styles.toggleActive : ''}`}
-                  onClick={() => setForm(p => ({ ...p, allowRepeats: false }))}
-                >
-                  OFF
-                </button>
-                <button 
-                  type="button" 
-                  className={`${styles.toggleBtn} ${form.allowRepeats ? styles.toggleActive : ''}`}
-                  onClick={() => setForm(p => ({ ...p, allowRepeats: true }))}
-                >
-                  ON
-                </button>
+              <div className={styles.cardFooter}>
+                <div className={styles.divisionLabel} style={{ '--dot-color': dotColors[c.division] || '#fff' } as any}>
+                  <span className={styles.divisionDot} />
+                  {c.division} Division
+                  {c.allowRepeats && <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>(Repeatable)</span>}
+                </div>
+                
+                <div className={styles.cardActions}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(c)} title="Edit Params">⚙️</button>
+                  {user?.role === 'superadmin' && (
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)} title="Purge Mission">🗑️</button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Description *</label>
-            <textarea required className="form-input" rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe what members need to do…" id="challenge-desc" style={{ resize: 'vertical' }} />
-          </div>
-
-          <button type="submit" className="btn btn-primary" style={{ height: '50px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.1em' }} disabled={creating} id="challenge-submit-btn">
-            {creating ? <span className="spinner" /> : editingId ? 'Update Challenge' : 'Create Challenge'}
-          </button>
-        </form>
+          ))}
+        </div>
       )}
 
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
-      ) : challenges.length === 0 ? (
-        <div className={styles.empty}>No challenges yet. Create one above!</div>
-      ) : (
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr><th>Title</th><th>Division</th><th>XP</th><th>Actions</th></tr>
-            </thead>
-            <tbody>
-              {challenges.map(c => (
-                <tr key={c._id}>
-                  <td>
-                    <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{c.title}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>{c.description.slice(0, 60)}…</div>
-                  </td>
-                  <td><span className={`division-tag ${divTagClass[c.division]}`}>{c.division}</span></td>
-                  <td>
-                    <span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{c.xpReward} XP</span>
-                    {c.allowRepeats && <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Repeatable</div>}
-                  </td>
-                  <td style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(c)} id={`edit-challenge-${c._id}`}>
-                      Edit
-                    </button>
-                    {user?.role === 'superadmin' && (
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)} id={`delete-challenge-${c._id}`}>
-                        Delete
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {showForm && (
+        <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.challengeTitle} style={{ margin: 0 }}>
+                {editingId ? 'Modify Mission' : 'Deploy New Mission'}
+              </h3>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}>✕</button>
+            </div>
+            
+            <form onSubmit={handleCreate}>
+              <div className={styles.modalBody}>
+                <div className="form-group">
+                  <label className="form-label">Mission Title *</label>
+                  <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" />
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className="form-group">
+                    <label className="form-label">XP Reward</label>
+                    <input type="number" className="form-input" value={form.xpReward} onChange={e => setForm(p => ({ ...p, xpReward: Number(e.target.value) }))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Tactical Division</label>
+                    <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))}>
+                      {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Mission Intel *</label>
+                  <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide clear objectives..." style={{ resize: 'none' }} />
+                </div>
+
+                <div className="form-group">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', fontSize: '0.85rem' }}>
+                    <input type="checkbox" checked={form.allowRepeats} onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} />
+                    Allow Multiple Deployments (Repeatable)
+                  </label>
+                </div>
+              </div>
+
+              <div className={styles.modalFooter}>
+                <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
+                  {creating ? <span className="spinner" /> : editingId ? 'Sync Mission' : 'Deploy Mission'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

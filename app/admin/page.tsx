@@ -30,9 +30,9 @@ export default function AdminPage() {
 
 
   const statCards = [
-    { label: 'Total Members', value: stats.users, icon: '👥', color: '#FF0000' },
-    { label: 'Active Challenges', value: stats.challenges, icon: '🏆', color: '#CC0000' },
-    { label: 'Products Listed', value: stats.products, icon: '👕', color: '#FFFDBA' },
+    { label: 'Total Members', value: stats.users, icon: '/ICONS/USER.svg', color: '#FF0000' },
+    { label: 'Active Challenges', value: stats.challenges, icon: '/ICONS/trophy_1.svg', color: '#CC0000' },
+    { label: 'Products Listed', value: stats.products, icon: '/ICONS/PRODUCTS.svg', color: '#FFFDBA' },
   ];
 
   return (
@@ -43,7 +43,9 @@ export default function AdminPage() {
       <div className={styles.statsGrid}>
         {statCards.map(s => (
           <div key={s.label} className={styles.statCard} style={{ '--card-color': s.color } as React.CSSProperties}>
-            <span className={styles.statIcon}>{s.icon}</span>
+            <span className={styles.statIcon}>
+              <img src={s.icon} alt="" style={{ width: '32px', height: '32px', filter: 'brightness(0) invert(1)', opacity: 0.8 }} />
+            </span>
             <div className={styles.statValue}>{s.value}</div>
             <div className={styles.statLabel}>{s.label}</div>
           </div>
@@ -54,13 +56,16 @@ export default function AdminPage() {
         <h3>Quick Actions</h3>
         <div className={styles.qGrid}>
           <a href="/admin/challenges" className={styles.qCard} id="admin-quick-challenges">
-            <span>🏆</span> Manage Challenges
+            <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)', opacity: 0.7 }} />
+            Manage Challenges
           </a>
           <a href="/admin/products" className={styles.qCard} id="admin-quick-products">
-            <span>👕</span> Manage Products
+            <img src="/ICONS/PRODUCTS.svg" alt="" style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)', opacity: 0.7 }} />
+            Manage Products
           </a>
           <a href="/admin/users" className={styles.qCard} id="admin-quick-users">
-            <span>👥</span> View Users
+            <img src="/ICONS/USER.svg" alt="" style={{ width: '20px', height: '20px', filter: 'brightness(0) invert(1)', opacity: 0.7 }} />
+            View Users
           </a>
           <a href="/leaderboard" className={styles.qCard} id="admin-quick-leaderboard">
             <span>📊</span> View Leaderboard

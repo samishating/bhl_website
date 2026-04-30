@@ -172,6 +172,7 @@ export default function AdminOrdersPage() {
               </div>
 
               <div className={styles.detailSection}>
+                <br />
                 <div className={styles.sectionLabel}>Manifest ({selectedOrder.items.length} items)</div>
                 <div className={styles.itemList}>
                   {selectedOrder.items.map((item, idx) => (

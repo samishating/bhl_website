@@ -643,6 +643,7 @@ tbody tr:last-child td { border-bottom: none; }
 
 /* FOOTER BAND */
 .footer-band {
+  margin-top: 20px;
   width: 100%;
   background: rgba(5, 5, 5, 0.96);
   border-top: 1px solid rgba(255, 0, 0, 0.2);

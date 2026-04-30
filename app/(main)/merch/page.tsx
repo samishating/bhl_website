@@ -16,11 +16,21 @@ export default async function MerchPage() {
 
   return (
     <div className={styles.page}>
-      <section className={styles.header}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroBanner}>
+          <img src="/backgrounds/merch-banner.png" alt="BHL Merch Banner" className={styles.bannerImg} />
+          <div className={styles.heroOverlay} />
+        </div>
         <div className="container">
-          <div className="section-tag">Official Store</div>
-          <h1 className={styles.heroTitle}>BHL <span className="gradient-text">Merch</span></h1>
-          <p className={styles.heroSub}>Rep the Brotherhood. Premium drops, limited editions, streetwear culture.</p>
+          <div className={styles.heroContent}>
+            <div className="section-tag animate-fade-down" style={{ justifyContent: 'center' }}>Official Store</div>
+            <h1 className={`${styles.heroTitle} animate-fade-up`}>
+              BHL <span className="gradient-text">MERCH</span>
+            </h1>
+            <p className={`${styles.heroSub} animate-fade-up`} style={{ animationDelay: '0.2s' }}>
+              REPRESENT THE BROTHERHOOD. PREMIUM APPAREL, LIMITED DROPS, AND EXCLUSIVE GEAR.
+            </p>
+          </div>
         </div>
       </section>
 

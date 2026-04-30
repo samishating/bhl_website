@@ -226,7 +226,14 @@ export default function AdminProductsPage() {
               {products.map(p => (
                 <tr key={p._id}>
                   <td style={{ fontWeight: 600 }}>
-                    {p.name} {p.isLimitedDrop && <span style={{ color: '#FF0000', fontSize: '0.75rem' }}>🔥 Conqueror</span>}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div className="avatar avatar-sm">
+                        {p.image ? <img src={p.image} alt="" /> : p.name[0].toUpperCase()}
+                      </div>
+                      <div>
+                        {p.name} {p.isLimitedDrop && <span style={{ color: '#FF0000', fontSize: '0.75rem' }}>🔥 Conqueror</span>}
+                      </div>
+                    </div>
                   </td>
                   <td><span className="division-tag tag-all">{p.category}</span></td>
                   <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>${p.price.toFixed(2)}</span></td>

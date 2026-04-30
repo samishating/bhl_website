@@ -30,11 +30,20 @@
   inset: 0;
   background: linear-gradient(
     to right,
-    rgba(14, 13, 13, 0) 0%,
-    rgba(14, 13, 13, 0.4) 40%,
-    rgba(14, 13, 13, 0.9) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.75) 100%
   );
   z-index: 1;
+}
+
+.heroSection::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .heroGrid {
@@ -79,11 +88,16 @@
 
 .heroContentInner {
   width: 100%;
-  max-width: 500px; /* ~45% of canvas on typical desktop */
+  max-width: 500px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  padding: 3rem;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px) saturate(0.85); /* LOCAL BLUR + DESATURATION */
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.3);
 }
 
 .heroTechTag {

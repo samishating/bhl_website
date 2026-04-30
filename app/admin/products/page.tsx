@@ -110,11 +110,10 @@ export default function AdminProductsPage() {
                 </select>
               </div>
               <div className="form-group" style={{ flex: 2 }}>
-                <label className="form-label">Featured Image URL</label>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input className="form-input" value={form.image} onChange={e => setForm(p => ({ ...p, image: e.target.value }))} placeholder="https://…" id="product-image" />
-                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    {uploading ? '⌛' : '📂'}
+                <label className="form-label">Featured Image</label>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap', width: '100%', justifyContent: 'center' }}>
+                    {uploading ? '⌛ Uploading...' : '📂 Click to Upload Main Image'}
                     <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;

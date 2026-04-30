@@ -241,11 +241,10 @@ export default function ProfilePage() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Avatar URL or Upload</label>
+                <label className="form-label">Profile Picture</label>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input className="form-input" value={avatar} onChange={e => setAvatar(e.target.value)} placeholder="https://…" id="profile-avatar-input" />
-                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    {uploading ? '⌛ Processing...' : '📂 Upload'}
+                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap', width: '100%', justifyContent: 'center' }}>
+                    {uploading ? '⌛ Processing...' : '📂 Click to Upload New Avatar'}
                     <input type="file" style={{ display: 'none' }} disabled={uploading} accept="image/*" onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {

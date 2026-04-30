@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -25,6 +25,9 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const { addItem } = useCart();
   const [filter, setFilter] = useState('all');
   const { showToast } = useToast();
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [hasMounted, setHasMounted] = useState(false);
 
   const REQUIRED_XP = 40000;
   const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
@@ -34,6 +37,22 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
     if (filter === 'drop') return p.isLimitedDrop;
     return p.category === filter;
   });
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (hasMounted) {
+      const activeTab = tabsRef.current?.querySelector(`.${styles.tabActive}`) as HTMLElement;
+      if (activeTab) {
+        setIndicatorStyle({
+          left: activeTab.offsetLeft,
+          width: activeTab.offsetWidth
+        });
+      }
+    }
+  }, [filter, hasMounted]);
 
   const handleAddToCart = (p: Product) => {
     if (!user) {
@@ -50,7 +69,16 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   return (
     <>
       <div className="animate-fade-up">
-        <div className={styles.tabs}>
+        <div className={styles.tabs} ref={tabsRef}>
+          {hasMounted && (
+            <div 
+              className={styles.indicator} 
+              style={{ 
+                left: `${indicatorStyle.left}px`, 
+                width: `${indicatorStyle.width}px` 
+              }} 
+            />
+          )}
           {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
             <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
               onClick={() => setFilter(c)} id={`merch-tab-${c}`}>

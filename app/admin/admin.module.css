@@ -27,7 +27,7 @@
   position: relative; 
   gap: 0;
 }
-.sidebarCollapsed .navLink span:not(.navIcon) { display: none; }
+.sidebarCollapsed .navLink span:not(.navIcon):not(.notificationBadge) { display: none; }
 .sidebarCollapsed .sidebarLogo span { display: none; }
 .sidebarCollapsed .sidebarLogo img { margin: 0 auto; width: 32px; display: block; }
 .sidebarCollapsed .sidebarLogo { 
@@ -129,4 +129,19 @@
   min-width: 1.5rem;
   text-align: center;
   line-height: 1.2;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.sidebarCollapsed .notificationBadge {
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  border: 2px solid var(--bg-secondary);
 }

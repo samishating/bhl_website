@@ -50,12 +50,8 @@
   position: relative;
   z-index: 2;
   height: 100%;
-  display: grid;
-  grid-template-columns: 4fr 6fr;
-  align-items: center;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 0 40px;
 }
 @media (max-width: 1024px) {
   .heroSection { height: auto; padding: 120px 0 80px; }
@@ -79,25 +75,32 @@
 }
 
 .heroTextContainer {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 45%;
   height: 100%;
-  padding-right: clamp(80px, 8vw, 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 100px 80px;
+  z-index: 3;
 }
 
 .heroContentInner {
   width: 100%;
-  max-width: 500px;
+  height: 80%; /* VERTICAL OCCUPATION RULE */
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* SPREAD CONTENT */
   align-items: flex-start;
   text-align: left;
-  padding: 3rem;
-  border-radius: 20px;
+  padding: 3.5rem;
+  border-radius: 24px;
   background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(10px) saturate(0.85); /* LOCAL BLUR + DESATURATION */
-  box-shadow: 0 0 100px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px) saturate(0.8);
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.4);
 }
 
 .heroTechTag {
@@ -117,31 +120,31 @@
 }
 
 .titleBHL {
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(5rem, 10vw, 10rem); /* MEDIUM DOMINANT */
   font-weight: 900;
   line-height: 0.8;
-  letter-spacing: -0.04em;
-  margin-bottom: 8px; /* FIXED OFFSET */
+  letter-spacing: -0.06em;
+  margin-bottom: 8px;
+  color: white;
 }
 
 .titleMerch {
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(7rem, 15vw, 16rem); /* PRIMARY DOMINANT */
   font-weight: 900;
   line-height: 0.8;
-  letter-spacing: -0.04em;
-  margin-top: -4px; /* TIGHTENING OFFSET */
+  letter-spacing: -0.06em;
+  margin-top: -12px; /* TIGHTER NEGATIVE MARGIN */
 }
 
 .heroSub { 
   color: var(--text-secondary); 
-  font-size: 1rem; 
+  font-size: 1.1rem; /* SMALL BUT READABLE */
   line-height: 1.8; 
-  letter-spacing: 0.2em; 
-  font-weight: 700;
+  letter-spacing: 0.3em; 
+  font-weight: 800;
   font-family: 'Rajdhani', sans-serif;
   text-transform: uppercase;
-  margin-top: 24px; /* FIXED OFFSET */
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .heroDragon {

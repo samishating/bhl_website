@@ -20,11 +20,22 @@
 .navLink:hover { background: rgba(255,255,255,0.03); color: white; }
 .navLink.active { background: rgba(255,0,0,0.08); color: var(--brand-red); }
 .navIcon { display: flex; align-items: center; justify-content: center; width: 32px; font-size: 1.25rem; flex-shrink: 0; }
-.sidebarCollapsed .navLink { justify-content: center; padding: 0.75rem 0; position: relative; }
+.sidebarCollapsed .navLink { 
+  width: 100%;
+  justify-content: center; 
+  padding: 0.75rem 0; 
+  position: relative; 
+  gap: 0;
+}
 .sidebarCollapsed .navLink span:not(.navIcon) { display: none; }
 .sidebarCollapsed .sidebarLogo span { display: none; }
-.sidebarCollapsed .sidebarLogo img { margin: 0 auto; width: 32px; }
-.sidebarCollapsed .sidebarLogo { padding: 1.5rem 0; justify-content: center; }
+.sidebarCollapsed .sidebarLogo img { margin: 0 auto; width: 32px; display: block; }
+.sidebarCollapsed .sidebarLogo { 
+  padding: 1.5rem 0; 
+  width: 100%;
+  justify-content: center; 
+}
+
 .sidebarCollapsed .sidebarFooter { display: none; }
 .sidebarCollapsed .closeSidebar { display: none; }
 

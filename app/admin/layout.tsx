@@ -106,20 +106,31 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         {mobileNavOpen && <div className={styles.sidebarOverlay} onClick={() => setMobileNavOpen(false)} />}
 
         <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingRight: isCollapsed ? '0' : '1rem' }}>
+          <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px' }}>
             <Link href="/" className={styles.sidebarLogo}>
               <img src="/brand/logo.webp" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
+              <span>BHL Admin</span>
             </Link>
-            {!isCollapsed && (
-              <button className={styles.collapseToggle} onClick={toggleCollapse} title="Collapse Sidebar">
-                ◀
-              </button>
-            )}
-            {isCollapsed && (
-              <button className={styles.collapseToggle} onClick={toggleCollapse} title="Expand Sidebar" style={{ position: 'absolute', top: '1.5rem', right: '-12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '50%', width: '24px', height: '24px', zIndex: 10 }}>
-                ▶
-              </button>
-            )}
+            
+            <button 
+              className={styles.collapseToggle} 
+              onClick={toggleCollapse} 
+              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+              style={{ 
+                position: 'absolute', 
+                right: isCollapsed ? '-12px' : '1rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 100,
+                background: isCollapsed ? 'var(--bg-secondary)' : 'transparent',
+                border: isCollapsed ? '1px solid var(--border)' : 'none',
+                borderRadius: '50%',
+                width: '24px',
+                height: '24px'
+              }}
+            >
+              {isCollapsed ? '▶' : '◀'}
+            </button>
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
           </div>
           <nav className={styles.nav}>

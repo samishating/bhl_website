@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await targetUser.save();
 
     // Clear auth cache to apply changes immediately
-    revalidateTag('auth');
+    revalidateTag('auth', 'auth');
 
     return NextResponse.json({ message: `User role updated to ${role}`, user: targetUser });
   } catch (err) {

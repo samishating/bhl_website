@@ -68,7 +68,8 @@ export default function AdminPage() {
             View Users
           </a>
           <a href="/leaderboard" className={styles.qCard} id="admin-quick-leaderboard">
-            <span>📊</span> View Leaderboard
+            <img src="/ICONS/OVERVIEW.svg" alt="" style={{ width: '20px', height: '20px' }} />
+            View Leaderboard
           </a>
         </div>
       </div>

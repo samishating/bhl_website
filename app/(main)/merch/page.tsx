@@ -3,7 +3,7 @@ import { Product } from '@/models/Product';
 import MerchClient from './MerchClient';
 import styles from './page.module.css';
 
-export const revalidate = 3600; // ISR: 1 hour
+export const revalidate = 60; // ISR: 1 minute fallback
 
 async function getProducts() {
   await connectDB();

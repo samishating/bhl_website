@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { verifyAdmin } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
+
+// ... (rest of imports)
 
 export async function GET() {
   try {
@@ -23,6 +26,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, description, price, image, images, stock, isLimitedDrop, category } = body;
     const product = await Product.create({ name, description, price, image, images: images || [], stock, isLimitedDrop, category });
+    
+    // Trigger revalidation
+    revalidatePath('/merch');
+
     return NextResponse.json({ product }, { status: 201 });
   } catch (err) {
     console.error(err);
@@ -40,6 +47,10 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
     await Product.findByIdAndDelete(id);
+    
+    // Trigger revalidation
+    revalidatePath('/merch');
+
     return NextResponse.json({ message: 'Product deleted' });
   } catch (err) {
     console.error(err);

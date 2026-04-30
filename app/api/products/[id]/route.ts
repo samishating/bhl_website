@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { verifyAdmin } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,6 +24,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     );
 
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    
+    // Trigger revalidation
+    revalidatePath('/merch');
+
     return NextResponse.json({ product });
   } catch (err) {
     console.error(err);

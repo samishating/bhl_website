@@ -49,6 +49,20 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   }, []);
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Load collapse state
+  useEffect(() => {
+    const saved = localStorage.getItem('adminSidebarCollapsed');
+    if (saved === 'true') setIsCollapsed(true);
+  }, []);
+
+  // Save collapse state
+  const toggleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('adminSidebarCollapsed', newState.toString());
+  };
 
   useEffect(() => {
     if (user?.role === 'admin' || user?.role === 'superadmin') {
@@ -91,11 +105,21 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Sidebar Overlay */}
         {mobileNavOpen && <div className={styles.sidebarOverlay} onClick={() => setMobileNavOpen(false)} />}
 
-        <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''}`}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
+        <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingRight: isCollapsed ? '0' : '1rem' }}>
             <Link href="/" className={styles.sidebarLogo}>
               <img src="/brand/logo.webp" alt="BHL Admin" style={{ height: '32px', objectFit: 'contain' }} />
             </Link>
+            {!isCollapsed && (
+              <button className={styles.collapseToggle} onClick={toggleCollapse} title="Collapse Sidebar">
+                ◀
+              </button>
+            )}
+            {isCollapsed && (
+              <button className={styles.collapseToggle} onClick={toggleCollapse} title="Expand Sidebar" style={{ position: 'absolute', top: '1.5rem', right: '-12px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '50%', width: '24px', height: '24px', zIndex: 10 }}>
+                ▶
+              </button>
+            )}
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
           </div>
           <nav className={styles.nav}>
@@ -109,12 +133,12 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                 <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>
                   <span className={styles.navIcon}>
                     {l.icon.endsWith('.svg') ? (
-                      <img src={l.icon} alt="" style={{ width: '18px', height: '18px' }} />
+                      <img src={l.icon} alt="" style={{ width: '22px', height: '22px' }} />
                     ) : (
                       l.icon
                     )}
                   </span> 
-                  {l.label}
+                  <span>{l.label}</span>
                   {badgeCount > 0 && <span className={styles.notificationBadge}>{badgeCount}</span>}
                 </Link>
               );
@@ -124,7 +148,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             <Link href="/" className={styles.backLink}>← Back to Site</Link>
           </div>
         </aside>
-        <main className={styles.main}>{children}</main>
+        <main className={`${styles.main} ${isCollapsed ? styles.mainCollapsed : ''}`}>{children}</main>
       </div>
     </AdminContext.Provider>
   );

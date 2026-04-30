@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
-import { getUserFromRequest } from '@/lib/auth';
+import { verifyAdmin } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -16,8 +16,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifyAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const body = await req.json();
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifyAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { searchParams } = new URL(req.url);

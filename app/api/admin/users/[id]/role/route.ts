@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
-import { getUserFromRequest, verifySuperAdmin } from '@/lib/auth';
+import { verifySuperAdmin } from '@/lib/auth';
 import { revalidateTag } from 'next/cache';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await targetUser.save();
 
     // Clear auth cache to apply changes immediately
-    revalidateTag('auth', 'auth');
+    revalidateTag('auth');
 
     return NextResponse.json({ message: `User role updated to ${role}`, user: targetUser });
   } catch (err) {

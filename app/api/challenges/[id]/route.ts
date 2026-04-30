@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Challenge } from '@/models/Challenge';
-import { getUserFromRequest } from '@/lib/auth';
+import { verifyAdmin, verifySuperAdmin } from '@/lib/auth';
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const payload = getUserFromRequest(req);
-    if (payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifySuperAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { id } = await params;
@@ -20,8 +20,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifyAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { id } = await params;

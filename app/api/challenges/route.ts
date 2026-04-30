@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Challenge } from '@/models/Challenge';
-import { getUserFromRequest } from '@/lib/auth';
+import { verifyAdmin } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const payload = getUserFromRequest(req);
-    if (payload?.role !== 'admin' && payload?.role !== 'superadmin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const admin = await verifyAdmin(req);
+    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();
     const { title, description, xpReward, division, allowRepeats } = await req.json();

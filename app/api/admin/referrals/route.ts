@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Referral } from '@/models/Referral';
-import { verifySuperAdmin } from '@/lib/auth';
+import { verifyAdmin, verifySuperAdmin } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const admin = await verifySuperAdmin(req);
+    // All admins can view referral codes (needed for order filtering)
+    const admin = await verifyAdmin(req);
     if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectDB();

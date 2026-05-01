@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '../layout';
 import styles from './page.module.css';
 
@@ -20,6 +20,7 @@ interface Referral {
   _id: string;
   code: string;
   discountPercentage: number;
+  assignedTo?: { username: string };
 }
 
 export default function AdminOrdersPage() {
@@ -27,7 +28,10 @@ export default function AdminOrdersPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [filterCode, setFilterCode] = useState<string>('all');
+  const [searchCode, setSearchCode] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null); // null = all
+  const searchRef = useRef<HTMLDivElement>(null);
   const { refreshCounts, setGlobalLoading } = useAdmin();
 
   useEffect(() => {
@@ -41,10 +45,20 @@ export default function AdminOrdersPage() {
     }).catch(() => setLoading(false));
   }, []);
 
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     setGlobalLoading(true);
     setOrders(prev => prev.map(o => o._id === id ? { ...o, status: newStatus } : o));
-
     try {
       const res = await fetch(`/api/orders/${id}`, {
         method: 'PATCH',
@@ -65,13 +79,34 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const filtered = filterCode === 'all'
-    ? orders
-    : filterCode === 'with_promo'
-    ? orders.filter(o => !!o.referralCode)
-    : orders.filter(o => o.referralCode === filterCode);
+  // Filter logic
+  const filtered = activeFilter
+    ? orders.filter(o => o.referralCode === activeFilter)
+    : orders;
 
-  const promoOrders = orders.filter(o => !!o.referralCode).length;
+  // Suggestions: filter referrals by search input and enrich with count
+  const enriched = referrals.map(r => ({
+    ...r,
+    count: orders.filter(o => o.referralCode === r.code).length,
+  }));
+
+  const suggestions = enriched.filter(r =>
+    searchCode.trim() === '' || r.code.toLowerCase().includes(searchCode.toLowerCase())
+  );
+
+  const selectCode = (code: string) => {
+    setActiveFilter(code);
+    setSearchCode(code);
+    setShowSuggestions(false);
+  };
+
+  const clearFilter = () => {
+    setActiveFilter(null);
+    setSearchCode('');
+    setShowSuggestions(false);
+  };
+
+  const promoCount = orders.filter(o => !!o.referralCode).length;
 
   return (
     <>
@@ -79,29 +114,145 @@ export default function AdminOrdersPage() {
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Order Management</h1>
-            <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} orders pending processing</p>
+            <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} orders pending • {promoCount} with promo code</p>
           </div>
-          {/* Referral Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontSize: '0.8rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>
-              Filter by Code:
-            </span>
-            <select
-              className="form-input"
-              style={{ width: 'auto', minWidth: '180px', cursor: 'pointer', fontFamily: 'Rajdhani', fontWeight: 700 }}
-              value={filterCode}
-              onChange={e => setFilterCode(e.target.value)}
-            >
-              <option value="all">All Orders ({orders.length})</option>
-              <option value="with_promo">With Promo Code ({promoOrders})</option>
-              {referrals.map(r => (
-                <option key={r._id} value={r.code}>
-                  {r.code} — {r.discountPercentage}% ({orders.filter(o => o.referralCode === r.code).length})
-                </option>
-              ))}
-            </select>
+
+          {/* Referral Code Search Field */}
+          <div ref={searchRef} style={{ position: 'relative', width: '280px' }}>
+            <label style={{ display: 'block', fontSize: '0.7rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
+              Filter by Referral Code
+            </label>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <span style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)', fontSize: '0.9rem', pointerEvents: 'none' }}>🔍</span>
+              <input
+                type="text"
+                className="form-input"
+                style={{ paddingLeft: '2.2rem', paddingRight: activeFilter ? '2.5rem' : '0.875rem', fontFamily: 'Rajdhani', fontWeight: 700, letterSpacing: activeFilter ? '0.12em' : 'normal', color: activeFilter ? '#4eff91' : 'white' }}
+                placeholder="Search codes..."
+                value={searchCode}
+                onChange={e => { setSearchCode(e.target.value); setActiveFilter(null); setShowSuggestions(true); }}
+                onFocus={() => setShowSuggestions(true)}
+              />
+              {(searchCode || activeFilter) && (
+                <button
+                  onClick={clearFilter}
+                  style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1rem', lineHeight: 1, padding: '0.2rem' }}
+                  title="Clear filter"
+                >✕</button>
+              )}
+            </div>
+
+            {/* Suggestions Dropdown */}
+            {showSuggestions && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 6px)',
+                left: 0,
+                right: 0,
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border)',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                zIndex: 200,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              }}>
+                {/* "All Orders" option */}
+                <button
+                  onClick={clearFilter}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.75rem 1rem',
+                    background: !activeFilter ? 'rgba(255,255,255,0.06)' : 'transparent',
+                    border: 'none',
+                    borderBottom: '1px solid var(--border)',
+                    color: !activeFilter ? 'white' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    fontFamily: 'Rajdhani',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    textAlign: 'left',
+                  }}
+                >
+                  <span>All Orders</span>
+                  <span style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '999px', padding: '0.1rem 0.5rem', fontSize: '0.75rem', fontWeight: 800 }}>{orders.length}</span>
+                </button>
+
+                {suggestions.length === 0 ? (
+                  <div style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', fontFamily: 'Rajdhani' }}>
+                    No matching codes
+                  </div>
+                ) : (
+                  suggestions.map(r => (
+                    <button
+                      key={r._id}
+                      onClick={() => selectCode(r.code)}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '0.75rem 1rem',
+                        background: activeFilter === r.code ? 'rgba(0,255,100,0.06)' : 'transparent',
+                        border: 'none',
+                        borderBottom: '1px solid rgba(255,255,255,0.04)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: '0.15s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = activeFilter === r.code ? 'rgba(0,255,100,0.06)' : 'transparent')}
+                    >
+                      <div>
+                        <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.12em', color: activeFilter === r.code ? '#4eff91' : 'white' }}>
+                          {r.code}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
+                          {r.discountPercentage}% off{r.assignedTo ? ` · ${r.assignedTo.username}` : ''}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.15rem' }}>
+                        <span style={{
+                          background: r.count > 0 ? 'rgba(0,255,100,0.12)' : 'rgba(255,255,255,0.06)',
+                          color: r.count > 0 ? '#4eff91' : 'var(--text-muted)',
+                          border: `1px solid ${r.count > 0 ? 'rgba(0,255,100,0.25)' : 'var(--border)'}`,
+                          borderRadius: '999px',
+                          padding: '0.1rem 0.6rem',
+                          fontSize: '0.8rem',
+                          fontWeight: 800,
+                          fontFamily: 'Rajdhani',
+                        }}>
+                          {r.count} order{r.count !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Active filter pill */}
+        {activeFilter && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'Rajdhani', fontWeight: 700, textTransform: 'uppercase' }}>Showing orders for:</span>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+              background: 'rgba(0,255,100,0.08)', border: '1px solid rgba(0,255,100,0.25)',
+              borderRadius: '999px', padding: '0.3rem 0.9rem',
+              fontFamily: 'monospace', fontWeight: 800, fontSize: '0.9rem', letterSpacing: '0.12em', color: '#4eff91',
+            }}>
+              {activeFilter}
+              <button onClick={clearFilter} style={{ background: 'none', border: 'none', color: '#4eff91', cursor: 'pointer', opacity: 0.7, padding: 0, lineHeight: 1 }}>✕</button>
+            </span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'Rajdhani' }}>
+              {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '10rem' }}>
@@ -114,7 +265,7 @@ export default function AdminOrdersPage() {
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
             <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              {filterCode === 'all' ? 'No logistics data found' : `No orders found for code: ${filterCode}`}
+              {activeFilter ? `No orders found for code: ${activeFilter}` : 'No logistics data found'}
             </p>
           </div>
         ) : (
@@ -143,23 +294,15 @@ export default function AdminOrdersPage() {
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{o.customerInfo.email}</div>
                     </td>
                     <td>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        {o.items.length} Units
-                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{o.items.length} Units</div>
                     </td>
                     <td>
                       {o.referralCode ? (
                         <span style={{
-                          fontFamily: 'monospace',
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          letterSpacing: '0.1em',
-                          color: '#4eff91',
-                          background: 'rgba(0,255,100,0.08)',
-                          border: '1px solid rgba(0,255,100,0.2)',
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '4px',
-                        }}>
+                          fontFamily: 'monospace', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.1em',
+                          color: '#4eff91', background: 'rgba(0,255,100,0.08)', border: '1px solid rgba(0,255,100,0.2)',
+                          padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer',
+                        }} onClick={() => selectCode(o.referralCode!)}>
                           {o.referralCode}
                         </span>
                       ) : (
@@ -171,15 +314,11 @@ export default function AdminOrdersPage() {
                         ${o.total.toFixed(2)}
                       </span>
                       {o.discountApplied && (
-                        <div style={{ fontSize: '0.65rem', color: '#4eff91', fontWeight: 700 }}>
-                          −{o.discountApplied}% applied
-                        </div>
+                        <div style={{ fontSize: '0.65rem', color: '#4eff91', fontWeight: 700 }}>−{o.discountApplied}% applied</div>
                       )}
                     </td>
                     <td>
-                      <span className={`${styles.statusBadge} ${styles[o.status]}`}>
-                        {o.status}
-                      </span>
+                      <span className={`${styles.statusBadge} ${styles[o.status]}`}>{o.status}</span>
                       {o.processedBy && (
                         <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '0.3rem', fontWeight: 700 }}>
                           BY: {o.processedBy.username.toUpperCase()}
@@ -256,19 +395,13 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
-              {/* Promo Code Block */}
               {selectedOrder.referralCode && (
                 <div className={styles.detailSection}>
                   <div className={styles.sectionLabel}>Promo Code Applied</div>
                   <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    background: 'rgba(0,255,100,0.06)',
-                    border: '1px solid rgba(0,255,100,0.2)',
-                    borderRadius: '12px',
-                    padding: '1rem 1.25rem',
-                    marginTop: '0.75rem',
+                    display: 'flex', alignItems: 'center', gap: '1rem',
+                    background: 'rgba(0,255,100,0.06)', border: '1px solid rgba(0,255,100,0.2)',
+                    borderRadius: '12px', padding: '1rem 1.25rem', marginTop: '0.75rem',
                   }}>
                     <div style={{ fontSize: '1.5rem' }}>🏷️</div>
                     <div>
@@ -306,10 +439,7 @@ export default function AdminOrdersPage() {
                 <button 
                   className="btn btn-primary" 
                   style={{ flex: 1 }}
-                  onClick={() => {
-                    handleStatusUpdate(selectedOrder._id, 'shipped');
-                    setSelectedOrder(null);
-                  }}
+                  onClick={() => { handleStatusUpdate(selectedOrder._id, 'shipped'); setSelectedOrder(null); }}
                 >
                   MARK AS SHIPPED
                 </button>

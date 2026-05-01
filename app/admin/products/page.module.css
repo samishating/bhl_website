@@ -95,7 +95,7 @@
 .splitForm { display: grid; grid-template-columns: 1fr 320px; gap: var(--space-lg); }
 
 /* Form Elements */
-.formRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.formRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px; }
 .imageGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
 .imageThumb { position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: #000; }
 .imageThumb img { width: 100%; height: 100%; object-fit: cover; }
@@ -122,7 +122,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  padding: 16px 20px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.04);
@@ -132,58 +132,44 @@
 
 .premiumToggle:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 0, 0, 0.4);
-}
-
-.premiumToggle input {
-  display: none;
+  border-color: var(--border-hover);
 }
 
 .toggleBox {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid var(--border);
   background: rgba(0,0,0,0.4);
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-.premiumToggle input:checked + .toggleBox {
-  background: #ff0000;
-  border-color: #ff0000;
-  box-shadow: 0 0 14px rgba(255,0,0,0.6);
-}
-
-.premiumToggle input:checked + .toggleBox::after {
-  content: '✓';
-  position: absolute;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 10px;
+  transition: all 0.2s ease;
+}
+
+.checkmark {
+  color: var(--brand-red);
+  font-size: 14px;
   font-weight: 900;
 }
 
-.toggleText {
+.toggleContent {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
-.toggleText strong {
+.toggleLabel {
   color: #fff;
-  font-size: 14px;
+  font-size: 0.88rem;
   font-family: 'Rajdhani', sans-serif;
-  text-transform: uppercase;
+  font-weight: 700;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-.toggleText small {
-  color: rgba(255,253,186,0.7);
-  font-size: 11px;
-  letter-spacing: 0.5px;
+.toggleSubtext {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
   font-weight: 600;
 }

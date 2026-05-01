@@ -230,26 +230,27 @@ export default function AdminProductsPage() {
                     <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide detailed specs..." style={{ resize: 'none' }} />
                   </div>
 
-                  <div className="form-group">
-                    <label className={styles.premiumToggle}>
-                      <input 
-                        type="checkbox" 
-                        checked={form.isLimitedDrop} 
-                        onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} 
-                      />
-                      <span className={styles.toggleBox}></span>
-                      <span className={styles.toggleText}>
-                        <strong>Premium Drop</strong>
-                        <small>Requires 40k XP</small>
-                      </span>
-                    </label>
+                  {/* Premium Drop Toggle Block */}
+                  <div 
+                    className={styles.premiumToggle} 
+                    onClick={() => setForm(p => ({ ...p, isLimitedDrop: !p.isLimitedDrop }))}
+                    style={{ marginTop: '24px' }}
+                  >
+                    <div className={styles.toggleBox}>
+                      {form.isLimitedDrop && <div className={styles.checkmark}>✓</div>}
+                    </div>
+                    <div className={styles.toggleContent}>
+                      <div className={styles.toggleLabel}>PREMIUM DROP</div>
+                      <div className={styles.toggleSubtext}>Requires 40k XP</div>
+                    </div>
                   </div>
 
-                  <div style={{ marginTop: 'auto', display: 'flex', gap: '1rem' }}>
+                  {/* Action Buttons Block */}
+                  <div style={{ marginTop: '32px', display: 'flex', gap: '16px' }}>
                     <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                      {creating ? <span className="spinner" /> : editingId ? 'Update Product' : 'Create Product'}
+                      {creating ? <span className="spinner" /> : editingId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
                     </button>
-                    <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
+                    <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>CANCEL</button>
                   </div>
                 </div>
 

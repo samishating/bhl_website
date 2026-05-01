@@ -157,24 +157,23 @@ export default function AdminChallengesPage() {
                   <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide clear objectives..." style={{ resize: 'none' }} />
                 </div>
 
-                <div className="form-group" style={{ marginTop: '0.25rem' }}>
-                  <label className={styles.premiumToggle}>
-                    <input 
-                      type="checkbox" 
-                      checked={form.allowRepeats} 
-                      onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} 
-                    />
-                    <span className={styles.toggleBox}></span>
-                    <span className={styles.toggleText}>
-                      <strong>Allow Multiple Completions</strong>
-                      <small>Repeatable</small>
-                    </span>
-                  </label>
+                <div 
+                  className={styles.premiumToggle} 
+                  onClick={() => setForm(p => ({ ...p, allowRepeats: !p.allowRepeats }))}
+                  style={{ marginTop: '24px' }}
+                >
+                  <div className={styles.toggleBox}>
+                    {form.allowRepeats && <div className={styles.checkmark}>✓</div>}
+                  </div>
+                  <div className={styles.toggleContent}>
+                    <div className={styles.toggleLabel}>ALLOW MULTIPLE COMPLETIONS</div>
+                    <div className={styles.toggleSubtext}>Repeatable</div>
+                  </div>
                 </div>
 
-                <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '16px', marginTop: '32px' }}>
                   <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                    {creating ? <span className="spinner" /> : editingId ? 'Save Changes' : 'Create Challenge'}
+                    {creating ? <span className="spinner" /> : editingId ? 'UPDATE CHALLENGE' : 'CREATE CHALLENGE'}
                   </button>
                   <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
                 </div>

@@ -210,7 +210,7 @@ h4 { font-size: 1.2rem; }
 .card-static:hover::before { opacity: 0; }
 
 /* ─── Forms ──────────────────────────────────────────── */
-.form-group { display: flex; flex-direction: column; gap: var(--space-xs); }
+.form-group { display: flex; flex-direction: column; gap: 10px; }
 .form-label {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
@@ -218,18 +218,19 @@ h4 { font-size: 1.2rem; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 10px;
 }
 .form-input {
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   color: white;
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   font-size: 0.95rem;
   transition: var(--transition);
   width: 100%;
 }
+textarea.form-input { min-height: 130px; }
 .form-input:focus {
   border-color: var(--brand-red);
   box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.12);

@@ -1,0 +1,197 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding-top: 120px;
+  padding-bottom: 80px;
+}
+
+.header {
+  margin-bottom: 3rem;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  transition: 0.2s;
+  margin-bottom: 2rem;
+}
+.back:hover { color: var(--brand-red); }
+
+.title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.sub { color: var(--text-secondary); font-size: 0.95rem; }
+
+/* Layout Grid */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* Left: Form */
+.formSection {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+}
+
+.sectionTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.formGrid { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* Promo Code Section */
+.promoSection {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.promoTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+}
+
+.promoInputRow {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.promoInput {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+}
+
+.promoApplied {
+  background: rgba(0,255,100,0.08);
+  border: 1px solid rgba(0,255,100,0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4eff91;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Right: Order Summary */
+.summary {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  position: sticky;
+  top: 120px;
+}
+
+.summaryTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.itemList { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem; }
+.summaryItem { display: flex; gap: 1rem; align-items: center; }
+.summaryImg { 
+  width: 70px; height: 70px; border-radius: 8px; border: 1px solid var(--border); 
+  overflow: hidden; flex-shrink: 0; background: #000;
+}
+.summaryImg img { width: 100%; height: 100%; object-fit: cover; }
+.summaryItemInfo { flex: 1; }
+.summaryItemName { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: white; margin-bottom: 0.2rem; }
+.summaryItemMeta { font-size: 0.8rem; color: var(--text-muted); }
+.summaryItemPrice { font-family: 'Rajdhani', sans-serif; font-weight: 800; color: var(--brand-red); }
+
+.divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+.totals { display: flex; flex-direction: column; gap: 0.75rem; }
+.totalRow { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-secondary); }
+.totalRow.grand { 
+  font-family: 'Rajdhani', sans-serif; 
+  font-weight: 800; 
+  font-size: 1.4rem; 
+  color: white;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+.discount { color: #4eff91 !important; }
+
+/* Promo Success Popup */
+.promoPopupOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.promoPopup {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(0,255,100,0.3);
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 40px rgba(0,255,100,0.1);
+  animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.promoEmoji { font-size: 3.5rem; margin-bottom: 1rem; }
+.promoPopupTitle { font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1.8rem; color: white; margin-bottom: 0.5rem; text-transform: uppercase; }
+.promoPopupDesc { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.5rem; }
+.promoDiscount { font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 3rem; color: #4eff91; margin: 1rem 0; }
+.promoNewPrice { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 2rem; }
+.promoNewPrice span { color: white; font-weight: 700; }

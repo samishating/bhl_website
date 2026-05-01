@@ -1,66 +1,18 @@
 'use client';
 import { useCart } from '@/contexts/CartContext';
-import { useState, useEffect } from 'react';
-import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from '@/app/(main)/merch/page.module.css';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function CartDrawer() {
-  const { isCartOpen, setCartOpen, items, count, total, removeItem, updateQuantity, clearCart } = useCart();
-  const { clearToasts } = useToast();
+  const { isCartOpen, setCartOpen, items, count, total, removeItem, updateQuantity } = useCart();
   const { user } = useAuth();
-  const [checkout, setCheckout] = useState(false);
-  const [orderDone, setOrderDone] = useState(false);
+  const router = useRouter();
 
-  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', address: '', phone: '' });
-  const [dialCode, setDialCode] = useState('+33');
-  const [countries, setCountries] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetch('/api/countries')
-      .then(res => res.json())
-      .then(data => {
-        if (data.countries) setCountries(data.countries);
-      })
-      .catch(console.error);
-  }, []);
-
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customerInfo.phone) return;
-    setLoading(true);
-    
-    const fullPhone = `${dialCode} ${customerInfo.phone}`;
-    
-    try {
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: items.map(i => ({
-            productId: i.id,
-            name: i.name,
-            quantity: i.quantity,
-            price: i.price,
-            size: i.size
-          })),
-          total,
-          customerInfo: { ...customerInfo, phone: fullPhone }
-        })
-      });
-
-      if (res.ok) {
-        setCheckout(false);
-        setOrderDone(true);
-        clearCart();
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  const handleCheckoutClick = () => {
+    setCartOpen(false);
+    router.push('/checkout');
   };
 
   return (
@@ -101,8 +53,8 @@ export default function CartDrawer() {
                 <div className={styles.cartFooter}>
                   <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
                   {user ? (
-                    <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => { clearToasts(); setCartOpen(false); setCheckout(true); }}>
-                      Proceed to Checkout
+                    <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleCheckoutClick}>
+                      Proceed to Checkout →
                     </button>
                   ) : (
                     <Link href="/login" className="btn btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} onClick={() => setCartOpen(false)}>
@@ -112,96 +64,6 @@ export default function CartDrawer() {
                 </div>
               </>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Checkout Modal */}
-      {checkout && (
-        <div className="modal-overlay" onClick={() => setCheckout(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Checkout</h3>
-              <button type="button" onClick={() => setCheckout(false)} className="btn-close">✕</button>
-            </div>
-            <div className="modal-body">
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                Confirm your shipping details to place your order.
-              </p>
-            <form onSubmit={handleCheckout} className={styles.checkoutForm} id="checkout-form">
-              <input 
-                required 
-                className="form-input" 
-                placeholder="Full Name" 
-                value={customerInfo.name}
-                onChange={e => setCustomerInfo(p => ({ ...p, name: e.target.value }))}
-              />
-              <input 
-                required 
-                type="email" 
-                className="form-input" 
-                placeholder="Email Address" 
-                value={customerInfo.email}
-                onChange={e => setCustomerInfo(p => ({ ...p, email: e.target.value }))}
-              />
-              <textarea 
-                required 
-                className="form-input" 
-                placeholder="Shipping Address" 
-                rows={2}
-                style={{ resize: 'vertical' }}
-                value={customerInfo.address}
-                onChange={e => setCustomerInfo(p => ({ ...p, address: e.target.value }))}
-              />
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <select 
-                  className="form-input" 
-                  style={{ width: '140px', cursor: 'pointer' }}
-                  value={dialCode}
-                  onChange={e => setDialCode(e.target.value)}
-                >
-                  {countries.map(c => (
-                    <option key={c.code} value={c.dial_code}>
-                      {c.flag} {c.name} ({c.dial_code})
-                    </option>
-                  ))}
-                </select>
-                <input 
-                  required 
-                  type="tel"
-                  pattern="^[0-9\-\+\s\(\)]+$"
-                  title="Please enter a valid phone number (digits, spaces, or + - () only)"
-                  className="form-input" 
-                  style={{ flex: 1 }}
-                  placeholder="Phone Number" 
-                  value={customerInfo.phone}
-                  onChange={e => setCustomerInfo(p => ({ ...p, phone: e.target.value }))}
-                />
-              </div>
-              <div className={styles.checkoutTotal}>Order Total: <strong>${total.toFixed(2)}</strong></div>
-            </form>
-            </div>
-            <div className="modal-footer">
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading} form="checkout-form">
-                {loading ? <span className="spinner" /> : 'Confirm Order'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Order Success */}
-      {orderDone && (
-        <div className="modal-overlay" onClick={() => setOrderDone(false)}>
-          <div className="modal-content" style={{ maxWidth: '400px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-body">
-              <div className={styles.successIcon}>🎉</div>
-              <h3>Order Placed!</h3>
-              <p>Your Brotherhood Legacy order is confirmed. You can view your orders in your dashboard.</p>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setOrderDone(false)}>Continue Shopping</button>
-            </div>
           </div>
         </div>
       )}

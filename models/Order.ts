@@ -10,6 +10,8 @@ export interface IOrder extends Document {
     size?: string;
   }>;
   total: number;
+  referralCode?: string;
+  discountApplied?: number;
   customerInfo: {
     name: string;
     email: string;
@@ -32,6 +34,8 @@ const OrderSchema = new Schema<IOrder>({
     size: { type: String },
   }],
   total: { type: Number, required: true },
+  referralCode: { type: String },
+  discountApplied: { type: Number },
   customerInfo: {
     name: { type: String, required: true },
     email: { type: String, required: true },

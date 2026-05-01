@@ -134,7 +134,13 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
           </div>
           <nav className={styles.nav}>
-            {links.map(l => {
+            {(() => {
+              const displayLinks = [...links];
+              if (user?.role === 'superadmin') {
+                displayLinks.push({ href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/USER.svg' });
+              }
+              return displayLinks;
+            })().map(l => {
               let badgeCount = 0;
               if (l.label === 'Submissions') badgeCount = counts.pendingSubmissions;
               if (l.label === 'Applications') badgeCount = counts.pendingApplications;

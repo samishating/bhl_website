@@ -348,9 +348,6 @@
   align-items: center;
   text-align: center; 
   padding: 8rem 2rem; 
-  background: var(--bg-card); 
-  border: 1px solid var(--border); 
-  border-radius: var(--radius-lg); 
   margin-top: 2rem; 
 }
 .lockedIcon { 

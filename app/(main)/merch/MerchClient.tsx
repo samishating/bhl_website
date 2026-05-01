@@ -84,7 +84,11 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
               onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
               {c === 'drop' ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px', filter: filter === 'drop' ? 'none' : 'grayscale(1) opacity(0.5)' }} />
+                  <img src="/ICONS/trophy_1.svg" alt="" style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    filter: filter === 'drop' ? 'brightness(0) invert(1)' : 'grayscale(1) opacity(0.5)' 
+                  }} />
                   PREMIUM DROPS
                 </span>
               ) : c.toUpperCase()}

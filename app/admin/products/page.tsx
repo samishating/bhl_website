@@ -234,7 +234,6 @@ export default function AdminProductsPage() {
                   <div 
                     className={styles.premiumToggle} 
                     onClick={() => setForm(p => ({ ...p, isLimitedDrop: !p.isLimitedDrop }))}
-                    style={{ marginTop: '24px' }}
                   >
                     <div className={styles.toggleBox}>
                       {form.isLimitedDrop && <div className={styles.checkmark}>✓</div>}
@@ -246,7 +245,7 @@ export default function AdminProductsPage() {
                   </div>
 
                   {/* Action Buttons Block */}
-                  <div style={{ marginTop: '32px', display: 'flex', gap: '16px' }}>
+                  <div style={{ marginTop: '32px', display: 'flex', gap: '20px' }}>
                     <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
                       {creating ? <span className="spinner" /> : editingId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
                     </button>

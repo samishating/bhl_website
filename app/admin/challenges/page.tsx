@@ -171,7 +171,7 @@ export default function AdminChallengesPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '16px', marginTop: '32px' }}>
+                <div style={{ display: 'flex', gap: '20px', marginTop: '32px' }}>
                   <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
                     {creating ? <span className="spinner" /> : editingId ? 'UPDATE CHALLENGE' : 'CREATE CHALLENGE'}
                   </button>

@@ -186,7 +186,7 @@ export default function AdminUsersPage() {
           <div className="modal-content">
             <div className="modal-header">
               <h3 className={styles.username} style={{ margin: 0 }}>Edit User: {editingUser.username}</h3>
-              <button className="btn btn-ghost btn-sm" onClick={() => setEditingUser(null)}>✕</button>
+              <button className="btn-close" onClick={() => setEditingUser(null)}>✕</button>
             </div>
             
             <div className="modal-body">

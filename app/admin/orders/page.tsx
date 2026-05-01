@@ -147,7 +147,7 @@ export default function AdminOrdersPage() {
                 <h3 className={styles.modalTitle}>Order Details</h3>
                 <p className={styles.modalSub}>#{selectedOrder._id.slice(-8).toUpperCase()} • {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
               </div>
-              <button onClick={() => setSelectedOrder(null)} className="btn btn-ghost btn-sm">✕</button>
+              <button onClick={() => setSelectedOrder(null)} className="btn-close">✕</button>
             </div>
 
             <div className="modal-body" style={{ gap: '2.5rem' }}>

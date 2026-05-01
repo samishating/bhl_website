@@ -14,6 +14,7 @@ interface Product {
   image: string;
   images: string[];
   stock: number;
+  sizes?: { size: string; stock: number }[];
   isLimitedDrop: boolean;
   category: string;
 }
@@ -25,9 +26,12 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [activeImg, setActiveImg] = useState(0);
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const REQUIRED_XP = 40000;
   const isLocked = product.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
+  const hasSizes = product.sizes && product.sizes.length > 0;
+  const isSoldOut = hasSizes ? product.sizes!.every(s => s.stock === 0) : product.stock === 0;
   
   const allImages = [product.image, ...(product.images || [])].filter(Boolean);
 
@@ -40,7 +44,11 @@ export default function ProductDetailClient({ product }: { product: Product }) {
       showToast('Insufficient XP for premium items', 'error');
       return;
     }
-    addItem({ id: product._id, name: product.name, price: product.price, image: product.image });
+    if (hasSizes && !selectedSize) {
+      showToast('Please select a size first', 'error');
+      return;
+    }
+    addItem({ id: product._id, name: product.name, price: product.price, image: product.image, size: selectedSize || undefined });
     showToast(`${product.name} added to cart`, 'success');
   };
 
@@ -104,13 +112,38 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               <p>{product.description}</p>
             </div>
 
+            {hasSizes && (
+              <div className={styles.sizeSection}>
+                <div className={styles.sizeHeader}>
+                  <span>Size</span>
+                  {selectedSize && <span style={{ color: 'var(--brand-red)' }}>{selectedSize}</span>}
+                </div>
+                <div className={styles.sizeGrid}>
+                  {product.sizes!.map((s, idx) => {
+                    const outOfStock = s.stock === 0;
+                    return (
+                      <button
+                        key={idx}
+                        className={`${styles.sizeBtn} ${selectedSize === s.size ? styles.sizeBtnActive : ''} ${outOfStock ? styles.sizeBtnSoldOut : ''}`}
+                        onClick={() => !outOfStock && setSelectedSize(s.size)}
+                        disabled={outOfStock}
+                        title={outOfStock ? 'Out of stock' : `${s.stock} left`}
+                      >
+                        {s.size}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <div className={styles.actions}>
               <button 
                 className={`btn btn-primary btn-lg ${styles.buyBtn}`}
                 onClick={handleAddToCart}
-                disabled={product.stock === 0 || isLocked}
+                disabled={isSoldOut || isLocked}
               >
-                {product.stock === 0 ? 'SOLD OUT' : isLocked ? 'LOCKED (INSUFFICIENT XP)' : 'ADD TO CART'}
+                {isSoldOut ? 'SOLD OUT' : isLocked ? 'LOCKED (INSUFFICIENT XP)' : 'ADD TO CART'}
               </button>
               
               {isLocked && (

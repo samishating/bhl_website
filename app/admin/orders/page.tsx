@@ -5,7 +5,7 @@ import styles from './page.module.css';
 
 interface Order {
   _id: string;
-  items: Array<{ name: string; quantity: number; price: number }>;
+  items: Array<{ name: string; quantity: number; price: number; size?: string }>;
   total: number;
   customerInfo: { name: string; email: string; address: string; phone: string };
   status: string;
@@ -179,7 +179,10 @@ export default function AdminOrdersPage() {
                     <div key={idx} className={styles.orderItemRow}>
                       <div className={styles.itemMain}>
                         <div className={styles.itemQty}>x{item.quantity}</div>
-                        <div className={styles.itemName}>{item.name}</div>
+                        <div className={styles.itemName}>
+                          {item.name}
+                          {item.size && <span style={{ marginLeft: '8px', color: 'var(--brand-red)', fontSize: '0.8rem', fontWeight: 800 }}>({item.size})</span>}
+                        </div>
                       </div>
                       <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
                     </div>

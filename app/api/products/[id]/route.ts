@@ -15,11 +15,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { id } = await params;
     const body = await req.json();
 
-    const { name, description, price, image, images, stock, isLimitedDrop, category } = body;
+    const { name, description, price, image, images, stock, sizes, isLimitedDrop, category } = body;
+
+    let totalStock = stock;
+    if (sizes && sizes.length > 0) {
+      totalStock = sizes.reduce((sum: number, sizeInfo: any) => sum + Number(sizeInfo.stock), 0);
+    }
 
     const product = await Product.findByIdAndUpdate(
       id,
-      { name, description, price, image, images: images || [], stock, isLimitedDrop, category },
+      { name, description, price, image, images: images || [], stock: totalStock, sizes: sizes || [], isLimitedDrop, category },
       { new: true }
     );
 

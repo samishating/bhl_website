@@ -16,6 +16,7 @@ interface Product {
   isLimitedDrop: boolean;
   category: string;
   images: string[];
+  sizes?: { size: string; stock: number }[];
 }
 
 const CATEGORIES = ['all', 'apparel', 'accessories', 'gear', 'digital'];
@@ -28,6 +29,11 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabsRef = useRef<HTMLDivElement>(null);
   const [hasMounted, setHasMounted] = useState(false);
+
+  // Quick View Modal State
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [quickViewSize, setQuickViewSize] = useState<string | null>(null);
+  const [quickViewQty, setQuickViewQty] = useState(1);
 
   const REQUIRED_XP = 40000;
   const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
@@ -168,9 +174,14 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   <div className={styles.quickViewOverlay}>
                     <button
                       className={styles.quickViewBtn}
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(p); }}
+                      onClick={(e) => { 
+                        e.preventDefault(); 
+                        e.stopPropagation(); 
+                        setQuickViewProduct(p); 
+                        setQuickViewSize(null); 
+                        setQuickViewQty(1); 
+                      }}
                       disabled={p.stock === 0 || isItemLocked}
-                      id={`add-to-cart-${p._id}`}
                     >
                       {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : 'QUICK VIEW ↗'}
                     </button>
@@ -187,6 +198,97 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           </div>
         )}
       </div>
+
+      {quickViewProduct && (() => {
+        const p = quickViewProduct;
+        const isLocked = p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
+        const hasSizes = p.sizes && p.sizes.length > 0;
+        const isSoldOut = hasSizes ? p.sizes!.every(s => s.stock === 0) : p.stock === 0;
+
+        const handleModalAddToCart = () => {
+          if (!user) return showToast('Please login to add items to your cart', 'error');
+          if (isLocked) return showToast('Insufficient XP for premium items', 'error');
+          if (hasSizes && !quickViewSize) return showToast('Please select a size', 'error');
+          
+          addItem({ id: p._id, name: p.name, price: p.price, image: p.image, size: quickViewSize || undefined, quantity: quickViewQty });
+          showToast(`${p.name} added to cart`, 'success');
+          setQuickViewProduct(null);
+        };
+
+        return (
+          <div className="modal-overlay" onClick={() => setQuickViewProduct(null)}>
+            <div 
+              className="modal-content" 
+              style={{ maxWidth: '900px', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'row', background: 'var(--bg-secondary)' }} 
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Left: Image Container */}
+              <div style={{ flex: '1.2', background: '#e0e0e0', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+
+              {/* Right: Details Container */}
+              <div style={{ flex: '1', padding: '3rem', position: 'relative', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
+                <button onClick={() => setQuickViewProduct(null)} className="btn-close" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>✕</button>
+                
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
+                  {p.category} | SHOP
+                </div>
+                <h2 style={{ fontFamily: 'Rajdhani', fontWeight: 800, fontSize: '2.5rem', marginBottom: '0.2rem', lineHeight: 1 }}>{p.name}</h2>
+                <div style={{ fontFamily: 'Inter', fontSize: '1.2rem', marginBottom: '0.5rem' }}>${p.price.toFixed(2)} dh</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '2rem' }}>Tax included.</div>
+
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', flex: 1 }}>
+                  {hasSizes && (
+                    <div className={styles.sizeSection}>
+                      <div className={styles.sizeHeader} style={{ fontSize: '0.9rem' }}>
+                        <span>Size</span>
+                        {quickViewSize && <span style={{ color: 'var(--brand-red)' }}>{quickViewSize}</span>}
+                      </div>
+                      <div className={styles.sizeGrid}>
+                        {p.sizes!.map((s, idx) => {
+                          const outOfStock = s.stock === 0;
+                          return (
+                            <button
+                              key={idx}
+                              className={`${styles.sizeBtn} ${quickViewSize === s.size ? styles.sizeBtnActive : ''} ${outOfStock ? styles.sizeBtnSoldOut : ''}`}
+                              style={{ padding: '0.5rem 0.8rem', fontSize: '0.85rem' }}
+                              onClick={() => !outOfStock && setQuickViewSize(s.size)}
+                              disabled={outOfStock}
+                              title={outOfStock ? 'Out of stock' : `${s.stock} left`}
+                            >
+                              {s.size}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'Rajdhani', letterSpacing: '0.05em' }}>Quantity</div>
+                  <div className={styles.qtyControl}>
+                    <button onClick={() => setQuickViewQty(Math.max(1, quickViewQty - 1))}>−</button>
+                    <span>{quickViewQty}</span>
+                    <button onClick={() => setQuickViewQty(quickViewQty + 1)}>+</button>
+                  </div>
+
+                  <button 
+                    className={`btn btn-primary ${styles.quickBuyBtn}`}
+                    onClick={handleModalAddToCart}
+                    disabled={isSoldOut || isLocked}
+                  >
+                    {isSoldOut ? 'SOLD OUT' : isLocked ? 'LOCKED' : 'ADD TO CART'}
+                  </button>
+
+                  <Link href={`/merch/${p._id}`} className={styles.viewFullLink} onClick={() => setQuickViewProduct(null)}>
+                    VIEW FULL PRODUCT
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </>
   );
 }

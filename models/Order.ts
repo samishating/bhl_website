@@ -7,6 +7,7 @@ export interface IOrder extends Document {
     name: string;
     quantity: number;
     price: number;
+    size?: string;
   }>;
   total: number;
   customerInfo: {
@@ -28,6 +29,7 @@ const OrderSchema = new Schema<IOrder>({
     name: { type: String, required: true },
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
+    size: { type: String },
   }],
   total: { type: Number, required: true },
   customerInfo: {

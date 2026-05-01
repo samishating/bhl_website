@@ -43,7 +43,8 @@ export default function CartDrawer() {
             productId: i.id,
             name: i.name,
             quantity: i.quantity,
-            price: i.price
+            price: i.price,
+            size: i.size
           })),
           total,
           customerInfo: { ...customerInfo, phone: fullPhone }
@@ -77,20 +78,23 @@ export default function CartDrawer() {
               <>
                 <div className={styles.cartItems}>
                   {items.map(item => (
-                    <div key={item.id} className={styles.cartItem}>
+                    <div key={item.cartItemId} className={styles.cartItem}>
                       <div className={styles.cartItemImg}>
                         {item.image ? <img src={item.image} alt="" /> : item.name[0]}
                       </div>
                       <div className={styles.cartItemInfo}>
-                        <div className={styles.cartItemName}>{item.name}</div>
+                        <div className={styles.cartItemName}>
+                          {item.name}
+                          {item.size && <span style={{ marginLeft: '6px', color: 'var(--brand-red)', fontSize: '0.85rem' }}>({item.size})</span>}
+                        </div>
                         <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
                       </div>
                       <div className={styles.cartQty}>
-                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
+                        <button onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}>−</button>
                         <span>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                        <button onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}>+</button>
                       </div>
-                      <button className={styles.removeItem} onClick={() => removeItem(item.id)}>✕</button>
+                      <button className={styles.removeItem} onClick={() => removeItem(item.cartItemId)}>✕</button>
                     </div>
                   ))}
                 </div>

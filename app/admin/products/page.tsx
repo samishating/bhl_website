@@ -4,8 +4,8 @@ import styles from './page.module.css';
 import { useToast } from '@/contexts/ToastContext';
 
 
-interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; isLimitedDrop: boolean; }
-const defaultForm = { name: '', description: '', price: 29.99, image: '', images: [] as string[], stock: 100, isLimitedDrop: false, category: 'apparel' };
+interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; sizes: { size: string, stock: number }[]; isLimitedDrop: boolean; }
+const defaultForm = { name: '', description: '', price: 29.99, image: '', images: [] as string[], stock: 100, sizes: [] as { size: string, stock: number }[], isLimitedDrop: false, category: 'apparel' };
 
 /** Compress an image file client-side to max 800px and 75% JPEG quality before upload */
 function compressImage(file: File, maxDim = 800, quality = 0.75): Promise<Blob> {
@@ -215,7 +215,14 @@ export default function AdminProductsPage() {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Stock Units</label>
-                      <input type="number" className="form-input" value={form.stock} onChange={e => setForm(p => ({ ...p, stock: Number(e.target.value) }))} />
+                      <input 
+                        type="number" 
+                        className="form-input" 
+                        value={form.sizes && form.sizes.length > 0 ? form.sizes.reduce((acc, s) => acc + s.stock, 0) : form.stock} 
+                        onChange={e => setForm(p => ({ ...p, stock: Number(e.target.value) }))} 
+                        disabled={form.sizes && form.sizes.length > 0}
+                        style={{ opacity: form.sizes && form.sizes.length > 0 ? 0.5 : 1 }}
+                      />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Category</label>
@@ -228,6 +235,69 @@ export default function AdminProductsPage() {
                   <div className="form-group">
                     <label className="form-label">Description *</label>
                     <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide detailed specs..." style={{ resize: 'none' }} />
+                  </div>
+
+                  {/* Sizes & Inventory Builder */}
+                  <div className="form-group" style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <label className="form-label" style={{ margin: 0 }}>Size Variants & Inventory</label>
+                      <button 
+                        type="button"
+                        className="btn btn-secondary btn-sm" 
+                        onClick={() => setForm(p => ({ ...p, sizes: [...(p.sizes || []), { size: '', stock: 0 }] }))}
+                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                      >
+                        + Add Size
+                      </button>
+                    </div>
+                    
+                    {(!form.sizes || form.sizes.length === 0) ? (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>No sizes defined. Base stock will be used.</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {form.sizes.map((s, idx) => (
+                          <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <input 
+                              required
+                              placeholder="Size (e.g. S, M, L)"
+                              className="form-input" 
+                              style={{ flex: 1 }}
+                              value={s.size} 
+                              onChange={e => {
+                                const newSizes = [...form.sizes];
+                                newSizes[idx].size = e.target.value;
+                                setForm(p => ({ ...p, sizes: newSizes }));
+                              }} 
+                            />
+                            <input 
+                              required
+                              type="number"
+                              min="0"
+                              placeholder="Stock"
+                              className="form-input" 
+                              style={{ width: '100px' }}
+                              value={s.stock} 
+                              onChange={e => {
+                                const newSizes = [...form.sizes];
+                                newSizes[idx].stock = Number(e.target.value);
+                                setForm(p => ({ ...p, sizes: newSizes }));
+                              }} 
+                            />
+                            <button 
+                              type="button"
+                              className="btn btn-danger btn-sm" 
+                              style={{ padding: '0.4rem 0.6rem' }}
+                              onClick={() => {
+                                setForm(p => ({ ...p, sizes: p.sizes.filter((_, i) => i !== idx) }));
+                              }}
+                            >✕</button>
+                          </div>
+                        ))}
+                        <div style={{ marginTop: '8px', fontSize: '0.8rem', color: 'var(--brand-red)', fontWeight: 800 }}>
+                          TOTAL VARIANT STOCK: {form.sizes.reduce((acc, curr) => acc + curr.stock, 0)}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Premium Drop Toggle Block */}

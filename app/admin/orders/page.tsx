@@ -381,7 +381,10 @@ export default function AdminOrdersPage() {
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button className="btn btn-ghost btn-sm" onClick={() => setSelectedOrder(o)}>DETAILS</button>
                         {o.status === 'pending' && (
-                          <button className="btn btn-primary btn-sm" onClick={() => handleStatusUpdate(o._id, 'shipped')}>SHIP</button>
+                          <button className="btn btn-primary btn-sm" onClick={() => handleStatusUpdate(o._id, 'confirmed')}>CONFIRM</button>
+                        )}
+                        {o.status === 'confirmed' && (
+                          <button className="btn btn-primary btn-sm" style={{ background: '#22c55e', borderColor: '#22c55e' }} onClick={() => handleStatusUpdate(o._id, 'shipped')}>SHIP</button>
                         )}
                       </div>
                     </td>
@@ -586,7 +589,7 @@ export default function AdminOrdersPage() {
                         style={{ flex: 1 }}
                         onClick={() => { handleStatusUpdate(selectedOrder._id, 'shipped'); setSelectedOrder(null); }}
                       >
-                        MARK AS SHIPPED
+                        SHIPPED
                       </button>
                     </>
                   )}

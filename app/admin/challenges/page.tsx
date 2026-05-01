@@ -157,7 +157,7 @@ export default function AdminChallengesPage() {
                   <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide clear objectives..." style={{ resize: 'none' }} />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group" style={{ marginTop: '0.25rem' }}>
                   <label className={styles.premiumToggle}>
                     <input 
                       type="checkbox" 
@@ -171,13 +171,13 @@ export default function AdminChallengesPage() {
                     </span>
                   </label>
                 </div>
-              </div>
 
-              <div className="modal-footer">
-                <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                  {creating ? <span className="spinner" /> : editingId ? 'Save Changes' : 'Create Challenge'}
-                </button>
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+                  <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
+                    {creating ? <span className="spinner" /> : editingId ? 'Save Changes' : 'Create Challenge'}
+                  </button>
+                  <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
+                </div>
               </div>
             </form>
           </div>

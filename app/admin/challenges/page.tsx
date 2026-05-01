@@ -129,7 +129,7 @@ export default function AdminChallengesPage() {
               <h3 className={styles.challengeTitle} style={{ margin: 0 }}>
                 {editingId ? 'Edit Challenge' : 'Create New Challenge'}
               </h3>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)} style={{ padding: '0.4rem 0.6rem' }}>✕</button>
+              <button className="btn-close" onClick={() => setShowForm(false)}>✕</button>
             </div>
             
             <form onSubmit={handleCreate}>

@@ -176,6 +176,27 @@ h4 { font-size: 1.2rem; }
 .btn-sm  { padding: 0.45rem 1rem;   font-size: 0.8rem; }
 .btn-lg  { padding: 1rem   2.5rem;  font-size: 1.1rem; }
 
+.btn-close {
+  border: none;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.2rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  padding: 0;
+  cursor: pointer;
+}
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.05);
+}
+
 /* ─── Cards ──────────────────────────────────────────── */
 .card {
   background: var(--bg-card);

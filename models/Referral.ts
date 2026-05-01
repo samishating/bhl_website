@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
-export interface IReferral {
-  _id: string;
+export interface IReferral extends Document {
   code: string;
   discountPercentage: number;
   assignedTo: mongoose.Types.ObjectId;

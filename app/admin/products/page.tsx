@@ -231,9 +231,17 @@ export default function AdminProductsPage() {
                   </div>
 
                   <div className="form-group">
-                    <label className={styles.checkLabel}>
-                      <input type="checkbox" checked={form.isLimitedDrop} onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} />
-                      Premium Drop (Requires 40k XP) <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px', marginLeft: '0.4rem', verticalAlign: 'middle' }} />
+                    <label className={styles.premiumToggle}>
+                      <input 
+                        type="checkbox" 
+                        checked={form.isLimitedDrop} 
+                        onChange={e => setForm(p => ({ ...p, isLimitedDrop: e.target.checked }))} 
+                      />
+                      <span className={styles.toggleBox}></span>
+                      <span className={styles.toggleText}>
+                        <strong>Premium Drop</strong>
+                        <small>Requires 40k XP</small>
+                      </span>
                     </label>
                   </div>
 

@@ -158,9 +158,17 @@ export default function AdminChallengesPage() {
                 </div>
 
                 <div className="form-group">
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', fontSize: '0.85rem' }}>
-                    <input type="checkbox" checked={form.allowRepeats} onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} />
-                    Allow Multiple Completions (Repeatable)
+                  <label className={styles.premiumToggle}>
+                    <input 
+                      type="checkbox" 
+                      checked={form.allowRepeats} 
+                      onChange={e => setForm(p => ({ ...p, allowRepeats: e.target.checked }))} 
+                    />
+                    <span className={styles.toggleBox}></span>
+                    <span className={styles.toggleText}>
+                      <strong>Allow Multiple Completions</strong>
+                      <small>Repeatable</small>
+                    </span>
                   </label>
                 </div>
               </div>

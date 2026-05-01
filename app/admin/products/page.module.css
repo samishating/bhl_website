@@ -117,3 +117,73 @@
   .splitForm { grid-template-columns: 1fr; }
   .modalContent { max-width: 100%; }
 }
+
+.premiumToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.premiumToggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 0, 0, 0.4);
+}
+
+.premiumToggle input {
+  display: none;
+}
+
+.toggleBox {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.4);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.premiumToggle input:checked + .toggleBox {
+  background: #ff0000;
+  border-color: #ff0000;
+  box-shadow: 0 0 14px rgba(255,0,0,0.6);
+}
+
+.premiumToggle input:checked + .toggleBox::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.toggleText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.toggleText strong {
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Rajdhani', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.toggleText small {
+  color: rgba(255,253,186,0.7);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}

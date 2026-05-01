@@ -44,7 +44,16 @@ export async function POST(req: NextRequest) {
       token,
     });
 
-    response.cookies.set('bhl_token', token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
+    // Aggressively clear old cookies before setting new one
+    response.cookies.delete('bhl_token');
+    response.cookies.set('bhl_token', token, { 
+      httpOnly: true, 
+      maxAge: 60 * 60 * 24 * 7, 
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    });
+    
     return response;
   } catch (err) {
     console.error(err);

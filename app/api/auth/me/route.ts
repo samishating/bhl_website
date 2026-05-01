@@ -16,7 +16,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    const response = NextResponse.json({ user });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

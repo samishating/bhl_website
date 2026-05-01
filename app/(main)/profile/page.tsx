@@ -27,6 +27,8 @@ export default function ProfilePage() {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [pendingAvatar, setPendingAvatar] = useState<Blob | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState('');
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -34,6 +36,8 @@ export default function ProfilePage() {
     if (!user) return;
     setBio(user.bio || '');
     setAvatar(user.avatar || '');
+    setAvatarPreview('');
+    setPendingAvatar(null);
     setUsername(user.username || '');
 
     fetch(`/api/submissions?userId=${user.id}`, { cache: 'no-store' })
@@ -41,22 +45,48 @@ export default function ProfilePage() {
       .then(d => setSubmissions(d.submissions || []));
   }, [user, loading, router]);
 
+  const cleanupAvatarPreview = () => {
+    if (avatarPreview && avatarPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+    setAvatarPreview('');
+    setPendingAvatar(null);
+  };
+
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const res = await fetch(`/api/users/${user.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bio, avatar, username }),
-    });
-    setSaving(false);
-    if (res.ok) { 
-      await refreshUser(); 
-      setEditing(false); 
-      showToast('Profile updated!', 'success'); 
-      window.dispatchEvent(new Event('stats-refresh'));
+    try {
+      let finalAvatar = avatar;
+      if (pendingAvatar) {
+        const formData = new FormData();
+        formData.append('file', pendingAvatar, 'avatar.jpg');
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Upload failed');
+        finalAvatar = data.url;
+      }
+
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bio, avatar: finalAvatar, username }),
+      });
+      
+      if (res.ok) { 
+        cleanupAvatarPreview();
+        await refreshUser(); 
+        setEditing(false); 
+        showToast('Profile updated!', 'success'); 
+        window.dispatchEvent(new Event('stats-refresh'));
+      } else {
+        showToast('Failed to save', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    } finally {
+      setSaving(false);
     }
-    else showToast('Failed to save', 'error');
   };
 
   const handleDailyXp = async () => {
@@ -78,26 +108,20 @@ export default function ProfilePage() {
   const handleCropSave = async () => {
     if (!imageToCrop || !croppedAreaPixels) return;
     try {
-      setUploading(true);
       const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
       if (!croppedBlob) throw new Error('Failed to crop');
       
-      const formData = new FormData();
-      formData.append('file', croppedBlob, 'avatar.jpg');
-      
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.url) {
-        setAvatar(data.url);
-        showToast('Avatar uploaded!', 'success');
-        setImageToCrop(null);
-      } else {
-        showToast(`Upload failed: ${data.error}`, 'error');
+      const localUrl = URL.createObjectURL(croppedBlob);
+      if (avatarPreview && avatarPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(avatarPreview);
       }
+      
+      setAvatarPreview(localUrl);
+      setPendingAvatar(croppedBlob);
+      setImageToCrop(null);
+      showToast('New avatar ready! Click save to finalize.', 'info');
     } catch (err) {
       showToast('Error processing image', 'error');
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -114,7 +138,11 @@ export default function ProfilePage() {
         <div className={styles.profileHeader}>
           <div className={styles.avatarSection}>
             <div className={`avatar avatar-xl ${styles.mainAvatar}`}>
-              {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username?.[0]?.toUpperCase() || 'U'}
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Preview" />
+              ) : (
+                user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username?.[0]?.toUpperCase() || 'U'
+              )}
             </div>
             <div className={styles.rankRing} />
           </div>
@@ -138,7 +166,10 @@ export default function ProfilePage() {
             </div>
 
             <div className={styles.profileActions}>
-              <button className="btn btn-secondary btn-sm" onClick={() => setEditing(!editing)} id="edit-profile-btn">
+              <button className="btn btn-secondary btn-sm" onClick={() => { 
+                if (editing) cleanupAvatarPreview();
+                setEditing(!editing); 
+              }} id="edit-profile-btn">
                 {editing ? 'Cancel' : 'Edit Profile'}
               </button>
                 <button className="btn btn-primary btn-sm" onClick={handleDailyXp} disabled={claimingXp} id="claim-daily-xp-btn">

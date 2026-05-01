@@ -21,6 +21,7 @@ export interface IOrder extends Document {
   status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
   processedBy?: mongoose.Types.ObjectId;
   processedAt?: Date;
+  stockDeducted: boolean;
   createdAt: Date;
 }
 
@@ -42,9 +43,10 @@ const OrderSchema = new Schema<IOrder>({
     address: { type: String, required: true },
     phone: { type: String, required: true },
   },
-  status: { type: String, enum: ['pending', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
   processedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   processedAt: { type: Date },
+  stockDeducted: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export const Order = models.Order || model<IOrder>('Order', OrderSchema);

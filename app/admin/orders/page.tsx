@@ -1,16 +1,17 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '../layout';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.css';
 
 interface Order {
   _id: string;
-  items: Array<{ name: string; quantity: number; price: number; size?: string }>;
+  items: Array<{ productId: string; name: string; quantity: number; price: number; size?: string }>;
   total: number;
   referralCode?: string;
   discountApplied?: number;
   customerInfo: { name: string; email: string; address: string; phone: string };
-  status: string;
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   processedBy?: { username: string };
   processedAt?: string;
   createdAt: string;
@@ -28,16 +29,41 @@ export default function AdminOrdersPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const { showToast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editItems, setEditItems] = useState<any[]>([]);
+  const [productStocks, setProductStocks] = useState<Record<string, any>>({});
   const [searchCode, setSearchCode] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string | null>(null); // null = all
   const searchRef = useRef<HTMLDivElement>(null);
   const { refreshCounts, setGlobalLoading } = useAdmin();
 
+  // Fetch current stock levels when an order is selected
+  useEffect(() => {
+    if (selectedOrder) {
+      const fetchStock = async () => {
+        const uniqueIds = Array.from(new Set(selectedOrder.items.map(i => i.productId)));
+        const stocks: Record<string, any> = {};
+        await Promise.all(uniqueIds.map(async (id) => {
+          try {
+            const res = await fetch(`/api/products/${id}`, { cache: 'no-store' });
+            const data = await res.json();
+            if (data.product) stocks[id.toString()] = data.product;
+          } catch (err) { console.error(err); }
+        }));
+        setProductStocks(stocks);
+      };
+      fetchStock();
+    } else {
+      setProductStocks({});
+    }
+  }, [selectedOrder]);
+
   useEffect(() => {
     Promise.all([
-      fetch('/api/orders').then(r => r.json()),
-      fetch('/api/admin/referrals').then(r => r.json()),
+      fetch('/api/orders', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/admin/referrals', { cache: 'no-store' }).then(r => r.json()),
     ]).then(([orderData, referralData]) => {
       setOrders(orderData.orders || []);
       setReferrals(referralData.referrals || []);
@@ -56,7 +82,7 @@ export default function AdminOrdersPage() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleStatusUpdate = async (id: string, newStatus: string) => {
+  const handleStatusUpdate = async (id: string, newStatus: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled') => {
     setGlobalLoading(true);
     setOrders(prev => prev.map(o => o._id === id ? { ...o, status: newStatus } : o));
     try {
@@ -66,7 +92,7 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ status: newStatus })
       });
       if (!res.ok) {
-        const r = await fetch('/api/orders');
+        const r = await fetch('/api/orders', { cache: 'no-store' });
         const d = await r.json();
         setOrders(d.orders || []);
       } else {
@@ -74,6 +100,29 @@ export default function AdminOrdersPage() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  const handleUpdateOrder = async () => {
+    if (!selectedOrder) return;
+    setGlobalLoading(true);
+    try {
+      const res = await fetch(`/api/orders/${selectedOrder._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: editItems })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Update failed');
+      
+      setOrders(prev => prev.map(o => o._id === selectedOrder._id ? data.order : o));
+      setSelectedOrder(data.order);
+      setIsEditing(false);
+      showToast('Order parameters synchronized!', 'success');
+    } catch (err: any) {
+      showToast(err.message, 'error');
     } finally {
       setGlobalLoading(false);
     }
@@ -349,49 +398,110 @@ export default function AdminOrdersPage() {
           <div className="modal-content" style={{ maxWidth: '700px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <div>
-                <h3 className={styles.modalTitle}>Order Details</h3>
+                <h3 className={styles.modalTitle}>{isEditing ? 'Modify Order' : 'Order Details'}</h3>
                 <p className={styles.modalSub}>#{selectedOrder._id.slice(-8).toUpperCase()} • {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
               </div>
-              <button onClick={() => setSelectedOrder(null)} className="btn-close">✕</button>
+              <button onClick={() => { setSelectedOrder(null); setIsEditing(false); }} className="btn-close">✕</button>
             </div>
 
             <div className="modal-body" style={{ gap: '2.5rem' }}>
-              <div className={styles.detailSection}>
-                <div className={styles.sectionLabel}>Customer & Shipping</div>
-                <div className={styles.shippingGrid}>
-                  <div className={styles.customerCard}>
-                    <div className={styles.avatarPlaceholder}>{selectedOrder.customerInfo.name[0].toUpperCase()}</div>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{selectedOrder.customerInfo.email}</div>
+              {!isEditing && (
+                <div className={styles.detailSection}>
+                  <div className={styles.sectionLabel}>Customer & Shipping</div>
+                  <div className={styles.shippingGrid}>
+                    <div className={styles.customerCard}>
+                      <div className={styles.avatarPlaceholder}>{selectedOrder.customerInfo.name[0].toUpperCase()}</div>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{selectedOrder.customerInfo.email}</div>
+                      </div>
                     </div>
-                  </div>
-                  <div className={styles.addressBlock}>
-                    <div className={styles.infoLabel}>Delivery Address</div>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>{selectedOrder.customerInfo.address}</p>
-                    <div style={{ marginTop: '0.75rem', fontWeight: 600, color: 'var(--brand-red)', fontSize: '0.85rem' }}>
-                      📞 {selectedOrder.customerInfo.phone}
+                    <div className={styles.addressBlock}>
+                      <div className={styles.infoLabel}>Delivery Address</div>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>{selectedOrder.customerInfo.address}</p>
+                      <div style={{ marginTop: '0.75rem', fontWeight: 600, color: 'var(--brand-red)', fontSize: '0.85rem' }}>
+                        📞 {selectedOrder.customerInfo.phone}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className={styles.detailSection}>
-                <br />
-                <div className={styles.sectionLabel}>Manifest ({selectedOrder.items.length} items)</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className={styles.sectionLabel}>Manifest ({selectedOrder.items.length} items)</div>
+                  {!isEditing && selectedOrder.status === 'pending' && (
+                    <button 
+                      className="btn btn-ghost btn-sm" 
+                      onClick={() => { setEditItems([...selectedOrder.items]); setIsEditing(true); }}
+                      style={{ fontSize: '0.7rem' }}
+                    >
+                      ✏️ EDIT ITEMS
+                    </button>
+                  )}
+                </div>
                 <div className={styles.itemList}>
-                  {selectedOrder.items.map((item, idx) => (
-                    <div key={idx} className={styles.orderItemRow}>
-                      <div className={styles.itemMain}>
-                        <div className={styles.itemQty}>x{item.quantity}</div>
-                        <div className={styles.itemName}>
-                          {item.name}
-                          {item.size && <span style={{ marginLeft: '8px', color: 'var(--brand-red)', fontSize: '0.8rem', fontWeight: 800 }}>({item.size})</span>}
+                  {selectedOrder.items.map((item, idx) => {
+                    const productInfo = productStocks[item.productId];
+                    const currentSizeStock = productInfo?.sizes?.find((s: any) => s.size === item.size)?.stock ?? productInfo?.stock;
+                    
+                    return (
+                      <div key={idx} className={styles.orderItemRow} style={{ alignItems: 'flex-start' }}>
+                        <div className={styles.itemMain}>
+                          <div className={styles.itemQty}>x{item.quantity}</div>
+                          <div style={{ flex: 1 }}>
+                            <div className={styles.itemName}>
+                              {item.name}
+                              {(!isEditing && item.size) && <span style={{ marginLeft: '8px', color: 'var(--brand-red)', fontSize: '0.8rem', fontWeight: 800 }}>({item.size})</span>}
+                            </div>
+                            
+                            {isEditing ? (
+                              <div style={{ marginTop: '0.75rem' }}>
+                                <label className="form-label" style={{ fontSize: '0.65rem' }}>ADJUST SIZE</label>
+                                <select 
+                                  className="form-input" 
+                                  value={editItems[idx]?.size || ''} 
+                                  onChange={e => {
+                                    const newItems = [...editItems];
+                                    newItems[idx] = { ...newItems[idx], size: e.target.value };
+                                    setEditItems(newItems);
+                                  }}
+                                  style={{ minHeight: '38px', fontSize: '0.85rem', fontFamily: 'Rajdhani', fontWeight: 700 }}
+                                >
+                                  {productInfo?.sizes?.map((s: any) => (
+                                    <option key={s.size} value={s.size}>
+                                      {s.size} ({s.stock} left)
+                                    </option>
+                                  ))}
+                                  {!productInfo?.sizes?.length && <option value="">No sizes available</option>}
+                                </select>
+                              </div>
+                            ) : (
+                              productInfo && (
+                                <div style={{ fontSize: '0.75rem', marginTop: '0.4rem', display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+                                  <span style={{ color: currentSizeStock < item.quantity ? 'var(--brand-red)' : '#4eff91', fontWeight: 700 }}>
+                                    STOCK LEFT: {currentSizeStock}
+                                  </span>
+                                  {productInfo.sizes && productInfo.sizes.length > 0 && (
+                                    <div style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-muted)' }}>
+                                      (
+                                      {productInfo.sizes.map((s: any) => (
+                                        <span key={s.size} style={{ color: s.size === item.size ? 'white' : 'inherit', fontWeight: s.size === item.size ? 800 : 400 }}>
+                                          {s.size}: {s.stock}
+                                        </span>
+                                      ))}
+                                      )
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                            )}
+                          </div>
                         </div>
+                        <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
                       </div>
-                      <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -434,15 +544,63 @@ export default function AdminOrdersPage() {
             </div>
             
             <div className="modal-footer">
-              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>CLOSE</button>
-              {selectedOrder.status === 'pending' && (
-                <button 
-                  className="btn btn-primary" 
-                  style={{ flex: 1 }}
-                  onClick={() => { handleStatusUpdate(selectedOrder._id, 'shipped'); setSelectedOrder(null); }}
-                >
-                  MARK AS SHIPPED
-                </button>
+              {isEditing ? (
+                <>
+                  <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsEditing(false)}>CANCEL</button>
+                  <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleUpdateOrder}>SAVE CHANGES</button>
+                </>
+              ) : (
+                <>
+                  <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>CLOSE</button>
+                  
+                  {selectedOrder.status === 'pending' && (
+                    <>
+                      <button 
+                        className="btn btn-ghost" 
+                        style={{ flex: 1, color: 'var(--brand-red)' }}
+                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
+                      >
+                        CANCEL ORDER
+                      </button>
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ flex: 1 }}
+                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'confirmed'); setSelectedOrder(null); }}
+                      >
+                        CONFIRM ORDER
+                      </button>
+                    </>
+                  )}
+
+                  {selectedOrder.status === 'confirmed' && (
+                    <>
+                      <button 
+                        className="btn btn-ghost" 
+                        style={{ flex: 1, color: 'var(--brand-red)' }}
+                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
+                      >
+                        CANCEL ORDER
+                      </button>
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ flex: 1 }}
+                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'shipped'); setSelectedOrder(null); }}
+                      >
+                        MARK AS SHIPPED
+                      </button>
+                    </>
+                  )}
+
+                  {selectedOrder.status === 'shipped' && (
+                    <button 
+                      className="btn btn-ghost" 
+                      style={{ flex: 1, color: 'var(--brand-red)' }}
+                      onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
+                    >
+                      CANCEL & REVERT STOCK
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>

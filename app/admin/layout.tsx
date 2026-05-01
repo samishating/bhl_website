@@ -33,7 +33,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
   const fetchCounts = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications');
+      const res = await fetch('/api/admin/notifications', { cache: 'no-store' });
       const data = await res.json();
       if (!data.error) {
         setCounts({

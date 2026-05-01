@@ -30,7 +30,27 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create the order
+    // 2. Decrement stock instantly as per user request: "no deduct it instantly"
+    for (const item of items) {
+      if (item.size) {
+        // Decrement both global stock and specific size stock
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { 
+            stock: -item.quantity,
+            "sizes.$[elem].stock": -item.quantity 
+          }
+        }, {
+          arrayFilters: [{ "elem.size": item.size }]
+        });
+      } else {
+        // Only decrement global stock if no size
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity }
+        });
+      }
+    }
+
+    // Create the order with stockDeducted: true
     const order = await Order.create({
       userId: payload.userId,
       items,
@@ -38,19 +58,13 @@ export async function POST(req: NextRequest) {
       referralCode: validReferral ? validReferral.code : undefined,
       discountApplied: discountApplied > 0 ? discountApplied : undefined,
       customerInfo,
-      status: 'pending'
+      status: 'pending',
+      stockDeducted: true
     });
 
     // Increment referral usage count
     if (validReferral) {
       await Referral.findByIdAndUpdate(validReferral._id, { $inc: { usageCount: 1 } });
-    }
-
-    // 2. Decrement stock for each product
-    for (const item of items) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { stock: -item.quantity }
-      });
     }
 
     return NextResponse.json({ order, message: 'Order placed successfully' }, { status: 201 });

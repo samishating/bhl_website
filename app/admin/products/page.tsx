@@ -34,13 +34,15 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadingSecondary, setUploadingSecondary] = useState(false);
+  const [pendingMain, setPendingMain] = useState<Blob | null>(null);
+  const [pendingSecondary, setPendingSecondary] = useState<{ blob: Blob, id: string }[]>([]);
+  const [previews, setPreviews] = useState<{ main: string, secondary: string[] }>({ main: '', secondary: [] });
   const [search, setSearch] = useState('');
   const { showToast } = useToast();
 
   const load = () => { 
     setLoading(true);
-    fetch('/api/products')
+    fetch('/api/products', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { 
         setProducts(d.products || []); 
@@ -61,23 +63,69 @@ export default function AdminProductsPage() {
     p.category.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Cleanup Blob URLs
+  const cleanupPreviews = () => {
+    if (previews.main.startsWith('blob:')) URL.revokeObjectURL(previews.main);
+    previews.secondary.forEach(url => {
+      if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+    });
+    setPreviews({ main: '', secondary: [] });
+    setPendingMain(null);
+    setPendingSecondary([]);
+  };
+
+  const uploadToApi = async (blob: Blob): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', blob, 'image.jpg');
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    return data.url;
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.image) return showToast('Please upload a main image', 'error');
+    if (!form.image && !pendingMain) return showToast('Please upload a main image', 'error');
     
     setCreating(true);
-    const method = editingId ? 'PATCH' : 'POST';
-    const url = editingId ? `/api/products/${editingId}` : '/api/products';
-    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
-    setCreating(false);
-    if (res.ok) { 
-      setForm(defaultForm); 
-      setShowForm(false); 
-      setEditingId(null);
-      load(); 
-      showToast(editingId ? 'Product updated!' : 'New product created!', 'success'); 
+    try {
+      let finalForm = { ...form };
+
+      // Upload main image if pending
+      if (pendingMain) {
+        const url = await uploadToApi(pendingMain);
+        finalForm.image = url;
+      }
+
+      // Upload secondary images if pending
+      if (pendingSecondary.length > 0) {
+        const uploadedUrls = await Promise.all(pendingSecondary.map(p => uploadToApi(p.blob)));
+        // Filter out blob URLs and replace with real ones
+        const existingImages = finalForm.images.filter(img => !img.startsWith('blob:'));
+        finalForm.images = [...existingImages, ...uploadedUrls];
+      }
+
+      const method = editingId ? 'PATCH' : 'POST';
+      const url = editingId ? `/api/products/${editingId}` : '/api/products';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(finalForm) });
+      
+      if (res.ok) { 
+        cleanupPreviews();
+        setForm(defaultForm); 
+        setShowForm(false); 
+        setEditingId(null);
+        load(); 
+        showToast(editingId ? 'Product updated!' : 'New product created!', 'success'); 
+      }
+      else { 
+        const d = await res.json(); 
+        showToast(`${d.error || 'Sync failed'}`, 'error'); 
+      }
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    } finally {
+      setCreating(false);
     }
-    else { const d = await res.json(); showToast(`${d.error || 'Sync failed'}`, 'error'); }
   };
 
   const handleEdit = (p: Product) => {
@@ -191,13 +239,13 @@ export default function AdminProductsPage() {
       </div>
 
       {showForm && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && (setShowForm(false), cleanupPreviews())}>
           <div className="modal-content" style={{ maxWidth: '1000px' }}>
             <div className="modal-header">
               <h3 className={styles.title} style={{ fontSize: '1.2rem', marginBottom: 0 }}>
                 {editingId ? 'Edit Product' : 'Create New Product'}
               </h3>
-              <button className="btn-close" onClick={() => setShowForm(false)}>✕</button>
+              <button className="btn-close" onClick={() => { setShowForm(false); cleanupPreviews(); }}>✕</button>
             </div>
             
             <div className="modal-body">
@@ -319,7 +367,7 @@ export default function AdminProductsPage() {
                     <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
                       {creating ? <span className="spinner" /> : editingId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
                     </button>
-                    <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>CANCEL</button>
+                    <button type="button" className="btn btn-ghost" onClick={() => { setShowForm(false); cleanupPreviews(); }} style={{ flex: 1 }}>CANCEL</button>
                   </div>
                 </div>
 
@@ -327,49 +375,53 @@ export default function AdminProductsPage() {
                   <label className="form-label">Images</label>
                   
                   <div style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)', background: '#000' }}>
-                    <img src={form.image || 'https://placehold.co/600x600/111/white?text=No+Preview'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={previews.main || form.image || 'https://placehold.co/600x600/111/white?text=No+Preview'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <label style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', width: '80%' }}>
                       <div className="btn btn-primary btn-sm" style={{ width: '100%', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        {uploading ? '⌛ Uploading...' : 'Change Main Image'}
+                        Change Main Image
                       </div>
-                      <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploading} onChange={async (e) => {
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        setUploading(true);
-                        try {
-                          const compressed = await compressImage(file);
-                          const formData = new FormData();
-                          formData.append('file', compressed, 'image.jpg');
-                          const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                          const data = await res.json();
-                          if (data.url) setForm(p => ({ ...p, image: data.url }));
-                        } finally { setUploading(false); }
+                        const compressed = await compressImage(file);
+                        const url = URL.createObjectURL(compressed);
+                        if (previews.main.startsWith('blob:')) URL.revokeObjectURL(previews.main);
+                        setPreviews(p => ({ ...p, main: url }));
+                        setPendingMain(compressed);
                       }} />
                     </label>
                   </div>
 
                   <div className={styles.imageGrid}>
+                    {/* Existing Images */}
                     {form.images.map((img, idx) => (
-                      <div key={idx} className={styles.imageThumb}>
+                      <div key={`exist-${idx}`} className={styles.imageThumb}>
                         <img src={img} alt="" />
                         <button type="button" className={styles.removeImg} onClick={() => setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== idx) }))}>✕</button>
                       </div>
                     ))}
-                    {form.images.length < 4 && (
+                    {/* Pending Previews */}
+                    {previews.secondary.map((url, idx) => (
+                      <div key={`pend-${idx}`} className={styles.imageThumb}>
+                        <img src={url} alt="" />
+                        <button type="button" className={styles.removeImg} onClick={() => {
+                          URL.revokeObjectURL(url);
+                          setPreviews(p => ({ ...p, secondary: p.secondary.filter((_, i) => i !== idx) }));
+                          setPendingSecondary(p => p.filter((_, i) => i !== idx));
+                        }}>✕</button>
+                      </div>
+                    ))}
+
+                    {(form.images.length + previews.secondary.length) < 4 && (
                       <label className={styles.uploadBox}>
                         <span style={{ fontSize: '1.5rem', color: 'var(--brand-red)' }}>+</span>
-                        <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploadingSecondary} onChange={async (e) => {
+                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (!file) return;
-                          setUploadingSecondary(true);
-                          try {
-                            const compressed = await compressImage(file);
-                            const formData = new FormData();
-                            formData.append('file', compressed, 'image.jpg');
-                            const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                            const data = await res.json();
-                            if (data.url) setForm(f => ({ ...f, images: [...f.images, data.url] }));
-                          } finally { setUploadingSecondary(false); }
+                          const compressed = await compressImage(file);
+                          const url = URL.createObjectURL(compressed);
+                          setPreviews(p => ({ ...p, secondary: [...p.secondary, url] }));
+                          setPendingSecondary(p => [...p, { blob: compressed, id: url }]);
                         }} />
                       </label>
                     )}

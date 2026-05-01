@@ -133,7 +133,24 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   id={`product-${p._id}`}
                 >
                 <div className={styles.productImg}>
-                  {p.image ? <img src={p.image} alt={p.name} loading="lazy" /> : (
+                  {p.image ? (
+                    <>
+                      <img 
+                        src={p.image} 
+                        alt={p.name} 
+                        loading="lazy" 
+                        className={`${styles.primaryImg} ${p.images && p.images.length > 0 ? styles.hasSecondary : ''}`} 
+                      />
+                      {p.images && p.images.length > 0 && (
+                        <img 
+                          src={p.images[0]} 
+                          alt={`${p.name} alternate`} 
+                          loading="lazy" 
+                          className={styles.secondaryImg} 
+                        />
+                      )}
+                    </>
+                  ) : (
                     <div className={styles.productImgPlaceholder}>{p.name[0]}</div>
                   )}
                   {p.isLimitedDrop && (
@@ -144,28 +161,25 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   )}
                   {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>ONLY {p.stock} REMAINING</span>}
                   {isItemLocked && (
-                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontFamily: 'Rajdhani', letterSpacing: '0.1em' }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontFamily: 'Rajdhani', letterSpacing: '0.1em', zIndex: 20 }}>
                       LOCKED (INSUFFICIENT XP)
                     </div>
                   )}
-                </div>
-                <div className={styles.productInfo}>
-                  <div className={styles.productCategory}>{p.category}</div>
-                  <h3 className={styles.productName}>{p.name}</h3>
-                  <p className={styles.productDesc}>{p.description}</p>
-                  <div className={styles.productFooter}>
-                    <span className={styles.productPrice}>${p.price.toFixed(2)}</span>
+                  <div className={styles.quickViewOverlay}>
                     <button
-                      className="btn btn-primary btn-sm"
+                      className={styles.quickViewBtn}
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(p); }}
                       disabled={p.stock === 0 || isItemLocked}
                       id={`add-to-cart-${p._id}`}
                     >
-                      {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : (
-                        <img src="/ICONS/CART.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} />
-                      )}
+                      {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : 'QUICK VIEW ↗'}
                     </button>
                   </div>
+                </div>
+                <div className={styles.productInfo}>
+                  <div className={styles.productCategory}>{p.category} | SHOP</div>
+                  <h3 className={styles.productName}>{p.name}</h3>
+                  <span className={styles.productPrice}>${p.price.toFixed(2)}</span>
                 </div>
                 </Link>
               );

@@ -266,8 +266,19 @@
   position: relative; 
   overflow: hidden; 
 }
-.productImg img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-.productCard:hover .productImg img { transform: scale(1.1); }
+.productImg img { width: 100%; height: 100%; object-fit: cover; }
+.primaryImg { transition: opacity 0.4s ease, transform 0.5s ease; position: relative; z-index: 2; }
+.secondaryImg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s ease, transform 0.5s ease; z-index: 1; }
+
+.productCard:hover .primaryImg.hasSecondary { opacity: 0; }
+.productCard:hover .secondaryImg { opacity: 1; transform: scale(1.05); }
+.productCard:hover .primaryImg:not(.hasSecondary) { transform: scale(1.05); }
+
+.quickViewOverlay { position: absolute; bottom: 0; left: 0; width: 100%; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
+.productCard:hover .quickViewOverlay { transform: translateY(0); }
+.quickViewBtn { width: 100%; background: var(--brand-red); color: white; border: none; padding: 1rem; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.quickViewBtn:hover { background: var(--brand-red-dark); }
+.quickViewBtn:disabled { background: #333; color: #888; cursor: not-allowed; }
 
 .productImgPlaceholder { 
   width: 100%; height: 100%; 
@@ -292,13 +303,10 @@
   font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
 }
 
-.productInfo { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
-.productCategory { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--brand-red); font-weight: 800; margin-bottom: 0.5rem; }
-.productName { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; color: white; }
-.productDesc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-.productFooter { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.productPrice { font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 800; color: white; }
+.productInfo { padding: 1.5rem 1rem; flex: 1; display: flex; flex-direction: column; background: var(--bg-card); }
+.productCategory { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem; }
+.productName { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-transform: uppercase; letter-spacing: 0.02em; }
+.productPrice { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 500; color: white; }
 
 /* Modal Styles */
 .cartOverlay { 

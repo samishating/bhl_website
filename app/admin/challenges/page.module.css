@@ -63,11 +63,12 @@
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
-.modalHeader { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modalBody { padding: var(--space-lg); display: flex; flex-direction: column; gap: 0; }
-.modalFooter { padding: var(--space-md) var(--space-lg); background: rgba(255,255,255,0.01); border-top: 1px solid var(--border); display: flex; gap: var(--space-sm); }
+.modalHeader { padding: var(--space-md); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modalBody { padding: var(--space-md); display: flex; flex-direction: column; gap: 0; }
+.modalFooter { padding: var(--space-md); background: rgba(255,255,255,0.01); border-top: 1px solid var(--border); display: flex; gap: var(--space-sm); }
 
 .formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+@media (max-width: 500px) { .formRow { grid-template-columns: 1fr; } }
 .formRow .form-group { margin-bottom: 0; }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

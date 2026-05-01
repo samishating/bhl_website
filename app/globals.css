@@ -462,7 +462,7 @@ select.form-input option { background: var(--bg-card); }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 550px;
+  max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -479,7 +479,7 @@ select.form-input option { background: var(--bg-card); }
 }
 
 .modal-header {
-  padding: 1.5rem 2rem;
+  padding: var(--space-md) var(--space-md);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -487,12 +487,12 @@ select.form-input option { background: var(--bg-card); }
 }
 
 .modal-body {
-  padding: var(--space-lg);
+  padding: var(--space-md);
   flex: 1;
 }
 
 .modal-footer {
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-md);
   background: rgba(255, 255, 255, 0.01);
   border-top: 1px solid var(--border);
   display: flex;

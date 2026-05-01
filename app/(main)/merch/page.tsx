@@ -30,6 +30,9 @@ export default async function MerchPage() {
             </span>
           </h1>
 
+          <p className={`${styles.heroSub} animate-fade-up`} style={{ animationDelay: '0.2s' }}>
+            PREMIUM APPAREL & EXCLUSIVE GEAR
+          </p>
         </div>
       </section>
 

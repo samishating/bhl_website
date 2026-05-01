@@ -118,7 +118,7 @@ export default function CartDrawer() {
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Checkout</h3>
-              <button onClick={() => setCheckout(false)} className="btn btn-ghost btn-sm">✕</button>
+              <button type="button" onClick={() => setCheckout(false)} className="btn-close">✕</button>
             </div>
             <div className="modal-body">
               <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
@@ -165,6 +165,8 @@ export default function CartDrawer() {
                 <input 
                   required 
                   type="tel"
+                  pattern="^[0-9\-\+\s\(\)]+$"
+                  title="Please enter a valid phone number (digits, spaces, or + - () only)"
                   className="form-input" 
                   style={{ flex: 1 }}
                   placeholder="Phone Number" 

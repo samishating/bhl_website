@@ -164,8 +164,8 @@ h4 { font-size: 1.2rem; }
 
 .btn-ghost {
   background: rgba(255,255,255,0.04);
-  color: var(--text-secondary);
-  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255,255,255,0.15);
 }
 .btn-ghost:hover {
   background: rgba(255, 0, 0, 0.06);
@@ -230,7 +230,10 @@ h4 { font-size: 1.2rem; }
   transition: var(--transition);
   width: 100%;
 }
-textarea.form-input { min-height: 130px; }
+textarea.form-input { 
+  min-height: 130px; 
+  border-color: rgba(255, 255, 255, 0.08);
+}
 .form-input:focus {
   border-color: var(--brand-red);
   box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.12);
@@ -479,7 +482,7 @@ select.form-input option { background: var(--bg-card); }
 }
 
 .modal-header {
-  padding: var(--space-md) var(--space-md);
+  padding: var(--space-md) var(--space-md) 24px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;

@@ -462,7 +462,7 @@ select.form-input option { background: var(--bg-card); }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;

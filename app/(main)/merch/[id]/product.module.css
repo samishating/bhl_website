@@ -265,3 +265,65 @@
   .thumbnails { flex-direction: row; justify-content: center; }
   .thumb { width: 70px; height: 70px; }
 }
+
+.quantitySection {
+  margin-bottom: 2.5rem;
+}
+
+.quantityHeader {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.qtyBtn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.qtyBtn:hover:not(:disabled) {
+  color: var(--brand-red);
+}
+
+.qtyBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.qtyValue {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  min-width: 20px;
+  text-align: center;
+}
+
+.stockStatus {
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.05em;
+}

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -27,12 +27,27 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
   const REQUIRED_XP = 40000;
   const isLocked = product.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP;
   const hasSizes = product.sizes && product.sizes.length > 0;
   const isSoldOut = hasSizes ? product.sizes!.every(s => s.stock === 0) : product.stock === 0;
   
+  const currentMaxStock = hasSizes 
+    ? (product.sizes?.find(s => s.size === selectedSize)?.stock || 0)
+    : product.stock;
+
+  // Clamp quantity when stock changes
+  useEffect(() => {
+    if (quantity > currentMaxStock) {
+      setQuantity(Math.max(1, currentMaxStock));
+    }
+    if (currentMaxStock > 0 && quantity === 0) {
+      setQuantity(1);
+    }
+  }, [selectedSize, currentMaxStock, quantity]);
+
   const allImages = [product.image, ...(product.images || [])].filter(Boolean);
 
   const handleAddToCart = () => {
@@ -48,8 +63,20 @@ export default function ProductDetailClient({ product }: { product: Product }) {
       showToast('Please select a size first', 'error');
       return;
     }
-    addItem({ id: product._id, name: product.name, price: product.price, image: product.image, size: selectedSize || undefined });
-    showToast(`${product.name} added to cart`, 'success');
+    if (quantity > currentMaxStock) {
+      showToast(`Only ${currentMaxStock} items left in stock`, 'error');
+      return;
+    }
+
+    addItem({ 
+      id: product._id, 
+      name: product.name, 
+      price: product.price, 
+      image: product.image, 
+      size: selectedSize || undefined,
+      quantity
+    });
+    showToast(`${quantity} x ${product.name} added to cart`, 'success');
   };
 
   return (
@@ -136,6 +163,34 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 </div>
               </div>
             )}
+
+            <div className={styles.quantitySection}>
+              <div className={styles.quantityHeader}>Quantity</div>
+              <div className={styles.quantityControls}>
+                <button 
+                  className={styles.qtyBtn} 
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                  disabled={quantity <= 1 || isSoldOut}
+                >
+                  −
+                </button>
+                <span className={styles.qtyValue}>{quantity}</span>
+                <button 
+                  className={styles.qtyBtn} 
+                  onClick={() => setQuantity(q => Math.min(currentMaxStock, q + 1))}
+                  disabled={quantity >= currentMaxStock || isSoldOut}
+                >
+                  +
+                </button>
+              </div>
+              <div className={styles.stockStatus}>
+                {isSoldOut ? (
+                  <span style={{ color: 'var(--brand-red)' }}>OUT OF STOCK</span>
+                ) : (
+                  <span>{currentMaxStock} available {hasSizes && selectedSize && `in size ${selectedSize}`}</span>
+                )}
+              </div>
+            </div>
 
             <div className={styles.actions}>
               <button 

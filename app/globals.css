@@ -49,6 +49,12 @@
   --radius-lg:  20px;
   --radius-xl:  32px;
 
+  /* Spacing */
+  --space-xs:   0.5rem;
+  --space-sm:   1rem;
+  --space-md:   1.5rem;
+  --space-lg:   2rem;
+
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -204,7 +210,7 @@ h4 { font-size: 1.2rem; }
 .card-static:hover::before { opacity: 0; }
 
 /* ─── Forms ──────────────────────────────────────────── */
-.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group { display: flex; flex-direction: column; gap: var(--space-xs); }
 .form-label {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
@@ -212,6 +218,7 @@ h4 { font-size: 1.2rem; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-secondary);
+  margin-bottom: 0.25rem;
 }
 .form-input {
   background: rgba(255,255,255,0.03);
@@ -445,7 +452,7 @@ select.form-input option { background: var(--bg-card); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--space-lg);
   animation: fadeIn 0.3s ease forwards;
 }
 
@@ -479,16 +486,16 @@ select.form-input option { background: var(--bg-card); }
 }
 
 .modal-body {
-  padding: 2rem;
+  padding: var(--space-lg);
   flex: 1;
 }
 
 .modal-footer {
-  padding: 1.5rem 2rem;
+  padding: var(--space-md) var(--space-lg);
   background: rgba(255, 255, 255, 0.01);
   border-top: 1px solid var(--border);
   display: flex;
-  gap: 1rem;
+  gap: var(--space-sm);
 }
 
 /* ─── Table ──────────────────────────────────────────── */
@@ -513,6 +520,7 @@ th {
   text-transform: uppercase;
   color: var(--text-secondary);
 }
+
 td {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(255,255,255,0.03);

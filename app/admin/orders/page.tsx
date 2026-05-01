@@ -7,6 +7,8 @@ interface Order {
   _id: string;
   items: Array<{ name: string; quantity: number; price: number; size?: string }>;
   total: number;
+  referralCode?: string;
+  discountApplied?: number;
   customerInfo: { name: string; email: string; address: string; phone: string };
   status: string;
   processedBy?: { username: string };
@@ -14,20 +16,29 @@ interface Order {
   createdAt: string;
 }
 
+interface Referral {
+  _id: string;
+  code: string;
+  discountPercentage: number;
+}
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [filterCode, setFilterCode] = useState<string>('all');
   const { refreshCounts, setGlobalLoading } = useAdmin();
 
   useEffect(() => {
-    fetch('/api/orders')
-      .then(r => r.json())
-      .then(d => {
-        setOrders(d.orders || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch('/api/orders').then(r => r.json()),
+      fetch('/api/admin/referrals').then(r => r.json()),
+    ]).then(([orderData, referralData]) => {
+      setOrders(orderData.orders || []);
+      setReferrals(referralData.referrals || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
@@ -54,6 +65,14 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const filtered = filterCode === 'all'
+    ? orders
+    : filterCode === 'with_promo'
+    ? orders.filter(o => !!o.referralCode)
+    : orders.filter(o => o.referralCode === filterCode);
+
+  const promoOrders = orders.filter(o => !!o.referralCode).length;
+
   return (
     <>
       <div className="animate-fade-up">
@@ -61,6 +80,26 @@ export default function AdminOrdersPage() {
           <div>
             <h1 className={styles.title}>Order Management</h1>
             <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} orders pending processing</p>
+          </div>
+          {/* Referral Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ fontSize: '0.8rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>
+              Filter by Code:
+            </span>
+            <select
+              className="form-input"
+              style={{ width: 'auto', minWidth: '180px', cursor: 'pointer', fontFamily: 'Rajdhani', fontWeight: 700 }}
+              value={filterCode}
+              onChange={e => setFilterCode(e.target.value)}
+            >
+              <option value="all">All Orders ({orders.length})</option>
+              <option value="with_promo">With Promo Code ({promoOrders})</option>
+              {referrals.map(r => (
+                <option key={r._id} value={r.code}>
+                  {r.code} — {r.discountPercentage}% ({orders.filter(o => o.referralCode === r.code).length})
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -72,9 +111,11 @@ export default function AdminOrdersPage() {
             </div>
             <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Orders...</p>
           </div>
-        ) : orders.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
-            <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No logistics data found</p>
+            <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {filterCode === 'all' ? 'No logistics data found' : `No orders found for code: ${filterCode}`}
+            </p>
           </div>
         ) : (
           <div className={styles.tableContainer}>
@@ -84,6 +125,7 @@ export default function AdminOrdersPage() {
                   <th>Order ID</th>
                   <th>Customer</th>
                   <th>Items</th>
+                  <th>Promo</th>
                   <th>Total</th>
                   <th>Status</th>
                   <th>Date</th>
@@ -91,7 +133,7 @@ export default function AdminOrdersPage() {
                 </tr>
               </thead>
               <tbody>
-                {orders.map(o => (
+                {filtered.map(o => (
                   <tr key={o._id}>
                     <td style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
                       {o._id.slice(-8).toUpperCase()}
@@ -106,9 +148,33 @@ export default function AdminOrdersPage() {
                       </div>
                     </td>
                     <td>
+                      {o.referralCode ? (
+                        <span style={{
+                          fontFamily: 'monospace',
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          letterSpacing: '0.1em',
+                          color: '#4eff91',
+                          background: 'rgba(0,255,100,0.08)',
+                          border: '1px solid rgba(0,255,100,0.2)',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '4px',
+                        }}>
+                          {o.referralCode}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>—</span>
+                      )}
+                    </td>
+                    <td>
                       <span style={{ fontWeight: 700, color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontSize: '1.1rem' }}>
                         ${o.total.toFixed(2)}
                       </span>
+                      {o.discountApplied && (
+                        <div style={{ fontSize: '0.65rem', color: '#4eff91', fontWeight: 700 }}>
+                          −{o.discountApplied}% applied
+                        </div>
+                      )}
                     </td>
                     <td>
                       <span className={`${styles.statusBadge} ${styles[o.status]}`}>
@@ -190,14 +256,46 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
+              {/* Promo Code Block */}
+              {selectedOrder.referralCode && (
+                <div className={styles.detailSection}>
+                  <div className={styles.sectionLabel}>Promo Code Applied</div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    background: 'rgba(0,255,100,0.06)',
+                    border: '1px solid rgba(0,255,100,0.2)',
+                    borderRadius: '12px',
+                    padding: '1rem 1.25rem',
+                    marginTop: '0.75rem',
+                  }}>
+                    <div style={{ fontSize: '1.5rem' }}>🏷️</div>
+                    <div>
+                      <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.15em', color: '#4eff91' }}>
+                        {selectedOrder.referralCode}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                        {selectedOrder.discountApplied}% discount applied to this order
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className={styles.summarySection}>
                 <div className={styles.statusGroup}>
                   <div className={styles.infoLabel}>Logistics Status</div>
                   <span className={`${styles.statusBadge} ${styles[selectedOrder.status]}`}>{selectedOrder.status}</span>
                 </div>
                 <div className={styles.totalGroup}>
-                   <div className={styles.infoLabel}>Total Valuation</div>
-                   <div className={styles.grandTotal}>${selectedOrder.total.toFixed(2)}</div>
+                  <div className={styles.infoLabel}>Total Valuation</div>
+                  <div className={styles.grandTotal}>${selectedOrder.total.toFixed(2)}</div>
+                  {selectedOrder.discountApplied && (
+                    <div style={{ fontSize: '0.75rem', color: '#4eff91', fontWeight: 700, marginTop: '0.25rem' }}>
+                      After {selectedOrder.discountApplied}% discount
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

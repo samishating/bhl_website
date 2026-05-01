@@ -171,7 +171,7 @@ export default function AdminUsersPage() {
 
                 <div className={styles.cardActions}>
                   <a href={`/users/${u._id}`} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>View Profile</a>
-                  {currentUser?.role === 'superadmin' && u.role !== 'superadmin' && (
+                  {u.role !== 'superadmin' && (
                     <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Edit</button>
                   )}
                 </div>
@@ -196,10 +196,7 @@ export default function AdminUsersPage() {
                   className="form-input" 
                   value={editForm.username} 
                   onChange={e => setEditForm({ ...editForm, username: e.target.value })} 
-                  readOnly={currentUser?.role !== 'superadmin'}
-                  style={{ opacity: currentUser?.role !== 'superadmin' ? 0.6 : 1, cursor: currentUser?.role !== 'superadmin' ? 'not-allowed' : 'text' }}
                 />
-                {currentUser?.role !== 'superadmin' && <p style={{ fontSize: '0.7rem', color: 'var(--brand-red)', marginTop: '0.2rem' }}>Only superadmins can change usernames</p>}
               </div>
 
               <div className="form-group">
@@ -208,8 +205,6 @@ export default function AdminUsersPage() {
                   className="form-input" 
                   value={editForm.role} 
                   onChange={e => setEditForm({ ...editForm, role: e.target.value })}
-                  disabled={currentUser?.role !== 'superadmin'}
-                  style={{ opacity: currentUser?.role !== 'superadmin' ? 0.6 : 1, cursor: currentUser?.role !== 'superadmin' ? 'not-allowed' : 'pointer' }}
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>

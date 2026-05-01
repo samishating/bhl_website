@@ -1,9 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAdmin } from './layout';
+import { useAdmin, adminLinks } from './layout';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
 
 export default function AdminPage() {
+  const { user } = useAuth();
   const [stats, setStats] = useState({ users: 0, challenges: 0, products: 0 });
   const [pageLoading, setPageLoading] = useState(true);
   const { setGlobalLoading } = useAdmin();
@@ -56,30 +58,12 @@ export default function AdminPage() {
       <div className={styles.quickLinks}>
         <h3 className={styles.sectionTitle}>Management</h3>
         <div className={styles.qGrid}>
-          <a href="/admin/users" className={styles.qCard}>
-            <img src="/ICONS/USER.svg" alt="" />
-            User Management
-          </a>
-          <a href="/admin/challenges" className={styles.qCard}>
-            <img src="/ICONS/trophy_1.svg" alt="" />
-            Challenges
-          </a>
-          <a href="/admin/submissions" className={styles.qCard}>
-            <img src="/ICONS/INBOX.svg" alt="" />
-            Submissions
-          </a>
-          <a href="/admin/applications" className={styles.qCard}>
-            <img src="/ICONS/INBOX.svg" alt="" />
-            Applications
-          </a>
-          <a href="/admin/products" className={styles.qCard}>
-            <img src="/ICONS/PRODUCTS.svg" alt="" />
-            Products
-          </a>
-          <a href="/admin/orders" className={styles.qCard}>
-            <img src="/ICONS/LIST PRODUCTS.svg" alt="" />
-            Orders
-          </a>
+          {adminLinks.filter(l => l.href !== '/admin' && (!l.superOnly || user?.role === 'superadmin')).map(l => (
+            <a key={l.href} href={l.href} className={styles.qCard}>
+              <img src={l.icon} alt="" />
+              {l.label}
+            </a>
+          ))}
         </div>
       </div>
     </div>

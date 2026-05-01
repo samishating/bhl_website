@@ -13,14 +13,15 @@ const AdminContext = createContext({
 
 export const useAdmin = () => useContext(AdminContext);
 
-const links = [
+export const adminLinks = [
   { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
-  { href: '/admin/users', label: 'Users', icon: '/ICONS/USER.svg' },
+  { href: '/admin/users', label: 'Users', icon: '/ICONS/USER.svg', superOnly: true },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Submissions', icon: '/ICONS/INBOX.svg' },
   { href: '/admin/applications', label: 'Applications', icon: '/ICONS/INBOX.svg' },
   { href: '/admin/products', label: 'Products', icon: '/ICONS/PRODUCTS.svg' },
   { href: '/admin/orders', label: 'Orders', icon: '/ICONS/LIST PRODUCTS.svg' },
+  { href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/USER.svg', superOnly: true },
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
@@ -89,6 +90,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // Protection for superadmin-only links
+  const currentLink = adminLinks.find(l => l.href === pathname);
+  if (currentLink?.superOnly && user?.role !== 'superadmin') {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#fff', gap: '1rem' }}>
+        <h2 style={{ fontFamily: 'Rajdhani', fontSize: '2.5rem', fontWeight: 800 }}>RESTRICTED ACCESS</h2>
+        <p style={{ color: 'var(--text-muted)' }}>This sector requires Level 4 clearance (Superadmin).</p>
+        <Link href="/admin" className="btn btn-primary">Return to Dashboard</Link>
+      </div>
+    );
+  }
+
   return (
     <AdminContext.Provider value={{ refreshCounts: fetchCounts, setGlobalLoading }}>
       <div className={styles.layout}>
@@ -99,7 +112,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Mobile Top Bar */}
         <div className={styles.mobileTopBar}>
           <button className={styles.menuToggle} onClick={() => setMobileNavOpen(true)}>☰</button>
-          <div className={styles.mobileTitle}>{links.find(l => l.href === pathname)?.label || 'Admin'}</div>
+          <div className={styles.mobileTitle}>{adminLinks.find(l => l.href === pathname)?.label || 'Admin'}</div>
         </div>
 
         {/* Sidebar Overlay */}
@@ -134,13 +147,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
           </div>
           <nav className={styles.nav}>
-            {(() => {
-              const displayLinks = [...links];
-              if (user?.role === 'superadmin') {
-                displayLinks.push({ href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/USER.svg' });
-              }
-              return displayLinks;
-            })().map(l => {
+            {adminLinks.filter(l => !l.superOnly || user?.role === 'superadmin').map(l => {
               let badgeCount = 0;
               if (l.label === 'Submissions') badgeCount = counts.pendingSubmissions;
               if (l.label === 'Applications') badgeCount = counts.pendingApplications;

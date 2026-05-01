@@ -124,7 +124,7 @@
   gap: 12px;
   padding: 12px 16px;
   border: 1px solid rgba(255, 0, 0, 0.25);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -142,7 +142,7 @@
 .toggleBox {
   width: 18px;
   height: 18px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(255,255,255,0.35);
   background: rgba(0,0,0,0.4);
   position: relative;

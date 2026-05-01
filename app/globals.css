@@ -111,7 +111,7 @@ h4 { font-size: 1.2rem; }
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
@@ -216,7 +216,7 @@ h4 { font-size: 1.2rem; }
 .form-input {
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: white;
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
@@ -417,7 +417,7 @@ select.form-input option { background: var(--bg-card); }
   min-height: 46px;
   height: 46px;
   padding: 0 1.75rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;

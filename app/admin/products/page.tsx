@@ -197,7 +197,7 @@ export default function AdminProductsPage() {
               <h3 className={styles.title} style={{ fontSize: '1.2rem', marginBottom: 0 }}>
                 {editingId ? 'Edit Product' : 'Create New Product'}
               </h3>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}>✕</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)} style={{ padding: '0.4rem 0.6rem' }}>✕</button>
             </div>
             
             <div className="modal-body">

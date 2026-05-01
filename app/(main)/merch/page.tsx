@@ -17,40 +17,20 @@ export default async function MerchPage() {
   return (
     <div className={styles.page}>
       <section className={styles.heroSection}>
-        <div className={styles.heroBanner}>
-          <img src="/backgrounds/merch-banner.png" alt="BHL Merch Banner" className={styles.bannerImg} />
-          <div className={styles.heroOverlay} />
+        <div className={styles.heroBg} aria-hidden="true" />
+        <div className={styles.heroVisualZone} aria-hidden="true" />
+
+        <div className={styles.heroTextContainer}>
+          <span className={`${styles.heroTechTag} animate-fade-down`}>[ COLLECTION // 2026 ]</span>
+
+          <h1 className={styles.heroTitleBlock}>
+            <span className={`${styles.titleBHL} animate-fade-up`}>BHL</span>
+            <span className={`${styles.titleMerch} animate-fade-up`} style={{ animationDelay: '0.1s' }}>
+              MERCH
+            </span>
+          </h1>
+
         </div>
-        <div className={styles.heroGrid}>
-          {/* LEFT 40%: VISUAL AREA (Implicitly handled by background image positioning or a placeholder if needed) */}
-          <div className={styles.heroVisualZone} />
-
-          {/* RIGHT 45%: TEXT BLOCK (FIXED CONTAINER) */}
-          <div className={styles.heroTextContainer}>
-            <div className={styles.heroContentInner}>
-              {/* TOP MASS */}
-              <div className={`${styles.heroTechTag} animate-fade-down`}>
-                [ COLLECTION // 2026 ]
-              </div>
-
-              {/* CENTER MASS */}
-              <div className={styles.heroTitleBlock}>
-                <h1 className={`${styles.titleBHL} animate-fade-up`}>BHL</h1>
-                <h1 className={`${styles.titleMerch} animate-fade-up`} style={{ animationDelay: '0.1s' }}>
-                  <span className="gradient-text">MERCH</span>
-                </h1>
-              </div>
-
-              {/* BOTTOM MASS */}
-              <p className={`${styles.heroSub} animate-fade-up`} style={{ animationDelay: '0.2s' }}>
-                PREMIUM APPAREL & EXCLUSIVE GEAR
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        {/* BACKGROUND LOGO */}
-        <div className={styles.heroDragon} />
       </section>
 
       <div className="container">

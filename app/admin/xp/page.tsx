@@ -38,6 +38,8 @@ export default function AdminXPPage() {
 
   // System Progression State
   const [isSavingSystem, setIsSavingSystem] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [tempData, setTempData] = useState<ProgressionLevel | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -102,11 +104,14 @@ export default function AdminXPPage() {
   const handleAddLevel = () => {
     const nextLevel = progression.length + 1;
     const lastXp = progression.length > 0 ? progression[progression.length - 1].xpRequired : 0;
-    setProgression([...progression, { 
+    const newLevel = { 
       level: nextLevel, 
       title: `Rank ${nextLevel}`, 
       xpRequired: lastXp + 500 
-    }]);
+    };
+    setProgression([...progression, newLevel]);
+    setEditingIndex(progression.length);
+    setTempData(newLevel);
   };
 
   const handleRemoveLevel = (index: number) => {
@@ -114,12 +119,29 @@ export default function AdminXPPage() {
     const updated = progression.filter((_, i) => i !== index)
       .map((p, i) => ({ ...p, level: i + 1 }));
     setProgression(updated);
+    if (editingIndex === index) {
+      setEditingIndex(null);
+      setTempData(null);
+    }
   };
 
-  const handleUpdateLevel = (index: number, field: keyof ProgressionLevel, value: string | number) => {
+  const startEditing = (index: number) => {
+    setEditingIndex(index);
+    setTempData({ ...progression[index] });
+  };
+
+  const cancelEditing = () => {
+    setEditingIndex(null);
+    setTempData(null);
+  };
+
+  const saveRow = (index: number) => {
+    if (!tempData) return;
     const updated = [...progression];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = tempData;
     setProgression(updated);
+    setEditingIndex(null);
+    setTempData(null);
   };
 
   const handleSaveSystem = async () => {
@@ -248,8 +270,8 @@ export default function AdminXPPage() {
               <p>Define levels, titles, and XP thresholds for the entire platform.</p>
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn btn-ghost" onClick={handleAddLevel}>+ Add Rank</button>
-              <button className="btn btn-primary" onClick={handleSaveSystem} disabled={isSavingSystem}>
+              <button className="btn btn-ghost btn-sm" onClick={handleAddLevel}>+ Add Rank</button>
+              <button className="btn btn-primary btn-sm" onClick={handleSaveSystem} disabled={isSavingSystem}>
                 {isSavingSystem ? 'Saving...' : 'Deploy System'}
               </button>
             </div>
@@ -257,39 +279,64 @@ export default function AdminXPPage() {
 
           <div className={styles.levelTable}>
             <div className={styles.levelTableHeader}>
-              <div>LVL</div>
-              <div>RANK TITLE</div>
-              <div>XP REQUIRED</div>
-              <div style={{ textAlign: 'right' }}>ACTIONS</div>
+              <div className={styles.colLvl}>LVL</div>
+              <div className={styles.colTitle}>RANK TITLE</div>
+              <div className={styles.colXp}>XP REQUIRED</div>
+              <div className={styles.colActions}>ACTIONS</div>
             </div>
             {progression.map((p, i) => (
-              <div key={i} className={styles.levelTableRow}>
-                <div className={styles.levelNum}>{p.level}</div>
-                <div>
-                  <input 
-                    className="form-input" 
-                    style={{ minHeight: '38px', fontSize: '0.9rem' }}
-                    value={p.title} 
-                    onChange={e => handleUpdateLevel(i, 'title', e.target.value)}
-                  />
+              <div key={i} className={`${styles.levelTableRow} ${editingIndex === i ? styles.isEditing : ''}`}>
+                <div className={styles.colLvl}>
+                  <span className={styles.lvlAnchor}>{p.level}</span>
+                  {i < progression.length - 1 && <div className={styles.ladderLine} />}
                 </div>
-                <div>
-                  <input 
-                    type="number"
-                    className="form-input" 
-                    style={{ minHeight: '38px', fontSize: '0.9rem' }}
-                    value={p.xpRequired} 
-                    onChange={e => handleUpdateLevel(i, 'xpRequired', Number(e.target.value))}
-                  />
+                
+                <div className={styles.colTitle}>
+                  {editingIndex === i ? (
+                    <input 
+                      className={styles.inlineInput} 
+                      value={tempData?.title || ''} 
+                      onChange={e => setTempData(prev => prev ? { ...prev, title: e.target.value } : null)}
+                      autoFocus
+                    />
+                  ) : (
+                    <span className={styles.rankTitle}>{p.title}</span>
+                  )}
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <button 
-                    className="btn btn-danger btn-sm" 
-                    onClick={() => handleRemoveLevel(i)}
-                    disabled={progression.length <= 1}
-                  >
-                    ✕
-                  </button>
+
+                <div className={styles.colXp}>
+                  {editingIndex === i ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input 
+                        type="number"
+                        className={styles.inlineInput} 
+                        value={tempData?.xpRequired || 0} 
+                        onChange={e => setTempData(prev => prev ? { ...prev, xpRequired: Number(e.target.value) } : null)}
+                      />
+                      <span className={styles.xpSmallUnit}>XP</span>
+                    </div>
+                  ) : (
+                    <div className={styles.xpDisplay}>
+                      <span className={styles.xpText}>{p.xpRequired.toLocaleString()}</span>
+                      <span className={styles.xpSmallUnit}>XP</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.colActions}>
+                  <div className={styles.actionReveal}>
+                    {editingIndex === i ? (
+                      <>
+                        <button className={styles.iconBtn} onClick={() => saveRow(i)} title="Save Rank">✓</button>
+                        <button className={styles.iconBtn} onClick={cancelEditing} title="Cancel">✕</button>
+                      </>
+                    ) : (
+                      <>
+                        <button className={styles.iconBtn} onClick={() => startEditing(i)} title="Edit Rank">✎</button>
+                        <button className={`${styles.iconBtn} ${styles.btnDestructive}`} onClick={() => handleRemoveLevel(i)} title="Delete Rank">🗑</button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

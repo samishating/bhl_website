@@ -16,6 +16,7 @@ export const useAdmin = () => useContext(AdminContext);
 export const adminLinks = [
   { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
   { href: '/admin/users', label: 'Users', icon: '/ICONS/USER.svg', superOnly: true },
+  { href: '/admin/xp', label: 'XP/Levels', icon: '/ICONS/xp.svg' },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Submissions', icon: '/ICONS/INBOX.svg' },
   { href: '/admin/applications', label: 'Applications', icon: '/ICONS/INBOX.svg' },

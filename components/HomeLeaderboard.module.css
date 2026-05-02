@@ -72,10 +72,10 @@
 
 .gridHeader {
   display: grid;
-  grid-template-columns: 80px 1fr 100px 180px 120px;
+  grid-template-columns: 70px minmax(200px, 2fr) 100px 150px 100px;
   background: rgba(255, 0, 0, 0.08);
   border-bottom: 1px solid var(--border);
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem 2rem;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
@@ -86,8 +86,8 @@
 
 .gridRow {
   display: grid;
-  grid-template-columns: 80px 1fr 100px 180px 120px;
-  padding: 1.25rem 1.5rem;
+  grid-template-columns: 70px minmax(200px, 2fr) 100px 150px 100px;
+  padding: 1.25rem 2rem;
   border-bottom: 1px solid rgba(255,255,255,0.03);
   align-items: center;
   transition: background 0.2s;
@@ -98,7 +98,7 @@
 @media (max-width: 768px) {
   .gridHeader, .gridRow {
     grid-template-columns: 50px 1fr 80px 100px;
-    padding: 1rem;
+    padding: 1rem 1.25rem;
   }
   /* Hide division column on mobile to keep alignment */
   .gridHeader > div:nth-child(4),

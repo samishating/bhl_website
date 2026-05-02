@@ -160,9 +160,13 @@ export default function HomeLeaderboard() {
                     <div><span className="badge badge-violet">Lv.{u.level}</span></div>
                     <div>
                       <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                        {u.divisions.map((d: string) => (
-                          <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
-                        ))}
+                        {u.divisions && u.divisions.length > 0 ? (
+                          u.divisions.map((d: string) => (
+                            <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
+                          ))
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>
+                        )}
                       </div>
                     </div>
                     <div><span className={styles.xpValue}>{u.xp.toLocaleString()}</span></div>

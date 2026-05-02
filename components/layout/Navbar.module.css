@@ -74,7 +74,7 @@
 .cartBtn {
   position: relative;
   display: flex; align-items: center; justify-content: center;
-  width: 42px; height: 42px;
+  width: 48px; height: 48px;
   border-radius: 8px;
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
@@ -114,11 +114,12 @@
 
 /* Burger */
 .burger {
-  display: none; width: 42px; height: 42px;
+  display: none; width: 48px; height: 48px;
   align-items: center; justify-content: center;
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
   border-radius: 8px; color: white;
+  padding: 0;
 }
 .burger span { display: block; width: 18px; height: 2px; background: white; position: relative; transition: all 0.3s ease; }
 .burger span::before, .burger span::after { content: ''; position: absolute; width: 18px; height: 2px; background: white; transition: all 0.3s ease; }

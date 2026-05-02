@@ -127,52 +127,48 @@ export default function HomeLeaderboard() {
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>No members yet in this division.</div>
           ) : (
             <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Member</th>
-                    <th>Level</th>
-                    <th>Division</th>
-                    <th>XP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u, i) => (
-                    <tr key={u._id} className={i < 3 ? styles.topRow : ''}>
-                      <td>
-                        <span className={styles.rank}>
-                          {i < 3 ? (
-                            <img src={rankIcons[i]} alt={`Rank ${i+1}`} style={{ width: '24px', height: '24px' }} />
-                          ) : (
-                            i + 1
-                          )}
-                        </span>
-                      </td>
-                      <td>
-                        <div className={styles.memberCell}>
-                          <Link href={`/users/${u._id}`} className="avatar">
-                            {u.avatar ? <img src={u.avatar} alt="" /> : u.username[0]}
-                          </Link>
-                          <div>
-                            <Link href={`/users/${u._id}`} className={styles.memberName}>{u.username}</Link>
-                            <div className={styles.memberTitle}>{getLevelTitle(u.level)}</div>
-                          </div>
+              <div className={styles.gridHeader}>
+                <div>#</div>
+                <div>Member</div>
+                <div>Level</div>
+                <div>Division</div>
+                <div>XP</div>
+              </div>
+              <div className={styles.gridBody}>
+                {users.map((u, i) => (
+                  <div key={u._id} className={`${styles.gridRow} ${i < 3 ? styles.topRow : ''}`}>
+                    <div>
+                      <span className={styles.rank}>
+                        {i < 3 ? (
+                          <img src={rankIcons[i]} alt={`Rank ${i+1}`} style={{ width: '24px', height: '24px' }} />
+                        ) : (
+                          i + 1
+                        )}
+                      </span>
+                    </div>
+                    <div>
+                      <div className={styles.memberCell}>
+                        <Link href={`/users/${u._id}`} className="avatar">
+                          {u.avatar ? <img src={u.avatar} alt="" /> : u.username[0]}
+                        </Link>
+                        <div>
+                          <Link href={`/users/${u._id}`} className={styles.memberName}>{u.username}</Link>
+                          <div className={styles.memberTitle}>{getLevelTitle(u.level)}</div>
                         </div>
-                      </td>
-                      <td><span className="badge badge-violet">Lv.{u.level}</span></td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.25rem' }}>
-                          {u.divisions.map((d: string) => (
-                            <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
-                          ))}
-                        </div>
-                      </td>
-                      <td><span className={styles.xpValue}>{u.xp.toLocaleString()}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+                    <div><span className="badge badge-violet">Lv.{u.level}</span></div>
+                    <div>
+                      <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                        {u.divisions.map((d: string) => (
+                          <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div><span className={styles.xpValue}>{u.xp.toLocaleString()}</span></div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

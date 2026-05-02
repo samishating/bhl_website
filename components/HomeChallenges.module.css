@@ -1,6 +1,6 @@
 .tabs { 
   display: flex; 
-  width: fit-content;
+  width: 100%;
   margin: 0 auto 4rem auto;
   gap: 0; 
   padding: 4px;
@@ -9,7 +9,11 @@
   border-radius: 100px;
   backdrop-filter: blur(10px);
   position: relative;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
+.tabs::-webkit-scrollbar { display: none; }
 .indicator {
   position: absolute;
   top: 4px;
@@ -35,6 +39,7 @@
   transition: color 0.3s ease; 
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
 }
 .tab:hover { color: white; }
 .tabActive { 

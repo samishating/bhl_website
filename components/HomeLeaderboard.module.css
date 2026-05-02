@@ -1,6 +1,6 @@
 .tabs { 
   display: flex; 
-  width: fit-content;
+  width: 100%;
   margin: 0 auto 4rem auto;
   gap: 0; 
   padding: 4px;
@@ -9,7 +9,11 @@
   border-radius: 100px;
   backdrop-filter: blur(10px);
   position: relative;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
+.tabs::-webkit-scrollbar { display: none; }
 .indicator {
   position: absolute;
   top: 4px;
@@ -35,6 +39,7 @@
   transition: color 0.3s ease; 
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
 }
 .tab:hover { color: white; }
 .tabActive { 
@@ -63,3 +68,40 @@
 .memberTitle { font-size: 0.75rem; color: var(--text-muted); }
 .badgePill { font-size: 0.7rem; font-family: 'Rajdhani', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 .xpValue { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; color: var(--brand-red); }
+
+.gridHeader {
+  display: grid;
+  grid-template-columns: 50px 1fr 100px 150px 100px;
+  background: rgba(255, 0, 0, 0.06);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: 50px 1fr 100px 150px 100px;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  align-items: center;
+  transition: background 0.2s;
+}
+.gridRow:hover { background: rgba(255,0,0,0.03); }
+.gridRow:last-child { border-bottom: none; }
+
+@media (max-width: 768px) {
+  .gridHeader, .gridRow {
+    grid-template-columns: 40px 1fr 80px 80px;
+  }
+  /* Hide division column on mobile to keep alignment */
+  .gridHeader > div:nth-child(4),
+  .gridRow > div:nth-child(4) {
+    display: none;
+  }
+}
+

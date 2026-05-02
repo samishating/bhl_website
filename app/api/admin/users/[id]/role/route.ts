@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await connectDB();
     const { id } = await params;
-    const { role } = await req.json();
+    const { role } = await req.json(); 
 
     if (!['user', 'admin'].includes(role)) {
       return NextResponse.json({ error: 'Invalid role provided' }, { status: 400 });

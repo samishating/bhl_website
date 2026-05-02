@@ -1,6 +1,7 @@
 .tabs { 
   display: flex; 
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 auto 4rem auto;
   gap: 0; 
   padding: 4px;
@@ -71,13 +72,13 @@
 
 .gridHeader {
   display: grid;
-  grid-template-columns: 50px 1fr 100px 150px 100px;
-  background: rgba(255, 0, 0, 0.06);
+  grid-template-columns: 80px 1fr 100px 180px 120px;
+  background: rgba(255, 0, 0, 0.08);
   border-bottom: 1px solid var(--border);
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5rem;
   font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: 0.8rem;
+  font-weight: 700;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -85,8 +86,8 @@
 
 .gridRow {
   display: grid;
-  grid-template-columns: 50px 1fr 100px 150px 100px;
-  padding: 1rem 1.25rem;
+  grid-template-columns: 80px 1fr 100px 180px 120px;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid rgba(255,255,255,0.03);
   align-items: center;
   transition: background 0.2s;
@@ -96,7 +97,8 @@
 
 @media (max-width: 768px) {
   .gridHeader, .gridRow {
-    grid-template-columns: 40px 1fr 80px 80px;
+    grid-template-columns: 50px 1fr 80px 100px;
+    padding: 1rem;
   }
   /* Hide division column on mobile to keep alignment */
   .gridHeader > div:nth-child(4),

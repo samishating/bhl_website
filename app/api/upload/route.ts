@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdmin } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth';
 
 /**
  * Since Vercel (serverless) has a read-only filesystem, 
@@ -8,8 +8,8 @@ import { verifyAdmin } from '@/lib/auth';
  */
 export async function POST(req: NextRequest) {
   try {
-    const admin = await verifyAdmin(req);
-    if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const user = await getUserFromRequest(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const formData = await req.formData();
     const file = formData.get('file') as File | null;

@@ -24,7 +24,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
-    if (payload.userId !== id && payload.role !== 'admin' && payload.role !== 'superadmin') {
+    
+    // Live role check to avoid stale token bugs
+    const { getCachedUserRole } = await import('@/lib/auth');
+    const currentRole = await getCachedUserRole(payload.userId);
+
+    if (payload.userId !== id && currentRole !== 'admin' && currentRole !== 'superadmin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -36,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { bio, avatar, divisions, username } = body;
 
     if (username !== undefined && username.trim() !== '' && username !== user.username) {
-      if (payload.role !== 'superadmin') {
+      if (currentRole !== 'superadmin') {
         return NextResponse.json({ error: 'Only superadmins can change usernames' }, { status: 403 });
       }
       // Check if username is already taken

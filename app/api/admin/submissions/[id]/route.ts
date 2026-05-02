@@ -57,7 +57,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             user.divisionXp[challengeDivision] = Math.max(0, (user.divisionXp[challengeDivision] || 0) - challengeReward);
             user.markModified('divisionXp');
           }
-          user.level = calculateLevel(user.xp);
+
+          // Fetch dynamic progression
+          const { getDynamicProgression } = await import('@/lib/progression-server');
+          const { thresholds } = await getDynamicProgression();
+
+          user.level = calculateLevel(user.xp, thresholds);
           await user.save();
         }
       }
@@ -101,7 +106,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           user.markModified('divisionXp');
         }
         
-        user.level = calculateLevel(user.xp);
+        // Fetch dynamic progression
+        const { getDynamicProgression } = await import('@/lib/progression-server');
+        const { thresholds } = await getDynamicProgression();
+
+        user.level = calculateLevel(user.xp, thresholds);
         
         if (!user.badges.includes(BADGES.CHALLENGER.id)) {
           user.badges.push(BADGES.CHALLENGER.id);

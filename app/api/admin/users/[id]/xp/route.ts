@@ -27,14 +27,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Protect superadmins from role-based XP demotion by lower admins? 
-    // Usually admins can manage all users' XP, but we might want to restrict changing superadmin XP.
-    if (targetUser.role === 'superadmin' && admin.role !== 'superadmin') {
-       return NextResponse.json({ error: 'Only superadmins can modify superadmin XP' }, { status: 403 });
-    }
+    // Fetch dynamic progression
+    const { getDynamicProgression } = await import('@/lib/progression-server');
+    const { thresholds } = await getDynamicProgression();
 
     targetUser.xp = xp;
-    targetUser.level = calculateLevel(xp);
+    targetUser.level = calculateLevel(xp, thresholds);
     await targetUser.save();
 
     return NextResponse.json({ 

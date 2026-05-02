@@ -1,7 +1,7 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
@@ -9,16 +9,45 @@
 
 .title {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 }
 
 .sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.tabContainer {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.tabBtn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
   color: var(--text-muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
   font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabBtn.active {
+  background: var(--brand-red);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
 }
 
 .userGrid {
@@ -28,42 +57,42 @@
 }
 
 .userCard {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .userCard:hover {
-  border-color: rgba(255, 0, 0, 0.3);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-hover);
+  transform: translateY(-5px);
+  box-shadow: var(--glow-red);
 }
 
 .userHeader {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   margin-bottom: 1.5rem;
-}
-
-.avatarWrapper {
-  position: relative;
+  align-items: center;
 }
 
 .avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-red);
   background: var(--bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: var(--brand-red);
-  border: 1px solid var(--border);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: white;
   overflow: hidden;
 }
 
@@ -75,43 +104,45 @@
 
 .levelBadge {
   position: absolute;
-  bottom: -6px;
-  right: -6px;
+  bottom: -5px;
+  right: -5px;
   background: var(--brand-red);
   color: white;
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 6px;
+  padding: 0.1rem 0.5rem;
   border-radius: 4px;
-  border: 1px solid #000;
+  border: 2px solid var(--bg-card);
+  font-family: 'Rajdhani', sans-serif;
 }
 
 .userInfo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .username {
+  font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 0.2rem;
+  font-size: 1.25rem;
+  color: white;
+  margin-bottom: 0.1rem;
 }
 
 .email {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
 .xpSection {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
   padding: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .xpLabel {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
@@ -127,58 +158,114 @@
 .xpCurrent {
   font-family: 'Rajdhani', sans-serif;
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--brand-red);
+  font-weight: 700;
+  color: white;
 }
 
 .xpUnit {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--brand-red);
+  font-weight: 700;
+  font-family: 'Rajdhani', sans-serif;
 }
 
-.cardActions {
-  display: flex;
-  gap: 0.75rem;
+/* System Progression View */
+.systemView {
+  animation: fadeIn 0.4s ease;
 }
 
-/* Modal specific */
-.modalXpInfo {
+.systemHeader {
   display: flex;
   justify-content: space-between;
-  background: rgba(255, 0, 0, 0.05);
-  padding: 1rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  border: 1px solid rgba(255, 0, 0, 0.1);
+  align-items: center;
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
 }
 
-.previewLabel {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+.systemHeader h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
-.previewValue {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 1.2rem;
+.systemHeader p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
-.previewValue.new {
+.levelTable {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.levelTableHeader {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 100px;
+  padding: 1.25rem 2rem;
+  background: rgba(255, 0, 0, 0.05);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.levelTableRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 100px;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  align-items: center;
+}
+
+.levelTableRow:last-child {
+  border-bottom: none;
+}
+
+.levelNum {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
   color: var(--brand-red);
 }
 
-.roleBadge {
-  font-size: 0.65rem;
-  padding: 2px 8px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  display: inline-block;
-  margin-top: 4px;
+/* Role Badges */
+.roleBadge { font-size: 0.6rem; padding: 0.1rem 0.6rem; border-radius: 4px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; margin-top: 4px; }
+.superadmin { background: linear-gradient(90deg, #ff0055, #cc0000); color: white; }
+.admin { background: rgba(255, 0, 0, 0.1); color: var(--brand-red); border: 1px solid rgba(255, 0, 0, 0.3); }
+.user { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+/* Modal */
+.modalXpInfo {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
 }
 
-.superadmin { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid rgba(255, 0, 85, 0.3); }
-.admin { background: rgba(255, 0, 0, 0.1); color: #ff0000; border: 1px solid rgba(255, 0, 0, 0.2); }
-.user { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border: 1px solid var(--border); }
+.previewLabel { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; }
+.previewValue { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.25rem; }
+.previewValue.new { color: var(--brand-red); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 1024px) {
+  .header { flex-direction: column; gap: 1.5rem; align-items: stretch; }
+  .tabContainer { width: fit-content; }
+}
+
+@media (max-width: 768px) {
+  .levelTable { font-size: 0.8rem; }
+  .levelTableHeader, .levelTableRow { grid-template-columns: 50px 1fr 1fr 60px; padding: 1rem; }
+  .systemHeader { flex-direction: column; gap: 1.5rem; text-align: center; }
+}

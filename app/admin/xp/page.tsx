@@ -15,34 +15,55 @@ interface User {
   role: string;
 }
 
+interface ProgressionLevel {
+  level: number;
+  title: string;
+  xpRequired: number;
+}
+
 export default function AdminXPPage() {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
+  
+  const [activeTab, setActiveTab] = useState<'users' | 'system'>('users');
   const [users, setUsers] = useState<User[]>([]);
+  const [progression, setProgression] = useState<ProgressionLevel[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  
+  // User XP Editing State
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newXp, setNewXp] = useState<number>(0);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSavingUser, setIsSavingUser] = useState(false);
+
+  // System Progression State
+  const [isSavingSystem, setIsSavingSystem] = useState(false);
 
   useEffect(() => {
-    fetchUsers();
+    fetchData();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/users');
-      const data = await res.json();
-      setUsers(data.users || []);
+      const [usersRes, progRes] = await Promise.all([
+        fetch('/api/users'),
+        fetch('/api/progression')
+      ]);
+      const usersData = await usersRes.json();
+      const progData = await progRes.json();
+      
+      setUsers(usersData.users || []);
+      setProgression(progData.progression || []);
     } catch (err) {
       console.error('[AdminXP] Fetch error:', err);
-      showToast('Failed to load personnel data', 'error');
+      showToast('Critical synchronization failure', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const filtered = users.filter(u =>
+  const filteredUsers = users.filter(u =>
     u.username.toLowerCase().includes(search.toLowerCase()) ||
     u.email.toLowerCase().includes(search.toLowerCase())
   );
@@ -54,7 +75,7 @@ export default function AdminXPPage() {
 
   const handleSaveXp = async () => {
     if (!editingUser) return;
-    setIsSaving(true);
+    setIsSavingUser(true);
     try {
       const res = await fetch(`/api/admin/users/${editingUser._id}/xp`, {
         method: 'PATCH',
@@ -65,7 +86,8 @@ export default function AdminXPPage() {
       if (res.ok) {
         showToast(`XP synchronized for ${editingUser.username}`, 'success');
         setEditingUser(null);
-        fetchUsers(); // Refresh list
+        const updatedUsers = await fetch('/api/users').then(r => r.json());
+        setUsers(updatedUsers.users || []);
       } else {
         const data = await res.json();
         showToast(data.error || 'Failed to update XP', 'error');
@@ -73,91 +95,214 @@ export default function AdminXPPage() {
     } catch (err) {
       showToast('Network error during synchronization', 'error');
     } finally {
-      setIsSaving(false);
+      setIsSavingUser(false);
     }
   };
 
-  const previewLevel = calculateLevel(newXp);
+  const handleAddLevel = () => {
+    const nextLevel = progression.length + 1;
+    const lastXp = progression.length > 0 ? progression[progression.length - 1].xpRequired : 0;
+    setProgression([...progression, { 
+      level: nextLevel, 
+      title: `Rank ${nextLevel}`, 
+      xpRequired: lastXp + 500 
+    }]);
+  };
+
+  const handleRemoveLevel = (index: number) => {
+    if (progression.length <= 1) return;
+    const updated = progression.filter((_, i) => i !== index)
+      .map((p, i) => ({ ...p, level: i + 1 }));
+    setProgression(updated);
+  };
+
+  const handleUpdateLevel = (index: number, field: keyof ProgressionLevel, value: string | number) => {
+    const updated = [...progression];
+    updated[index] = { ...updated[index], [field]: value };
+    setProgression(updated);
+  };
+
+  const handleSaveSystem = async () => {
+    setIsSavingSystem(true);
+    try {
+      const res = await fetch('/api/admin/progression', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ progression })
+      });
+
+      if (res.ok) {
+        showToast('Progression system updated globally', 'success');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to update progression', 'error');
+      }
+    } catch (err) {
+      showToast('Network error during save', 'error');
+    } finally {
+      setIsSavingSystem(false);
+    }
+  };
+
+  const currentThresholds = progression.map(p => p.xpRequired);
+  const currentTitles = progression.map(p => p.title);
+  const previewLevel = calculateLevel(newXp, currentThresholds);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '10rem' }}>
+        <div className="loader-visual" style={{ margin: '0 auto' }}>
+          <div className="loader-arc" />
+          <img src="/brand/logo.webp" alt="" className="loader-logo" />
+        </div>
+        <p className="loader-text" style={{ marginTop: '2rem' }}>Decrypting progression nodes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-up">
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>XP & Level Control</h1>
-          <p className={styles.sub}>Administrative override for user experience and rank progression</p>
+          <h1 className={styles.title}>Progression Sector</h1>
+          <p className={styles.sub}>Manage member experience and global level architecture</p>
         </div>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <input
-            className="form-input"
-            style={{ width: '320px' }}
-            placeholder="Search users by name or email..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+        <div className={styles.tabContainer}>
+          <button 
+            className={`${styles.tabBtn} ${activeTab === 'users' ? styles.active : ''}`}
+            onClick={() => setActiveTab('users')}
+          >
+            Personnel XP
+          </button>
+          <button 
+            className={`${styles.tabBtn} ${activeTab === 'system' ? styles.active : ''}`}
+            onClick={() => setActiveTab('system')}
+          >
+            Level System
+          </button>
         </div>
       </div>
 
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '10rem' }}>
-          <div className="loader-visual" style={{ margin: '0 auto' }}>
-            <div className="loader-arc" />
-            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+      {activeTab === 'users' ? (
+        <>
+          <div className="form-group" style={{ marginBottom: '2rem' }}>
+            <input
+              className="form-input"
+              style={{ width: '400px' }}
+              placeholder="Search personnel by intel..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
-          <p className="loader-text" style={{ marginTop: '2rem' }}>Fetching encrypted user data...</p>
-        </div>
+
+          <div className={styles.userGrid}>
+            {filteredUsers.map(u => (
+              <div key={u._id} className={styles.userCard}>
+                <div className={styles.userHeader}>
+                  <div className={styles.avatarWrapper}>
+                    <div className={styles.avatar}>
+                      {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                    </div>
+                    <div className={styles.levelBadge}>Lv.{u.level}</div>
+                  </div>
+                  <div className={styles.userInfo}>
+                    <div className={styles.username}>{u.username}</div>
+                    <div className={styles.email}>{u.email}</div>
+                    <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
+                      {u.role}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.xpSection}>
+                  <div className={styles.xpLabel}>Current Status</div>
+                  <div className={styles.xpValueRow}>
+                    <span className={styles.xpCurrent}>{u.xp.toLocaleString()}</span>
+                    <span className={styles.xpUnit}>XP</span>
+                    <span style={{ margin: '0 0.5rem', opacity: 0.2 }}>|</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      {getLevelTitle(u.level, currentTitles)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.cardActions}>
+                  <button 
+                    className="btn btn-primary btn-sm" 
+                    style={{ width: '100%' }}
+                    onClick={() => handleEditXp(u)}
+                    disabled={u.role === 'superadmin' && currentUser?.role !== 'superadmin'}
+                  >
+                    Override XP
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
-        <div className={styles.userGrid}>
-          {filtered.map(u => (
-            <div key={u._id} className={styles.userCard}>
-              <div className={styles.userHeader}>
-                <div className={styles.avatarWrapper}>
-                  <div className={styles.avatar}>
-                    {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                  </div>
-                  <div className={styles.levelBadge}>Lv.{u.level}</div>
-                </div>
-                <div className={styles.userInfo}>
-                  <div className={styles.username}>{u.username}</div>
-                  <div className={styles.email}>{u.email}</div>
-                  <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
-                    {u.role}
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.xpSection}>
-                <div className={styles.xpLabel}>Current Status</div>
-                <div className={styles.xpValueRow}>
-                  <span className={styles.xpCurrent}>{u.xp.toLocaleString()}</span>
-                  <span className={styles.xpUnit}>XP</span>
-                  <span style={{ margin: '0 0.5rem', opacity: 0.3 }}>|</span>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                    {getLevelTitle(u.level)}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.cardActions}>
-                <button 
-                  className="btn btn-primary btn-sm" 
-                  style={{ width: '100%' }}
-                  onClick={() => handleEditXp(u)}
-                  disabled={u.role === 'superadmin' && currentUser?.role !== 'superadmin'}
-                >
-                  Adjust XP / Level
-                </button>
-              </div>
+        <div className={styles.systemView}>
+          <div className={styles.systemHeader}>
+            <div>
+              <h3>Global Rank Architecture</h3>
+              <p>Define levels, titles, and XP thresholds for the entire platform.</p>
             </div>
-          ))}
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button className="btn btn-ghost" onClick={handleAddLevel}>+ Add Rank</button>
+              <button className="btn btn-primary" onClick={handleSaveSystem} disabled={isSavingSystem}>
+                {isSavingSystem ? 'Saving...' : 'Deploy System'}
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.levelTable}>
+            <div className={styles.levelTableHeader}>
+              <div>LVL</div>
+              <div>RANK TITLE</div>
+              <div>XP REQUIRED</div>
+              <div style={{ textAlign: 'right' }}>ACTIONS</div>
+            </div>
+            {progression.map((p, i) => (
+              <div key={i} className={styles.levelTableRow}>
+                <div className={styles.levelNum}>{p.level}</div>
+                <div>
+                  <input 
+                    className="form-input" 
+                    style={{ minHeight: '38px', fontSize: '0.9rem' }}
+                    value={p.title} 
+                    onChange={e => handleUpdateLevel(i, 'title', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <input 
+                    type="number"
+                    className="form-input" 
+                    style={{ minHeight: '38px', fontSize: '0.9rem' }}
+                    value={p.xpRequired} 
+                    onChange={e => handleUpdateLevel(i, 'xpRequired', Number(e.target.value))}
+                  />
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <button 
+                    className="btn btn-danger btn-sm" 
+                    onClick={() => handleRemoveLevel(i)}
+                    disabled={progression.length <= 1}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {editingUser && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && !isSaving && setEditingUser(null)}>
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && !isSavingUser && setEditingUser(null)}>
           <div className="modal-content" style={{ maxWidth: '420px' }}>
             <div className="modal-header">
-              <h3 className={styles.username} style={{ margin: 0 }}>Adjust XP: {editingUser.username}</h3>
-              <button className="btn-close" onClick={() => !isSaving && setEditingUser(null)}>✕</button>
+              <h3 style={{ margin: 0 }}>Adjust XP: {editingUser.username}</h3>
+              <button className="btn-close" onClick={() => !isSavingUser && setEditingUser(null)}>✕</button>
             </div>
             
             <div className="modal-body">
@@ -181,19 +326,19 @@ export default function AdminXPPage() {
                   className="form-input" 
                   value={newXp} 
                   onChange={e => setNewXp(Number(e.target.value))}
-                  disabled={isSaving}
+                  disabled={isSavingUser}
                   min="0"
                 />
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                  Rank: {getLevelTitle(previewLevel)}
+                  Rank: {getLevelTitle(previewLevel, currentTitles)}
                 </p>
               </div>
             </div>
 
             <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={() => setEditingUser(null)} disabled={isSaving} style={{ flex: 1 }}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSaveXp} disabled={isSaving} style={{ flex: 1 }}>
-                {isSaving ? 'Synchronizing...' : 'Save Changes'}
+              <button className="btn btn-ghost" onClick={() => setEditingUser(null)} disabled={isSavingUser} style={{ flex: 1 }}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleSaveXp} disabled={isSavingUser} style={{ flex: 1 }}>
+                {isSavingUser ? 'Syncing...' : 'Save Changes'}
               </button>
             </div>
           </div>

@@ -12,9 +12,6 @@ export const LEVEL_THRESHOLDS = [
   1000,   // Level 5
   1750,   // Level 6
   2750,   // Level 7
-  4000,   // Level 8
-  5500,   // Level 9
-  7500,   // Level 10
   10000,  // Level 11
   12500,  // Level 12
   15000,  // Level 13
@@ -37,10 +34,19 @@ export const LEVEL_THRESHOLDS = [
   50000,  // Level 30
 ];
 
-export function calculateLevel(xp: number): number {
+export const LEVEL_TITLES = [
+  'Recruit', 'Novice', 'Apprentice', 'Initiate', 'Member',
+  'Trusted', 'Veteran', 'Elite', 'Specialist', 'Warrior',
+  'Champion', 'Commander', 'Captain', 'Hero', 'Legend',
+  'Icon', 'Mythic', 'Vanguard', 'Sentinel', 'Guardian',
+  'Overseer', 'Warlord', 'Conqueror', 'Sovereign', 'Immortal',
+  'Celestial', 'Ascendant', 'Apex', 'Brotherhood Master', 'Eternal Legacy',
+];
+
+export function calculateLevel(xp: number, thresholds: number[] = LEVEL_THRESHOLDS): number {
   let level = 1;
-  for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-    if (xp >= LEVEL_THRESHOLDS[i]) {
+  for (let i = thresholds.length - 1; i >= 0; i--) {
+    if (xp >= thresholds[i]) {
       level = i + 1;
       break;
     }
@@ -48,17 +54,17 @@ export function calculateLevel(xp: number): number {
   return level;
 }
 
-export function xpForNextLevel(currentXp: number): { current: number; needed: number; progress: number } {
-  const level = calculateLevel(currentXp);
-  const maxLevel = LEVEL_THRESHOLDS.length;
+export function xpForNextLevel(currentXp: number, thresholds: number[] = LEVEL_THRESHOLDS): { current: number; needed: number; progress: number } {
+  const level = calculateLevel(currentXp, thresholds);
+  const maxLevel = thresholds.length;
   
   if (level >= maxLevel) {
-    const currentThreshold = LEVEL_THRESHOLDS[maxLevel - 1];
+    const currentThreshold = thresholds[maxLevel - 1];
     return { current: currentXp - currentThreshold, needed: 0, progress: 100 };
   }
 
-  const currentThreshold = LEVEL_THRESHOLDS[level - 1] || 0;
-  const nextThreshold = LEVEL_THRESHOLDS[level];
+  const currentThreshold = thresholds[level - 1] || 0;
+  const nextThreshold = thresholds[level];
   
   const xpInLevel = currentXp - currentThreshold;
   const xpNeeded = nextThreshold - currentThreshold;
@@ -67,6 +73,9 @@ export function xpForNextLevel(currentXp: number): { current: number; needed: nu
   return { current: xpInLevel, needed: xpNeeded, progress };
 }
 
+export function getLevelTitle(level: number, titles: string[] = LEVEL_TITLES): string {
+  return titles[Math.min(level - 1, titles.length - 1)] || 'Recruit';
+}
 
 export const BADGES = {
   FOUNDER: { id: 'FOUNDER', label: 'Founder', color: '#FFFDBA', description: 'Joined at launch' },
@@ -89,41 +98,3 @@ export function getDivisionBadge(division: string): BadgeId | null {
   };
   return map[division.toLowerCase()] || null;
 }
-
-export const LEVEL_TITLES = [
-  'Recruit',    // 1
-  'Novice',     // 2
-  'Apprentice', // 3
-  'Initiate',   // 4
-  'Member',     // 5
-  'Trusted',    // 6
-  'Veteran',    // 7
-  'Elite',      // 8
-  'Specialist', // 9
-  'Warrior',    // 10
-  'Champion',   // 11
-  'Commander',  // 12
-  'Captain',    // 13
-  'Hero',       // 14
-  'Legend',     // 15
-  'Icon',       // 16
-  'Mythic',     // 17
-  'Vanguard',   // 18
-  'Sentinel',   // 19
-  'Guardian',   // 20
-  'Overseer',   // 21
-  'Warlord',    // 22
-  'Conqueror',  // 23
-  'Sovereign',  // 24
-  'Immortal',   // 25
-  'Celestial',  // 26
-  'Ascendant',  // 27
-  'Apex',       // 28
-  'Brotherhood Master', // 29
-  'Eternal Legacy', // 30
-];
-
-export function getLevelTitle(level: number): string {
-  return LEVEL_TITLES[Math.min(level - 1, LEVEL_TITLES.length - 1)];
-}
-

@@ -25,7 +25,7 @@ export default function AdminXPPage() {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<'users' | 'system'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'system'>('system');
   const [users, setUsers] = useState<User[]>([]);
   const [progression, setProgression] = useState<ProgressionLevel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -231,7 +231,7 @@ export default function AdminXPPage() {
                     className="btn btn-primary btn-sm" 
                     style={{ width: '100%' }}
                     onClick={() => handleEditXp(u)}
-                    disabled={u.role === 'superadmin' && currentUser?.role !== 'superadmin'}
+                    disabled={currentUser?.role !== 'superadmin'}
                   >
                     Override XP
                   </button>

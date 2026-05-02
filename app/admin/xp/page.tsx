@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { calculateLevel, getLevelTitle } from '@/lib/xp';
+import { calculateLevel, getLevelTitle, xpForNextLevel } from '@/lib/xp';
 import styles from './page.module.css';
 
 interface User {
@@ -207,7 +207,7 @@ export default function AdminXPPage() {
 
       {activeTab === 'users' ? (
         <>
-          <div className="form-group" style={{ marginBottom: '2rem' }}>
+          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
             <input
               className="form-input"
               style={{ width: '400px' }}
@@ -218,48 +218,54 @@ export default function AdminXPPage() {
           </div>
 
           <div className={styles.userGrid}>
-            {filteredUsers.map(u => (
-              <div key={u._id} className={styles.userCard}>
-                <div className={styles.userHeader}>
-                  <div className={styles.avatarWrapper}>
-                    <div className={styles.avatar}>
-                      {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+            {filteredUsers.map(u => {
+              const xpData = xpForNextLevel(u.xp, currentThresholds);
+              return (
+                <div key={u._id} className={styles.userCard}>
+                  <div className={styles.cardTop}>
+                    <div className={styles.avatarContainer}>
+                      <div className={styles.avatar}>
+                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                      </div>
                     </div>
-                    <div className={styles.levelBadge}>Lv.{u.level}</div>
-                  </div>
-                  <div className={styles.userInfo}>
-                    <div className={styles.username}>{u.username}</div>
-                    <div className={styles.email}>{u.email}</div>
-                    <div className={`${styles.roleBadge} ${styles[u.role] || styles.user}`}>
-                      {u.role}
+                    
+                    <div className={styles.mainInfo}>
+                      <div className={styles.nameLine}>
+                        <span className={styles.username}>{u.username}</span>
+                        <span className={`${styles.roleDot} ${styles[u.role] || styles.user}`} title={u.role} />
+                        {u.email && <span className={styles.emailHint} title={u.email}>@</span>}
+                      </div>
+                      <div className={styles.rankLine}>
+                        <span className={styles.rankTitle}>{getLevelTitle(u.level, currentTitles)}</span>
+                        <span className={styles.lvlLabel}>LVL {u.level}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className={styles.xpSection}>
-                  <div className={styles.xpLabel}>Current Status</div>
-                  <div className={styles.xpValueRow}>
-                    <span className={styles.xpCurrent}>{u.xp.toLocaleString()}</span>
-                    <span className={styles.xpUnit}>XP</span>
-                    <span style={{ margin: '0 0.5rem', opacity: 0.2 }}>|</span>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                      {getLevelTitle(u.level, currentTitles)}
-                    </span>
+                  <div className={styles.progressSection}>
+                    <div className={styles.xpMeta}>
+                      <span className={styles.xpCount}>
+                        <strong>{u.xp.toLocaleString()}</strong> / {xpData.needed > 0 ? (u.xp + (xpData.needed - xpData.current)).toLocaleString() : 'MAX'} XP
+                      </span>
+                      <span className={styles.xpPercent}>{xpData.progress}%</span>
+                    </div>
+                    <div className={styles.miniXpBar}>
+                      <div className={styles.miniXpFill} style={{ width: `${xpData.progress}%` }} />
+                    </div>
+                  </div>
+
+                  <div className={styles.cardFooter}>
+                    <button 
+                      className={styles.secondaryAction}
+                      onClick={() => handleEditXp(u)}
+                      disabled={currentUser?.role !== 'superadmin'}
+                    >
+                      Override XP
+                    </button>
                   </div>
                 </div>
-
-                <div className={styles.cardActions}>
-                  <button 
-                    className="btn btn-primary btn-sm" 
-                    style={{ width: '100%' }}
-                    onClick={() => handleEditXp(u)}
-                    disabled={currentUser?.role !== 'superadmin'}
-                  >
-                    Override XP
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       ) : (
@@ -300,7 +306,7 @@ export default function AdminXPPage() {
                       autoFocus
                     />
                   ) : (
-                    <span className={styles.rankTitle}>{p.title}</span>
+                    <span className={styles.rankTitleText}>{p.title}</span>
                   )}
                 </div>
 

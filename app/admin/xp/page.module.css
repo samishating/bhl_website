@@ -2,233 +2,179 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .title {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
+  margin: 0;
 }
 
-.sub {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
+.sub { color: var(--text-secondary); font-size: 0.85rem; opacity: 0.7; }
 
 .tabContainer {
   display: flex;
   background: rgba(255, 255, 255, 0.03);
   padding: 4px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .tabBtn {
-  padding: 0.6rem 1.25rem;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   border: none;
   background: transparent;
   color: var(--text-muted);
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.tabBtn.active {
-  background: var(--brand-red);
-  color: white;
-  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
-}
+.tabBtn.active { background: var(--brand-red); color: white; }
 
-/* User Grid */
+/* User Grid & Card */
 .userGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
 .userCard {
   background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 1.25rem;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 .userCard:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-4px);
   background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
-.userHeader { display: flex; gap: 1rem; margin-bottom: 1.25rem; align-items: center; }
+.cardTop { display: flex; gap: 0.85rem; align-items: center; }
+
+.avatarContainer { position: relative; }
 .avatar { 
-  width: 52px; height: 52px; border-radius: 50%; 
-  border: 2px solid var(--brand-red); background: var(--bg-secondary); 
-  display: flex; align-items: center; justify-content: center; 
-  font-family: 'Rajdhani', sans-serif; font-weight: 700; color: white; overflow: hidden; 
+  width: 44px; height: 44px; border-radius: 50%; 
+  background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; color: white;
+  overflow: hidden; transition: all 0.3s ease;
 }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
-.levelBadge { 
-  position: absolute; bottom: -2px; right: -2px; 
-  background: var(--brand-red); color: white; font-size: 0.6rem; 
-  font-weight: 800; padding: 0.1rem 0.4rem; border-radius: 4px; 
-  border: 2px solid var(--bg-card); font-family: 'Rajdhani', sans-serif; 
+
+/* Avatar Glow on Card Hover */
+.userCard:hover .avatar {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
 }
 
-.username { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.1rem; color: white; }
-.email { font-size: 0.7rem; color: var(--text-muted); opacity: 0.6; }
+.mainInfo { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; }
 
-.xpSection { background: rgba(255, 255, 255, 0.02); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem; }
-.xpLabel { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; }
-.xpCurrent { font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; font-weight: 700; color: white; }
-.xpUnit { font-size: 0.7rem; color: var(--brand-red); font-weight: 700; margin-left: 0.25rem; }
+.nameLine { display: flex; align-items: center; gap: 0.5rem; }
+.username { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.05rem; color: white; }
+.roleDot { width: 6px; height: 6px; border-radius: 50%; background: #666; }
+.roleDot.superadmin { background: var(--brand-red); box-shadow: 0 0 8px var(--brand-red); }
+.roleDot.admin { background: #ffaa00; }
 
-/* System Progression View */
-.systemView { animation: fadeIn 0.4s ease; }
-
-.systemHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.emailHint { 
+  font-size: 0.7rem; color: var(--text-muted); cursor: help; 
+  opacity: 0.4; transition: opacity 0.2s ease;
 }
+.emailHint:hover { opacity: 1; color: white; }
 
-.systemHeader h3 { font-family: 'Rajdhani', sans-serif; font-size: 1.25rem; font-weight: 700; margin: 0; }
-.systemHeader p { color: var(--text-muted); font-size: 0.85rem; margin: 0; opacity: 0.6; }
-
-.levelTable {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  overflow: hidden;
+.rankLine { display: flex; align-items: center; gap: 0.5rem; }
+.rankTitle { 
+  font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 0.75rem; 
+  color: var(--brand-red); text-transform: uppercase; letter-spacing: 0.05em; 
 }
+.lvlLabel { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; opacity: 0.6; }
 
-.levelTableHeader {
-  display: grid;
-  grid-template-columns: 80px 1fr 1fr 120px;
-  padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
+/* Progress Section */
+.progressSection { display: flex; flex-direction: column; gap: 0.35rem; }
+.xpMeta { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
+.xpCount { color: var(--text-secondary); }
+.xpCount strong { color: white; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; }
+.xpPercent { font-weight: 700; color: var(--text-muted); }
+
+.miniXpBar { 
+  height: 3px; background: rgba(255, 255, 255, 0.05); 
+  border-radius: 2px; overflow: hidden; 
+}
+.miniXpFill { height: 100%; background: var(--brand-red); transition: width 0.4s ease; }
+
+/* Footer & Buttons */
+.cardFooter { display: flex; justify-content: center; margin-top: 0.25rem; }
+
+.secondaryAction {
+  width: 70%; height: 32px; /* ~30% reduction from standard 44px */
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-muted);
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.levelTableRow {
-  display: grid;
-  grid-template-columns: 80px 1fr 1fr 120px;
-  padding: 0.5rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  align-items: center;
-  min-height: 52px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
-}
-
-.levelTableRow:nth-child(even) { background: rgba(255, 255, 255, 0.01); }
-.levelTableRow:hover { background: rgba(255, 255, 255, 0.04); }
-.levelTableRow.isEditing { background: rgba(255, 0, 0, 0.03); border-color: var(--brand-red); }
-
-/* Column Styles */
-.colLvl { 
-  display: flex; flex-direction: column; align-items: center; justify-content: center; 
-  position: relative; font-family: 'Rajdhani', sans-serif; 
-}
-.lvlAnchor {
-  width: 32px; height: 32px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 0.95rem; color: white;
-  z-index: 2;
-}
-.levelTableRow:hover .lvlAnchor { border-color: var(--brand-red); color: var(--brand-red); }
-
-.ladderLine {
-  position: absolute; top: 32px; bottom: -20px;
-  width: 2px; background: rgba(255, 255, 255, 0.05);
-  left: 50%; transform: translateX(-50%);
-  z-index: 1;
 }
 
-.rankTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.1rem; color: white; }
-.xpText { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text-secondary); }
-.xpSmallUnit { font-size: 0.65rem; color: var(--text-muted); margin-left: 0.25rem; font-weight: 800; letter-spacing: 0.05em; }
-
-.colActions { display: flex; justify-content: flex-end; }
-.actionReveal { 
-  display: flex; gap: 0.5rem; 
-  opacity: 0.15; transition: opacity 0.2s ease; 
-}
-.levelTableRow:hover .actionReveal, .levelTableRow.isEditing .actionReveal { opacity: 1; }
-
-.iconBtn {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.2s ease; font-size: 0.9rem;
-}
-.iconBtn:hover { background: rgba(255, 255, 255, 0.1); border-color: white; }
-.btnDestructive:hover { background: rgba(255, 0, 0, 0.15); border-color: var(--brand-red); color: var(--brand-red); }
-
-.inlineInput {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+.secondaryAction:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 4px 10px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.95rem;
-  width: 100%;
-  max-width: 200px;
+  background: rgba(255, 255, 255, 0.03);
 }
-.inlineInput:focus { border-color: var(--brand-red); outline: none; }
 
-/* Modals */
-.modalXpInfo {
-  display: flex; justify-content: space-between;
-  background: rgba(255, 255, 255, 0.02); padding: 1rem;
-  border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.08);
+.secondaryAction:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* System Table Redesigns (Already mostly consistent, but refining) */
+.systemView { animation: fadeIn 0.4s ease; }
+.systemHeader {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.25rem; background: rgba(255, 255, 255, 0.02);
+  padding: 0.75rem 1.25rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.previewLabel { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; }
-.previewValue { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; }
-.previewValue.new { color: var(--brand-red); }
+.systemHeader h3 { font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; margin: 0; }
+.systemHeader p { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+
+.levelTable { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; }
+.levelTableHeader { 
+  display: grid; grid-template-columns: 70px 1fr 1fr 100px; padding: 0.6rem 1.25rem; 
+  background: rgba(255, 255, 255, 0.03); font-family: 'Rajdhani', sans-serif; 
+  font-weight: 700; font-size: 0.7rem; color: var(--text-muted); 
+}
+.levelTableRow { 
+  display: grid; grid-template-columns: 70px 1fr 1fr 100px; padding: 0.4rem 1.25rem; 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03); align-items: center; min-height: 44px; 
+}
+
+.lvlAnchor { width: 28px; height: 28px; font-size: 0.85rem; }
+.ladderLine { top: 28px; bottom: -16px; }
+.rankTitleText { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; color: white; }
+
+.iconBtn { width: 28px; height: 28px; font-size: 0.8rem; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-@media (max-width: 1024px) {
-  .header { flex-direction: column; gap: 1.5rem; }
-  .tabContainer { width: 100%; justify-content: center; }
-}
-
-@media (max-width: 768px) {
-  .levelTableHeader { display: none; }
-  .levelTableRow { 
-    grid-template-columns: 1fr; gap: 0.5rem; padding: 1.25rem; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
-  }
-  .colLvl { align-items: flex-start; }
-  .ladderLine { display: none; }
-  .actionReveal { opacity: 1; margin-top: 0.5rem; }
-  .colActions { justify-content: flex-start; }
+@media (max-width: 600px) {
+  .userGrid { grid-template-columns: 1fr; }
+  .secondaryAction { width: 100%; }
 }

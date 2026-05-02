@@ -7,10 +7,7 @@
       }
 
       .cls-2 {
-        fill: none;
-        stroke: red;
-        stroke-miterlimit: 10;
-        stroke-width: 176px;
+        fill: red;
       }
     </style>
   </defs>

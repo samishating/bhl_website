@@ -187,88 +187,32 @@ export default function AdminXPPage() {
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Progression Sector</h1>
-          <p className={styles.sub}>Manage member experience and global level architecture</p>
+          <p className={styles.sub}>Manage global level architecture and member experience</p>
         </div>
         <div className={styles.tabContainer}>
-          <button 
-            className={`${styles.tabBtn} ${activeTab === 'users' ? styles.active : ''}`}
-            onClick={() => setActiveTab('users')}
-          >
-            Personnel XP
-          </button>
+          {/* Sliding Highlight */}
+          <div 
+            className={styles.tabHighlight} 
+            style={{ 
+              transform: `translateX(${activeTab === 'system' ? '0%' : '100%'})` 
+            }} 
+          />
           <button 
             className={`${styles.tabBtn} ${activeTab === 'system' ? styles.active : ''}`}
             onClick={() => setActiveTab('system')}
           >
             Level System
           </button>
+          <button 
+            className={`${styles.tabBtn} ${activeTab === 'users' ? styles.active : ''}`}
+            onClick={() => setActiveTab('users')}
+          >
+            Personnel XP
+          </button>
         </div>
       </div>
 
-      {activeTab === 'users' ? (
-        <>
-          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-            <input
-              className="form-input"
-              style={{ width: '400px' }}
-              placeholder="Search personnel by intel..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-
-          <div className={styles.userGrid}>
-            {filteredUsers.map(u => {
-              const xpData = xpForNextLevel(u.xp, currentThresholds);
-              return (
-                <div key={u._id} className={styles.userCard}>
-                  <div className={styles.cardTop}>
-                    <div className={styles.avatarContainer}>
-                      <div className={styles.avatar}>
-                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                      </div>
-                    </div>
-                    
-                    <div className={styles.mainInfo}>
-                      <div className={styles.nameLine}>
-                        <span className={styles.username}>{u.username}</span>
-                        <span className={`${styles.roleDot} ${styles[u.role] || styles.user}`} title={u.role} />
-                        {u.email && <span className={styles.emailHint} title={u.email}>@</span>}
-                      </div>
-                      <div className={styles.rankLine}>
-                        <span className={styles.rankTitle}>{getLevelTitle(u.level, currentTitles)}</span>
-                        <span className={styles.lvlLabel}>LVL {u.level}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.progressSection}>
-                    <div className={styles.xpMeta}>
-                      <span className={styles.xpCount}>
-                        <strong>{u.xp.toLocaleString()}</strong> / {xpData.needed > 0 ? (u.xp + (xpData.needed - xpData.current)).toLocaleString() : 'MAX'} XP
-                      </span>
-                      <span className={styles.xpPercent}>{xpData.progress}%</span>
-                    </div>
-                    <div className={styles.miniXpBar}>
-                      <div className={styles.miniXpFill} style={{ width: `${xpData.progress}%` }} />
-                    </div>
-                  </div>
-
-                  <div className={styles.cardFooter}>
-                    <button 
-                      className={styles.secondaryAction}
-                      onClick={() => handleEditXp(u)}
-                      disabled={currentUser?.role !== 'superadmin'}
-                    >
-                      Override XP
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      ) : (
+      {activeTab === 'system' ? (
         <div className={styles.systemView}>
           <div className={styles.systemHeader}>
             <div>
@@ -348,6 +292,69 @@ export default function AdminXPPage() {
             ))}
           </div>
         </div>
+      ) : (
+        <>
+          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+            <input
+              className="form-input"
+              style={{ width: '400px' }}
+              placeholder="Search personnel by intel..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.userGrid}>
+            {filteredUsers.map(u => {
+              const xpData = xpForNextLevel(u.xp, currentThresholds);
+              return (
+                <div key={u._id} className={styles.userCard}>
+                  <div className={styles.cardTop}>
+                    <div className={styles.avatarContainer}>
+                      <div className={styles.avatar}>
+                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                      </div>
+                    </div>
+                    
+                    <div className={styles.mainInfo}>
+                      <div className={styles.nameLine}>
+                        <span className={styles.username}>{u.username}</span>
+                        <span className={`${styles.roleDot} ${styles[u.role] || styles.user}`} title={u.role} />
+                        {u.email && <span className={styles.emailHint} title={u.email}>@</span>}
+                      </div>
+                      <div className={styles.rankLine}>
+                        <span className={styles.rankTitle}>{getLevelTitle(u.level, currentTitles)}</span>
+                        <span className={styles.lvlLabel}>LVL {u.level}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.progressSection}>
+                    <div className={styles.xpMeta}>
+                      <span className={styles.xpCount}>
+                        <strong>{u.xp.toLocaleString()}</strong> / {xpData.needed > 0 ? (u.xp + (xpData.needed - xpData.current)).toLocaleString() : 'MAX'} XP
+                      </span>
+                      <span className={styles.xpPercent}>{xpData.progress}%</span>
+                    </div>
+                    <div className={styles.miniXpBar}>
+                      <div className={styles.miniXpFill} style={{ width: `${xpData.progress}%` }} />
+                    </div>
+                  </div>
+
+                  <div className={styles.cardFooter}>
+                    <button 
+                      className={styles.secondaryAction}
+                      onClick={() => handleEditXp(u)}
+                      disabled={currentUser?.role !== 'superadmin'}
+                    >
+                      Override XP
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {editingUser && (

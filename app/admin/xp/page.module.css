@@ -24,10 +24,28 @@
   padding: 4px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.tabHighlight {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  height: calc(100% - 8px);
+  width: calc(50% - 4px);
+  background: var(--brand-red);
+  border-radius: 6px;
+  z-index: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .tabBtn {
-  padding: 0.5rem 1rem;
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem 1.25rem;
   border-radius: 6px;
   border: none;
   background: transparent;
@@ -37,14 +55,14 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
+  min-width: 130px;
 }
 
-.tabBtn.active { background: var(--brand-red); color: white; }
+.tabBtn.active { color: white; }
+.tabBtn:hover:not(.active) { color: white; }
 
-/* ==========================================================================
-   PERSONNEL XP CARDS
-   ========================================================================== */
+/* Personnel XP Cards */
 .userGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -144,9 +162,7 @@
 
 .secondaryAction:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* ==========================================================================
-   SYSTEM PROGRESSION VIEW (RESTORED & UNIFIED)
-   ========================================================================== */
+/* System Progression View */
 .systemView { animation: fadeIn 0.4s ease; }
 
 .systemHeader {
@@ -198,7 +214,6 @@
 .levelTableRow:hover { background: rgba(255, 255, 255, 0.04); }
 .levelTableRow.isEditing { background: rgba(255, 0, 0, 0.03); border-color: var(--brand-red); }
 
-/* Column Styles */
 .colLvl { 
   display: flex; flex-direction: column; align-items: center; justify-content: center; 
   position: relative; font-family: 'Rajdhani', sans-serif; 
@@ -257,7 +272,6 @@
 }
 .inlineInput:focus { border-color: var(--brand-red); outline: none; }
 
-/* Modals */
 .modalXpInfo {
   display: flex; justify-content: space-between;
   background: rgba(255, 255, 255, 0.02); padding: 1rem;

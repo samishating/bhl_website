@@ -64,7 +64,7 @@ export const getServerUser = cache(async () => {
 // Admin Authorization with Live DB Check (avoids stale cookie role bug)
 import { unstable_cache } from 'next/cache';
 
-const getCachedUserRole = unstable_cache(
+export const getCachedUserRole = unstable_cache(
   async (userId: string) => {
     await connectDB();
     const user = await User.findById(userId).select('role').lean();

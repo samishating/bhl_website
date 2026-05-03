@@ -10,29 +10,47 @@
 
 /* ─── Glass Panel ────────────────────────────────────────── */
 .navbar {
-  /* Strong frosted glass */
-  background: linear-gradient(
-    180deg,
-    rgba(22, 18, 18, 0.68) 0%,
-    rgba(12, 10, 10, 0.58) 100%
-  );
-  backdrop-filter: blur(28px) saturate(170%);
-  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  /* Maximum frosted glass — text behind must become unreadable */
+  background: rgba(14, 12, 12, 0.42);
+  backdrop-filter: blur(48px) saturate(190%) contrast(85%);
+  -webkit-backdrop-filter: blur(48px) saturate(190%) contrast(85%);
 
   /* Floating panel edges */
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
 
   /* Depth: drop shadow + inner top-edge highlight */
   box-shadow:
-    0 10px 36px rgba(0, 0, 0, 0.48),
-    0 2px 8px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    inset 0 -1px 0 rgba(255, 0, 0, 0.06);
+    0 12px 40px rgba(0, 0, 0, 0.52),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(255, 0, 0, 0.07);
 
-  /* No transition needed for hide (it's always visible now) */
-  overflow: visible;
+  overflow: hidden;
   position: relative;
+}
+
+/* Frost diffusion layer — sits behind all nav content */
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.09) 0%,
+      rgba(255, 255, 255, 0.03) 100%
+    ),
+    rgba(8, 6, 6, 0.36);
+  border-radius: inherit;
+}
+
+/* All children float above the frost layer */
+.navbar > * {
+  position: relative;
+  z-index: 1;
 }
 
 .inner {

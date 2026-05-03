@@ -1,36 +1,44 @@
 /* ─── Floating Glass Navbar Wrapper ─────────────────────── */
+/* No transform here — transform on a parent breaks backdrop-filter in Chromium */
 .navbarWrap {
   position: fixed;
   top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1260px, calc(100% - 28px));
+  left: 0;
+  right: 0;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: 0 14px;
+  pointer-events: none; /* let clicks pass through the wrapper gap */
 }
 
 /* ─── Glass Panel ────────────────────────────────────────── */
 .navbar {
-  /* Maximum frosted glass — text behind must become unreadable */
-  background: rgba(14, 12, 12, 0.42);
-  backdrop-filter: blur(48px) saturate(190%) contrast(85%);
-  -webkit-backdrop-filter: blur(48px) saturate(190%) contrast(85%);
+  pointer-events: all; /* re-enable clicks on the panel itself */
+  width: 100%;
+  max-width: 1260px;
+
+  /* Maximum sandblasted frost */
+  background: rgba(18, 18, 18, 0.62);
+  backdrop-filter: blur(80px) saturate(200%) contrast(65%) brightness(0.85);
+  -webkit-backdrop-filter: blur(80px) saturate(200%) contrast(65%) brightness(0.85);
 
   /* Floating panel edges */
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
 
-  /* Depth: drop shadow + inner top-edge highlight */
+  /* Depth shadow + inner highlight */
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.52),
+    0 14px 45px rgba(0, 0, 0, 0.52),
     0 2px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
     inset 0 -1px 0 rgba(255, 0, 0, 0.07);
 
   overflow: hidden;
   position: relative;
 }
 
-/* Frost diffusion layer — sits behind all nav content */
+/* Primary frost diffusion layer */
 .navbar::before {
   content: '';
   position: absolute;
@@ -40,14 +48,36 @@
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.09) 0%,
-      rgba(255, 255, 255, 0.03) 100%
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.06) 100%
     ),
-    rgba(8, 6, 6, 0.36);
+    rgba(22, 22, 22, 0.30);
   border-radius: inherit;
 }
 
-/* All children float above the frost layer */
+/* Secondary haze layer — corner light scatter */
+.navbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(255, 255, 255, 0.10),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 100%,
+      rgba(255, 255, 255, 0.05),
+      transparent 45%
+    );
+  opacity: 0.8;
+  border-radius: inherit;
+}
+
+/* All children float above both frost layers */
 .navbar > * {
   position: relative;
   z-index: 1;
@@ -237,7 +267,7 @@
 @media (max-width: 600px) {
   .navbarWrap {
     top: 10px;
-    width: calc(100% - 20px);
+    padding: 0 10px;
   }
   .inner { padding: 0 1rem; height: 54px; }
 }

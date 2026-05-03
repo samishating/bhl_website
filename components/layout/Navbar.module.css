@@ -2,11 +2,24 @@
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: rgba(8, 7, 7, 0.82);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border-bottom: 1px solid rgba(255, 0, 0, 0.08);
-  box-shadow: 0 1px 0 rgba(255, 0, 0, 0.06);
+  /* Liquid glass base */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(12, 10, 10, 0.72) 40%,
+      rgba(8, 6, 6, 0.85) 100%
+    );
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  /* Inner top highlight — the "glass edge" */
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.1);
+  /* Layered shadow: depth + faint red ambient */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 0, 0, 0.08);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
 }
 .hidden {

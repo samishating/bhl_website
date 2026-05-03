@@ -650,24 +650,30 @@ tbody tr:last-child td { border-bottom: none; }
   text-align: center;
 }
 
-/* CONTENT BANDS (Full width) */
+/* CONTENT BANDS (Full width) — Liquid glass system */
 .content-band {
   width: 100%;
   position: relative;
   z-index: 2;
   padding: 120px 24px;
-  background: 
+  /* Liquid glass: layered translucent panel */
+  background:
     linear-gradient(
-      to bottom,
-      rgba(5, 5, 5, 0.88),
-      rgba(10, 0, 0, 0.92)
+      180deg,
+      rgba(255, 255, 255, 0.018) 0%,
+      rgba(10, 5, 5, 0.80) 20%,
+      rgba(8, 3, 3, 0.88) 100%
     );
-  border-top: 1px solid rgba(255, 0, 0, 0.18);
-  border-bottom: 1px solid rgba(255, 0, 0, 0.12);
-  box-shadow: 
-    0 -30px 80px rgba(0, 0, 0, 0.65),
-    0 30px 80px rgba(0, 0, 0, 0.65),
-    inset 0 0 80px rgba(255, 0, 0, 0.04);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  /* Edge highlights — top bright, bottom red */
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.1);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 -30px 80px rgba(0, 0, 0, 0.5),
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    inset 0 0 60px rgba(255, 0, 0, 0.03);
 }
 
 .content-inner {
@@ -679,8 +685,16 @@ tbody tr:last-child td { border-bottom: none; }
 .footer-band {
   margin-top: 20px;
   width: 100%;
-  background: rgba(5, 5, 5, 0.96);
-  border-top: 1px solid rgba(255, 0, 0, 0.2);
+  /* Liquid glass — consistent with navbar + footer */
+  background: linear-gradient(
+    180deg,
+    rgba(12, 8, 8, 0.78) 0%,
+    rgba(6, 4, 4, 0.92) 100%
+  );
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 -1px 0 rgba(255, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {

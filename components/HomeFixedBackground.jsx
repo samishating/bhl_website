@@ -73,32 +73,16 @@ export default function HomeFixedBackground() {
   }, []);
 
   return (
-    <>
-      <div className="home-fixed-bg">
-        <picture>
-          <source srcSet="/backgrounds/hero-mobile.webp" media="(max-width: 768px)" />
-          <img 
-            src="/backgrounds/hero-ultra.webp" 
-            alt="Brotherhood Legacy" 
-            className="home-bg-image"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </picture>
-        <div className="home-bg-overlay" />
-      </div>
-      <canvas 
-        ref={canvasRef} 
-        style={{ 
-          position: 'fixed', 
-          inset: 0, 
-          zIndex: -5, 
-          width: '100%', 
-          height: '100%', 
-          pointerEvents: 'none' 
-        }} 
-      />
-    </>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: -5,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none'
+      }}
+    />
   );
 }

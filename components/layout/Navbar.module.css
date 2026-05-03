@@ -2,10 +2,11 @@
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: rgba(14, 13, 13, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 0, 0, 0.12);
+  background: rgba(8, 7, 7, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.08);
+  box-shadow: 0 1px 0 rgba(255, 0, 0, 0.06);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
 }
 .hidden {
@@ -14,8 +15,8 @@
 .inner {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 70px;
+  padding: 0 2rem;
+  height: 64px;
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -36,33 +37,35 @@
 }
 
 /* Nav Links */
-.navLinks { display: flex; align-items: center; gap: 0.25rem; flex: 1; list-style: none; margin: 0; padding: 0; }
+.navLinks { display: flex; align-items: center; gap: 0; flex: 1; list-style: none; margin: 0; padding: 0; }
 .navLink {
-  padding: 0.5rem 0.85rem;
+  padding: 0.5rem 0.9rem;
   position: relative;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.06em;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-secondary);
-  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 0.2s ease;
   white-space: nowrap;
 }
 .navLink::after {
   content: '';
   position: absolute;
-  bottom: -4px;
-  left: 0.85rem;
-  right: 0.85rem;
+  bottom: -1px;
+  left: 0.9rem;
+  right: 0.9rem;
   height: 2px;
   background: var(--brand-red);
+  border-radius: 2px 2px 0 0;
   transform: scaleX(0);
-  transition: transform 0.3s ease;
-  box-shadow: 0 0 8px var(--brand-red);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.3);
 }
-.navLink:hover { color: white; }
-.navLink.active { color: white; }
+.navLink:hover { color: rgba(255, 255, 255, 0.85); }
+.navLink.active { color: #ffffff; }
 .navLink:hover::after, .navLink.active::after {
   transform: scaleX(1);
 }
@@ -74,14 +77,14 @@
 .cartBtn {
   position: relative;
   display: flex; align-items: center; justify-content: center;
-  width: 48px; height: 48px;
+  width: 42px; height: 42px;
   border-radius: 8px;
   background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.5);
   transition: all 0.2s ease;
 }
-.cartBtn:hover { color: white; border-color: var(--brand-red); background: rgba(255,0,0,0.06); }
+.cartBtn:hover { color: white; border-color: rgba(255,0,0,0.4); background: rgba(255,0,0,0.06); }
 .cartBadge {
   position: absolute; top: -4px; right: -4px;
   background: var(--brand-red);
@@ -97,32 +100,32 @@
 .userMenu { display: flex; align-items: center; gap: 0.6rem; }
 .userAvatarBtn {
   display: flex; align-items: center; gap: 0.65rem;
-  height: 42px;
+  height: 38px;
   padding: 0 0.85rem;
   border-radius: 8px;
   background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.07);
   transition: all 0.2s ease;
 }
-.userAvatarBtn:hover { background: rgba(255,0,0,0.05); border-color: var(--brand-red); }
-.navAvatar { width: 28px !important; height: 28px !important; font-size: 0.8rem !important; border-radius: 50%; overflow: hidden; }
-.username { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.95rem; color: white; }
-.levelBadge { font-size: 0.7rem !important; background: rgba(255,0,0,0.15) !important; color: var(--brand-red) !important; border: 1px solid rgba(255,0,0,0.3) !important; }
+.userAvatarBtn:hover { background: rgba(255,0,0,0.05); border-color: rgba(255,0,0,0.35); }
+.navAvatar { width: 26px !important; height: 26px !important; font-size: 0.75rem !important; border-radius: 50%; overflow: hidden; }
+.username { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.92rem; color: rgba(255,255,255,0.9); }
+.levelBadge { font-size: 0.7rem !important; background: rgba(255,0,0,0.12) !important; color: var(--brand-red) !important; border: 1px solid rgba(255,0,0,0.25) !important; }
 
 /* Auth */
 .authButtons { display: flex; align-items: center; gap: 0.5rem; }
 
 /* Burger */
 .burger {
-  display: none; width: 48px; height: 48px;
+  display: none; width: 42px; height: 42px;
   align-items: center; justify-content: center;
   background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.07);
   border-radius: 8px; color: white;
   padding: 0;
 }
-.burger span { display: block; width: 18px; height: 2px; background: white; position: relative; transition: all 0.3s ease; }
-.burger span::before, .burger span::after { content: ''; position: absolute; width: 18px; height: 2px; background: white; transition: all 0.3s ease; }
+.burger span { display: block; width: 18px; height: 2px; background: rgba(255,255,255,0.8); position: relative; transition: all 0.3s ease; }
+.burger span::before, .burger span::after { content: ''; position: absolute; width: 18px; height: 2px; background: rgba(255,255,255,0.8); transition: all 0.3s ease; }
 .burger span::before { top: -6px; }
 .burger span::after  { top:  6px; }
 .burgerOpen { background: transparent !important; }
@@ -130,28 +133,28 @@
 .burgerOpen::after { transform: rotate(-45deg); top: 0 !important; }
 
 /* Mobile Menu */
-.mobileMenu { 
-  display: flex; 
-  flex-direction: column; 
-  padding: 1rem 1.5rem; 
-  background: rgba(14, 13, 13, 0.98); 
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border); 
-  gap: 0.25rem; 
-  max-height: calc(100vh - 70px); 
-  overflow-y: auto; 
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+  background: rgba(8, 7, 7, 0.98);
+  backdrop-filter: blur(28px);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  gap: 0.25rem;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
 }
 .mobileLink {
   padding: 0.75rem 1rem; border-radius: 8px;
   font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1rem;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--text-secondary); display: block; transition: all 0.2s ease;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); display: block; transition: all 0.2s ease;
   background: none; border: none; text-align: left; cursor: pointer; width: 100%;
 }
-.mobileLink:hover, .mobileLink.active { color: var(--brand-red); background: rgba(255,0,0,0.06); }
+.mobileLink:hover, .mobileLink.active { color: var(--brand-red); background: rgba(255,0,0,0.05); }
 
 .navLoading { display: flex; align-items: center; gap: 0.75rem; padding: 0.3rem 0.6rem; }
-.skeletonAvatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
+.skeletonAvatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
 .skeletonText { width: 60px; height: 12px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
 
 @keyframes pulse {
@@ -160,31 +163,31 @@
 }
 
 /* Global Navbar Button Override */
-.userMenu :global(.btn), 
+.userMenu :global(.btn),
 .authButtons :global(.btn) {
-  height: 42px !important;
-  min-height: 42px !important;
+  height: 38px !important;
+  min-height: 38px !important;
   border-radius: 8px !important;
-  padding: 0 1.25rem !important;
-  font-size: 0.85rem !important;
+  padding: 0 1.1rem !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.1em !important;
 }
 
 @media (max-width: 900px) {
   .navLinks { display: none; }
   .burger { display: flex; }
   .actions { gap: 0.5rem; }
-  /* Target global btn class inside userMenu and authButtons */
-  .userMenu :global(.btn), 
-  .authButtons :global(.btn) { 
-    display: none; 
+  .userMenu :global(.btn),
+  .authButtons :global(.btn) {
+    display: none;
   }
 }
 
 @media (max-width: 500px) {
-  .username, 
-  .levelBadge { 
-    display: none; 
+  .username,
+  .levelBadge {
+    display: none;
   }
-  .inner { padding: 0 1rem; height: 64px; }
-  .logo img { height: 32px !important; }
+  .inner { padding: 0 1rem; height: 58px; }
 }
+

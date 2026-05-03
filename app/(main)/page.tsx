@@ -1,5 +1,5 @@
 import HomeFixedBackground from '@/components/HomeFixedBackground';
-import HeroClient from '@/components/HeroClient';
+import CinematicHero from '@/components/CinematicHero';
 import HomeDivisions from '@/components/HomeDivisions';
 import HomeLeaderboard from '@/components/HomeLeaderboard';
 import HomeChallenges from '@/components/HomeChallenges';
@@ -24,15 +24,11 @@ export default async function HomePage() {
 
   return (
     <div className="home-page">
-      {/* Fixed Background */}
+      {/* Ambient particle canvas (fixed, behind everything) */}
       <HomeFixedBackground />
 
-      {/* HERO SECTION */}
-      <section className="hero-section" id="hero">
-        <div className="hero-content">
-          <HeroClient statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
-        </div>
-      </section>
+      {/* HERO SECTION — CinematicHero owns its own <section id="hero"> */}
+      <CinematicHero statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
 
       {/* DIVISIONS SECTION */}
       <HomeDivisions initialStats={stats} />
@@ -51,7 +47,7 @@ export default async function HomePage() {
             <p>Join hundreds of members already building their story in the Brotherhood.</p>
             <div className={styles.ctaBtns}>
               <a href="/register" className="btn btn-primary btn-lg" id="home-cta-join-btn">
-                Create Account — It's Free
+                Create Account — It&apos;s Free
               </a>
               <a href="/apply" className="btn btn-ghost btn-lg" id="home-cta-apply-btn">
                 Apply to Join

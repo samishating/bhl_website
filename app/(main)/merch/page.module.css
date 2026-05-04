@@ -8,6 +8,7 @@
   justify-content: space-between;
   overflow: hidden;
   margin-bottom: 0;
+  margin-top: -88px; /* Offset the main layout padding to sit under the floating navbar */
   isolation: isolate;
   background: #080808;
 }

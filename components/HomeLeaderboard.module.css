@@ -72,7 +72,7 @@
 
 .gridHeader {
   display: grid;
-  grid-template-columns: 70px minmax(200px, 2fr) 100px 150px 100px;
+  grid-template-columns: 70px minmax(200px, 2fr) 100px minmax(160px, 1fr) 100px;
   background: rgba(255, 0, 0, 0.08);
   border-bottom: 1px solid var(--border);
   padding: 1.25rem 2rem;
@@ -86,7 +86,7 @@
 
 .gridRow {
   display: grid;
-  grid-template-columns: 70px minmax(200px, 2fr) 100px 150px 100px;
+  grid-template-columns: 70px minmax(200px, 2fr) 100px minmax(160px, 1fr) 100px;
   padding: 1.25rem 2rem;
   border-bottom: 1px solid rgba(255,255,255,0.03);
   align-items: center;

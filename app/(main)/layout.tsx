@@ -7,7 +7,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <>
       <Navbar />
       <CartDrawer />
-      <main style={{ paddingTop: '70px', minHeight: '100vh' }}>
+      <main style={{ paddingTop: '88px', minHeight: '100vh' }}>
         {children}
       </main>
       <Footer />

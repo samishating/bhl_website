@@ -11,6 +11,7 @@
   overflow: hidden;
   background: #050505;
   padding: 90px 24px 80px;
+  margin-top: -88px; /* cancel layout paddingTop — hero is full-screen */
 }
 
 /* ─── Atmospheric Background ─────────────────────────────── */

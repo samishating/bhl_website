@@ -41,11 +41,14 @@ export default async function HomePage() {
 
       {/* CTA SECTION BAND */}
       <section className="content-band" style={{ borderTop: 'none', paddingBottom: '160px' }}>
-        <div className="content-inner">
-          <div className={styles.ctaContent}>
+        <div className="section-divider" />
+        <div className="content-inner" style={{ paddingTop: '5rem' }}>
+          <div className="section-header">
+            <span className="section-tag">Final Step</span>
             <h2>Ready to Write Your <span className="gradient-text">Legacy?</span></h2>
-            <p>Join hundreds of members already building their story in the Brotherhood.</p>
-            <div className={styles.ctaBtns}>
+            <p className="section-desc">Join hundreds of members already building their story in the Brotherhood.</p>
+          </div>
+          <div className={styles.ctaBtns}>
               <a href="/register" className="btn btn-primary btn-lg" id="home-cta-join-btn">
                 Create Account — It&apos;s Free
               </a>
@@ -53,7 +56,6 @@ export default async function HomePage() {
                 Apply to Join
               </a>
             </div>
-          </div>
         </div>
       </section>
     </div>

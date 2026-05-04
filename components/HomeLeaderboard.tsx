@@ -60,18 +60,19 @@ export default function HomeLeaderboard() {
 
   return (
     <section id="leaderboard" className="content-band" style={{ borderTop: 'none' }}>
-      <div className="content-inner">
+      <div className="section-divider" />
+      <div className="content-inner" style={{ paddingTop: '4rem' }}>
         <div ref={headerRef}>
-          <div data-reveal="header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <div className="section-tag">Rankings</div>
+          <div data-reveal="header" className="section-header">
+            <span className="section-tag">Rankings</span>
             <h2>Global <span className="gradient-text">Leaderboard</span></h2>
-            <p style={{ color: 'var(--text-secondary)' }}>Top members ranked by XP across all divisions</p>
+            <p className="section-desc">Top members ranked by XP across all divisions</p>
           </div>
         </div>
 
         {/* Tabs */}
         <div ref={contentRef}>
-        <div data-reveal className={styles.tabs} ref={tabsRef}>
+        <div data-reveal className={`${styles.tabs} premium-panel`} ref={tabsRef}>
           {hasMounted && (
             <div 
               className={styles.indicator} 
@@ -126,7 +127,7 @@ export default function HomeLeaderboard() {
           ) : users.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>No members yet in this division.</div>
           ) : (
-            <div className="table-container">
+            <div className="table-container premium-panel">
               <div className={styles.gridHeader}>
                 <div>#</div>
                 <div>Member</div>

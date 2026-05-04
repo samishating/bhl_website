@@ -107,10 +107,10 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
       <div className="content-inner">
         {/* Header — own reveal element */}
         <div ref={headerRef}>
-          <div className={styles.sectionHeader} data-reveal="header">
-            <div className="section-tag">Elite Units</div>
+          <div className="section-header" data-reveal="header">
+            <span className="section-tag">Elite Units</span>
             <h2>Our <span className="gradient-text">Divisions</span></h2>
-            <p className={styles.sectionDesc}>
+            <p className="section-desc">
               Join a specialized unit. Compete for your colors. Rise to the top of your field.
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
               <div
                 key={div.id}
                 data-reveal
-                className={`${styles.divCard} ${styles.homeDivCard}`}
+                className={`${styles.divCard} premium-panel`}
                 style={{ '--div-color': div.color } as any}
                 id={`home-division-${div.id}`}
               >

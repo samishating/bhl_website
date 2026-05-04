@@ -3,28 +3,15 @@
 /* ─── Divisions ─────────────────────────────────────── */
 .divisionsSection {
   min-height: calc(100vh - 80px);
-  padding: clamp(32px, 5vh, 64px) clamp(24px, 4vw, 60px);
+  padding: clamp(64px, 10vh, 120px) clamp(24px, 4vw, 60px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(to bottom, rgba(5, 5, 5, 0.88), rgba(10, 0, 0, 0.92));
-  border-top: 1px solid rgba(255, 0, 0, 0.18);
-  border-bottom: 1px solid rgba(255, 0, 0, 0.12);
-  box-shadow: 
-    0 -30px 80px rgba(0, 0, 0, 0.65),
-    0 30px 80px rgba(0, 0, 0, 0.65),
-    inset 0 0 80px rgba(255, 0, 0, 0.04);
+  position: relative;
+  z-index: 2;
 }
 
-.sectionHeader { text-align: center; margin-bottom: clamp(1.5rem, 3vh, 2.5rem); }
-.sectionDesc { 
-  color: var(--text-secondary); 
-  font-size: clamp(0.9rem, 1vw, 1rem); 
-  margin-top: 0.5rem; 
-  max-width: 600px; 
-  margin-left: auto; 
-  margin-right: auto; 
-}
+/* Header typography is now handled globally by .section-header, .section-tag, .section-desc */
 
 .divisionsGrid { 
   display: grid; 
@@ -38,16 +25,9 @@
 }
 
 .divCard {
-  position: relative; 
-  background: rgba(10, 10, 10, 0.4);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: var(--radius-lg); 
   padding: clamp(16px, 2vh, 24px);
   display: flex; flex-direction: column; gap: clamp(0.75rem, 1.5vh, 1.25rem); 
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInUp 0.6s ease both;
+  animation: fadeUp 0.6s ease both;
 }
 
 /* Per-division logo color hover theme */

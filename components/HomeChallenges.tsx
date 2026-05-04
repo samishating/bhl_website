@@ -170,18 +170,19 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
 
   return (
     <section id="challenges" className="content-band" style={{ borderTop: 'none' }}>
-      <div className="content-inner">
+      <div className="section-divider" />
+      <div className="content-inner" style={{ paddingTop: '4rem' }}>
         <div ref={headerRef}>
-          <div data-reveal="header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <div className="section-tag">Earn XP</div>
+          <div data-reveal="header" className="section-header">
+            <span className="section-tag">Earn XP</span>
             <h2>Active <span className="gradient-text">Challenges</span></h2>
-            <p style={{ color: 'var(--text-secondary)' }}>Complete tasks, submit proof, and level up your legacy.</p>
+            <p className="section-desc">Complete tasks, submit proof, and level up your legacy.</p>
           </div>
         </div>
 
         <div ref={contentRef}>
 
-        <div className={styles.tabs} ref={tabsRef}>
+        <div className={`${styles.tabs} premium-panel`} ref={tabsRef}>
           {hasMounted && (
             <div 
               className={styles.indicator} 
@@ -208,7 +209,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
             {challenges.map(c => {
               const status = submissionStatus[c._id];
               return (
-                <div key={c._id} className={`${styles.card} ${status === 'approved' ? styles.cardDone : ''}`}>
+                <div key={c._id} className={`${styles.card} premium-panel ${status === 'approved' ? styles.cardDone : ''}`}>
                   <div className={styles.cardTop}>
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                       <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>

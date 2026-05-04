@@ -60,17 +60,6 @@
   z-index: 5;
 }
 
-.structuralLines::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  background: rgba(255, 0, 0, 0.06);
-}
-
 /* Layer 6: Drifting Dust Particles */
 .dustContainer {
   position: absolute;

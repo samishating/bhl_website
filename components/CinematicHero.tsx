@@ -151,7 +151,6 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
       {/* Scroll indicator */}
       <div className={styles.scroll}>
         <div className={styles.scrollLine} />
-        <span className={styles.scrollLabel}>Scroll</span>
       </div>
     </section>
   );

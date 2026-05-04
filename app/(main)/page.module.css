@@ -1,7 +1,7 @@
 /* ─── Hero — managed by CinematicHero.module.css ─────────── */
 .heroStickyWrapper {
   position: relative;
-  height: 120vh; /* Lets the hero stick for 20vh of scroll before moving up */
+  height: 200vh; /* Hero sticks exactly until the Divisions panel reaches the top of the viewport */
   z-index: 1;
 }
 

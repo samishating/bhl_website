@@ -13,37 +13,18 @@
   min-height: 100vh;
   margin-top: -2vh; /* very small overlap */
   padding: 120px clamp(24px, 4vw, 60px) 96px;
-  border-top-left-radius: 32px;
-  border-top-right-radius: 32px;
   background: linear-gradient(
     to bottom,
-    rgba(20, 0, 0, 0.98) 0%,
-    rgba(10, 0, 0, 0.985) 12%,
-    rgba(4, 0, 0, 1) 24%,
+    rgba(12, 0, 0, 0.96) 0%,
+    rgba(4, 0, 0, 1) 15%,
     rgba(4, 0, 0, 1) 85%,
     transparent 100%
   );
-  box-shadow:
-    0 -24px 60px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  /* Massive soft dark shadow pulling upwards to feather the transition, completely removing any hard line or dent */
+  box-shadow: 0 -80px 120px rgba(10, 0, 0, 1);
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.divisionsSection::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  left: 0;
-  right: 0;
-  height: 70px;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 0, 0, 0.05),
-    rgba(0, 0, 0, 0)
-  );
 }
 
 /* Header typography is now handled globally by .section-header, .section-tag, .section-desc */

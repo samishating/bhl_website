@@ -11,6 +11,34 @@ interface CinematicHeroProps {
   };
 }
 
+// Splits a word into individual letter spans with staggered animation delays
+function SplitWord({
+  word,
+  className,
+  baseDelay,        // seconds — when the first letter starts
+  letterDelay = 0.055, // seconds between each letter
+}: {
+  word: string;
+  className: string;
+  baseDelay: number;
+  letterDelay?: number;
+}) {
+  return (
+    <span className={className} aria-label={word}>
+      {word.split('').map((char, i) => (
+        <span
+          key={i}
+          className={styles.letter}
+          style={{ animationDelay: `${baseDelay + i * letterDelay}s` }}
+          aria-hidden="true"
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function CinematicHero({ statsData: _statsData }: CinematicHeroProps) {
   const logoRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -32,7 +60,6 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
     };
 
     const tick = () => {
-      // Lerp for smooth lag
       currentX += (targetX - currentX) * 0.06;
       currentY += (targetY - currentY) * 0.06;
 
@@ -55,6 +82,15 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
     };
   }, []);
 
+  // "BROTHERHOOD" = 12 letters × 0.055s = ~0.66s duration
+  // Logo starts after brotherhood finishes animating (0.3 + 0.66 = ~1.0s)
+  // "LEGACY" starts shortly after logo begins (1.1s)
+  const brotherhoodStart = 0.3;
+  const brotherhoodLetters = 'Brotherhood'.length;
+  const letterDelay = 0.055;
+  const logoStart = brotherhoodStart + brotherhoodLetters * letterDelay + 0.05;
+  const legacyStart = logoStart + 0.15;
+
   return (
     <section className={styles.hero} id="hero">
       {/* Atmospheric background */}
@@ -62,15 +98,23 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
       <div className={styles.bgNoise} />
       <div className={styles.bgLines} />
 
-      {/* Composition: BROTHERHOOD → LOGO → LEGACY stacked */}
+      {/* Composition: BROTHERHOOD → LOGO → LEGACY */}
       <div className={styles.textBlock}>
-        {/* Line 1 */}
-        <span className={`${styles.line} ${styles.lineBrotherhood}`}>
-          Brotherhood
-        </span>
 
-        {/* Rising Logo — sits between the two lines */}
-        <div className={styles.logoWrap} ref={logoRef}>
+        {/* Line 1 — letter-by-letter */}
+        <SplitWord
+          word="Brotherhood"
+          className={`${styles.line} ${styles.lineBrotherhood}`}
+          baseDelay={brotherhoodStart}
+          letterDelay={letterDelay}
+        />
+
+        {/* Rising Logo */}
+        <div
+          className={styles.logoWrap}
+          ref={logoRef}
+          style={{ animationDelay: `${logoStart}s, ${logoStart + 1.1}s` }}
+        >
           <Image
             src="/brand/logo.webp"
             alt="BHL"
@@ -82,10 +126,13 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
           <div className={styles.logoGlow} />
         </div>
 
-        {/* Line 2 */}
-        <span className={`${styles.line} ${styles.lineLegacy}`}>
-          Legacy
-        </span>
+        {/* Line 2 — letter-by-letter */}
+        <SplitWord
+          word="Legacy"
+          className={`${styles.line} ${styles.lineLegacy}`}
+          baseDelay={legacyStart}
+          letterDelay={letterDelay}
+        />
       </div>
 
       {/* Subtitle */}

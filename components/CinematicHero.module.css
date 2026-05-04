@@ -336,9 +336,8 @@
   }
 
   .line {
-    font-size: clamp(3.5rem, 18vw, 6rem);
-    white-space: normal;
-    word-break: break-word;
+    font-size: clamp(3rem, 13vw, 5rem);
+    white-space: nowrap;
   }
 
   .logo {
@@ -370,7 +369,7 @@
 
 @media (max-width: 480px) {
   .line {
-    font-size: clamp(3rem, 22vw, 5rem);
+    font-size: clamp(2.2rem, 11vw, 3.5rem);
   }
 
   .logo {

@@ -28,7 +28,7 @@ export default async function HomePage() {
       <HomeFixedBackground />
 
       {/* HERO SECTION — CinematicHero owns its own <section id="hero"> */}
-      <div className={styles.heroStickyWrapper}>
+      <div id="hero" className={styles.heroStickyWrapper}>
         <CinematicHero statsData={{ members: stats.totalMembers, xp: stats.totalXP }} />
       </div>
 

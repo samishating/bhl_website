@@ -92,7 +92,7 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
   const legacyStart = logoStart + 0.15;
 
   return (
-    <section className={styles.hero} id="hero">
+    <section className={styles.hero}>
       {/* Atmospheric background */}
       <div className={styles.bgGlow} ref={glowRef} />
       <div className={styles.bgNoise} />

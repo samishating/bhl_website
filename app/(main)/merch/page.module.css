@@ -288,7 +288,7 @@
 }
 
 .dropBadge { 
-  position: absolute; top: 1rem; left: 1rem; 
+  position: absolute; top: 1rem; left: 1rem; z-index: 10;
   background: var(--brand-red); color: white; 
   padding: 0.4rem 1rem; border-radius: 4px; 
   font-size: 0.7rem; font-family: 'Rajdhani', sans-serif; font-weight: 800; 

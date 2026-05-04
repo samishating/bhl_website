@@ -115,6 +115,7 @@
     color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 1.5rem;
   }
   .sidebarLogo { border-bottom: none !important; }
+  .collapseToggle { display: none !important; }
 
   .main { margin-left: 0; padding: 1rem; padding-top: 5rem; }
 }

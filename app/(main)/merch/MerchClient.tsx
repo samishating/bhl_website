@@ -253,7 +253,12 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                               key={idx}
                               className={`${styles.sizeBtn} ${quickViewSize === s.size ? styles.sizeBtnActive : ''} ${outOfStock ? styles.sizeBtnSoldOut : ''}`}
                               style={{ padding: '0.5rem 0.8rem', fontSize: '0.85rem' }}
-                              onClick={() => !outOfStock && setQuickViewSize(s.size)}
+                              onClick={() => {
+                                if (!outOfStock) {
+                                  setQuickViewSize(s.size);
+                                  if (quickViewQty > s.stock) setQuickViewQty(s.stock);
+                                }
+                              }}
                               disabled={outOfStock}
                               title={outOfStock ? 'Out of stock' : `${s.stock} left`}
                             >
@@ -269,8 +274,20 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   <div className={styles.qtyControl}>
                     <button onClick={() => setQuickViewQty(Math.max(1, quickViewQty - 1))}>−</button>
                     <span>{quickViewQty}</span>
-                    <button onClick={() => setQuickViewQty(quickViewQty + 1)}>+</button>
+                    <button onClick={() => {
+                      const maxStock = hasSizes && quickViewSize 
+                        ? p.sizes!.find(s => s.size === quickViewSize)?.stock || 0
+                        : (hasSizes ? 99 : p.stock); // If no size selected yet, don't hard limit, it will be caught on add to cart or size select
+                      if (quickViewQty < maxStock) setQuickViewQty(quickViewQty + 1);
+                    }}>+</button>
                   </div>
+                  {((hasSizes && quickViewSize) || (!hasSizes)) && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
+                      {hasSizes 
+                        ? `${p.sizes!.find(s => s.size === quickViewSize)?.stock || 0} available in size ${quickViewSize}`
+                        : `${p.stock} available`}
+                    </div>
+                  )}
 
                   <button 
                     className={`btn btn-primary ${styles.quickBuyBtn}`}

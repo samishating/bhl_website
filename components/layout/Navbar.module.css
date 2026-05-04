@@ -34,7 +34,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.10),
     inset 0 -1px 0 rgba(255, 0, 0, 0.07);
 
-  overflow: hidden;
   position: relative;
 }
 
@@ -191,7 +190,7 @@
   padding: 0;
 }
 .burger span { display: block; width: 16px; height: 2px; background: rgba(255,255,255,0.8); position: relative; transition: all 0.3s ease; }
-.burger span::before, .burger span::after { content: ''; position: absolute; width: 16px; height: 2px; background: rgba(255,255,255,0.8); transition: all 0.3s ease; }
+.burger span::before, .burger span::after { content: ''; position: absolute; left: 0; width: 16px; height: 2px; background: rgba(255,255,255,0.8); transition: all 0.3s ease; }
 .burger span::before { top: -5px; }
 .burger span::after  { top:  5px; }
 .burgerOpen { background: transparent !important; }

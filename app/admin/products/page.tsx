@@ -262,14 +262,14 @@ export default function AdminProductsPage() {
                       <input type="number" step="0.01" className="form-input" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Stock Units</label>
+                      <label className="form-label">Total Stock Units</label>
                       <input 
                         type="number" 
                         className="form-input" 
-                        value={form.sizes && form.sizes.length > 0 ? form.sizes.reduce((acc, s) => acc + s.stock, 0) : form.stock} 
-                        onChange={e => setForm(p => ({ ...p, stock: Number(e.target.value) }))} 
-                        disabled={form.sizes && form.sizes.length > 0}
-                        style={{ opacity: form.sizes && form.sizes.length > 0 ? 0.5 : 1 }}
+                        value={form.sizes ? form.sizes.reduce((acc, s) => acc + s.stock, 0) : 0} 
+                        readOnly
+                        disabled
+                        style={{ opacity: 0.5, cursor: 'not-allowed' }}
                       />
                     </div>
                     <div className="form-group">

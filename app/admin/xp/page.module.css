@@ -284,9 +284,21 @@
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 768px) {
+  .header { flex-direction: column; gap: 1.5rem; }
+  .systemHeader { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .systemHeader > div:last-child { width: 100%; }
+  .systemHeader > div:last-child button { flex: 1; }
+
   .levelTableHeader { display: none; }
-  .levelTableRow { grid-template-columns: 1fr; padding: 1rem; }
-  .colLvl { align-items: flex-start; }
+  .levelTableRow { 
+    grid-template-columns: auto 1fr; 
+    padding: 1rem; 
+    gap: 0.5rem;
+  }
+  .colLvl { grid-column: 1 / 2; grid-row: 1 / 3; align-items: center; justify-content: center; padding-right: 1rem; }
+  .colTitle { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; align-items: flex-end; }
+  .colXp { grid-column: 2 / 3; grid-row: 2 / 3; display: flex; align-items: flex-start; }
+  .colActions { grid-column: 1 / 3; grid-row: 3 / 4; justify-content: flex-end; margin-top: 0.5rem; }
   .ladderLine { display: none; }
 }
 

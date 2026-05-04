@@ -18,15 +18,24 @@
 
 .bgImageWrapper {
   position: absolute;
-  inset: 0;
+  inset: -10px; /* Expand slightly to prevent blur edges from bleeding */
   z-index: 0;
   pointer-events: none;
+}
+
+.bgImageWrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+  z-index: 1; /* Above the image, but below the hero text */
 }
 
 .bgImage {
   object-fit: cover;
   object-position: center;
-  opacity: 1; /* Fully visible background image */
+  opacity: 1; 
+  filter: blur(5px) brightness(0.75); /* Soft blur and depth darkening */
 }
 
 /* ─── Atmospheric Background ─────────────────────────────── */

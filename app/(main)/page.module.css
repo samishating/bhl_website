@@ -13,15 +13,17 @@
   min-height: 100vh;
   margin-top: -2vh; /* very small overlap */
   padding: 120px clamp(24px, 4vw, 60px) 96px;
-  background: linear-gradient(
-    to bottom,
-    rgba(12, 0, 0, 0.96) 0%,
-    rgba(4, 0, 0, 1) 15%,
-    rgba(4, 0, 0, 1) 85%,
-    transparent 100%
-  );
-  /* Massive soft dark shadow pulling upwards to feather the transition, completely removing any hard line or dent */
-  box-shadow: 0 -80px 120px rgba(10, 0, 0, 1);
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% 10%, rgba(40, 0, 0, 0.15) 0%, transparent 70%),
+    linear-gradient(
+      to bottom,
+      rgba(12, 0, 0, 0.85) 0%,
+      rgba(6, 2, 2, 0.65) 15%,
+      rgba(4, 0, 0, 0.75) 85%,
+      transparent 100%
+    );
+  /* Massive soft dark shadow pulling upwards to feather the transition */
+  box-shadow: 0 -80px 120px rgba(10, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: center;

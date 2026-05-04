@@ -22,9 +22,9 @@
   z-index: 0;
   /* Deep red bloom from center-bottom */
   background:
-    radial-gradient(ellipse 70% 55% at 50% 85%, rgba(180, 0, 0, 0.28) 0%, transparent 70%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(120, 0, 0, 0.22) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(60, 0, 0, 0.18) 0%, transparent 70%);
+    radial-gradient(ellipse 70% 55% at 50% 85%, rgba(180, 0, 0, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(120, 0, 0, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(60, 0, 0, 0.08) 0%, transparent 40%);
   animation: glowBreathe 6s ease-in-out infinite;
 }
 
@@ -87,9 +87,8 @@
   width: clamp(115px, 18.5vw, 250px);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.85))
-          drop-shadow(0 0 50px rgba(255, 0, 0, 0.45))
-          drop-shadow(0 0 90px rgba(255, 0, 0, 0.20));
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.45))
+          drop-shadow(0 0 18px rgba(255, 0, 0, 0.18));
   position: relative;
   z-index: 2;
 }
@@ -101,7 +100,7 @@
   transform: translateX(-50%);
   width: 160%;
   height: 80px;
-  background: radial-gradient(ellipse, rgba(255, 0, 0, 0.35) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(255, 0, 0, 0.15) 0%, transparent 50%);
   pointer-events: none;
   z-index: 1;
   animation: glowBreathe 3.5s ease-in-out infinite;
@@ -150,9 +149,8 @@
 .lineLegacy {
   color: #FF0000;
   text-shadow:
-    0 0 40px rgba(255, 0, 0, 0.6),
-    0 0 100px rgba(255, 0, 0, 0.25),
-    0 0 200px rgba(255, 0, 0, 0.1);
+    0 0 10px rgba(255, 0, 0, 0.28),
+    0 0 22px rgba(255, 0, 0, 0.12);
   /* no animation — handled per-letter */
 }
 

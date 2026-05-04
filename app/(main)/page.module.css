@@ -2,6 +2,7 @@
 .heroStickyWrapper {
   position: relative;
   height: 200vh; /* Hero sticks exactly until the Divisions panel reaches the top of the viewport */
+  margin-bottom: -100vh; /* Collapse the extra 100vh of scroll space so the next section starts immediately */
   z-index: 1;
 }
 

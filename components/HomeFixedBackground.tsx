@@ -28,29 +28,6 @@ export default function HomeFixedBackground() {
   if (!mounted) return null;
 
   return (
-    <div className={styles.fixedBackground}>
-      <div className={styles.baseTonalShift} />
-      <div className={styles.vignette} />
-      <div className={styles.ambientHaze} />
-      <div className={styles.grainTexture} />
-      <div className={styles.structuralLines} />
-      
-      <div className={styles.dustContainer}>
-        {dustParticles.map(p => (
-          <div 
-            key={p.id}
-            className={styles.dustParticle}
-            style={{
-              left: p.left,
-              width: p.size,
-              height: p.size,
-              animationDuration: p.duration,
-              animationDelay: p.delay,
-              opacity: p.opacity,
-            }}
-          />
-        ))}
-      </div>
-    </div>
+    <div className={styles.fixedBackground} />
   );
 }

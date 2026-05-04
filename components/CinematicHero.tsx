@@ -41,7 +41,6 @@ function SplitWord({
 
 export default function CinematicHero({ statsData: _statsData }: CinematicHeroProps) {
   const logoRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
 
   // Subtle mouse parallax — desktop only
   useEffect(() => {
@@ -65,9 +64,6 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
 
       if (logoRef.current) {
         logoRef.current.style.transform = `translate(${currentX * 10}px, ${currentY * 5}px)`;
-      }
-      if (glowRef.current) {
-        glowRef.current.style.transform = `translate(${currentX * 18}px, ${currentY * 8}px)`;
       }
 
       rafId = requestAnimationFrame(tick);
@@ -104,11 +100,6 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
           className={styles.bgImage}
         />
       </div>
-
-      {/* Atmospheric background */}
-      <div className={styles.bgGlow} ref={glowRef} />
-      <div className={styles.bgNoise} />
-      <div className={styles.bgLines} />
 
       {/* Composition: BROTHERHOOD → LOGO → LEGACY */}
       <div className={styles.textBlock}>

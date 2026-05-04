@@ -16,6 +16,19 @@
   margin-top: -88px; /* cancel layout paddingTop — hero is full-screen */
 }
 
+.bgImageWrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgImage {
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.6; /* Slight opacity so it blends with the dark base */
+}
+
 /* ─── Atmospheric Background ─────────────────────────────── */
 .bgGlow {
   position: absolute;

@@ -93,6 +93,18 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
 
   return (
     <section className={styles.hero}>
+      {/* Background Image */}
+      <div className={styles.bgImageWrapper}>
+        <Image 
+          src="/backgrounds/herobackground.png" 
+          alt="" 
+          fill
+          priority
+          quality={100}
+          className={styles.bgImage}
+        />
+      </div>
+
       {/* Atmospheric background */}
       <div className={styles.bgGlow} ref={glowRef} />
       <div className={styles.bgNoise} />

@@ -206,6 +206,7 @@
   border: 1px solid rgba(255, 0, 0, 0.1);
   border-radius: 999px;
   width: fit-content;
+  max-width: 92vw;
   margin-left: auto;
   margin-right: auto;
   backdrop-filter: blur(20px);
@@ -240,6 +241,8 @@
   font-size: 0.75rem;
   position: relative;
   z-index: 2;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .tab:hover { color: #888; }
 .tabActive { 
@@ -378,6 +381,21 @@
 }
 @media (max-width: 600px) {
   .grid { grid-template-columns: 1fr; }
+  .tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    border-radius: 16px;
+    padding: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab {
+    padding: 0.6rem 1.2rem;
+  }
 }
 
 /* Quick View Modal Sizes */

@@ -2,42 +2,41 @@
 
 /* ─── Divisions ─────────────────────────────────────── */
 .divisionsSection {
-  min-height: calc(100vh - 80px);
-  padding: clamp(64px, 10vh, 120px) clamp(24px, 4vw, 60px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   position: relative;
-  z-index: 3;
-  margin-top: -140px;
-  padding-top: 180px;
-  border-top-left-radius: 32px;
-  border-top-right-radius: 32px;
+  z-index: 2;
+  min-height: 100vh;
+  margin-top: -8vh; /* small overlap only */
+  padding: 120px clamp(24px, 4vw, 60px) 96px;
+  border-top-left-radius: 36px;
+  border-top-right-radius: 36px;
   background:
     linear-gradient(
       to bottom,
-      rgba(18, 0, 0, 0.92) 0%,
-      rgba(8, 0, 0, 0.96) 10%,
-      rgba(0, 0, 0, 0.98) 28%,
-      rgba(0, 0, 0, 1) 100%
+      rgba(18, 0, 0, 0.96) 0%,
+      rgba(8, 0, 0, 0.98) 16%,
+      rgba(0, 0, 0, 1) 45%
     );
   box-shadow:
-    0 -20px 60px rgba(0, 0, 0, 0.45),
-    0 -2px 0 rgba(255, 0, 0, 0.08);
+    0 -24px 80px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .divisionsSection::before {
   content: "";
   position: absolute;
-  top: -60px;
-  left: 0;
-  right: 0;
-  height: 80px;
-  pointer-events: none;
+  top: 0;
+  left: 50%;
+  width: min(1100px, 86vw);
+  height: 1px;
+  transform: translateX(-50%);
   background: linear-gradient(
-    to bottom,
-    rgba(255, 0, 0, 0.06),
-    rgba(0, 0, 0, 0)
+    90deg,
+    transparent,
+    rgba(255, 0, 0, 0.35),
+    transparent
   );
 }
 

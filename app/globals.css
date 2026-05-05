@@ -566,7 +566,7 @@ select.form-input option { background: var(--bg-card); }
   align-items: center;
   justify-content: center;
   padding: 24px;
-  overflow: hidden;
+  overflow-y: auto;
   animation: fadeIn 0.3s ease forwards;
 }
 
@@ -579,7 +579,7 @@ select.form-input option { background: var(--bg-card); }
   display: flex;
   flex-direction: column;
   position: relative;
-  margin: 0;
+  margin: auto; /* Required to center inside an overflow-y: auto container */
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(255,0,0,0.15);
   animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;

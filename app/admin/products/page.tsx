@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import { useToast } from '@/contexts/ToastContext';
+import Modal from '@/components/Modal';
 
 
 interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; sizes: { size: string, stock: number }[]; isLimitedDrop: boolean; }
@@ -238,18 +239,21 @@ export default function AdminProductsPage() {
         )}
       </div>
 
-      {showForm && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && (setShowForm(false), cleanupPreviews())}>
-          <div className="modal-content" style={{ maxWidth: '1000px' }}>
-            <div className="modal-header">
-              <h3 className={styles.title} style={{ fontSize: '1.2rem', marginBottom: 0 }}>
-                {editingId ? 'Edit Product' : 'Create New Product'}
-              </h3>
-              <button className="btn-close" onClick={() => { setShowForm(false); cleanupPreviews(); }}>✕</button>
-            </div>
-            
-            <div className="modal-body">
-              <form onSubmit={handleCreate} className={styles.splitForm}>
+      <Modal
+        isOpen={showForm}
+        onClose={() => { setShowForm(false); cleanupPreviews(); }}
+        title={editingId ? 'Edit Product' : 'Create New Product'}
+        maxWidth="1100px"
+        footer={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => { setShowForm(false); cleanupPreviews(); }} style={{ minWidth: '120px' }}>CANCEL</button>
+            <button type="button" className="btn btn-primary" onClick={handleCreate} disabled={creating} style={{ minWidth: '180px' }}>
+              {creating ? <span className="spinner" /> : editingId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
+            </button>
+          </>
+        }
+      >
+        <form onSubmit={handleCreate} className={styles.splitForm}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div className="form-group">
                     <label className="form-label">Product Name *</label>
@@ -258,8 +262,8 @@ export default function AdminProductsPage() {
 
                   <div className={styles.formRow}>
                     <div className="form-group">
-                      <label className="form-label">Price ($)</label>
-                      <input type="number" step="0.01" className="form-input" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} />
+                      <label className="form-label">Price ($) *</label>
+                      <input required type="number" step="0.01" className="form-input" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Total Stock Units</label>
@@ -272,12 +276,13 @@ export default function AdminProductsPage() {
                         style={{ opacity: 0.5, cursor: 'not-allowed' }}
                       />
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Category</label>
-                      <select className="form-input" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}>
-                        {['apparel', 'accessories', 'gear', 'digital'].map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Category *</label>
+                    <select required className="form-input" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}>
+                      {['apparel', 'accessories', 'gear', 'digital'].map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
                   </div>
 
                   <div className="form-group">
@@ -352,6 +357,7 @@ export default function AdminProductsPage() {
                   <div 
                     className={styles.premiumToggle} 
                     onClick={() => setForm(p => ({ ...p, isLimitedDrop: !p.isLimitedDrop }))}
+                    style={{ marginBottom: 0 }}
                   >
                     <div className={styles.toggleBox}>
                       {form.isLimitedDrop && <div className={styles.checkmark}>✓</div>}
@@ -360,14 +366,6 @@ export default function AdminProductsPage() {
                       <div className={styles.toggleLabel}>PREMIUM DROP</div>
                       <div className={styles.toggleSubtext}>Requires 40k XP</div>
                     </div>
-                  </div>
-
-                  {/* Action Buttons Block */}
-                  <div style={{ marginTop: '32px', display: 'flex', gap: '20px' }}>
-                    <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                      {creating ? <span className="spinner" /> : editingId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT'}
-                    </button>
-                    <button type="button" className="btn btn-ghost" onClick={() => { setShowForm(false); cleanupPreviews(); }} style={{ flex: 1 }}>CANCEL</button>
                   </div>
                 </div>
 
@@ -428,10 +426,7 @@ export default function AdminProductsPage() {
                   </div>
                 </div>
               </form>
-            </div>
-          </div>
-        </div>
-      )}
+      </Modal>
     </>
   );
 }

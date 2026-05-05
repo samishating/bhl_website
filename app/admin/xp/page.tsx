@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { calculateLevel, getLevelTitle, xpForNextLevel } from '@/lib/xp';
+import Modal from '@/components/Modal';
 import styles from './page.module.css';
 
 interface User {
@@ -357,23 +358,28 @@ export default function AdminXPPage() {
         </>
       )}
 
-      {editingUser && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && !isSavingUser && setEditingUser(null)}>
-          <div className="modal-content" style={{ maxWidth: '420px' }}>
-            <div className="modal-header">
-              <h3 style={{ margin: 0 }}>Adjust XP: {editingUser.username}</h3>
-              <button className="btn-close" onClick={() => !isSavingUser && setEditingUser(null)}>✕</button>
-            </div>
-            
-            <div className="modal-body">
+      <Modal
+        isOpen={!!editingUser}
+        onClose={() => !isSavingUser && setEditingUser(null)}
+        title={`Adjust XP: ${editingUser?.username}`}
+        maxWidth="420px"
+        footer={
+          <>
+            <button className="btn btn-ghost" onClick={() => setEditingUser(null)} disabled={isSavingUser} style={{ flex: 1 }}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleSaveXp} disabled={isSavingUser} style={{ flex: 1 }}>
+              {isSavingUser ? 'Syncing...' : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
               <div className={styles.modalXpInfo}>
                 <div>
                   <div className={styles.previewLabel}>Current XP</div>
-                  <div className={styles.previewValue}>{editingUser.xp.toLocaleString()}</div>
+                  <div className={styles.previewValue}>{editingUser?.xp.toLocaleString()}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div className={styles.previewLabel}>Preview Level</div>
-                  <div className={`${styles.previewValue} ${newXp !== editingUser.xp ? styles.new : ''}`}>
+                  <div className={`${styles.previewValue} ${newXp !== editingUser?.xp ? styles.new : ''}`}>
                     Lv.{previewLevel}
                   </div>
                 </div>
@@ -393,17 +399,7 @@ export default function AdminXPPage() {
                   Rank: {getLevelTitle(previewLevel, currentTitles)}
                 </p>
               </div>
-            </div>
-
-            <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={() => setEditingUser(null)} disabled={isSavingUser} style={{ flex: 1 }}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSaveXp} disabled={isSavingUser} style={{ flex: 1 }}>
-                {isSavingUser ? 'Syncing...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

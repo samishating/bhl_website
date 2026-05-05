@@ -28,7 +28,7 @@ export default function Modal({ isOpen, onClose, title, children, footer, maxWid
 
   return createPortal(
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content" style={{ maxWidth: maxWidth || '680px' }}>
+      <div className="modal-content" style={{ width: `min(${maxWidth || '680px'}, calc(100vw - 32px))`, maxWidth: 'none' }}>
         <div className="modal-header">
           <h3 style={{ 
             fontFamily: 'Rajdhani', 

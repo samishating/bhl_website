@@ -146,7 +146,13 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
         <Link href="/register" className="btn btn-primary btn-lg" id="hero-join-btn">
           Join the Brotherhood
         </Link>
-        <Link href="/#divisions" className="btn btn-secondary btn-lg" id="hero-explore-btn">
+        <Link href="/#divisions" className="btn btn-secondary btn-lg" id="hero-explore-btn" onClick={(e) => {
+          if (typeof window !== 'undefined' && window.location.pathname === '/') {
+            e.preventDefault();
+            document.getElementById('divisions')?.scrollIntoView({ behavior: 'smooth' });
+            window.history.pushState(null, '', '/#divisions');
+          }
+        }}>
           Explore Divisions
         </Link>
       </div>

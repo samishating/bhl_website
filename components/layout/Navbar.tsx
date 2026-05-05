@@ -88,6 +88,17 @@ export default function Navbar() {
                     (!link.href.startsWith('/#') && pathname === link.href)
                       ? styles.active : ''
                   }`}
+                  onClick={(e) => {
+                    if (pathname === '/' && link.href.startsWith('/#')) {
+                      e.preventDefault();
+                      const targetId = link.href.substring(2);
+                      const targetElement = document.getElementById(targetId);
+                      if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        window.history.pushState(null, '', link.href);
+                      }
+                    }
+                  }}
                 >
                   {link.label}
                 </Link>
@@ -154,7 +165,18 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={`${styles.mobileLink} ${pathname === link.href ? styles.active : ''}`}
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => {
+                  setMenuOpen(false);
+                  if (pathname === '/' && link.href.startsWith('/#')) {
+                    e.preventDefault();
+                    const targetId = link.href.substring(2);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                      targetElement.scrollIntoView({ behavior: 'smooth' });
+                      window.history.pushState(null, '', link.href);
+                    }
+                  }
+                }}
               >
                 {link.label}
               </Link>

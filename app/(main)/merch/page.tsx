@@ -4,7 +4,6 @@ import MerchClient from './MerchClient';
 import MerchHero from './MerchHero';
 import styles from './page.module.css';
 
-export const revalidate = 60; // ISR: 1 minute fallback
 
 async function getProducts() {
   await connectDB();

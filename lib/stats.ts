@@ -67,7 +67,7 @@ export const getGlobalStats = unstable_cache(
     }
   },
   ['global-stats'],
-  { revalidate: 60, tags: ['stats'] }
+  { revalidate: 3600, tags: ['stats'] }
 );
 
 export const getLiveStats = async () => {

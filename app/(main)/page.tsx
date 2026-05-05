@@ -8,7 +8,6 @@ import { connectDB } from '@/lib/db';
 import { Challenge } from '@/models/Challenge';
 import styles from './page.module.css';
 
-export const revalidate = 60; // Hybrid ISR: Revalidate every minute
 
 async function getInitialChallenges() {
   await connectDB();

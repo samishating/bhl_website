@@ -14,7 +14,6 @@ export default function SyncListener() {
       refreshTimeoutRef.current = setTimeout(() => {
         refreshTimeoutRef.current = null;
         window.dispatchEvent(new Event('stats-refresh'));
-        router.refresh();
       }, 150);
     };
 
@@ -25,18 +24,8 @@ export default function SyncListener() {
 
         const data = await res.json();
         
-        // Only trigger updates if the database timestamp has moved forward
         if (lastUpdatedRef.current !== null && data.lastUpdated > lastUpdatedRef.current) {
-          // Dispatch event to update client-side components (Leaderboard, Cards)
           window.dispatchEvent(new Event('stats-refresh'));
-
-          // Trigger Next.js router.refresh() for server-side components (Hero stats)
-          if (!refreshTimeoutRef.current) {
-            refreshTimeoutRef.current = setTimeout(() => {
-              refreshTimeoutRef.current = null;
-              router.refresh();
-            }, 150);
-          }
         }
 
         lastUpdatedRef.current = data.lastUpdated;
@@ -48,7 +37,7 @@ export default function SyncListener() {
     const eventSource = new EventSource('/api/realtime');
     eventSource.addEventListener('sync', triggerRefresh);
 
-    const interval = setInterval(checkUpdates, 10000);
+    const interval = setInterval(checkUpdates, 60000);
     checkUpdates();
 
     return () => {

@@ -151,26 +151,6 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               )}
             </Link>
             
-            <button 
-              className={styles.collapseToggle} 
-              onClick={toggleCollapse} 
-              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-              style={{ 
-                position: 'absolute', 
-                right: isCollapsed ? '28px' : '1rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 100,
-                background: isCollapsed ? 'var(--bg-secondary)' : 'transparent',
-                border: isCollapsed ? '1px solid var(--border)' : 'none',
-                borderRadius: '50%',
-                width: '24px',
-                height: '24px',
-                transition: 'right 0.4s spring'
-              }}
-            >
-              {isCollapsed ? '▶' : '◀'}
-            </button>
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
           </div>
           <nav className={styles.nav}>
@@ -204,6 +184,19 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             })}
           </nav>
           <div className={styles.sidebarFooter}>
+            <button 
+              className={styles.collapseToggle} 
+              onClick={toggleCollapse} 
+              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+              style={{ 
+                marginBottom: '1rem',
+                width: '100%',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                padding: isCollapsed ? '0.5rem 0' : '0.5rem 1rem'
+              }}
+            >
+              {isCollapsed ? '▶' : '◀ Collapse'}
+            </button>
             <Link href="/" className={styles.backLink}>{isCollapsed ? '←' : '← Back to Site'}</Link>
           </div>
         </motion.aside>

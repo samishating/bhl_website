@@ -220,9 +220,10 @@
 
 .dropdownMenu {
   position: absolute;
-  top: 56px; /* slightly lower for breathing room */
-  left: 0.5rem;
-  width: 175px; /* compact but not cramped */
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  width: 190px;
   background: rgba(10, 6, 6, 0.96); /* high opacity to block hero text */
   backdrop-filter: blur(32px) saturate(200%);
   -webkit-backdrop-filter: blur(32px) saturate(200%);
@@ -243,7 +244,7 @@
 .dropdownMenuOpen {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .dropdownLink {

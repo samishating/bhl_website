@@ -7,11 +7,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import styles from './Navbar.module.css';
 
-const navLinks = [
-  { href: '/#hero', label: 'Home' },
-  { href: '/#divisions', label: 'Divisions' },
-  { href: '/#leaderboard', label: 'Leaderboard' },
-  { href: '/#challenges', label: 'Challenges' },
+const homeSections = [
+  { href: '/#hero', id: 'hero', label: 'Home' },
+  { href: '/#divisions', id: 'divisions', label: 'Divisions' },
+  { href: '/#leaderboard', id: 'leaderboard', label: 'Leaderboard' },
+  { href: '/#challenges', id: 'challenges', label: 'Challenges' },
+];
+
+const externalLinks = [
   { href: '/merch', label: 'Merch' },
   { href: '/apply', label: 'Apply to Us' },
   { href: '/coming-soon', label: 'Coming Soon' },
@@ -23,6 +26,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [homeDropdownOpen, setHomeDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
@@ -79,26 +83,56 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <ul className={styles.navLinks}>
-            {navLinks.map(link => (
+            {/* Dynamic Home Sections Dropdown */}
+            <li 
+              className={`${styles.dynamicSlot} ${pathname === '/' ? styles.activeSlot : ''}`}
+              onMouseEnter={() => setHomeDropdownOpen(true)}
+              onMouseLeave={() => setHomeDropdownOpen(false)}
+            >
+              <div className={styles.dynamicLabelWrapper}>
+                <div className={styles.dynamicLabelInner}>
+                  {homeSections.map((sec) => (
+                    <span 
+                      key={sec.id}
+                      className={`${styles.dynamicLabel} ${(pathname === '/' && activeSection === sec.id) || (pathname !== '/' && sec.id === 'hero') ? styles.dynamicLabelActive : styles.dynamicLabelHidden}`}
+                    >
+                      {sec.label}
+                    </span>
+                  ))}
+                </div>
+                <svg className={`${styles.dropdownIcon} ${homeDropdownOpen ? styles.dropdownIconOpen : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+
+              {/* Dropdown Menu */}
+              <div className={`${styles.dropdownMenu} ${homeDropdownOpen ? styles.dropdownMenuOpen : ''}`}>
+                {homeSections.map(link => (
+                  <Link
+                    key={link.id}
+                    href={link.href}
+                    className={`${styles.dropdownLink} ${pathname === '/' && activeSection === link.id ? styles.dropdownLinkActive : ''}`}
+                    onClick={(e) => {
+                      setHomeDropdownOpen(false);
+                      if (pathname === '/') {
+                        e.preventDefault();
+                        document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                        window.history.pushState(null, '', link.href);
+                      }
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </li>
+
+            {/* External Links */}
+            {externalLinks.map(link => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`${styles.navLink} ${
-                    (pathname === '/' && link.href.startsWith('/#') && activeSection === link.href.slice(2)) ||
-                    (!link.href.startsWith('/#') && pathname === link.href)
-                      ? styles.active : ''
-                  }`}
-                  onClick={(e) => {
-                    if (pathname === '/' && link.href.startsWith('/#')) {
-                      e.preventDefault();
-                      const targetId = link.href.substring(2);
-                      const targetElement = document.getElementById(targetId);
-                      if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth' });
-                        window.history.pushState(null, '', link.href);
-                      }
-                    }
-                  }}
+                  className={`${styles.navLink} ${pathname === link.href ? styles.active : ''}`}
                 >
                   {link.label}
                 </Link>
@@ -160,23 +194,29 @@ export default function Navbar() {
         {/* Mobile Menu — floats below the capsule */}
         {menuOpen && (
           <div className={styles.mobileMenu}>
-            {navLinks.map(link => (
+            {homeSections.map(link => (
+              <Link
+                key={link.id}
+                href={link.href}
+                className={`${styles.mobileLink} ${pathname === '/' && activeSection === link.id ? styles.active : ''}`}
+                onClick={(e) => {
+                  setMenuOpen(false);
+                  if (pathname === '/') {
+                    e.preventDefault();
+                    document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                    window.history.pushState(null, '', link.href);
+                  }
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
+            {externalLinks.map(link => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`${styles.mobileLink} ${pathname === link.href ? styles.active : ''}`}
-                onClick={(e) => {
-                  setMenuOpen(false);
-                  if (pathname === '/' && link.href.startsWith('/#')) {
-                    e.preventDefault();
-                    const targetId = link.href.substring(2);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                      targetElement.scrollIntoView({ behavior: 'smooth' });
-                      window.history.pushState(null, '', link.href);
-                    }
-                  }
-                }}
+                onClick={() => setMenuOpen(false)}
               >
                 {link.label}
               </Link>

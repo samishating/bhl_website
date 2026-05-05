@@ -135,6 +135,135 @@
 .navLink.active { color: #ffffff; }
 .navLink:hover::after, .navLink.active::after { transform: scaleX(1); }
 
+/* ─── Dynamic Nav Dropdown ──────────────────────────── */
+.dynamicSlot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 0.85rem;
+  height: 52px;
+  cursor: pointer;
+}
+
+.dynamicLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dynamicSlot::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 0.85rem;
+  right: 0.85rem;
+  height: 2px;
+  background: var(--brand-red);
+  border-radius: 2px 2px 0 0;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.3);
+}
+
+.dynamicSlot.activeSlot::after,
+.dynamicSlot:hover::after {
+  transform: scaleX(1);
+}
+
+.dynamicLabelInner {
+  position: relative;
+  width: 95px; /* Fits "Leaderboard" comfortably */
+  height: 20px;
+  overflow: hidden;
+}
+
+.dynamicLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.dynamicLabelActive {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dynamicLabelHidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.dropdownIcon {
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease;
+  margin-top: -2px;
+}
+
+.dropdownIconOpen {
+  transform: rotate(180deg);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 48px;
+  left: 0.5rem;
+  width: 160px;
+  background: rgba(12, 8, 8, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  z-index: 10;
+}
+
+.dropdownMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdownLink {
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.dropdownLink:hover, .dropdownLinkActive {
+  color: var(--brand-red);
+  background: rgba(255, 0, 0, 0.08);
+}
+
 /* Actions */
 .actions { display: flex; align-items: center; gap: 0.65rem; margin-left: auto; }
 

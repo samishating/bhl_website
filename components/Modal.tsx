@@ -26,6 +26,8 @@ export default function Modal({ isOpen, onClose, title, children, footer, maxWid
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
+  if (!mounted) return null;
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (

@@ -197,7 +197,7 @@
 .carouselAvatar {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   border: 2px solid var(--brand-red);
   background: #111;
   overflow: hidden;
@@ -275,7 +275,7 @@
   align-items: center;
   justify-content: center;
   padding: 4px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   transition: all 0.2s;
 }
 
@@ -436,7 +436,7 @@
 .playIcon {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   background: var(--brand-red);
   color: #fff;
   display: flex;
@@ -457,7 +457,7 @@
 .contentAvatar {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   background: #111;
   overflow: hidden;
   flex-shrink: 0;
@@ -604,7 +604,7 @@
 .socialIconBtn {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;

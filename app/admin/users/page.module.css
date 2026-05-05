@@ -23,7 +23,7 @@
 .avatarWrapper { position: relative; }
 .avatar { 
   width: 64px; height: 64px; 
-  border-radius: 50%; 
+  border-radius: var(--radius-md); 
   border: 2px solid var(--brand-red); 
   background: var(--bg-secondary); 
   display: flex; align-items: center; justify-content: center; 

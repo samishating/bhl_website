@@ -282,7 +282,7 @@
 .cartBadge {
   position: absolute; top: -4px; right: -4px;
   background: var(--brand-red);
-  color: white; border-radius: 50%;
+  color: white; border-radius: var(--radius-md);
   width: 17px; height: 17px;
   font-size: 0.6rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
@@ -302,7 +302,7 @@
   transition: all 0.2s ease;
 }
 .userAvatarBtn:hover { background: rgba(255,0,0,0.06); border-color: rgba(255,0,0,0.35); }
-.navAvatar { width: 24px !important; height: 24px !important; font-size: 0.7rem !important; border-radius: 50%; overflow: hidden; }
+.navAvatar { width: 24px !important; height: 24px !important; font-size: 0.7rem !important; border-radius: var(--radius-sm); overflow: hidden; }
 .username { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.9rem; color: rgba(255,255,255,0.9); }
 .levelBadge { font-size: 0.68rem !important; background: rgba(255,0,0,0.12) !important; color: var(--brand-red) !important; border: 1px solid rgba(255,0,0,0.25) !important; }
 
@@ -362,7 +362,7 @@
 .mobileLink:hover, .mobileLink.active { color: var(--brand-red); background: rgba(255,0,0,0.06); }
 
 .navLoading { display: flex; align-items: center; gap: 0.75rem; padding: 0.3rem 0.6rem; }
-.skeletonAvatar { width: 26px; height: 26px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
+.skeletonAvatar { width: 26px; height: 26px; border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
 .skeletonText { width: 60px; height: 12px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); animation: pulse 1.5s infinite; }
 
 @keyframes pulse {

@@ -121,14 +121,7 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
 
   return (
     <div className={styles.page}>
-      <div className={styles.profileHeaderBg}>
-        <div className={styles.headerOverlay} />
-        {profile.featuredLinks?.[0] && (
-          <img src={profile.featuredLinks[0].url} alt="" className={styles.bannerImg} />
-        )}
-      </div>
-      
-      <div className="container" style={{ position: 'relative', zIndex: 5, marginTop: '-120px' }}>
+      <div className="container" style={{ position: 'relative', zIndex: 5, paddingTop: '120px' }}>
         <div className={styles.profileHeader}>
           <div className={styles.avatarSection}>
             <div className={styles.mainAvatar}>

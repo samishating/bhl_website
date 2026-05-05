@@ -4,29 +4,6 @@
   min-height: 100vh;
 }
 
-.profileHeaderBg {
-  height: 400px;
-  width: 100%;
-  position: relative;
-  background: #0a0a0a;
-  overflow: hidden;
-}
-
-.bannerImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.4;
-  filter: blur(40px) brightness(0.6);
-  transform: scale(1.1);
-}
-
-.headerOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 70%, #000 100%);
-  z-index: 2;
-}
 
 .profileHeader {
   display: grid;

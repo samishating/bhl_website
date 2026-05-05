@@ -3,25 +3,66 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import styles from './page.module.css';
+import { 
+  FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
+  FaApple, FaSoundcloud, FaDiscord, FaGlobe 
+} from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
 interface SocialLinks {
   twitter?: string;
   youtube?: string;
   twitch?: string;
   instagram?: string;
+  tiktok?: string;
+  spotify?: string;
+  appleMusic?: string;
+  soundcloud?: string;
+  kick?: string;
   discord?: string;
+  website?: string;
 }
 
 interface User {
   _id: string;
   username: string;
   avatar: string;
+  bio: string;
   level: number;
   xp: number;
   divisions: string[];
   socialLinks?: SocialLinks;
-  featuredLinks?: { title: string; url: string }[];
+  featuredLinks?: { title: string; url: string; type?: string }[];
 }
+
+const KickIcon = ({ size = 14 }: { size?: number }) => (
+  <div style={{ 
+    width: `${size}px`, 
+    height: `${size}px`, 
+    background: '#53fc18', 
+    color: '#000', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    fontSize: `${size * 0.6}px`, 
+    fontWeight: '900', 
+    borderRadius: '2px' 
+  }}>K</div>
+);
+
+const PLATFORM_ICONS: Record<string, any> = {
+  twitter: <FaXTwitter />,
+  youtube: <FaYoutube />,
+  twitch: <FaTwitch />,
+  instagram: <FaInstagram />,
+  tiktok: <FaTiktok />,
+  spotify: <FaSpotify />,
+  appleMusic: <FaApple />,
+  soundcloud: <FaSoundcloud />,
+  kick: <KickIcon />,
+  discord: <FaDiscord />,
+  website: <FaGlobe />,
+};
 
 function getYouTubeThumbnail(url: string) {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -29,7 +70,7 @@ function getYouTubeThumbnail(url: string) {
   if (match && match[2].length === 11) {
     return `https://img.youtube.com/vi/${match[2]}/maxresdefault.jpg`;
   }
-  return url; // Return original if not YouTube
+  return url;
 }
 
 export default function CommunityPage() {
@@ -53,13 +94,12 @@ export default function CommunityPage() {
 
   const allContent = [...featuredCreators, ...members].flatMap(u => 
     (u.featuredLinks || []).map(link => ({ ...link, user: u }))
-  );
+  ).sort(() => Math.random() - 0.5); // Randomize content for variety
 
   return (
     <div className={styles.page}>
       <HomeFixedBackground />
       
-      {/* Community Hero */}
       <section className={styles.hero}>
         <div className="container animate-fade-up">
           <div className="section-tag" style={{ margin: '0 auto 16px' }}>Network</div>
@@ -99,7 +139,13 @@ export default function CommunityPage() {
                     </div>
                     <div className={styles.creatorInfo}>
                       <div className={styles.creatorName}>{creator.username}</div>
-                      <div className={styles.creatorRole}>Featured Member</div>
+                      <div className={styles.creatorSocials}>
+                        {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                          const url = creator.socialLinks?.[key as keyof SocialLinks];
+                          if (!url) return null;
+                          return <span key={key} className={styles.miniIcon}>{icon}</span>;
+                        })}
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -168,7 +214,7 @@ export default function CommunityPage() {
           ) : (
             <div className={styles.membersGrid}>
               {members.map(member => (
-                <Link href={`/users/${member._id}`} key={member._id} className={styles.memberCard}>
+                <div key={member._id} className={styles.memberCard}>
                   <div className={styles.memberAvatar}>
                     {member.avatar ? <img src={member.avatar} alt={member.username} /> : member.username[0].toUpperCase()}
                   </div>
@@ -181,13 +227,24 @@ export default function CommunityPage() {
                     ))}
                   </div>
 
+                  {member.bio && <p className={styles.memberBio}>{member.bio}</p>}
+
                   <div className={styles.memberSocials}>
-                    {member.socialLinks?.twitter && <span className={styles.socialIcon} title="Twitter">TW</span>}
-                    {member.socialLinks?.youtube && <span className={styles.socialIcon} title="YouTube">YT</span>}
-                    {member.socialLinks?.twitch && <span className={styles.socialIcon} title="Twitch">TC</span>}
-                    {member.socialLinks?.instagram && <span className={styles.socialIcon} title="Instagram">IG</span>}
+                    {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                      const url = member.socialLinks?.[key as keyof SocialLinks];
+                      if (!url) return null;
+                      return (
+                        <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
+                          {icon}
+                        </a>
+                      );
+                    })}
                   </div>
-                </Link>
+
+                  <Link href={`/users/${member._id}`} className={styles.viewProfileBtn}>
+                    View Profile
+                  </Link>
+                </div>
               ))}
             </div>
           )}

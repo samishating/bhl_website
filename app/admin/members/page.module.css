@@ -1,0 +1,114 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin: 0;
+}
+
+.sub {
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Custom Switch Toggle */
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggleRow:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.toggleLabel {
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.toggleSublabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.switch {
+  width: 48px;
+  height: 24px;
+  background: #333;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.switchOn {
+  background: var(--brand-red);
+  box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+}
+
+.switchHandle {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.switchOn .switchHandle {
+  transform: translateX(24px);
+}
+
+/* Media Gallery in Modal */
+.featuredSection {
+  margin-top: 8px;
+}
+
+.mediaCardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mediaAdminCard {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.mediaEmpty {
+  text-align: center;
+  padding: 24px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}

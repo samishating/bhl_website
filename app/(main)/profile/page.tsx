@@ -1,383 +1,262 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { xpForNextLevel, getLevelTitle, BADGES, calculateLevel } from '@/lib/xp';
-import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '@/lib/image';
+import HomeFixedBackground from '@/components/HomeFixedBackground';
 import styles from './page.module.css';
+import { 
+  FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
+  FaApple, FaSoundcloud, FaDiscord, FaGlobe 
+} from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
+// Fallback for Kick if not in the version of react-icons
+const KickIcon = () => (
+  <div style={{ 
+    width: '18px', 
+    height: '18px', 
+    background: '#53fc18', 
+    color: '#000', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    fontSize: '11px', 
+    fontWeight: '900', 
+    borderRadius: '3px' 
+  }}>K</div>
+);
 
-
-interface Submission { _id: string; challengeId: { title: string; xpReward: number; division: string }; proofUrl: string; status: string; createdAt: string; }
+const SOCIAL_PLATFORMS = [
+  { id: 'twitter', label: 'X / Twitter', icon: <FaXTwitter />, placeholder: 'https://x.com/username' },
+  { id: 'youtube', label: 'YouTube', icon: <FaYoutube />, placeholder: 'https://youtube.com/@username' },
+  { id: 'twitch', label: 'Twitch', icon: <FaTwitch />, placeholder: 'https://twitch.tv/username' },
+  { id: 'instagram', label: 'Instagram', icon: <FaInstagram />, placeholder: 'https://instagram.com/username' },
+  { id: 'tiktok', label: 'TikTok', icon: <FaTiktok />, placeholder: 'https://tiktok.com/@username' },
+  { id: 'spotify', label: 'Spotify', icon: <FaSpotify />, placeholder: 'Spotify artist/profile URL' },
+  { id: 'appleMusic', label: 'Apple Music', icon: <FaApple />, placeholder: 'Apple Music artist/profile URL' },
+  { id: 'soundcloud', label: 'SoundCloud', icon: <FaSoundcloud />, placeholder: 'https://soundcloud.com/username' },
+  { id: 'kick', label: 'Kick', icon: <KickIcon />, placeholder: 'https://kick.com/username' },
+  { id: 'discord', label: 'Discord', icon: <FaDiscord />, placeholder: 'username or invite URL' },
+  { id: 'website', label: 'Portfolio', icon: <FaGlobe />, placeholder: 'https://yourwebsite.com' },
+];
 
 export default function ProfilePage() {
-  const { user, loading, refreshUser, logout } = useAuth();
-  const router = useRouter();
-  const [editing, setEditing] = useState(false);
-  const [bio, setBio] = useState('');
-  const [avatar, setAvatar] = useState('');
-  const [username, setUsername] = useState('');
-  const [socialLinks, setSocialLinks] = useState({ twitter: '', youtube: '', twitch: '', instagram: '', discord: '' });
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [claimingXp, setClaimingXp] = useState(false);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const [pendingAvatar, setPendingAvatar] = useState<Blob | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState('');
+  const { user, updateUser, refreshUser } = useAuth();
   const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  
+  const [form, setForm] = useState({
+    bio: '',
+    avatar: '',
+    socialLinks: {
+      twitter: '',
+      youtube: '',
+      twitch: '',
+      instagram: '',
+      tiktok: '',
+      spotify: '',
+      appleMusic: '',
+      soundcloud: '',
+      kick: '',
+      discord: '',
+      website: '',
+    }
+  });
 
   useEffect(() => {
-    if (!loading && !user) { router.push('/login'); return; }
-    if (!user) return;
-    setBio(user.bio || '');
-    setAvatar(user.avatar || '');
-    setAvatarPreview('');
-    setPendingAvatar(null);
-    setUsername(user.username || '');
-    setSocialLinks({
-      twitter: user.socialLinks?.twitter || '',
-      youtube: user.socialLinks?.youtube || '',
-      twitch: user.socialLinks?.twitch || '',
-      instagram: user.socialLinks?.instagram || '',
-      discord: user.socialLinks?.discord || ''
-    });
-
-    fetch(`/api/submissions?userId=${user.id}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(d => setSubmissions(d.submissions || []));
-  }, [user, loading, router]);
-
-  const cleanupAvatarPreview = () => {
-    if (avatarPreview && avatarPreview.startsWith('blob:')) {
-      URL.revokeObjectURL(avatarPreview);
+    if (user) {
+      setForm({
+        bio: user.bio || '',
+        avatar: user.avatar || '',
+        socialLinks: {
+          twitter: user.socialLinks?.twitter || '',
+          youtube: user.socialLinks?.youtube || '',
+          twitch: user.socialLinks?.twitch || '',
+          instagram: user.socialLinks?.instagram || '',
+          tiktok: user.socialLinks?.tiktok || '',
+          spotify: user.socialLinks?.spotify || '',
+          appleMusic: user.socialLinks?.appleMusic || '',
+          soundcloud: user.socialLinks?.soundcloud || '',
+          kick: user.socialLinks?.kick || '',
+          discord: user.socialLinks?.discord || '',
+          website: user.socialLinks?.website || '',
+        }
+      });
     }
-    setAvatarPreview('');
-    setPendingAvatar(null);
-  };
+  }, [user]);
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!user) return;
-    setSaving(true);
-    try {
-      let finalAvatar = avatar;
-      if (pendingAvatar) {
-        const formData = new FormData();
-        formData.append('file', pendingAvatar, 'avatar.jpg');
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Upload failed');
-        finalAvatar = data.url;
-      }
+    setLoading(true);
 
+    try {
       const res = await fetch(`/api/users/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bio, avatar: finalAvatar, username, socialLinks }),
+        body: JSON.stringify(form)
       });
-      
-      if (res.ok) { 
-        cleanupAvatarPreview();
-        await refreshUser(); 
-        setEditing(false); 
-        showToast('Profile updated!', 'success'); 
-        window.dispatchEvent(new Event('stats-refresh'));
+
+      if (res.ok) {
+        const data = await res.json();
+        updateUser(data.user);
+        setEditMode(false);
+        showToast('Profile updated successfully', 'success');
+        refreshUser();
       } else {
-        showToast('Failed to save', 'error');
+        const data = await res.json();
+        showToast(data.error || 'Update failed', 'error');
       }
-    } catch (err: any) {
-      showToast(err.message, 'error');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDailyXp = async () => {
-    setClaimingXp(true);
-    const res = await fetch('/api/xp/daily', { method: 'POST' });
-    const data = await res.json();
-    setClaimingXp(false);
-    if (res.ok) {
-      await refreshUser();
-      showToast(data.gained ? `+${data.gained} XP! Daily login reward claimed!` : 'Already claimed today', 'success');
-      window.dispatchEvent(new Event('stats-refresh'));
-    }
-  };
-
-  const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  };
-
-  const handleCropSave = async () => {
-    if (!imageToCrop || !croppedAreaPixels) return;
-    try {
-      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
-      if (!croppedBlob) throw new Error('Failed to crop');
-      
-      const localUrl = URL.createObjectURL(croppedBlob);
-      if (avatarPreview && avatarPreview.startsWith('blob:')) {
-        URL.revokeObjectURL(avatarPreview);
-      }
-      
-      setAvatarPreview(localUrl);
-      setPendingAvatar(croppedBlob);
-      setImageToCrop(null);
-      showToast('New avatar ready! Click save to finalize.', 'info');
     } catch (err) {
-      showToast('Error processing image', 'error');
+      showToast('Connection error', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '4rem' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>;
   if (!user) return null;
-
-  const xpInfo = xpForNextLevel(user.xp);
-  const levelTitle = getLevelTitle(user.level);
 
   return (
     <div className={styles.page}>
-      <div className="container">
-        {/* Profile Header */}
-        <div className={styles.profileHeader}>
-          <div className={styles.avatarSection}>
-            <div className={`avatar avatar-xl ${styles.mainAvatar}`}>
-              {avatarPreview ? (
-                <img src={avatarPreview} alt="Preview" />
-              ) : (
-                user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username?.[0]?.toUpperCase() || 'U'
-              )}
-            </div>
-            <div className={styles.rankRing} />
-          </div>
+      <HomeFixedBackground />
+      
+      <div className="container" style={{ position: 'relative', zIndex: 10, paddingBottom: '80px' }}>
+        <header className={styles.header}>
+          <div className="section-tag">Identity</div>
+          <h1 className={styles.title}>Your <span className="gradient-text">Profile</span></h1>
+          <p className={styles.subtitle}>Manage your digital presence within the Brotherhood.</p>
+        </header>
 
-          <div className={styles.profileInfo}>
-            <div className={styles.nameRow}>
-              <h1 className={styles.username}>{user.username}</h1>
-              {user.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' }}>SUPERADMIN</span>}
-              {user.role === 'admin' && <span className="badge badge-red">Admin</span>}
-            </div>
-            <div className={styles.levelRow}>
-              <span className="badge badge-violet">Level {user.level}</span>
-              <span className={styles.levelTitle}>{levelTitle}</span>
-            </div>
-            <p className={styles.bio}>{user.bio || 'No bio yet.'}</p>
-            <div className={styles.divisionTags}>
-              {(user.divisions || []).map(d => (
-                <span key={d} className={`division-tag tag-${d}`}>{d}</span>
-              ))}
-              {(!user.divisions || user.divisions.length === 0) && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No divisions joined yet</span>}
-            </div>
+        <div className={styles.profileLayout}>
+          {/* Main Info Card */}
+          <div className={`${styles.card} ${editMode ? styles.editActive : ''}`}>
+            {!editMode ? (
+              <div className={styles.viewMode}>
+                <div className={styles.profileHero}>
+                  <div className={styles.avatarWrapper}>
+                    <div className={styles.avatarLarge}>
+                      {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username[0].toUpperCase()}
+                    </div>
+                  </div>
+                  <div className={styles.heroInfo}>
+                    <h2 className={styles.username}>{user.username}</h2>
+                    <div className={styles.badgeRow}>
+                      <span className="badge badge-red">Level {user.level}</span>
+                      <span className="badge badge-violet">{user.role}</span>
+                    </div>
+                  </div>
+                </div>
 
-            {user.socialLinks && Object.values(user.socialLinks).some(val => val) && (
-              <div style={{ display: 'flex', gap: '0.8rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                {user.socialLinks.twitter && <a href={user.socialLinks.twitter} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>Twitter ↗</a>}
-                {user.socialLinks.youtube && <a href={user.socialLinks.youtube} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>YouTube ↗</a>}
-                {user.socialLinks.twitch && <a href={user.socialLinks.twitch} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>Twitch ↗</a>}
-                {user.socialLinks.instagram && <a href={user.socialLinks.instagram} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>Instagram ↗</a>}
-                {user.socialLinks.discord && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Discord: {user.socialLinks.discord}</span>}
-              </div>
-            )}
+                <div className={styles.bioSection}>
+                  <h3 className={styles.sectionTitle}>BIO</h3>
+                  <p className={styles.bioText}>{user.bio || 'No bio provided yet.'}</p>
+                </div>
 
-            <div className={styles.profileActions}>
-              <button className="btn btn-secondary btn-sm" onClick={() => { 
-                if (editing) cleanupAvatarPreview();
-                setEditing(!editing); 
-              }} id="edit-profile-btn">
-                {editing ? 'Cancel' : 'Edit Profile'}
-              </button>
-                <button className="btn btn-primary btn-sm" onClick={handleDailyXp} disabled={claimingXp} id="claim-daily-xp-btn">
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    {claimingXp ? '…' : (
-                      <>
-                        <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '16px', height: '16px', filter: 'brightness(0) invert(1)' }} />
-                        Claim Daily XP
-                      </>
+                <div className={styles.socialGrid}>
+                  <h3 className={styles.sectionTitle}>SOCIAL LINKS</h3>
+                  <div className={styles.socialRow}>
+                    {SOCIAL_PLATFORMS.map(p => {
+                      const url = user.socialLinks?.[p.id as keyof typeof user.socialLinks];
+                      if (!url) return null;
+                      return (
+                        <a key={p.id} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={p.label}>
+                          {p.icon}
+                        </a>
+                      );
+                    })}
+                    {(!user.socialLinks || Object.values(user.socialLinks).every(v => !v)) && (
+                      <p className={styles.mutedText}>No social links connected.</p>
                     )}
-                  </span>
-                </button>
-            </div>
-          </div>
+                  </div>
+                </div>
 
-          {/* XP Card */}
-          <div className={styles.xpCard}>
-            <div className={styles.xpTop}>
-              <span className={styles.xpTotal}>{user.xp.toLocaleString()} XP</span>
-              <span className={styles.xpLevel}>Lv.{user.level}</span>
-            </div>
-            <div className={styles.xpBarLabel}>
-              <span>{xpInfo.current} / {xpInfo.needed} XP to next level</span>
-              <span>{xpInfo.progress}%</span>
-            </div>
-            <div className="xp-bar-container">
-              <div className="xp-bar-fill" style={{ width: `${xpInfo.progress}%` }} />
-            </div>
-            <div className={styles.badges}>
-              {(user.badges || []).map(b => {
-                const badge = BADGES[b as keyof typeof BADGES];
-                return badge ? (
-                  <span key={b} className={styles.badgeItem} style={{ color: badge.color }} title={badge.description}>
-                    {badge.label}
-                  </span>
-                ) : null;
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Image Cropper Modal */}
-        {imageToCrop && (
-          <div style={{
-            position: 'fixed', inset: 0, zIndex: 1000,
-            background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(10px)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <div style={{ position: 'relative', width: '100%', height: '70vh', maxWidth: '800px', background: '#000' }}>
-              <Cropper
-                image={imageToCrop}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onCropComplete={onCropComplete}
-                onZoomChange={setZoom}
-                cropShape="round"
-                showGrid={false}
-              />
-            </div>
-            <div style={{ padding: '2rem', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Zoom</label>
-                <input
-                  type="range"
-                  value={zoom}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: 'var(--brand-red)' }}
-                />
-              </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setImageToCrop(null)}>Cancel</button>
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleCropSave} disabled={uploading}>
-                  {uploading ? 'Processing...' : 'Apply Crop'}
+                <button className="btn btn-primary" style={{ marginTop: '2rem', width: '100%' }} onClick={() => setEditMode(true)}>
+                  Edit Profile
                 </button>
               </div>
-            </div>
-          </div>
-        )}
+            ) : (
+              <form onSubmit={handleSave} className={styles.editForm}>
+                <div className={styles.formGrid}>
+                  {/* Left Column: Profile Info */}
+                  <div className={styles.formColumn}>
+                    <h3 className={styles.formSectionTitle}>Profile Info</h3>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Username</label>
+                      <input className="form-input" value={user.username} disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+                      <p className={styles.inputHelper}>Usernames can only be changed by staff.</p>
+                    </div>
 
-        {/* Edit Form */}
-        {editing && (
-          <div className={styles.editSection}>
-            {saving && (
-              <div className={styles.loadingOverlay}>
-                <div className="spinner" />
-                <span style={{ fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem' }}>Updating Profile...</span>
-              </div>
+                    <div className="form-group">
+                      <label className="form-label">Avatar URL</label>
+                      <input 
+                        className="form-input" 
+                        placeholder="https://image-link.com/avatar.jpg" 
+                        value={form.avatar}
+                        onChange={e => setForm({ ...form, avatar: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Bio</label>
+                      <textarea 
+                        className="form-input" 
+                        rows={6} 
+                        placeholder="Tell the Brotherhood about yourself..." 
+                        value={form.bio}
+                        onChange={e => setForm({ ...form, bio: e.target.value })}
+                        style={{ resize: 'none', minHeight: '130px' }}
+                      />
+                    </div>
+
+                    <div className={styles.formActions}>
+                      <button type="submit" className="btn btn-primary" disabled={loading} style={{ flex: 1 }}>
+                        {loading ? 'Saving...' : 'Save Changes'}
+                      </button>
+                      <button type="button" className="btn btn-ghost" onClick={() => setEditMode(false)} style={{ flex: 1 }}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Social Links */}
+                  <div className={styles.formColumn}>
+                    <h3 className={styles.formSectionTitle}>SOCIAL LINKS</h3>
+                    <p className={styles.inputHelper} style={{ marginBottom: '24px' }}>
+                      Add the platforms you want visible on your public profile.
+                    </p>
+
+                    <div className={styles.socialInputsList}>
+                      {SOCIAL_PLATFORMS.map(p => (
+                        <div key={p.id} className={styles.socialInputGroup}>
+                          <label className={styles.socialLabel}>
+                            <span className={styles.platformIcon}>{p.icon}</span>
+                            {p.label}
+                          </label>
+                          <div className={styles.inputWithIcon}>
+                            <input 
+                              type="text"
+                              className="form-input"
+                              placeholder={p.placeholder}
+                              value={form.socialLinks[p.id as keyof typeof form.socialLinks] || ''}
+                              onChange={e => setForm({
+                                ...form,
+                                socialLinks: {
+                                  ...form.socialLinks,
+                                  [p.id]: e.target.value
+                                }
+                              })}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </form>
             )}
-            <h3 className={styles.sectionTitle}>Edit Profile</h3>
-            <div className={styles.editForm}>
-              <div className="form-group">
-                <label className="form-label">Username {user.role !== 'superadmin' && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginLeft: '0.5rem', fontWeight: 400 }}>(Permanent)</span>}</label>
-                <input 
-                  className="form-input" 
-                  value={username} 
-                  onChange={e => setUsername(e.target.value)} 
-                  placeholder="New username" 
-                  id="profile-username-input" 
-                  disabled={user.role !== 'superadmin'}
-                  style={user.role !== 'superadmin' ? { opacity: 0.6, cursor: 'not-allowed', backgroundColor: 'rgba(255,255,255,0.05)' } : {}}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Profile Picture</label>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', whiteSpace: 'nowrap', width: '100%', justifyContent: 'center' }}>
-                    {uploading ? '⌛ Processing...' : '📂 Click to Upload New Avatar'}
-                    <input type="file" style={{ display: 'none' }} disabled={uploading} accept="image/*" onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.addEventListener('load', () => {
-                          setImageToCrop(reader.result as string);
-                        });
-                        reader.readAsDataURL(file);
-                      }
-                    }} />
-                  </label>
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Bio</label>
-                <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Social Links</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <input className="form-input" placeholder="Twitter URL" value={socialLinks.twitter} onChange={e => setSocialLinks({...socialLinks, twitter: e.target.value})} />
-                  <input className="form-input" placeholder="YouTube URL" value={socialLinks.youtube} onChange={e => setSocialLinks({...socialLinks, youtube: e.target.value})} />
-                  <input className="form-input" placeholder="Twitch URL" value={socialLinks.twitch} onChange={e => setSocialLinks({...socialLinks, twitch: e.target.value})} />
-                  <input className="form-input" placeholder="Instagram URL" value={socialLinks.instagram} onChange={e => setSocialLinks({...socialLinks, instagram: e.target.value})} />
-                  <input className="form-input" placeholder="Discord Username or URL" value={socialLinks.discord} onChange={e => setSocialLinks({...socialLinks, discord: e.target.value})} />
-                </div>
-              </div>
-
-              <button 
-                className="btn btn-primary" 
-                onClick={handleSave} 
-                disabled={saving || uploading} 
-                id="save-profile-btn" 
-                style={{ 
-                  minWidth: '160px', 
-                  justifyContent: 'center',
-                  ...( (saving || uploading) ? { 
-                    background: '#333', 
-                    color: '#666', 
-                    border: '1px solid #444', 
-                    boxShadow: 'none', 
-                    cursor: 'not-allowed' 
-                  } : {} )
-                }}
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
           </div>
-        )}
-
-        {/* Submission History */}
-        <div className={styles.historySection}>
-          <h3 className={styles.sectionTitle}>Challenge History</h3>
-          {submissions.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No challenge submissions yet. Go earn some XP!</p>
-          ) : (
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr><th>Challenge</th><th>Division</th><th>XP</th><th>Status</th><th>Date</th></tr>
-                </thead>
-                <tbody>
-                  {submissions.map(s => (
-                    <tr key={s._id}>
-                      <td style={{ fontWeight: 600 }}>{s.challengeId?.title || 'Unknown'}</td>
-                      <td><span className={`division-tag tag-${s.challengeId?.division || 'global'}`}>{s.challengeId?.division || 'global'}</span></td>
-                      <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{s.challengeId?.xpReward || 0}</span></td>
-                      <td><span className={`badge ${s.status === 'approved' ? 'badge-green' : s.status === 'rejected' ? 'badge-red' : 'badge-blue'}`}>{s.status}</span></td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(s.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
       </div>
     </div>

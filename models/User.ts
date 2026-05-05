@@ -23,9 +23,20 @@ export interface IUser extends Document {
     youtube?: string;
     twitch?: string;
     instagram?: string;
+    tiktok?: string;
+    spotify?: string;
+    appleMusic?: string;
+    soundcloud?: string;
+    kick?: string;
     discord?: string;
+    website?: string;
   };
-  featuredLinks: Array<{ title: string; url: string }>;
+  featuredLinks: Array<{ 
+    title: string; 
+    url: string; 
+    type?: 'youtube' | 'spotify' | 'apple' | 'soundcloud' | 'other';
+    thumbnail?: string;
+  }>;
   createdAt: Date;
 }
 
@@ -57,11 +68,19 @@ const UserSchema = new Schema<IUser>({
     youtube: { type: String, default: '' },
     twitch: { type: String, default: '' },
     instagram: { type: String, default: '' },
+    tiktok: { type: String, default: '' },
+    spotify: { type: String, default: '' },
+    appleMusic: { type: String, default: '' },
+    soundcloud: { type: String, default: '' },
+    kick: { type: String, default: '' },
     discord: { type: String, default: '' },
+    website: { type: String, default: '' },
   },
   featuredLinks: [{
     title: { type: String },
-    url: { type: String }
+    url: { type: String },
+    type: { type: String, enum: ['youtube', 'spotify', 'apple', 'soundcloud', 'other'], default: 'other' },
+    thumbnail: { type: String, default: '' }
   }],
 }, { timestamps: true });
 

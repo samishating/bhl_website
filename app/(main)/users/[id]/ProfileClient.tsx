@@ -5,6 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { getLevelTitle, BADGES } from '@/lib/xp';
 import styles from './page.module.css';
+import { 
+  FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
+  FaApple, FaSoundcloud, FaDiscord, FaGlobe 
+} from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
 interface UserProfile {
   _id: string;
@@ -22,9 +27,15 @@ interface UserProfile {
     youtube?: string;
     twitch?: string;
     instagram?: string;
+    tiktok?: string;
+    spotify?: string;
+    appleMusic?: string;
+    soundcloud?: string;
+    kick?: string;
     discord?: string;
+    website?: string;
   };
-  featuredLinks?: { title: string; url: string }[];
+  featuredLinks?: { title: string; url: string; type?: string; thumbnail?: string }[];
 }
 
 interface Submission { 
@@ -34,6 +45,35 @@ interface Submission {
   status: string; 
   createdAt: string; 
 }
+
+const KickIcon = ({ size = 16 }: { size?: number }) => (
+  <div style={{ 
+    width: `${size}px`, 
+    height: `${size}px`, 
+    background: '#53fc18', 
+    color: '#000', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    fontSize: `${size * 0.6}px`, 
+    fontWeight: '900', 
+    borderRadius: '3px' 
+  }}>K</div>
+);
+
+const PLATFORM_ICONS: Record<string, any> = {
+  twitter: <FaXTwitter />,
+  youtube: <FaYoutube />,
+  twitch: <FaTwitch />,
+  instagram: <FaInstagram />,
+  tiktok: <FaTiktok />,
+  spotify: <FaSpotify />,
+  appleMusic: <FaApple />,
+  soundcloud: <FaSoundcloud />,
+  kick: <KickIcon />,
+  discord: <FaDiscord />,
+  website: <FaGlobe />,
+};
 
 export default function ProfileClient({ initialProfile, initialSubmissions }: { initialProfile: UserProfile, initialSubmissions: Submission[] }) {
   const { user: currentUser } = useAuth();
@@ -88,10 +128,10 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
         )}
       </div>
       
-      <div className="container" style={{ position: 'relative', zIndex: 5, marginTop: '-100px' }}>
+      <div className="container" style={{ position: 'relative', zIndex: 5, marginTop: '-120px' }}>
         <div className={styles.profileHeader}>
           <div className={styles.avatarSection}>
-            <div className={`avatar avatar-xl ${styles.mainAvatar}`}>
+            <div className={styles.mainAvatar}>
               {profile.avatar ? <img src={profile.avatar} alt={profile.username} /> : profile.username[0].toUpperCase()}
             </div>
           </div>
@@ -114,11 +154,15 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
             </div>
 
             <div className={styles.profileSocials}>
-              {profile.socialLinks?.twitter && <a href={profile.socialLinks.twitter} target="_blank" rel="noreferrer" className={styles.socialLink}>TWITTER</a>}
-              {profile.socialLinks?.youtube && <a href={profile.socialLinks.youtube} target="_blank" rel="noreferrer" className={styles.socialLink}>YOUTUBE</a>}
-              {profile.socialLinks?.twitch && <a href={profile.socialLinks.twitch} target="_blank" rel="noreferrer" className={styles.socialLink}>TWITCH</a>}
-              {profile.socialLinks?.instagram && <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" className={styles.socialLink}>INSTAGRAM</a>}
-              {profile.socialLinks?.discord && <span className={styles.socialLink} style={{ cursor: 'default' }}>DISCORD: {profile.socialLinks.discord}</span>}
+              {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                const url = profile.socialLinks?.[key as keyof typeof profile.socialLinks];
+                if (!url) return null;
+                return (
+                  <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
+                    {icon}
+                  </a>
+                );
+              })}
             </div>
 
             <div className={styles.joinedDate}>Member since {new Date(profile.createdAt).getFullYear()}</div>
@@ -133,10 +177,10 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
               {profile.badges.map(b => {
                 const badge = BADGES[b as keyof typeof BADGES];
                 return badge ? (
-                  <span key={b} className={styles.badgeItem} style={{ color: badge.color }} title={badge.description}>
+                  <div key={b} className={styles.badgeItem} style={{ color: badge.color }} title={badge.description}>
                     {badge.label}
-                  </span>
-                ) : <span key={b}>{b}</span>;
+                  </div>
+                ) : <div key={b} className={styles.badgeItem}>{b}</div>;
               })}
             </div>
           </div>
@@ -192,7 +236,7 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
                     <tr key={s._id}>
                       <td style={{ fontWeight: 600 }}>{s.challengeId?.title || 'Unknown'}</td>
                       <td><span className={`division-tag tag-${s.challengeId?.division || 'global'}`}>{s.challengeId?.division || 'global'}</span></td>
-                      <td><span style={{ color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{s.challengeId?.xpReward || 0}</span></td>
+                      <td><span style={{ color: 'var(--brand-red)', fontFamily: 'Rajdhani', fontWeight: 700 }}>+{s.challengeId?.xpReward || 0}</span></td>
                       <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(s.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}

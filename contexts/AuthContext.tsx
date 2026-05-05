@@ -21,7 +21,13 @@ interface User {
     youtube?: string;
     twitch?: string;
     instagram?: string;
+    tiktok?: string;
+    spotify?: string;
+    appleMusic?: string;
+    soundcloud?: string;
+    kick?: string;
     discord?: string;
+    website?: string;
   };
 }
 

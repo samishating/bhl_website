@@ -27,8 +27,7 @@
   position: relative; 
   gap: 0;
 }
-.sidebarCollapsed .navLink span:not(.navIcon):not(.notificationBadge) { display: none; }
-.sidebarCollapsed .sidebarLogo span { display: none; }
+
 .sidebarCollapsed .sidebarLogo img { margin: 0 auto; width: 32px; display: block; }
 .sidebarCollapsed .sidebarLogo { 
   padding: 1.5rem 0; 

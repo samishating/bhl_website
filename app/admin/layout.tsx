@@ -142,15 +142,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px', overflow: 'hidden' }}>
             <Link href="/" className={styles.sidebarLogo}>
               <img src="/brand/logo.webp" alt="BHL" style={{ height: '32px', objectFit: 'contain' }} />
-              {!isCollapsed && (
                 <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
+                  initial={false}
+                  animate={{ 
+                    opacity: isCollapsed ? 0 : 1,
+                    width: isCollapsed ? 0 : 'auto',
+                    marginLeft: isCollapsed ? 0 : 8
+                  }}
+                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
                 >
                   BHL <span style={{ color: '#FFFDBA' }}>ADMIN</span>
                 </motion.span>
-              )}
             </Link>
             
             <button className={styles.closeSidebar} onClick={() => setMobileNavOpen(false)}>✕</button>
@@ -171,15 +174,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                       l.icon
                     )}
                   </span> 
-                  {!isCollapsed && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                    >
-                      {l.label}
-                    </motion.span>
-                  )}
+                  <motion.span
+                    initial={false}
+                    animate={{ 
+                      opacity: isCollapsed ? 0 : 1,
+                      width: isCollapsed ? 0 : 'auto',
+                      marginLeft: isCollapsed ? 0 : 12
+                    }}
+                    transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                    style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
+                  >
+                    {l.label}
+                  </motion.span>
                   {badgeCount > 0 && <span className={styles.notificationBadge}>{badgeCount}</span>}
                 </Link>
               );
@@ -199,7 +205,14 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             >
               {isCollapsed ? '▶' : '◀ Collapse'}
             </button>
-            <Link href="/" className={styles.backLink}>{isCollapsed ? '←' : '← Back to Site'}</Link>
+            <Link href="/" className={styles.backLink}>
+              <motion.span
+                animate={{ width: isCollapsed ? 20 : 'auto' }}
+                style={{ overflow: 'hidden', whiteSpace: 'nowrap', display: 'inline-block' }}
+              >
+                {isCollapsed ? '←' : '← Back to Site'}
+              </motion.span>
+            </Link>
           </div>
         </motion.aside>
 

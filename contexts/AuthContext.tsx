@@ -13,6 +13,16 @@ interface User {
   divisions: string[];
   badges: string[];
   role: string;
+  isPublic?: boolean;
+  isFeatured?: boolean;
+  displayOrder?: number;
+  socialLinks?: {
+    twitter?: string;
+    youtube?: string;
+    twitch?: string;
+    instagram?: string;
+    discord?: string;
+  };
 }
 
 interface AuthContextType {

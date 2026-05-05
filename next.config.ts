@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '*.githubusercontent.com' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/coming-soon',
+        destination: '/community',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

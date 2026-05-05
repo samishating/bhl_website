@@ -17,6 +17,14 @@ interface UserProfile {
   badges: string[];
   role: string;
   createdAt: string;
+  socialLinks?: {
+    twitter?: string;
+    youtube?: string;
+    twitch?: string;
+    instagram?: string;
+    discord?: string;
+  };
+  featuredLinks?: { title: string; url: string }[];
 }
 
 interface Submission { 
@@ -65,9 +73,22 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
   const isSuper = currentUser?.role === 'superadmin';
   const levelTitle = getLevelTitle(profile.level);
 
+  const getYouTubeId = (url: string) => {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
   return (
     <div className={styles.page}>
-      <div className="container">
+      <div className={styles.profileHeaderBg}>
+        <div className={styles.headerOverlay} />
+        {profile.featuredLinks?.[0] && (
+          <img src={profile.featuredLinks[0].url} alt="" className={styles.bannerImg} />
+        )}
+      </div>
+      
+      <div className="container" style={{ position: 'relative', zIndex: 5, marginTop: '-100px' }}>
         <div className={styles.profileHeader}>
           <div className={styles.avatarSection}>
             <div className={`avatar avatar-xl ${styles.mainAvatar}`}>
@@ -91,7 +112,16 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
                 <span key={d} className={`division-tag tag-${d}`}>{d}</span>
               ))}
             </div>
-            <div className={styles.joinedDate}>Joined {new Date(profile.createdAt).toLocaleDateString()}</div>
+
+            <div className={styles.profileSocials}>
+              {profile.socialLinks?.twitter && <a href={profile.socialLinks.twitter} target="_blank" rel="noreferrer" className={styles.socialLink}>TWITTER</a>}
+              {profile.socialLinks?.youtube && <a href={profile.socialLinks.youtube} target="_blank" rel="noreferrer" className={styles.socialLink}>YOUTUBE</a>}
+              {profile.socialLinks?.twitch && <a href={profile.socialLinks.twitch} target="_blank" rel="noreferrer" className={styles.socialLink}>TWITCH</a>}
+              {profile.socialLinks?.instagram && <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" className={styles.socialLink}>INSTAGRAM</a>}
+              {profile.socialLinks?.discord && <span className={styles.socialLink} style={{ cursor: 'default' }}>DISCORD: {profile.socialLinks.discord}</span>}
+            </div>
+
+            <div className={styles.joinedDate}>Member since {new Date(profile.createdAt).getFullYear()}</div>
           </div>
 
           <div className={styles.xpCard}>
@@ -111,6 +141,40 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
             </div>
           </div>
         </div>
+
+        {/* Featured Media Gallery */}
+        {profile.featuredLinks && profile.featuredLinks.length > 0 && (
+          <div className={styles.mediaSection}>
+            <h3 className={styles.sectionTitle}>Featured Media</h3>
+            <div className={styles.mediaGrid}>
+              {profile.featuredLinks.map((media, idx) => {
+                const ytId = getYouTubeId(media.url);
+                return (
+                  <div key={idx} className={styles.mediaCard}>
+                    {ytId ? (
+                      <div className={styles.videoWrapper}>
+                        <iframe 
+                          src={`https://www.youtube.com/embed/${ytId}`}
+                          title={media.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    ) : (
+                      <div className={styles.imageWrapper}>
+                        <img src={media.url} alt={media.title} />
+                      </div>
+                    )}
+                    <div className={styles.mediaInfo}>
+                      <div className={styles.mediaTitle}>{media.title || 'Untitled Content'}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Submission History */}
         <div className={styles.historySection} style={{ marginBottom: '4rem' }}>

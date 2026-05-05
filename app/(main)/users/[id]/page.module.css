@@ -1,204 +1,283 @@
 .page {
-  padding-top: 100px;
+  padding-bottom: 80px;
+  position: relative;
   min-height: 100vh;
-  padding-bottom: 5rem;
+}
+
+.profileHeaderBg {
+  height: 400px;
+  width: 100%;
+  position: relative;
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+.bannerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+  filter: blur(40px) brightness(0.6);
+  transform: scale(1.1);
+}
+
+.headerOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 70%, #000 100%);
+  z-index: 2;
 }
 
 .profileHeader {
   display: grid;
-  grid-template-columns: auto 1fr 350px;
-  gap: 3rem;
+  grid-template-columns: 240px 1fr 320px;
+  gap: 40px;
   background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 3rem;
   border-radius: 24px;
-  backdrop-filter: blur(10px);
-  margin-bottom: 3rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.profileHeader::before {
-  content: '';
-  position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, var(--brand-red-alpha) 0%, transparent 70%);
-  z-index: 0;
-  pointer-events: none;
+  padding: 40px;
+  margin-bottom: 40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
 .avatarSection {
   position: relative;
-  z-index: 1;
 }
 
 .mainAvatar {
-  width: 140px;
-  height: 140px;
-  font-size: 3rem;
-  border: 3px solid var(--brand-red);
-  box-shadow: 0 0 30px var(--brand-red-alpha);
+  width: 240px !important;
+  height: 240px !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 .profileInfo {
-  position: relative;
-  z-index: 1;
-}
-
-.nameRow {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+  flex-direction: column;
 }
 
 .username {
-  font-size: 2.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 3.5rem;
   font-weight: 800;
-  margin: 0;
-  letter-spacing: -1px;
+  color: #fff;
+  margin: 0 0 12px;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .levelRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .levelTitle {
-  color: var(--text-secondary);
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.9rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
 }
 
 .bio {
   color: var(--text-secondary);
+  font-size: 1.1rem;
   line-height: 1.6;
-  max-width: 500px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
+  max-width: 600px;
 }
 
 .divisionTags {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.profileSocials {
+  display: flex;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
+}
+
+.socialLink {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.socialLink:hover {
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+  transform: translateY(-2px);
 }
 
 .joinedDate {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .xpCard {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
+  height: fit-content;
 }
 
 .xpTop {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 1.5rem;
+  align-items: baseline;
+  margin-bottom: 20px;
 }
 
 .xpTotal {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--neon-blue);
   font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 .xpLevel {
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--brand-red);
+  font-weight: 800;
+  font-size: 0.9rem;
 }
 
 .badges {
   display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .badgeItem {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.4rem 0.8rem;
-  border-radius: 100px;
-  border: 1px solid currentColor;
+  font-weight: 600;
+  background: rgba(255,255,255,0.03);
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
-.adminSection {
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  padding: 2rem;
-  border-radius: 20px;
+/* Media Section */
+.mediaSection {
+  margin-bottom: 64px;
 }
 
 .sectionTitle {
-  font-size: 1.25rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 2rem;
-  color: var(--brand-red);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+  color: #fff;
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.mediaCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+
+.videoWrapper iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.imageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaInfo {
+  padding: 16px;
+}
+
+.mediaTitle {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1rem;
+}
+
+/* Admin Section */
+.adminSection {
+  background: rgba(255, 0, 85, 0.05);
+  border: 1px solid rgba(255, 0, 85, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 40px;
 }
 
 .adminButtons {
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 12px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .profileHeader {
+    grid-template-columns: 200px 1fr;
+  }
+  .xpCard {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
   .profileHeader {
     grid-template-columns: 1fr;
+    padding: 24px;
     text-align: center;
-    padding: 2rem;
   }
-  
   .avatarSection {
-    margin: 0 auto;
-  }
-  
-  .nameRow {
+    display: flex;
     justify-content: center;
   }
-  
-  .levelRow {
+  .mainAvatar {
+    width: 160px !important;
+    height: 160px !important;
+  }
+  .username {
+    font-size: 2.5rem;
+  }
+  .levelRow, .divisionTags, .profileSocials {
     justify-content: center;
   }
-  
-  .bio {
-    margin: 0 auto 1.5rem;
-  }
-  
-  .divisionTags {
-    justify-content: center;
-  }
-  
-  .xpCard {
-    max-width: 400px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .adminButtons {
-    justify-content: center;
+  .mediaGrid {
+    grid-template-columns: 1fr;
   }
 }

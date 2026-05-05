@@ -11,7 +11,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const { id } = await params;
-    const { status } = await req.json();
+    const { status, makePublic } = await req.json();
 
     if (!['approved', 'rejected'].includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
@@ -23,6 +23,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       processedBy: payload.userId,
       processedAt: new Date()
     }, { new: true });
+
+    if (status === 'approved' && application.userId) {
+      const { User } = await import('@/models/User');
+      const updateDoc: any = { $addToSet: { divisions: application.division } };
+      if (makePublic) updateDoc.$set = { isPublic: true };
+      await User.findByIdAndUpdate(application.userId, updateDoc);
+    }
     
     return NextResponse.json({ application });
   } catch (err) {

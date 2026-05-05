@@ -17,7 +17,7 @@ const homeSections = [
 const externalLinks = [
   { href: '/merch', label: 'Merch' },
   { href: '/apply', label: 'Apply to Us' },
-  { href: '/coming-soon', label: 'Coming Soon' },
+  { href: '/community', label: 'Community' },
 ];
 
 export default function Navbar() {

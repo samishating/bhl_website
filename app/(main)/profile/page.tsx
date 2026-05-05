@@ -19,6 +19,7 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
   const [username, setUsername] = useState('');
+  const [socialLinks, setSocialLinks] = useState({ twitter: '', youtube: '', twitch: '', instagram: '', discord: '' });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [claimingXp, setClaimingXp] = useState(false);
@@ -39,6 +40,13 @@ export default function ProfilePage() {
     setAvatarPreview('');
     setPendingAvatar(null);
     setUsername(user.username || '');
+    setSocialLinks({
+      twitter: user.socialLinks?.twitter || '',
+      youtube: user.socialLinks?.youtube || '',
+      twitch: user.socialLinks?.twitch || '',
+      instagram: user.socialLinks?.instagram || '',
+      discord: user.socialLinks?.discord || ''
+    });
 
     fetch(`/api/submissions?userId=${user.id}`, { cache: 'no-store' })
       .then(r => r.json())
@@ -70,7 +78,7 @@ export default function ProfilePage() {
       const res = await fetch(`/api/users/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bio, avatar: finalAvatar, username }),
+        body: JSON.stringify({ bio, avatar: finalAvatar, username, socialLinks }),
       });
       
       if (res.ok) { 
@@ -164,6 +172,16 @@ export default function ProfilePage() {
               ))}
               {(!user.divisions || user.divisions.length === 0) && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No divisions joined yet</span>}
             </div>
+
+            {user.socialLinks && Object.values(user.socialLinks).some(val => val) && (
+              <div style={{ display: 'flex', gap: '0.8rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                {user.socialLinks.twitter && <a href={user.socialLinks.twitter} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>Twitter ↗</a>}
+                {user.socialLinks.youtube && <a href={user.socialLinks.youtube} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>YouTube ↗</a>}
+                {user.socialLinks.twitch && <a href={user.socialLinks.twitch} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>Twitch ↗</a>}
+                {user.socialLinks.instagram && <a href={user.socialLinks.instagram} target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'none' }}>Instagram ↗</a>}
+                {user.socialLinks.discord && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Discord: {user.socialLinks.discord}</span>}
+              </div>
+            )}
 
             <div className={styles.profileActions}>
               <button className="btn btn-secondary btn-sm" onClick={() => { 
@@ -299,6 +317,17 @@ export default function ProfilePage() {
               <div className="form-group">
                 <label className="form-label">Bio</label>
                 <textarea className="form-input" rows={3} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us who you are…" id="profile-bio-input" style={{ resize: 'vertical' }} />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Social Links</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <input className="form-input" placeholder="Twitter URL" value={socialLinks.twitter} onChange={e => setSocialLinks({...socialLinks, twitter: e.target.value})} />
+                  <input className="form-input" placeholder="YouTube URL" value={socialLinks.youtube} onChange={e => setSocialLinks({...socialLinks, youtube: e.target.value})} />
+                  <input className="form-input" placeholder="Twitch URL" value={socialLinks.twitch} onChange={e => setSocialLinks({...socialLinks, twitch: e.target.value})} />
+                  <input className="form-input" placeholder="Instagram URL" value={socialLinks.instagram} onChange={e => setSocialLinks({...socialLinks, instagram: e.target.value})} />
+                  <input className="form-input" placeholder="Discord Username or URL" value={socialLinks.discord} onChange={e => setSocialLinks({...socialLinks, discord: e.target.value})} />
+                </div>
               </div>
 
               <button 

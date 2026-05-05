@@ -34,7 +34,7 @@ export default function ApplicationsInbox() {
 
   useEffect(load, []);
 
-  const handleAction = async (id: string, status: 'approved' | 'rejected') => {
+  const handleAction = async (id: string, status: 'approved' | 'rejected', makePublic: boolean = false) => {
     setGlobalLoading(true);
     const prevApps = [...apps];
     setApps(current => current.map(a => a._id === id ? { ...a, status } : a));
@@ -44,7 +44,7 @@ export default function ApplicationsInbox() {
       const res = await fetch(`/api/applications/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, makePublic }),
       });
       
       if (!res.ok) throw new Error('Request failed');
@@ -149,13 +149,20 @@ export default function ApplicationsInbox() {
               </div>
 
               {app.status === 'pending' && (
-                <div className={styles.appActions}>
-                  <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved')} disabled={actioning === app._id} style={{ flex: 1 }}>
-                    APPROVE APPLICATION
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => handleAction(app._id, 'rejected')} disabled={actioning === app._id} style={{ flex: 1, color: 'var(--brand-red)' }}>
-                    REJECT APPLICATION
-                  </button>
+                <div className={styles.appActions} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved', false)} disabled={actioning === app._id} style={{ flex: 1 }}>
+                      APPROVE
+                    </button>
+                    <button className="btn btn-ghost" onClick={() => handleAction(app._id, 'rejected')} disabled={actioning === app._id} style={{ flex: 1, color: 'var(--brand-red)' }}>
+                      REJECT
+                    </button>
+                  </div>
+                  {app.userId && (
+                    <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved', true)} disabled={actioning === app._id} style={{ width: '100%', background: 'linear-gradient(90deg, #ff0055, #cc0000)', border: 'none', color: '#fff' }}>
+                      APPROVE & SHOW ON COMMUNITY PAGE
+                    </button>
+                  )}
                 </div>
               )}
             </div>

@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
     const body = await req.json();
-    const { bio, avatar, divisions, username } = body;
+    const { bio, avatar, divisions, username, socialLinks, isPublic, isFeatured, displayOrder, featuredLinks } = body;
 
     if (username !== undefined && username.trim() !== '' && username !== user.username) {
       if (currentRole !== 'superadmin') {
@@ -54,6 +54,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (bio !== undefined) user.bio = bio;
     if (avatar !== undefined) user.avatar = avatar;
+    if (socialLinks !== undefined) user.socialLinks = { ...user.socialLinks, ...socialLinks };
+
+    // Admin-only fields
+    if (currentRole === 'admin' || currentRole === 'superadmin') {
+      if (isPublic !== undefined) user.isPublic = isPublic;
+      if (isFeatured !== undefined) user.isFeatured = isFeatured;
+      if (displayOrder !== undefined) user.displayOrder = displayOrder;
+      if (featuredLinks !== undefined) user.featuredLinks = featuredLinks;
+    }
+
     const oldDivisions = [...(user.divisions || [])];
 
     if (divisions !== undefined) {

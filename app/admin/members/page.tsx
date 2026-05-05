@@ -208,7 +208,7 @@ export default function AdminMembersPage() {
               </div>
 
               <div className={styles.featuredSection}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div className={styles.featuredHeader}>
                   <label className="form-label" style={{ margin: 0 }}>Featured Media</label>
                   <button className="btn btn-primary btn-sm" onClick={() => setEditForm({ ...editForm, featuredLinks: [...editForm.featuredLinks, { title: '', url: '', type: 'youtube', thumbnail: '' }] })}>
                     + Add Content

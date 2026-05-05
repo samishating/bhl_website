@@ -81,6 +81,15 @@
 /* Media Gallery in Modal */
 .featuredSection {
   margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.featuredHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .mediaCardsList {

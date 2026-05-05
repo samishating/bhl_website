@@ -6,11 +6,29 @@ import HomeFixedBackground from '@/components/HomeFixedBackground';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
-  FaApple, FaSoundcloud, FaDiscord, FaGlobe 
+  FaApple, FaSoundcloud, FaDiscord, FaGlobe, FaCamera
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
-// Fallback for Kick if not in the version of react-icons
+/** Compress an image file client-side to max 400px and 80% JPEG quality before upload */
+function compressImage(file: File, maxDim = 400, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression failed')), 'image/jpeg', quality);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 const KickIcon = () => (
   <div style={{ 
     width: '18px', 
@@ -45,6 +63,7 @@ export default function ProfilePage() {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [uploading, setUploading] = useState(false);
   
   const [form, setForm] = useState({
     bio: '',
@@ -85,6 +104,35 @@ export default function ProfilePage() {
       });
     }
   }, [user]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const compressed = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', compressed, 'avatar.jpg');
+      
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        setForm(prev => ({ ...prev, avatar: data.url }));
+        showToast('Avatar uploaded!', 'success');
+      } else {
+        showToast(data.error || 'Upload failed', 'error');
+      }
+    } catch (err) {
+      showToast('Upload failed', 'error');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,20 +230,26 @@ export default function ProfilePage() {
                   <div className={styles.formColumn}>
                     <h3 className={styles.formSectionTitle}>Profile Info</h3>
                     
+                    {/* New Avatar Section */}
+                    <div className={styles.avatarUploadBlock}>
+                      <div className={styles.avatarPreview}>
+                        {form.avatar ? <img src={form.avatar} alt="Preview" /> : user.username[0].toUpperCase()}
+                        {uploading && <div className={styles.uploadOverlay}><span className="spinner" /></div>}
+                      </div>
+                      <div className={styles.uploadInfo}>
+                        <label className={styles.uploadBtn}>
+                          <FaCamera style={{ marginRight: '8px' }} />
+                          Change Profile Pic
+                          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                        </label>
+                        <p className={styles.uploadHint}>JPG, PNG or WEBP. Max 5MB.</p>
+                      </div>
+                    </div>
+
                     <div className="form-group">
                       <label className="form-label">Username</label>
                       <input className="form-input" value={user.username} disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
                       <p className={styles.inputHelper}>Usernames can only be changed by staff.</p>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Avatar URL</label>
-                      <input 
-                        className="form-input" 
-                        placeholder="https://image-link.com/avatar.jpg" 
-                        value={form.avatar}
-                        onChange={e => setForm({ ...form, avatar: e.target.value })}
-                      />
                     </div>
 
                     <div className="form-group">
@@ -211,7 +265,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className={styles.formActions}>
-                      <button type="submit" className="btn btn-primary" disabled={loading} style={{ flex: 1 }}>
+                      <button type="submit" className="btn btn-primary" disabled={loading || uploading} style={{ flex: 1 }}>
                         {loading ? 'Saving...' : 'Save Changes'}
                       </button>
                       <button type="button" className="btn btn-ghost" onClick={() => setEditMode(false)} style={{ flex: 1 }}>

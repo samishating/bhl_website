@@ -1,9 +1,9 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, staggerContainer, dropdownAnimation } from '@/lib/animations';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import Modal from '@/components/Modal';
 import styles from './HomeChallenges.module.css';
 
@@ -12,39 +12,43 @@ const divTagClass: Record<string, string> = {
 };
 const DIVS = ['global', 'gaming', 'music', 'sport', 'content'];
 
-export default function HomeChallenges({ initialChallenges }: { initialChallenges?: any[] }) {
+interface Challenge {
+  _id: string;
+  division: string;
+  title: string;
+  description: string;
+  xpReward: number;
+  allowRepeats?: boolean;
+}
+
+interface SubmissionRecord {
+  challengeId: string | { _id: string };
+  status: string;
+}
+
+export default function HomeChallenges({ initialChallenges }: { initialChallenges?: Challenge[] }) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [challenges, setChallenges] = useState<any[]>(initialChallenges || []);
+  const [challenges, setChallenges] = useState<Challenge[]>(initialChallenges || []);
   const [loading, setLoading] = useState(initialChallenges ? false : true);
   const [filter, setFilter] = useState('global');
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
-  const [confirmJoin, setConfirmJoin] = useState<any | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [confirmJoin, setConfirmJoin] = useState<Challenge | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const loadChallenges = () => {
-    setLoading(true);
+  const loadChallenges = useCallback(() => {
     fetch(`/api/challenges?division=${filter}`)
       .then(r => r.json())
-      .then(d => { setChallenges(d.challenges || []); setLoading(false); });
-  };
+      .then(d => { setChallenges((d.challenges as Challenge[]) || []); setLoading(false); });
+  }, [filter]);
 
   useEffect(() => {
-    setHasMounted(true);
-    // Only skip initial load if we have non-empty ISR data for the global filter
-    if (filter === 'global' && initialChallenges && initialChallenges.length > 0) {
-      // Keep ISR data
-    } else {
+    if (!(filter === 'global' && initialChallenges && initialChallenges.length > 0)) {
       loadChallenges();
     }
-  }, [filter, initialChallenges]);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  }, [filter, initialChallenges, loadChallenges]);
 
   useEffect(() => {
     const handleRefresh = () => {
@@ -58,7 +62,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
         .then(d => {
           if (d.submissions) {
             const statusMap: Record<string, string> = {};
-            d.submissions.forEach((s: any) => {
+            (d.submissions as SubmissionRecord[]).forEach((s) => {
               const cid = s.challengeId && typeof s.challengeId === 'object' ? s.challengeId._id : s.challengeId;
               if (cid) statusMap[cid] = s.status;
             });
@@ -68,7 +72,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
     }
     
     return () => window.removeEventListener('stats-refresh', handleRefresh);
-  }, [user]);
+  }, [loadChallenges, user]);
 
   const handleSubmit = async (challengeId: string) => {
     if (!user) return showToast('Please login to submit a challenge', 'error');
@@ -149,7 +153,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
       } else {
         showToast('Failed to join division', 'error');
       }
-    } catch (e) {
+    } catch {
       showToast('Error processing request', 'error');
     } finally {
       setSubmitting(null);
@@ -182,18 +186,26 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           viewport={{ once: true, amount: 0.1 }}
           variants={fadeUp}
         >
-          <div className={`${styles.tabs} premium-panel`} ref={tabsRef}>
+          <div className={`${styles.tabs} premium-panel selection-pill-group`} ref={tabsRef}>
             {DIVS.map(d => (
               <button 
                 key={d} 
-                className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
-                onClick={() => setFilter(d)}
+                className={`${styles.tab} selection-pill ${filter === d ? `selection-pill-active ${styles.tabActive}` : ''}`}
+                onClick={() => {
+                  if (d === 'global' && initialChallenges && initialChallenges.length > 0) {
+                    setChallenges(initialChallenges);
+                    setLoading(false);
+                  } else {
+                    setLoading(true);
+                  }
+                  setFilter(d);
+                }}
               >
                 {d === 'global' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
                 {filter === d && (
                   <motion.div 
                     layoutId="challengeTab"
-                    className={styles.indicator}
+                    className="selection-pill-indicator"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -262,7 +274,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
                         <button
                           className="btn btn-primary"
                           onClick={() => handleSubmit(c._id)}
-                          disabled={hasMounted ? submitting === c._id : undefined}
+                          disabled={submitting === c._id}
                         >
                           {submitting === c._id ? <span className="spinner" /> : 'Submit'}
                         </button>

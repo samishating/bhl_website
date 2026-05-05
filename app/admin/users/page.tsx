@@ -232,21 +232,21 @@ export default function AdminUsersPage() {
 
         <div className="form-group">
           <label className="form-label">Divisions</label>
-          <div className={styles.pillGroup}>
+          <div className={`${styles.pillGroup} selection-pill-group`}>
             {DIVISION_OPTIONS.map(div => {
               const active = editForm.divisions.includes(div.id);
               return (
                 <button
                   key={div.id}
                   type="button"
-                  className={`${styles.pill} ${active ? styles.pillActive : ''}`}
+                  className={`${styles.pill} selection-pill ${active ? `selection-pill-active ${styles.pillActive}` : ''}`}
                   onClick={() => toggleDivision(div.id)}
                 >
-                  <span className={styles.pillText}>{div.label}</span>
+                  <span className={`${styles.pillText} selection-pill-label`}>{div.label}</span>
                   {active && (
                     <motion.div 
                       layoutId="adminUserDivPill"
-                      className={styles.pillIndicator}
+                      className="selection-pill-indicator"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}

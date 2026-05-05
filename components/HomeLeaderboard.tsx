@@ -1,9 +1,9 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getLevelTitle, BADGES } from '@/lib/xp';
+import { getLevelTitle } from '@/lib/xp';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, staggerContainer } from '@/lib/animations';
+import { fadeUp } from '@/lib/animations';
 import styles from './HomeLeaderboard.module.css';
 
 const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
@@ -16,37 +16,41 @@ const rankIcons = [
   '/ICONS/MEDAL 3.svg'
 ];
 
+interface LeaderboardUser {
+  _id: string;
+  username: string;
+  avatar: string;
+  xp: number;
+  level: number;
+  divisions: string[];
+}
+
 export default function HomeLeaderboard() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const [hasMounted, setHasMounted] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const loadLeaderboard = (silent = false) => {
-    if (!silent) setLoading(true);
+  useEffect(() => {
     fetch(`/api/leaderboard?division=${filter}`, { cache: 'no-store' })
       .then(r => r.json())
-      .then(d => { 
-        setUsers(d.users || []); 
-        if (!silent) setLoading(false); 
+      .then(d => {
+        setUsers((d.users as LeaderboardUser[]) || []);
+        setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    setHasMounted(true);
-    loadLeaderboard();
   }, [filter]);
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const handleSyncRefresh = () => loadLeaderboard(true);
+    const handleSyncRefresh = () => {
+      fetch(`/api/leaderboard?division=${filter}`, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(d => {
+          setUsers((d.users as LeaderboardUser[]) || []);
+        });
+    };
     window.addEventListener('stats-refresh', handleSyncRefresh);
     return () => window.removeEventListener('stats-refresh', handleSyncRefresh);
-  }, [filter]); // Re-bind with current filter context
+  }, [filter]);
 
   return (
     <section id="leaderboard" className="content-band" style={{ borderTop: 'none' }}>
@@ -72,18 +76,21 @@ export default function HomeLeaderboard() {
           viewport={{ once: true, amount: 0.1 }}
           variants={fadeUp}
         >
-          <div className={`${styles.tabs} premium-panel`} ref={tabsRef}>
+          <div className={`${styles.tabs} premium-panel selection-pill-group`} ref={tabsRef}>
             {DIVISIONS.map(d => (
               <button
                 key={d}
-                className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
-                onClick={() => setFilter(d)}
+                className={`${styles.tab} selection-pill ${filter === d ? `selection-pill-active ${styles.tabActive}` : ''}`}
+                onClick={() => {
+                  setLoading(true);
+                  setFilter(d);
+                }}
               >
                 {d === 'all' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
                 {filter === d && (
                   <motion.div 
                     layoutId="activeTab"
-                    className={styles.indicator}
+                    className="selection-pill-indicator"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}

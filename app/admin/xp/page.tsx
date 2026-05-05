@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { calculateLevel, getLevelTitle, xpForNextLevel } from '@/lib/xp';
 import Modal from '@/components/Modal';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
 
@@ -45,28 +45,25 @@ export default function AdminXPPage() {
   const [tempData, setTempData] = useState<ProgressionLevel | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    void Promise.all([
+      fetch('/api/users'),
+      fetch('/api/progression')
+    ])
+      .then(async ([usersRes, progRes]) => {
+        const usersData = await usersRes.json();
+        const progData = await progRes.json();
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [usersRes, progRes] = await Promise.all([
-        fetch('/api/users'),
-        fetch('/api/progression')
-      ]);
-      const usersData = await usersRes.json();
-      const progData = await progRes.json();
-      
-      setUsers(usersData.users || []);
-      setProgression(progData.progression || []);
-    } catch (err) {
-      console.error('[AdminXP] Fetch error:', err);
-      showToast('Critical synchronization failure', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+        setUsers(usersData.users || []);
+        setProgression(progData.progression || []);
+      })
+      .catch((err) => {
+        console.error('[AdminXP] Fetch error:', err);
+        showToast('Critical synchronization failure', 'error');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const filteredUsers = users.filter(u =>
     u.username.toLowerCase().includes(search.toLowerCase()) ||
@@ -196,29 +193,29 @@ export default function AdminXPPage() {
           <h1 className={styles.title}>Progression Sector</h1>
           <p className={styles.sub}>Manage global level architecture and member experience</p>
         </div>
-        <div className={styles.tabContainer}>
+        <div className={`${styles.tabContainer} selection-pill-group`}>
           <button 
-            className={`${styles.tabBtn} ${activeTab === 'system' ? styles.active : ''}`}
+            className={`${styles.tabBtn} selection-pill selection-pill-compact ${activeTab === 'system' ? `selection-pill-active ${styles.active}` : ''}`}
             onClick={() => setActiveTab('system')}
           >
             Level System
             {activeTab === 'system' && (
               <motion.div 
                 layoutId="adminXpTab"
-                className={styles.tabHighlight}
+                className="selection-pill-indicator"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />
             )}
           </button>
           <button 
-            className={`${styles.tabBtn} ${activeTab === 'users' ? styles.active : ''}`}
+            className={`${styles.tabBtn} selection-pill selection-pill-compact ${activeTab === 'users' ? `selection-pill-active ${styles.active}` : ''}`}
             onClick={() => setActiveTab('users')}
           >
             Personnel XP
             {activeTab === 'users' && (
               <motion.div 
                 layoutId="adminXpTab"
-                className={styles.tabHighlight}
+                className="selection-pill-indicator"
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />
             )}

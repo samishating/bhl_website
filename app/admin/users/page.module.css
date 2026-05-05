@@ -101,10 +101,6 @@
 .pillGroup {
   display: flex;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
   margin-top: 8px;
   flex-wrap: wrap;
 }
@@ -112,41 +108,12 @@
 .pill {
   flex: 1;
   min-width: 80px;
-  background: transparent;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  cursor: pointer;
-  position: relative;
-  transition: color 0.3s;
 }
-
-.pill:hover {
-  color: var(--text-secondary);
-}
-
-.pillActive {
-  color: white !important;
-}
+.pillActive {}
 
 .pillText {
-  position: relative;
-  z-index: 2;
-}
-
-.pillIndicator {
-  position: absolute;
-  inset: 0;
-  background: var(--brand-red);
-  border-radius: 8px;
-  z-index: 1;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {

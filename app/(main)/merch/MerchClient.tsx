@@ -1,11 +1,11 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import Modal from '@/components/Modal';
 import styles from './page.module.css';
 
@@ -30,7 +30,6 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const [filter, setFilter] = useState('all');
   const { showToast } = useToast();
   const tabsRef = useRef<HTMLDivElement>(null);
-  const [hasMounted, setHasMounted] = useState(false);
 
   // Quick View Modal State
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
@@ -46,32 +45,12 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
     return p.category === filter;
   });
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  const handleAddToCart = (p: Product) => {
-    if (!user) {
-      showToast('Please login to add items to your cart', 'error');
-      return;
-    }
-    if (p.isLimitedDrop && (user?.xp || 0) < REQUIRED_XP) {
-      showToast('Insufficient XP for premium items', 'error');
-      return;
-    }
-    addItem({ id: p._id, name: p.name, price: p.price, image: p.image });
-  };
-
   return (
     <>
       <div className="container">
-        <div className={styles.tabs} ref={tabsRef}>
+        <div className={`${styles.tabs} selection-pill-group`} ref={tabsRef}>
           {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
-            <button key={c} className={`${styles.tab} ${filter === c ? styles.tabActive : ''}`}
+            <button key={c} className={`${styles.tab} selection-pill ${filter === c ? `selection-pill-active ${styles.tabActive}` : ''}`}
               onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
               {c === 'drop' ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -86,7 +65,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
               {filter === c && (
                 <motion.div 
                   layoutId="merchTab"
-                  className={styles.indicator}
+                  className="selection-pill-indicator"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}

@@ -185,7 +185,7 @@ export default function AdminMembersPage() {
 
       {editingUser && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
-          <div className="modal-content" style={{ maxWidth: '600px' }}>
+          <div className="modal-content">
             <div className="modal-header">
               <h3 style={{ fontFamily: 'Rajdhani', fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
                 Configure Creator: {editingUser.username}

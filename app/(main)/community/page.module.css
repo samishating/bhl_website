@@ -174,6 +174,125 @@
   color: var(--text-muted);
 }
 
+/* Carousel Header & Controls */
+.carouselContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.carouselHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.carouselCreatorInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.carouselAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-red);
+  background: #111;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--brand-red);
+  font-size: 1.2rem;
+}
+
+.carouselAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carouselCreatorName {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.carouselCreatorSubtitle {
+  font-size: 0.8rem;
+  color: var(--brand-red);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.carouselControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.carouselTimer {
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carouselTimerBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--brand-red);
+}
+
+.pauseIcon {
+  color: #fff;
+  z-index: 2;
+}
+
+.carouselBtn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.carouselBtn:hover {
+  background: rgba(255, 0, 85, 0.2);
+  color: var(--brand-red);
+}
+
+.carouselCounter {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  min-width: 40px;
+  text-align: center;
+}
+
 /* YouTube Video Carousel */
 .videoCarouselLayout {
   display: flex;

@@ -17,7 +17,9 @@ export async function GET(req: Request) {
         { isFeatured: true },
         { divisions: { $in: ['content', 'gaming', 'music'] } },
       ],
-    }).select('_id username avatar divisions creatorDisplayName displayOrder');
+    }).select('_id username avatar divisions creatorDisplayName level xp isFeatured')
+      .sort({ xp: -1 })
+      .lean();
 
     const eligibleIds = eligibleCreators.map(u => u._id);
     const creatorMap = new Map(eligibleCreators.map(u => [u._id.toString(), u]));
@@ -26,32 +28,57 @@ export async function GET(req: Request) {
       userId: { $in: eligibleIds },
       isHidden: false,
     };
-    if (featuredOnly) filter.isFeatured = true;
 
-    const videos = await CreatorVideo.find(filter)
-      .sort({ isFeatured: -1, publishedAt: -1 })
-      .limit(limit)
+    const allVideos = await CreatorVideo.find(filter)
+      .sort({ publishedAt: -1 })
       .lean();
 
-    const response = videos.map(v => {
-      const creator = creatorMap.get(v.userId.toString());
-      return {
-        videoId: v.videoId,
-        title: v.title,
-        thumbnailUrl: v.thumbnailUrl,
-        videoUrl: v.videoUrl,
-        publishedAt: v.publishedAt,
-        isFeatured: v.isFeatured,
-        creator: creator ? {
-          username: creator.username,
-          creatorDisplayName: creator.creatorDisplayName || creator.username,
-          avatar: creator.avatar,
-          divisions: creator.divisions,
-        } : null,
-      };
-    });
+    // Group videos by creator
+    const groupedVideosMap = new Map<string, any[]>();
+    for (const v of allVideos) {
+      const creatorIdStr = v.userId.toString();
+      if (!groupedVideosMap.has(creatorIdStr)) {
+        groupedVideosMap.set(creatorIdStr, []);
+      }
+      const creatorVideos = groupedVideosMap.get(creatorIdStr)!;
+      if (creatorVideos.length < 5) {
+        creatorVideos.push({
+          videoId: v.videoId,
+          title: v.title,
+          thumbnailUrl: v.thumbnailUrl,
+          videoUrl: v.videoUrl,
+          publishedAt: v.publishedAt,
+          isFeatured: v.isFeatured,
+        });
+      }
+    }
 
-    return NextResponse.json(response);
+    const featuredGroups: any[] = [];
+    const latestGroups: any[] = [];
+
+    // Order groups by the initial Level/XP sort of the creators
+    for (const creator of eligibleCreators) {
+      const creatorIdStr = creator._id.toString();
+      const videos = groupedVideosMap.get(creatorIdStr);
+      if (videos && videos.length > 0) {
+        const groupObj = {
+          creator: {
+            username: creator.username,
+            creatorDisplayName: creator.creatorDisplayName || creator.username,
+            avatar: creator.avatar,
+            divisions: creator.divisions,
+          },
+          videos,
+        };
+
+        latestGroups.push(groupObj);
+        if (creator.isFeatured) {
+          featuredGroups.push(groupObj);
+        }
+      }
+    }
+
+    return NextResponse.json({ featuredGroups, latestGroups });
   } catch (err: any) {
     console.error('[Community Videos]', err);
     return NextResponse.json({ error: 'Failed to load videos' }, { status: 500 });

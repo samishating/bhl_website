@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
+import CreatorVideoCarousel from './CreatorVideoCarousel';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
@@ -9,6 +10,7 @@ import {
   FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import { calculateLevel, getLevelTitle } from '@/lib/xp';
 
 interface SocialLinks {
   twitter?: string;
@@ -85,7 +87,8 @@ function getYouTubeThumbnail(url: string) {
 export default function CommunityPage() {
   const [featuredCreators, setFeaturedCreators] = useState<User[]>([]);
   const [members, setMembers] = useState<User[]>([]);
-  const [videos, setVideos] = useState<any[]>([]);
+  const [featuredVideoGroups, setFeaturedVideoGroups] = useState<any[]>([]);
+  const [latestVideoGroups, setLatestVideoGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -95,11 +98,12 @@ export default function CommunityPage() {
         if (data.featuredCreators) setFeaturedCreators(data.featuredCreators);
         if (data.members) setMembers(data.members);
         
-        // Also fetch videos parallelly
-        fetch('/api/community/videos?limit=5')
+        // Also fetch grouped videos
+        fetch('/api/community/videos')
           .then(res => res.json())
           .then(vidData => {
-            if (Array.isArray(vidData)) setVideos(vidData);
+            if (vidData.featuredGroups) setFeaturedVideoGroups(vidData.featuredGroups);
+            if (vidData.latestGroups) setLatestVideoGroups(vidData.latestGroups);
             setLoading(false);
           })
           .catch(() => setLoading(false));
@@ -128,6 +132,15 @@ export default function CommunityPage() {
           </p>
         </div>
       </section>
+
+      {/* Featured Video Carousel (Only if featured creators have videos) */}
+      {featuredVideoGroups.length > 0 && (
+        <section className={styles.section} style={{ paddingBottom: '32px' }}>
+          <div className="container">
+            <CreatorVideoCarousel groups={featuredVideoGroups} />
+          </div>
+        </section>
+      )}
 
       {/* Featured Creators Section */}
       {featuredCreators.length > 0 && (
@@ -176,7 +189,7 @@ export default function CommunityPage() {
       )}
 
       {/* Latest from the Brotherhood - YouTube Cache */}
-      {videos.length > 0 && (
+      {latestVideoGroups.length > 0 && (
         <section className={styles.section} style={{ paddingTop: 0 }}>
           <div className="container">
             <div className={styles.sectionHeader}>
@@ -186,54 +199,7 @@ export default function CommunityPage() {
               </div>
             </div>
             
-            <div className={styles.videoCarouselLayout}>
-              {/* Featured Large Card (First Video) */}
-              <a href={videos[0].videoUrl} target="_blank" rel="noreferrer" className={styles.videoFeatured}>
-                <img src={videos[0].thumbnailUrl} alt={videos[0].title} />
-                <div className={styles.videoFeaturedOverlay}>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-                    <div className={styles.contentAvatar} style={{ width: '48px', height: '48px', fontSize: '1rem', border: '2px solid var(--brand-red)' }}>
-                      {videos[0].creator?.avatar ? <img src={videos[0].creator.avatar} alt="" /> : videos[0].creator?.username?.[0] || '?'}
-                    </div>
-                    <div>
-                      <div style={{ color: '#fff', fontWeight: 700 }}>{videos[0].creator?.creatorDisplayName || videos[0].creator?.username || 'Unknown Creator'}</div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <FaYoutube style={{ color: '#ff0000', fontSize: '1rem' }} />
-                        {new Date(videos[0].publishedAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.videoFeaturedTitle}>{videos[0].title}</div>
-                </div>
-              </a>
-
-              {/* Grid of Remaining Videos (Up to 4) */}
-              <div className={styles.videoGrid}>
-                {videos.slice(1, 5).map((v, idx) => (
-                  <div key={idx} className={styles.contentCard} style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div className={styles.contentThumb}>
-                      <img src={v.thumbnailUrl} alt={v.title} />
-                      <div className={styles.playOverlay}>
-                        <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>▶</div>
-                      </div>
-                    </div>
-                    <div className={styles.contentMeta} style={{ flex: 1 }}>
-                      <div className={styles.contentAvatar}>
-                        {v.creator?.avatar ? <img src={v.creator.avatar} alt="" /> : v.creator?.username?.[0] || '?'}
-                      </div>
-                      <div className={styles.contentText}>
-                        <div className={styles.contentTitle}>{v.title}</div>
-                        <div className={styles.contentAuthor} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                          <FaYoutube style={{ color: '#ff0000' }} />
-                          {v.creator?.creatorDisplayName || v.creator?.username}
-                        </div>
-                      </div>
-                    </div>
-                    <a href={v.videoUrl} target="_blank" rel="noreferrer" className={styles.fullLink} />
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CreatorVideoCarousel groups={latestVideoGroups} />
           </div>
         </section>
       )}
@@ -264,7 +230,9 @@ export default function CommunityPage() {
                     {member.avatar ? <img src={member.avatar} alt={member.username} /> : member.username[0].toUpperCase()}
                   </div>
                   <div className={styles.memberName}>{member.username}</div>
-                  <div className={styles.memberLevel}>Level {member.level}</div>
+                  <div className={styles.memberLevel}>
+                    Level {calculateLevel(member.xp)} • {getLevelTitle(calculateLevel(member.xp))}
+                  </div>
                   
                   <div className={styles.memberDivisions}>
                     {member.divisions.map(div => (

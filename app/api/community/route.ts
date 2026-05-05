@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     // Fetch all public users
     const publicUsers = await User.find({ isPublic: true })
       .select('-password -email')
-      .sort({ displayOrder: -1, xp: -1 })
+      .sort({ xp: -1 })
       .lean();
       
     // Separate featured creators from the rest

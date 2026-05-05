@@ -58,7 +58,6 @@ export default function AdminMembersPage() {
   const [editForm, setEditForm] = useState({
     isPublic: false,
     isFeatured: false,
-    displayOrder: 0,
     featuredLinks: [] as { title: string; url: string; type: string; thumbnail: string }[],
     youtubeChannelId: '',
     youtubeHandle: '',
@@ -84,7 +83,6 @@ export default function AdminMembersPage() {
     setEditForm({
       isPublic: !!user.isPublic,
       isFeatured: !!user.isFeatured,
-      displayOrder: user.displayOrder || 0,
       featuredLinks: (user.featuredLinks || []).map(l => ({
         title: l.title || '', url: l.url || '', type: l.type || 'youtube', thumbnail: l.thumbnail || ''
       })),
@@ -109,7 +107,6 @@ export default function AdminMembersPage() {
         body: JSON.stringify({
           isPublic: editForm.isPublic,
           isFeatured: editForm.isFeatured,
-          displayOrder: editForm.displayOrder,
           featuredLinks: editForm.featuredLinks,
           youtubeChannelId: editForm.youtubeChannelId,
           youtubeHandle: editForm.youtubeHandle,
@@ -282,18 +279,6 @@ export default function AdminMembersPage() {
               value={editForm.creatorDisplayName}
               onChange={e => setEditForm({ ...editForm, creatorDisplayName: e.target.value })}
             />
-          </div>
-
-          {/* Display Order */}
-          <div className="form-group">
-            <label className="form-label">Display Order Priority</label>
-            <input
-              type="number"
-              className="form-input"
-              value={editForm.displayOrder}
-              onChange={e => setEditForm({ ...editForm, displayOrder: parseInt(e.target.value) || 0 })}
-            />
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>Higher numbers appear first.</div>
           </div>
 
           {/* YouTube Section */}

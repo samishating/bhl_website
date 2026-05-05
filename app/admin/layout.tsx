@@ -24,15 +24,15 @@ interface AdminLink {
 
 export const adminLinks: AdminLink[] = [
   { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
-  { href: '/admin/members', label: 'Creators Settings', icon: '/ICONS/USER.svg' },
-  { href: '/admin/users', label: 'Users Settings', icon: '/ICONS/USER.svg', superOnly: true },
+  { href: '/admin/members', label: 'Creators Settings', icon: '/ICONS/CREATORS SETTINGS.svg' },
+  { href: '/admin/users', label: 'Users Settings', icon: '/ICONS/USER SETTINGS.svg', superOnly: true },
   { href: '/admin/xp', label: 'XP/Levels', icon: '/ICONS/XP.svg' },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Submissions', icon: '/ICONS/INBOX.svg' },
   { href: '/admin/applications', label: 'Applications', icon: '/ICONS/INBOX.svg' },
   { href: '/admin/products', label: 'Products', icon: '/ICONS/PRODUCTS.svg' },
   { href: '/admin/orders', label: 'Orders', icon: '/ICONS/LIST PRODUCTS.svg' },
-  { href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/USER.svg', superOnly: true },
+  { href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/REFERRALS.svg', superOnly: true },
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {

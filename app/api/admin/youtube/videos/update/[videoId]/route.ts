@@ -8,7 +8,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ videoI
   try {
     const { videoId } = await params;
     const cookieStore = await cookies();
-    const token = cookieStore.get('bhl-token')?.value;
+    const token = cookieStore.get('bhl_token')?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const payload = verifyToken(token);
     if (!payload || (payload.role !== 'admin' && payload.role !== 'superadmin')) {

@@ -15,10 +15,10 @@ interface CinematicHeroProps {
 const customEase: BezierDefinition = [0.215, 0.61, 0.355, 1];
 
 const letterVariants: Variants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+  hidden: { opacity: 0, scale: 0.9, filter: 'blur(10px)' },
   visible: (i: number) => ({
     opacity: 1,
-    y: 0,
+    scale: 1,
     filter: 'blur(0px)',
     transition: {
       delay: i * 0.05,
@@ -161,11 +161,10 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
         <motion.div
           className={styles.logoWrap}
           ref={logoRef}
-          initial={{ opacity: 0, scale: 0.8, y: 100 }}
+          initial={{ opacity: 0, scale: 0.8 }}
           animate={{ 
             opacity: 1, 
             scale: 1, 
-            y: 0,
           }}
           transition={{ 
             delay: 1.2, 
@@ -216,8 +215,8 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
       {/* CTAs */}
       <motion.div 
         className={styles.ctas}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 2.5, duration: 0.8 }}
       >
         <Link href="/register" className="btn btn-primary btn-lg" id="hero-join-btn">

@@ -105,9 +105,9 @@ export default function HomeLeaderboard() {
             <motion.div 
               key={`podium-${filter}`}
               className={styles.podium}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.35 }}
             >
               {[users[1], users[0], users[2]].map((u, idx) => {
@@ -159,9 +159,9 @@ export default function HomeLeaderboard() {
             ) : (
               <motion.div 
                 key={`table-${filter}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.3 }}
                 className="table-container premium-panel"
               >

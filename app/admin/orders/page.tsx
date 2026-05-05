@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '../layout';
 import { useToast } from '@/contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
+import { fadeUp, scaleIn } from '@/lib/animations';
 import Modal from '@/components/Modal';
 import styles from './page.module.css';
 

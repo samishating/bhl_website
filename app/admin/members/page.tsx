@@ -174,7 +174,7 @@ export default function AdminMembersPage() {
     >
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Members Management</h1>
+          <h1 className={styles.title}>Creators Settings</h1>
           <p className={styles.sub}>Manage public visibility and creator status</p>
         </div>
         <div className="form-group" style={{ marginBottom: 0 }}>
@@ -195,7 +195,7 @@ export default function AdminMembersPage() {
           <motion.table variants={staggerContainer} initial="hidden" animate="visible">
             <thead>
               <tr>
-                <th>Member</th>
+                <th>Creator</th>
                 <th>Status</th>
                 <th>Socials</th>
                 <th>Community</th>

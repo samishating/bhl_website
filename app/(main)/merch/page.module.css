@@ -219,6 +219,8 @@
   position: absolute;
   top: 4px;
   bottom: 4px;
+  left: 4px;
+  right: 4px;
   background: var(--brand-red);
   border-radius: 100px;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);

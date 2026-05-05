@@ -108,8 +108,23 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
   };
 
   const logout = async () => {
-    await fetch('/api/auth/me', { method: 'DELETE' });
+    try {
+      await fetch('/api/auth/me', { method: 'DELETE' });
+    } catch (err) {
+      console.error('Logout sync error:', err);
+    }
+    // Clear any non-HttpOnly cookies manually for a deep reset
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+
     setUser(null);
+    // Force a complete client-side refresh to clear any cached state/memory
+    window.location.href = '/';
   };
 
   const updateUser = (data: Partial<User>) => {

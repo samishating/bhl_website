@@ -55,7 +55,13 @@ export async function POST(req: NextRequest) {
       token,
     }, { status: 201 });
 
-    response.cookies.set('bhl_token', token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
+    response.cookies.set('bhl_token', token, { 
+      httpOnly: true, 
+      maxAge: 60 * 60 * 24 * 7, 
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    });
     return response;
   } catch (err) {
     console.error(err);

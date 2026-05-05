@@ -15,10 +15,17 @@ const AdminContext = createContext({
 
 export const useAdmin = () => useContext(AdminContext);
 
-export const adminLinks = [
+interface AdminLink {
+  href: string;
+  label: string;
+  icon: string;
+  superOnly?: boolean;
+}
+
+export const adminLinks: AdminLink[] = [
   { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
   { href: '/admin/members', label: 'Members', icon: '/ICONS/USER.svg' },
-  { href: '/admin/users', label: 'User setto/ICONS/USER.svg', superOnly: true },
+  { href: '/admin/users', label: 'Users Settings', icon: '/ICONS/USER.svg', superOnly: true },
   { href: '/admin/xp', label: 'XP/Levels', icon: '/ICONS/XP.svg' },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Submissions', icon: '/ICONS/INBOX.svg' },
@@ -168,10 +175,10 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               return (
                 <Link key={l.href} href={l.href} className={`${styles.navLink} ${pathname === l.href ? styles.active : ''}`} id={`admin-nav-${l.label.toLowerCase()}`}>
                   <span className={styles.navIcon}>
-                    {l.icon.endsWith('.svg') ? (
+                    {l.icon && l.icon.endsWith('.svg') ? (
                       <img src={l.icon} alt="" style={{ width: '22px', height: '22px' }} />
                     ) : (
-                      l.icon
+                      l.icon || null
                     )}
                   </span> 
                   <motion.span

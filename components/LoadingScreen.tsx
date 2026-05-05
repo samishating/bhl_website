@@ -9,7 +9,7 @@ export default function LoadingScreen({ message = 'Initializing Legacy...' }: { 
           <div className="loader-arc-bg" />
           <div className="loader-arc" />
           <Image 
-            src="/brand/logo.webp" 
+            src="/brand/logo.png" 
             alt="BHL" 
             width={70} 
             height={70} 

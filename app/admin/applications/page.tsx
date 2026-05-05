@@ -80,7 +80,7 @@ export default function ApplicationsInbox() {
         <div style={{ textAlign: 'center', padding: '10rem' }}>
           <div className="loader-visual" style={{ margin: '0 auto' }}>
             <div className="loader-arc" />
-            <img src="/brand/logo.webp" alt="" className="loader-logo" />
+            <img src="/brand/logo.png" alt="" className="loader-logo" />
           </div>
           <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Applications...</p>
         </div>

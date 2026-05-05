@@ -148,7 +148,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         >
           <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px', overflow: 'hidden' }}>
             <Link href="/" className={styles.sidebarLogo}>
-              <img src="/brand/logo.webp" alt="BHL" style={{ height: '32px', objectFit: 'contain' }} />
+              <img src="/brand/logo.png" alt="BHL" style={{ height: '32px', objectFit: 'contain' }} />
                 <motion.span
                   initial={false}
                   animate={{ 

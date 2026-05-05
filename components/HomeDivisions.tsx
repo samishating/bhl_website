@@ -26,7 +26,7 @@ const divisions = [
     perks: ['Live match discussions', 'Fitness & nutrition tips', 'Fantasy leagues', 'Workout challenges'],
   },
   {
-    id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.webp', color: '#EF4444', tag: 'tag-content',
+    id: 'content', label: 'Content', icon: '🎬', image: '/brand/logo.png', color: '#EF4444', tag: 'tag-content',
     desc: 'The Content division is where memes, videos, and viral moments are born. We support streamers, editors, photographers, and memers who want to build their brand and dominate the digital world.',
     perks: ['Cross-promotion', 'Editing resources', 'Content calendars', 'Platform growth tips'],
   },

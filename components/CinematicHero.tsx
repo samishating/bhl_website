@@ -173,7 +173,7 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
           }}
         >
           <Image
-            src="/brand/logo.webp"
+            src="/brand/logo.png"
             alt="BHL"
             width={220}
             height={220}

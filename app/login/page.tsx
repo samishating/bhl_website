@@ -44,7 +44,7 @@ function LoginForm() {
       >
         <motion.div variants={fadeUp}>
           <Link href="/" className={styles.logo}>
-            <img src="/brand/logo.webp" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
+            <img src="/brand/logo.png" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
           </Link>
           <h2 className={styles.title}>Welcome Back</h2>
           <p className={styles.sub}>Sign in to your Brotherhood account</p>

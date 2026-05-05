@@ -256,6 +256,55 @@ h4 { font-size: 1.2rem; }
   font-size: 0.8rem;
 }
 
+/* ─── Multi-Chip (MULTI SELECT) ─────────────────────── */
+/* Use this for divisions, tags, roles — anything where   */
+/* multiple options can be active simultaneously.         */
+.multi-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.multi-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.multi-chip:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.multi-chip-active {
+  border-color: rgba(255, 0, 0, 0.5) !important;
+  background: rgba(255, 0, 0, 0.1) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.2), 0 0 12px rgba(255, 0, 0, 0.1);
+}
+
+.multi-chip-check {
+  font-size: 0.7rem;
+  color: var(--brand-red);
+}
+
 /* Section Transitions */
 .section-divider {
   width: 100%;

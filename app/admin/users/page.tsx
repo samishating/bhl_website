@@ -232,24 +232,18 @@ export default function AdminUsersPage() {
 
         <div className="form-group">
           <label className="form-label">Divisions</label>
-          <div className={`${styles.pillGroup} selection-pill-group`}>
+          <div className="multi-chip-group">
             {DIVISION_OPTIONS.map(div => {
               const active = editForm.divisions.includes(div.id);
               return (
                 <button
                   key={div.id}
                   type="button"
-                  className={`${styles.pill} selection-pill ${active ? `selection-pill-active ${styles.pillActive}` : ''}`}
+                  className={`multi-chip ${active ? 'multi-chip-active' : ''}`}
                   onClick={() => toggleDivision(div.id)}
                 >
-                  <span className={`${styles.pillText} selection-pill-label`}>{div.label}</span>
-                  {active && (
-                    <motion.div 
-                      layoutId={`adminUserDivPill-${div.id}`}
-                      className="selection-pill-indicator"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
+                  {active && <span className="multi-chip-check">✓</span>}
+                  {div.label}
                 </button>
               );
             })}
@@ -259,4 +253,3 @@ export default function AdminUsersPage() {
     </>
   );
 }
-

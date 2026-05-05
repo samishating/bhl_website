@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
@@ -9,25 +9,8 @@ import {
   FaApple, FaSoundcloud, FaDiscord, FaGlobe, FaCamera
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-
-/** Compress an image file client-side to max 400px and 80% JPEG quality before upload */
-function compressImage(file: File, maxDim = 400, quality = 0.8): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression failed')), 'image/jpeg', quality);
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '@/lib/image';
 
 const KickIcon = () => (
   <div style={{ 
@@ -65,6 +48,12 @@ export default function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [uploading, setUploading] = useState(false);
   
+  // Cropper State
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
   const [form, setForm] = useState({
     bio: '',
     avatar: '',
@@ -105,15 +94,28 @@ export default function ProfilePage() {
     }
   }, [user]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const onCropComplete = useCallback((_: any, pixels: any) => {
+    setCroppedAreaPixels(pixels);
+  }, []);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setImageToCrop(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropSave = async () => {
+    if (!imageToCrop || !croppedAreaPixels) return;
     setUploading(true);
     try {
-      const compressed = await compressImage(file);
+      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
+      if (!croppedBlob) throw new Error('Cropping failed');
+
       const formData = new FormData();
-      formData.append('file', compressed, 'avatar.jpg');
+      formData.append('file', croppedBlob, 'avatar.jpg');
       
       const res = await fetch('/api/upload', {
         method: 'POST',
@@ -123,12 +125,13 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setForm(prev => ({ ...prev, avatar: data.url }));
-        showToast('Avatar uploaded!', 'success');
+        showToast('Avatar cropped and uploaded!', 'success');
+        setImageToCrop(null);
       } else {
         showToast(data.error || 'Upload failed', 'error');
       }
     } catch (err) {
-      showToast('Upload failed', 'error');
+      showToast('Cropping/Upload failed', 'error');
     } finally {
       setUploading(false);
     }
@@ -230,7 +233,7 @@ export default function ProfilePage() {
                   <div className={styles.formColumn}>
                     <h3 className={styles.formSectionTitle}>Profile Info</h3>
                     
-                    {/* New Avatar Section */}
+                    {/* Avatar Upload Block */}
                     <div className={styles.avatarUploadBlock}>
                       <div className={styles.avatarPreview}>
                         {form.avatar ? <img src={form.avatar} alt="Preview" /> : user.username[0].toUpperCase()}
@@ -240,9 +243,9 @@ export default function ProfilePage() {
                         <label className={styles.uploadBtn}>
                           <FaCamera style={{ marginRight: '8px' }} />
                           Change Profile Pic
-                          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                          <input type="file" accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />
                         </label>
-                        <p className={styles.uploadHint}>JPG, PNG or WEBP. Max 5MB.</p>
+                        <p className={styles.uploadHint}>Square crop recommended. Max 5MB.</p>
                       </div>
                     </div>
 
@@ -313,6 +316,51 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Cropper Modal */}
+      {imageToCrop && (
+        <div className="modal-overlay" style={{ zIndex: 3000 }}>
+          <div className="modal-content" style={{ maxWidth: '500px', height: '600px' }}>
+            <div className="modal-header">
+              <h3>Crop Profile Picture</h3>
+              <button className="btn-close" onClick={() => setImageToCrop(null)}>✕</button>
+            </div>
+            <div className="modal-body" style={{ position: 'relative', background: '#000' }}>
+              <Cropper
+                image={imageToCrop}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className="modal-footer" style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px' }}>
+              <div style={{ width: '100%' }}>
+                <label className="form-label">Zoom</label>
+                <input 
+                  type="range" 
+                  min={1} 
+                  max={3} 
+                  step={0.1} 
+                  value={zoom} 
+                  onChange={(e) => setZoom(Number(e.target.value))} 
+                  style={{ width: '100%', accentColor: 'var(--brand-red)' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleCropSave} disabled={uploading}>
+                  {uploading ? 'Processing...' : 'Apply & Upload'}
+                </button>
+                <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setImageToCrop(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

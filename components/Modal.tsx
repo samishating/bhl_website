@@ -45,7 +45,7 @@ export default function Modal({ isOpen, onClose, title, children, footer, maxWid
             animate="visible"
             exit="exit"
             variants={scaleIn}
-            style={{ width: `min(${maxWidth || '680px'}, calc(100vw - 32px))`, maxWidth: 'none' }}
+            style={{ width: `min(${maxWidth || '560px'}, calc(100vw - 32px))`, maxWidth: 'none' }}
           >
             <div className="modal-header">
               <h3 style={{ 

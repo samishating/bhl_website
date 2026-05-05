@@ -14,12 +14,12 @@
   transition: var(--transition);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 16px;
   backdrop-filter: blur(10px);
 }
 .userCard:hover { border-color: var(--border-hover); transform: translateY(-5px); box-shadow: var(--glow-red); }
 
-.userHeader { display: flex; align-items: center; gap: 1.25rem; }
+.userHeader { display: flex; align-items: center; gap: 16px; }
 .avatarWrapper { position: relative; }
 .avatar { 
   width: 64px; height: 64px; 
@@ -110,7 +110,7 @@
   min-width: 80px;
   font-size: 0.85rem;
 }
-.pillActive {}
+
 
 .pillText {
   white-space: nowrap;

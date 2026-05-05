@@ -25,7 +25,7 @@
 
   /* Floating panel edges */
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
 
   /* Depth shadow + inner highlight */
   box-shadow:
@@ -144,7 +144,7 @@
   position: relative;
   display: flex; align-items: center; justify-content: center;
   width: 36px; height: 36px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.5);
@@ -168,13 +168,13 @@
   display: flex; align-items: center; gap: 0.6rem;
   height: 36px;
   padding: 0 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
   transition: all 0.2s ease;
 }
 .userAvatarBtn:hover { background: rgba(255,0,0,0.06); border-color: rgba(255,0,0,0.35); }
-.navAvatar { width: 24px !important; height: 24px !important; font-size: 0.7rem !important; border-radius: var(--radius-sm); overflow: hidden; }
+.navAvatar { width: 24px !important; height: 24px !important; font-size: 0.7rem !important; border-radius: var(--radius-md); overflow: hidden; }
 .username { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.9rem; color: rgba(255,255,255,0.9); }
 .levelBadge { font-size: 0.68rem !important; background: rgba(255,0,0,0.12) !important; color: var(--brand-red) !important; border: 1px solid rgba(255,0,0,0.25) !important; }
 
@@ -187,7 +187,7 @@
   align-items: center; justify-content: center;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px; color: white;
+  border-radius: var(--radius-md); color: white;
   padding: 0;
 }
 .burger span { display: block; width: 16px; height: 2px; background: rgba(255,255,255,0.8); position: relative; transition: all 0.3s ease; }
@@ -204,7 +204,7 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   padding: 0.75rem 1rem;
@@ -225,7 +225,7 @@
   z-index: 1001;
 }
 .mobileLink {
-  padding: 0.7rem 1rem; border-radius: 10px;
+  padding: 0.7rem 1rem; border-radius: var(--radius-md);
   font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.95rem;
   letter-spacing: 0.08em; text-transform: uppercase;
   color: rgba(255,255,255,0.55); display: block; transition: all 0.2s ease;
@@ -247,7 +247,7 @@
 .authButtons :global(.btn) {
   height: 36px !important;
   min-height: 36px !important;
-  border-radius: 8px !important;
+  border-radius: var(--radius-md) !important;
   padding: 0 1rem !important;
   font-size: 0.8rem !important;
   letter-spacing: 0.1em !important;

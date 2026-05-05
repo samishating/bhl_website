@@ -29,7 +29,6 @@
   font-size: 0.8rem;
   min-width: 130px;
 }
-.active {}
 
 /* Personnel XP Cards */
 .userGrid {
@@ -46,7 +45,7 @@
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 16px;
 }
 
 .userCard:hover {
@@ -55,7 +54,7 @@
   transform: translateY(-2px);
 }
 
-.cardTop { display: flex; gap: 0.85rem; align-items: center; }
+.cardTop { display: flex; gap: 16px; align-items: center; }
 
 .avatarContainer { position: relative; }
 .avatar { 
@@ -192,7 +191,7 @@
   width: 28px; height: 28px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: 0.85rem; color: white;
   z-index: 2;
@@ -220,7 +219,7 @@
 .levelTableRow:hover .actionReveal, .levelTableRow.isEditing .actionReveal { opacity: 1; }
 
 .iconBtn {
-  width: 28px; height: 28px; border-radius: 6px;
+  width: 28px; height: 28px; border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
   color: white; display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: all 0.2s ease; font-size: 0.8rem;
@@ -231,7 +230,7 @@
 .inlineInput {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   color: white;
   padding: 4px 10px;
   font-family: 'Rajdhani', sans-serif;

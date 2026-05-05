@@ -4,8 +4,9 @@ import { verifyToken } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import { CreatorVideo } from '@/models/CreatorVideo';
 
-export async function PATCH(req: Request, { params }: { params: { videoId: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ videoId: string }> }) {
   try {
+    const { videoId } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('bhl-token')?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -23,7 +24,7 @@ export async function PATCH(req: Request, { params }: { params: { videoId: strin
 
     await connectDB();
     const video = await CreatorVideo.findOneAndUpdate(
-      { videoId: params.videoId },
+      { videoId },
       { $set: update },
       { new: true }
     );

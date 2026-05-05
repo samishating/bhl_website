@@ -4,8 +4,9 @@ import { verifyToken } from '@/lib/auth';
 import { connectDB } from '@/lib/db';
 import { CreatorVideo } from '@/models/CreatorVideo';
 
-export async function GET(_req: Request, { params }: { params: { userId: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
+    const { userId } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('bhl-token')?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,7 +16,7 @@ export async function GET(_req: Request, { params }: { params: { userId: string 
     }
 
     await connectDB();
-    const videos = await CreatorVideo.find({ userId: params.userId })
+    const videos = await CreatorVideo.find({ userId })
       .sort({ publishedAt: -1 })
       .limit(10)
       .lean();

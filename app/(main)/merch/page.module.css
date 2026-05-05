@@ -44,20 +44,7 @@
   pointer-events: none;
 }
 
-.heroSection::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.25) 35%,
-    rgba(0, 0, 0, 0.55) 60%,
-    rgba(0, 0, 0, 0.85) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
+/* Removed heroSection::after gradient to show background image clearly */
 
 .heroVisualZone {
   position: relative;
@@ -79,10 +66,7 @@
   align-items: flex-start;
   padding: 80px 100px;
   z-index: 4;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  filter: saturate(0.85) brightness(0.9);
+  /* Removed background and blur to show background image clearly */
   text-align: left;
 }
 

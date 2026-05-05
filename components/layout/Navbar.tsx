@@ -117,7 +117,11 @@ export default function Navbar() {
                       setHomeDropdownOpen(false);
                       if (pathname === '/') {
                         e.preventDefault();
-                        document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                        const el = document.getElementById(link.id);
+                        if (el) {
+                          const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                          window.scrollTo({ top: y, behavior: 'smooth' });
+                        }
                         window.history.pushState(null, '', link.href);
                       }
                     }}
@@ -204,7 +208,11 @@ export default function Navbar() {
                   setMenuOpen(false);
                   if (pathname === '/') {
                     e.preventDefault();
-                    document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                    const el = document.getElementById(link.id);
+                    if (el) {
+                      const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
                     window.history.pushState(null, '', link.href);
                   }
                 }}

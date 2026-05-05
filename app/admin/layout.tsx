@@ -108,7 +108,9 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <AdminContext.Provider value={{ refreshCounts: fetchCounts, setGlobalLoading }}>
-      <div className={styles.layout}>
+      <div className={styles.layout} style={{ 
+        '--sidebar-width': isCollapsed ? '80px' : '280px' 
+      } as any}>
         {(globalLoading || countsLoading) && (
           <LoadingScreen message="Syncing Dashboard..." />
         )}
@@ -201,13 +203,9 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
         </motion.aside>
 
-        <motion.main 
-          className={`${styles.main} ${isCollapsed ? styles.mainCollapsed : ''}`}
-          animate={{ paddingLeft: isCollapsed ? 100 : 300 }}
-          transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-        >
+        <main className={`${styles.main} ${isCollapsed ? styles.mainCollapsed : ''}`}>
           {children}
-        </motion.main>
+        </main>
       </div>
     </AdminContext.Provider>
 

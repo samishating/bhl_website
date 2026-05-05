@@ -36,7 +36,6 @@
   justify-content: center; 
 }
 
-.sidebarCollapsed .sidebarFooter { display: none; }
 .sidebarCollapsed .closeSidebar { display: none; }
 
 
@@ -46,9 +45,9 @@
 .main {
   flex: 1;
   padding: 2rem;
-  margin-left: 280px;
+  margin-left: var(--sidebar-width, 280px);
   overflow-y: auto;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .mainCollapsed { margin-left: 80px; }
 

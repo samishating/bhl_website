@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
@@ -63,7 +63,7 @@ const KickIcon = ({ size = 16 }: { size?: number }) => (
   }}>K</div>
 );
 
-const PLATFORM_ICONS: Record<string, JSX.Element> = {
+const PLATFORM_ICONS: Record<string, React.ReactNode> = {
   twitter: <FaXTwitter />,
   youtube: <FaYoutube />,
   twitch: <FaTwitch />,

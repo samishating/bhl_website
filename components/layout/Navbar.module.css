@@ -220,24 +220,24 @@
 
 .dropdownMenu {
   position: absolute;
-  top: 48px;
+  top: 56px; /* slightly lower for breathing room */
   left: 0.5rem;
-  width: 160px;
-  background: rgba(12, 8, 8, 0.85);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 175px; /* compact but not cramped */
+  background: rgba(10, 6, 6, 0.96); /* high opacity to block hero text */
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid rgba(255, 0, 0, 0.2); /* subtle red border */
   border-radius: 12px;
-  padding: 0.5rem;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.4rem; /* increased vertical padding between items */
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-  z-index: 10;
+  transform: translateY(12px); /* smooth open from below */
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 20px rgba(255,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.05); /* soft shadow */
+  z-index: 10000; /* above hero */
 }
 
 .dropdownMenuOpen {
@@ -247,31 +247,31 @@
 }
 
 .dropdownLink {
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5); /* muted gray/white */
   transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .dropdownLink:hover, .dropdownLinkActive {
-  color: var(--brand-red);
+  color: var(--brand-red); /* red active */
   background: rgba(255, 0, 0, 0.08);
 }
 
 /* Actions */
-.actions { display: flex; align-items: center; gap: 0.65rem; margin-left: auto; }
+.actions { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
 
 /* Cart */
 .cartBtn {
   position: relative;
   display: flex; align-items: center; justify-content: center;
-  width: 38px; height: 38px;
+  width: 36px; height: 36px;
   border-radius: 8px;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);

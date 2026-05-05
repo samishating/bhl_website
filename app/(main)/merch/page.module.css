@@ -243,7 +243,7 @@
 .productCard:hover .secondaryImg { opacity: 1; transform: scale(1.05); }
 .productCard:hover .primaryImg:not(.hasSecondary) { transform: scale(1.05); }
 
-.quickViewOverlay { position: absolute; bottom: 0; left: 0; width: 100%; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
+.quickViewOverlay { position: absolute; bottom: 0; left: 0; width: 100%; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 30; }
 .productCard:hover .quickViewOverlay { transform: translateY(0); }
 .quickViewBtn { width: 100%; background: var(--brand-red); color: white; border: none; padding: 1rem; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .quickViewBtn:hover { background: var(--brand-red-dark); }

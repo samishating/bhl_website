@@ -245,7 +245,7 @@ export default function AdminUsersPage() {
                   <span className={`${styles.pillText} selection-pill-label`}>{div.label}</span>
                   {active && (
                     <motion.div 
-                      layoutId="adminUserDivPill"
+                      layoutId={`adminUserDivPill-${div.id}`}
                       className="selection-pill-indicator"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />

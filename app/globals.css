@@ -554,7 +554,10 @@ select.form-input option { background: var(--bg-card); }
 /* ─── Modals (Global) ────────────────────────────────── */
 .modal-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -562,8 +565,9 @@ select.form-input option { background: var(--bg-card); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
+  padding: 40px 20px;
   animation: fadeIn 0.3s ease forwards;
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -573,6 +577,7 @@ select.form-input option { background: var(--bg-card); }
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
+  margin: auto;
   overflow-y: auto;
   position: relative;
   box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(255,0,0,0.15);

@@ -1,10 +1,12 @@
 # Brotherhood Legacy (BHL) — Official Platform
 
-Brotherhood Legacy is a premier multi-division community platform designed for Gaming, Music, Sport, and Content creators. This platform integrates gamification, community management, and exclusive commerce into a unified experience for the Brotherhood.
+Brotherhood Legacy is a high-fidelity, community-driven ecosystem designed for elite **Gaming**, **Music**, **Sport**, and **Content** creators. This platform fuses cinematic aesthetics with deep gamification, community automation, and exclusive commerce.
+
+---
 
 ## ⚔️ The Gamification System
 
-BHL is built on a progression system where every action contributes to your legacy. Earn XP to climb the ranks, unlock exclusive content, and earn prestigious badges.
+BHL operates on a 100% organic, XP-driven meritocracy. Every contribution to the Brotherhood is tracked, calculated, and converted into status.
 
 ### How to Earn XP
 | Action | XP Reward | Description |
@@ -14,21 +16,19 @@ BHL is built on a progression system where every action contributes to your lega
 | **Submit Challenge** | +50-500 XP | Complete community challenges and provide proof. |
 
 ### 🏆 Ranks & Progression
-There are **30 elite ranks** in the Brotherhood. Reaching higher levels unlocks exclusive features and store access.
+The Brotherhood recognizes **30 elite ranks**. Progression is dynamic, powered by the core `lib/xp.ts` engine.
 
-| Level | Title | XP Required | Unlocks |
+| Level | Title | XP Required | Milestone |
 | :--- | :--- | :--- | :--- |
-| 1 | **Recruit** | 0 XP | Basic platform access |
-| 5 | **Member** | 1,000 XP | Forum posting permissions |
-| 10 | **Warrior** | 7,500 XP | Division-specific challenges |
-| 15 | **Legend** | 20,000 XP | **Ranked Badge** unlocked |
-| 20 | **Guardian** | 32,500 XP | Priority challenge review |
-| 23 | **Conqueror** | 40,000 XP | **Exclusive Drop Access** |
-| 25 | **Immortal** | 44,000 XP | Squad recruitment access |
-| 30 | **Eternal Legacy** | 50,000 XP | The Ultimate Recognition |
+| 1 | **Recruit** | 0 XP | Initial entry into the Brotherhood |
+| 5 | **Member** | 1,000 XP | **Ranked Badge** unlocked |
+| 15 | **Legend** | 20,000 XP | **Veteran Status** achieved |
+| 23 | **Conqueror** | 40,000 XP | **Exclusive Drop Access** (Merch Lock) |
+| 25 | **Immortal** | 44,000 XP | Elite circle membership |
+| 30 | **Eternal Legacy** | 50,000 XP | The Ultimate Ascension |
 
 > [!IMPORTANT]
-> **Conqueror Drops**: Exclusive merchandise and limited-edition gear are reserved for members with **40,000+ XP**.
+> **Conqueror Drops**: Premium merchandise and limited-edition releases are strictly reserved for members who have achieved **Conqueror status (40,000+ XP)**.
 
 ---
 
@@ -37,25 +37,34 @@ Choose your path and dominate your field:
 - **🎮 Gaming**: Competitive play, scrims, and tournament domination.
 - **🎵 Music**: Artist collaboration, track drops, and sound engineering.
 - **💪 Sport**: Physical excellence, fitness challenges, and athletic growth.
-- **🎬 Content**: Content creation, digital branding, and viral meta.
+- **🎬 Content**: Content creation, digital branding, and viral strategy.
+
+---
+
+## 📡 Community & Creator Sync
+BHL features an automated content pipeline that keeps the community page alive and dynamic.
+- **YouTube Sync Engine**: Server-side sync pipeline (`/api/admin/youtube/sync`) that caches creator content.
+- **Auto-Cycling Carousels**: High-fidelity creator video showcases that auto-cycle based on community ranking.
+- **Organic Ranking**: The Community Directory and Leaderboards are automatically sorted by XP, ensuring the most active members are always featured.
 
 ---
 
 ## 🛠️ Technology Stack
-- **Frontend**: Next.js 16 (App Router), TypeScript, Vanilla CSS
-- **Backend**: Node.js, MongoDB (Mongoose)
-- **Authentication**: JWT-based secure sessions with Bcrypt hashing
-- **Email Service**: Gmail SMTP via Nodemailer for secure password resets
-- **Styling**: Premium "Rich Aesthetics" with Glassmorphism, Rajdhani typography, and scroll-reveal animations.
+- **Framework**: Next.js 15+ (App Router, Server Components)
+- **Language**: TypeScript
+- **Database**: MongoDB (Mongoose) with optimized indexing for rankings
+- **Automation**: Vercel Cron Jobs for daily creator synchronization
+- **Authentication**: JWT-based secure sessions
+- **UI/UX**: Vanilla CSS with custom design tokens, Glassmorphism, and the signature **BHL Square Avatar** standard.
 
 ---
 
 ## 🛡️ Administrative Infrastructure
-The platform includes a robust Admin Panel for community management:
-- **Challenge Inbox**: Review and approve member submissions in real-time.
-- **User Management**: Search, promote, or manage member profiles.
-- **Product Management**: Multi-image support, stock tracking, and XP-locking for exclusive drops.
-- **Division Control**: Manage division leads and community stats.
+A comprehensive command center for platform oversight:
+- **Personnel Progression**: High-density dashboard for managing member XP, levels, and division assignments.
+- **Product Management**: 2-column wide layout for managing merchandise, stock levels, and XP-locks.
+- **Submission Pipeline**: Real-time review system for community challenges.
+- **Sync Control**: Manual triggers for YouTube content synchronization.
 
 ---
 
@@ -64,7 +73,8 @@ The platform includes a robust Admin Panel for community management:
 ### Prerequisites
 - Node.js 18+
 - MongoDB instance (local or Atlas)
-- Gmail Account (for SMTP)
+- YouTube Data API v3 Key (for creator sync)
+- Gmail Account (for SMTP transactional emails)
 
 ### Installation
 1. Clone the repository:
@@ -82,13 +92,14 @@ The platform includes a robust Admin Panel for community management:
    
    # Security
    JWT_SECRET=your_secure_secret
+   CRON_SECRET=your_vercel_cron_secret
+   
+   # APIs
+   YOUTUBE_API_KEY=your_youtube_api_key
    
    # Email (Gmail SMTP)
    GMAIL_USER=bhlsupportmail@gmail.com
    GMAIL_PASS=your_google_app_password
-   
-   # App URL
-   NEXT_PUBLIC_APP_URL=https://brotherhoodlegacy.com
    ```
 4. Run the development server:
    ```bash
@@ -97,9 +108,11 @@ The platform includes a robust Admin Panel for community management:
 
 ---
 
-## 📡 Socials & Support
-- **GitHub**: [bhl_website](https://github.com/samishating/bhl_website)
-- **Discord**: [Join the Brotherhood](https://discord.gg/UJmwVv589E)
+## 🛡️ Development Standards (For Agents & Contributors)
+- **Aesthetics**: Follow the 8px spacing system and use `var(--radius-md)` (12px) for consistency.
+- **Avatars**: All profile images **MUST** be square/squircle. Never use circular `border-radius: 50%`.
+- **Ranking**: Never use manual order fields. Always sort by `xp: -1`.
 
 ---
+
 © 2026 Brotherhood Legacy. All rights reserved.

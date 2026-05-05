@@ -7,16 +7,11 @@
 
 .profileHeader {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 300px;
+  grid-template-columns: 220px minmax(0, 1fr) 320px;
   gap: 32px;
   align-items: start;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
   padding: 32px;
   margin-bottom: 40px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
 .avatarSection {
@@ -51,6 +46,23 @@
 .profileInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.nameRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.roleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .username {
@@ -58,21 +70,25 @@
   font-size: 3rem;
   font-weight: 800;
   color: #fff;
-  margin: 0 0 12px; /* username -> badges: 10-14px */
-  line-height: 0.9;
+  margin: 0;
+  line-height: 0.88;
   text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .levelRow {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 18px; /* badges -> bio: 16-20px */
+  margin-bottom: 24px;
 }
 
 .levelTitle {
   color: var(--text-muted);
   font-size: 0.9rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -81,21 +97,22 @@
   color: var(--text-secondary);
   font-size: 1.05rem;
   line-height: 1.5;
-  margin-bottom: 18px; /* bio -> division badge: 16px */
-  max-width: 600px;
+  margin-bottom: 24px;
+  max-width: 620px;
 }
 
 .divisionTags {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px; /* division badge -> socials: 14-16px */
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 .profileSocials {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 16px; /* socials -> member since: 14-16px */
+  margin-bottom: 24px;
 }
 
 .socialIconBtn {
@@ -124,38 +141,53 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .xpCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 20px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  height: fit-content;
+  gap: 24px;
+  min-height: 100%;
   align-self: start;
 }
 
 .xpTop {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.xpSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xpEyebrow {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
 }
 
 .xpTotal {
   font-family: 'Rajdhani', sans-serif;
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
+  line-height: 0.95;
 }
 
 .xpLevel {
   color: var(--brand-red);
   font-weight: 800;
   font-size: 0.9rem;
+  letter-spacing: 0.06em;
 }
 
 .badges {
@@ -166,10 +198,12 @@
 
 .badgeItem {
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   background: rgba(255,255,255,0.03);
-  padding: 8px 12px;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-family: 'Rajdhani', sans-serif;
 }
 
 /* Media Section */
@@ -194,9 +228,6 @@
 }
 
 .mediaCard {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -235,9 +266,6 @@
 
 /* Admin Section */
 .adminSection {
-  background: rgba(255, 0, 85, 0.05);
-  border: 1px solid rgba(255, 0, 85, 0.2);
-  border-radius: 16px;
   padding: 24px;
   margin-top: 40px;
 }
@@ -245,6 +273,11 @@
 .adminButtons {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.historyTable {
+  overflow: hidden;
 }
 
 @media (max-width: 1200px) {
@@ -262,7 +295,6 @@
   .profileHeader {
     grid-template-columns: 1fr;
     padding: 24px;
-    text-align: center;
   }
   .avatarSection {
     display: flex;
@@ -275,8 +307,23 @@
   .username {
     font-size: 2.5rem;
   }
+  .nameRow,
+  .profileInfo {
+    align-items: center;
+    text-align: center;
+  }
+  .roleRow,
   .levelRow, .divisionTags, .profileSocials {
     justify-content: center;
+  }
+  .xpCard {
+    min-height: 0;
+  }
+  .xpTop {
+    align-items: center;
+  }
+  .adminButtons {
+    flex-direction: column;
   }
   .mediaGrid {
     grid-template-columns: 1fr;

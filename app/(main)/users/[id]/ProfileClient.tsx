@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -63,7 +63,7 @@ const KickIcon = ({ size = 16 }: { size?: number }) => (
   }}>K</div>
 );
 
-const PLATFORM_ICONS: Record<string, any> = {
+const PLATFORM_ICONS: Record<string, JSX.Element> = {
   twitter: <FaXTwitter />,
   youtube: <FaYoutube />,
   twitch: <FaTwitch />,
@@ -125,7 +125,7 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
     <div className={styles.page}>
       <div className="container" style={{ position: 'relative', zIndex: 5, paddingTop: '120px' }}>
         <motion.div 
-          className={styles.profileHeader}
+          className={`${styles.profileHeader} premium-panel`}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -140,8 +140,10 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
           <div className={styles.profileInfo}>
             <div className={styles.nameRow}>
               <h1 className={styles.username}>{profile.username}</h1>
-              {profile.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' }}>SUPERADMIN</span>}
-              {profile.role === 'admin' && <span className="badge badge-red">Admin</span>}
+              <div className={styles.roleRow}>
+                {profile.role === 'superadmin' && <span className="badge badge-red" style={{ background: 'linear-gradient(90deg, #ff0055, #cc0000)', color: 'white' }}>SUPERADMIN</span>}
+                {profile.role === 'admin' && <span className="badge badge-red">Admin</span>}
+              </div>
             </div>
             <div className={styles.levelRow}>
               <span className="badge badge-violet">Level {profile.level}</span>
@@ -178,9 +180,12 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
             <div className={styles.joinedDate}>Member since {new Date(profile.createdAt).getFullYear()}</div>
           </div>
 
-          <div className={styles.xpCard}>
+          <div className={`${styles.xpCard} premium-panel`}>
             <div className={styles.xpTop}>
-              <span className={styles.xpTotal}>{profile.xp.toLocaleString()} XP</span>
+              <div className={styles.xpSummary}>
+                <span className={styles.xpEyebrow}>Legacy Score</span>
+                <span className={styles.xpTotal}>{profile.xp.toLocaleString()} XP</span>
+              </div>
               <span className={styles.xpLevel}>Lv.{profile.level}</span>
             </div>
             <div className={styles.badges}>
@@ -210,7 +215,7 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
               {profile.featuredLinks.map((media, idx) => {
                 const ytId = getYouTubeId(media.url);
                 return (
-                  <motion.div key={idx} className={styles.mediaCard} variants={fadeUp}>
+                  <motion.div key={idx} className={`${styles.mediaCard} premium-panel`} variants={fadeUp}>
                     {ytId ? (
                       <div className={styles.videoWrapper}>
                         <iframe 
@@ -242,7 +247,7 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
           {initialSubmissions.length === 0 ? (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No approved challenge submissions yet.</p>
           ) : (
-            <div className="table-container">
+            <div className={`${styles.historyTable} table-container premium-panel`}>
               <table>
                 <thead>
                   <tr><th>Challenge</th><th>Division</th><th>XP</th><th>Date</th></tr>
@@ -264,7 +269,7 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
 
         {/* Admin Controls */}
         {isAdmin && profile.role !== 'superadmin' && (
-          <div className={styles.adminSection}>
+          <div className={`${styles.adminSection} premium-panel`}>
             <h3 className={styles.sectionTitle}>🛡️ Admin Controls</h3>
             <div className={styles.adminButtons}>
               {isSuper && profile.role === 'user' && (

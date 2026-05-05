@@ -212,7 +212,7 @@
   font-size: 0.75rem;
   min-width: 132px;
 }
-.tabActive {}
+
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.5rem; padding-bottom: 5rem; }
 

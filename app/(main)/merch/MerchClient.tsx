@@ -50,7 +50,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
       <div className="container">
         <div className={`${styles.tabs} selection-pill-group`} ref={tabsRef}>
           {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
-            <button key={c} className={`${styles.tab} selection-pill ${filter === c ? `selection-pill-active ${styles.tabActive}` : ''}`}
+            <button key={c} className={`${styles.tab} selection-pill ${filter === c ? 'selection-pill-active' : ''}`}
               onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
               {c === 'drop' ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

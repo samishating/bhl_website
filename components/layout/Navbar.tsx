@@ -33,8 +33,9 @@ export default function Navbar() {
     // Scroll spy only — no hide logic
     const handleScroll = () => {
       if (pathname !== '/') return;
-      const sections = ['hero', 'divisions', 'leaderboard', 'challenges'];
-      const scrollPos = window.scrollY + 100;
+      // Reverse order: check bottom-most sections first to handle overlapping wrappers (like the 200vh hero wrapper)
+      const sections = ['challenges', 'leaderboard', 'divisions', 'hero'];
+      const scrollPos = window.scrollY + 150; // Use 150px offset to trigger slightly earlier
 
       for (const section of sections) {
         const el = document.getElementById(section);

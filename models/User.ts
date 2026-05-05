@@ -37,6 +37,12 @@ export interface IUser extends Document {
     type?: 'youtube' | 'spotify' | 'apple' | 'soundcloud' | 'other';
     thumbnail?: string;
   }>;
+  // YouTube creator fields
+  youtubeChannelId?: string;
+  youtubeUploadsPlaylistId?: string;
+  youtubeHandle?: string;
+  youtubeLastSynced?: Date;
+  creatorDisplayName?: string;
   createdAt: Date;
 }
 
@@ -82,6 +88,12 @@ const UserSchema = new Schema<IUser>({
     type: { type: String, enum: ['youtube', 'spotify', 'apple', 'soundcloud', 'other'], default: 'other' },
     thumbnail: { type: String, default: '' }
   }],
+  // YouTube creator fields
+  youtubeChannelId: { type: String, default: '' },
+  youtubeUploadsPlaylistId: { type: String, default: '' },
+  youtubeHandle: { type: String, default: '' },
+  youtubeLastSynced: { type: Date, default: null },
+  creatorDisplayName: { type: String, default: '' },
 }, { timestamps: true });
 
 UserSchema.index({ xp: -1 });

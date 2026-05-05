@@ -76,6 +76,7 @@ function getYouTubeThumbnail(url: string) {
 export default function CommunityPage() {
   const [featuredCreators, setFeaturedCreators] = useState<User[]>([]);
   const [members, setMembers] = useState<User[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -84,7 +85,15 @@ export default function CommunityPage() {
       .then(data => {
         if (data.featuredCreators) setFeaturedCreators(data.featuredCreators);
         if (data.members) setMembers(data.members);
-        setLoading(false);
+        
+        // Also fetch videos parallelly
+        fetch('/api/community/videos?limit=5')
+          .then(res => res.json())
+          .then(vidData => {
+            if (Array.isArray(vidData)) setVideos(vidData);
+            setLoading(false);
+          })
+          .catch(() => setLoading(false));
       })
       .catch(err => {
         console.error('Failed to fetch community data:', err);
@@ -155,43 +164,68 @@ export default function CommunityPage() {
         </section>
       )}
 
-      {/* Recent Content Section */}
-      {allContent.length > 0 && (
+      {/* Latest from the Brotherhood - YouTube Cache */}
+      {videos.length > 0 && (
         <section className={styles.section} style={{ paddingTop: 0 }}>
           <div className="container">
             <div className={styles.sectionHeader}>
               <div>
-                <h2 className={styles.sectionTitle}>Recent Content</h2>
-                <p className={styles.sectionSubtitle}>Latest updates from the network</p>
+                <h2 className={styles.sectionTitle}>Latest from the Brotherhood</h2>
+                <p className={styles.sectionSubtitle}>Recent uploads from platform creators</p>
               </div>
             </div>
             
-            <div className={styles.contentGrid}>
-              {allContent.slice(0, 6).map((content, idx) => (
-                <div key={idx} className={styles.contentCard}>
-                  <div className={styles.contentThumb}>
-                    <img src={getYouTubeThumbnail(content.url)} alt={content.title} />
-                    <div className={styles.playOverlay}>
-                      <div className={styles.playIcon}>▶</div>
+            <div className={styles.videoCarouselLayout}>
+              {/* Featured Large Card (First Video) */}
+              <a href={videos[0].videoUrl} target="_blank" rel="noreferrer" className={styles.videoFeatured}>
+                <img src={videos[0].thumbnailUrl} alt={videos[0].title} />
+                <div className={styles.videoFeaturedOverlay}>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
+                    <div className={styles.contentAvatar} style={{ width: '48px', height: '48px', fontSize: '1rem', border: '2px solid var(--brand-red)' }}>
+                      {videos[0].creator?.avatar ? <img src={videos[0].creator.avatar} alt="" /> : videos[0].creator?.username?.[0] || '?'}
+                    </div>
+                    <div>
+                      <div style={{ color: '#fff', fontWeight: 700 }}>{videos[0].creator?.creatorDisplayName || videos[0].creator?.username || 'Unknown Creator'}</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <FaYoutube style={{ color: '#ff0000', fontSize: '1rem' }} />
+                        {new Date(videos[0].publishedAt).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
-                  <div className={styles.contentMeta}>
-                    <div className={styles.contentAvatar}>
-                      {content.user.avatar ? <img src={content.user.avatar} alt="" /> : content.user.username[0]}
-                    </div>
-                    <div className={styles.contentText}>
-                      <div className={styles.contentTitle}>{content.title || 'Untitled Content'}</div>
-                      <div className={styles.contentAuthor}>{content.user.username}</div>
-                    </div>
-                  </div>
-                  <a href={content.url} target="_blank" rel="noreferrer" className={styles.fullLink} />
+                  <div className={styles.videoFeaturedTitle}>{videos[0].title}</div>
                 </div>
-              ))}
+              </a>
+
+              {/* Grid of Remaining Videos (Up to 4) */}
+              <div className={styles.videoGrid}>
+                {videos.slice(1, 5).map((v, idx) => (
+                  <div key={idx} className={styles.contentCard} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className={styles.contentThumb}>
+                      <img src={v.thumbnailUrl} alt={v.title} />
+                      <div className={styles.playOverlay}>
+                        <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>▶</div>
+                      </div>
+                    </div>
+                    <div className={styles.contentMeta} style={{ flex: 1 }}>
+                      <div className={styles.contentAvatar}>
+                        {v.creator?.avatar ? <img src={v.creator.avatar} alt="" /> : v.creator?.username?.[0] || '?'}
+                      </div>
+                      <div className={styles.contentText}>
+                        <div className={styles.contentTitle}>{v.title}</div>
+                        <div className={styles.contentAuthor} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <FaYoutube style={{ color: '#ff0000' }} />
+                          {v.creator?.creatorDisplayName || v.creator?.username}
+                        </div>
+                      </div>
+                    </div>
+                    <a href={v.videoUrl} target="_blank" rel="noreferrer" className={styles.fullLink} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
       )}
-
       {/* Community Directory Section */}
       <section className={styles.section}>
         <div className="container">

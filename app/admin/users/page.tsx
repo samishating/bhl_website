@@ -232,18 +232,27 @@ export default function AdminUsersPage() {
 
         <div className="form-group">
           <label className="form-label">Divisions</label>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-            {DIVISION_OPTIONS.map(div => (
-              <button
-                key={div.id}
-                type="button"
-                className={`btn btn-sm ${editForm.divisions.includes(div.id) ? 'btn-primary' : 'btn-ghost'}`}
-                onClick={() => toggleDivision(div.id)}
-                style={{ flex: 1, minWidth: '100px' }}
-              >
-                {div.label}
-              </button>
-            ))}
+          <div className={styles.pillGroup}>
+            {DIVISION_OPTIONS.map(div => {
+              const active = editForm.divisions.includes(div.id);
+              return (
+                <button
+                  key={div.id}
+                  type="button"
+                  className={`${styles.pill} ${active ? styles.pillActive : ''}`}
+                  onClick={() => toggleDivision(div.id)}
+                >
+                  <span className={styles.pillText}>{div.label}</span>
+                  {active && (
+                    <motion.div 
+                      layoutId="adminUserDivPill"
+                      className={styles.pillIndicator}
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </Modal>

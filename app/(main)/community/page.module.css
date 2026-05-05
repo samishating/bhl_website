@@ -76,8 +76,13 @@
   display: none;
 }
 
-.creatorCard {
+.creatorItem {
   flex: 0 0 340px;
+  display: flex;
+}
+
+.creatorCard {
+  width: 100%;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
@@ -86,6 +91,10 @@
   position: relative;
   cursor: pointer;
   text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  backdrop-filter: blur(10px);
 }
 
 .creatorCard:hover {
@@ -100,6 +109,7 @@
   background: #000;
   position: relative;
   overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cardImage img {
@@ -124,6 +134,9 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0)),
+    rgba(10, 10, 10, 0.26);
 }
 
 .divisionBadge {
@@ -656,6 +669,10 @@
   }
   
   .creatorCard {
+    min-height: auto;
+  }
+
+  .creatorItem {
     flex: 0 0 280px;
   }
 

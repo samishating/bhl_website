@@ -170,7 +170,7 @@ export default function AdminUsersPage() {
                 <div className={styles.statsRow}>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>User XP</div>
-                    <div className={styles.statValue}>{u.xp.toLocaleString()} dh</div>
+                    <div className={styles.statValue}>{u.xp.toLocaleString()}</div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Joined</div>

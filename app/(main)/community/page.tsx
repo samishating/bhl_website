@@ -168,7 +168,7 @@ export default function CommunityPage() {
               variants={staggerContainer}
             >
               {featuredCreators.map(creator => (
-                <motion.div key={creator._id} variants={fadeUp}>
+                <motion.div key={creator._id} variants={fadeUp} className={styles.creatorItem}>
                   <Link href={`/users/${creator._id}`} className={styles.creatorCard}>
                     <div className={styles.cardImage}>
                       {creator.featuredLinks?.[0] ? (

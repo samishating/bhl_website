@@ -218,7 +218,7 @@ export default function CheckoutClient() {
               style={{ width: '100%', padding: '1.25rem', fontSize: '1.1rem', marginTop: '1.5rem' }}
               disabled={loading}
             >
-              {loading ? <span className="spinner" /> : `CONFIRM ORDER — $${discountedTotal.toFixed(2)}`}
+              {loading ? <span className="spinner" /> : `CONFIRM ORDER — ${discountedTotal.toFixed(2)} MAD`}
             </button>
           </div>
 
@@ -237,7 +237,7 @@ export default function CheckoutClient() {
                       Qty: {item.quantity}{item.size ? ` · Size: ${item.size}` : ''}
                     </div>
                   </div>
-                  <div className={styles.summaryItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
+                  <div className={styles.summaryItemPrice}>{(item.price * item.quantity).toFixed(2)} MAD</div>
                 </div>
               ))}
             </div>
@@ -247,17 +247,17 @@ export default function CheckoutClient() {
             <div className={styles.totals}>
               <div className={styles.totalRow}>
                 <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{total.toFixed(2)} MAD</span>
               </div>
               {appliedPromo && (
                 <div className={`${styles.totalRow} ${styles.discount}`}>
                   <span>Discount ({appliedPromo.code} — {appliedPromo.discount}%)</span>
-                  <span>−${discountAmount.toFixed(2)}</span>
+                  <span>−{discountAmount.toFixed(2)} MAD</span>
                 </div>
               )}
               <div className={`${styles.totalRow} ${styles.grand}`}>
                 <span>Total</span>
-                <span>${discountedTotal.toFixed(2)}</span>
+                <span>{discountedTotal.toFixed(2)} MAD</span>
               </div>
             </div>
           </div>
@@ -276,8 +276,8 @@ export default function CheckoutClient() {
             </div>
             <div className={styles.promoDiscount}>−{appliedPromo.discount}%</div>
             <div className={styles.promoNewPrice}>
-              New total: <span>${discountedTotal.toFixed(2)}</span>{' '}
-              <span style={{ color: 'var(--text-muted)', textDecoration: 'line-through', fontSize: '0.85rem' }}>${total.toFixed(2)}</span>
+              New total: <span>{discountedTotal.toFixed(2)} MAD</span>{' '}
+              <span style={{ color: 'var(--text-muted)', textDecoration: 'line-through', fontSize: '0.85rem' }}>{total.toFixed(2)} MAD</span>
             </div>
             <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setShowPromoPopup(false)}>
               AWESOME, LET'S GO! →

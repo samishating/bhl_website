@@ -39,7 +39,7 @@ export default function CartDrawer() {
                           {item.name}
                           {item.size && <span style={{ marginLeft: '6px', color: 'var(--brand-red)', fontSize: '0.85rem' }}>({item.size})</span>}
                         </div>
-                        <div className={styles.cartItemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
+                        <div className={styles.cartItemPrice}>{(item.price * item.quantity).toFixed(2)} MAD</div>
                       </div>
                       <div className={styles.cartQty}>
                         <button onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}>−</button>
@@ -51,7 +51,7 @@ export default function CartDrawer() {
                   ))}
                 </div>
                 <div className={styles.cartFooter}>
-                  <div className={styles.cartTotal}>Total: <span>${total.toFixed(2)}</span></div>
+                  <div className={styles.cartTotal}>Total: <span>{total.toFixed(2)} MAD</span></div>
                   {user ? (
                     <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleCheckoutClick}>
                       Proceed to Checkout →

@@ -186,7 +186,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     <div className={styles.productInfo}>
                       <div className={styles.productCategory}>{p.category} | SHOP</div>
                       <h3 className={styles.productName}>{p.name}</h3>
-                      <span className={styles.productPrice}>${p.price.toFixed(2)} dh</span>
+                      <span className={styles.productPrice}>{p.price.toFixed(2)} MAD</span>
                     </div>
                     </Link>
                   </motion.div>
@@ -241,7 +241,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   {p.category} | SHOP
                 </div>
                 <h2 style={{ fontFamily: 'Rajdhani', fontWeight: 800, fontSize: '2.2rem', marginBottom: '0.2rem', lineHeight: 1.1, color: 'white' }}>{p.name}</h2>
-                <div style={{ fontFamily: 'Inter', fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--brand-red)', fontWeight: 700 }}>${p.price.toFixed(2)} dh</div>
+                <div style={{ fontFamily: 'Inter', fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--brand-red)', fontWeight: 700 }}>{p.price.toFixed(2)} MAD</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>Tax included. Shipping calculated at checkout.</div>
 
                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', flex: 1 }}>

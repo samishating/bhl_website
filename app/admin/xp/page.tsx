@@ -393,7 +393,7 @@ export default function AdminXPPage() {
         <div className={styles.modalXpInfo}>
           <div>
             <div className={styles.previewLabel}>Current XP</div>
-            <div className={styles.previewValue}>{editingUser?.xp.toLocaleString()} dh</div>
+            <div className={styles.previewValue}>{editingUser?.xp.toLocaleString()}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div className={styles.previewLabel}>Preview Level</div>

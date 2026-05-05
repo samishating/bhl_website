@@ -313,16 +313,7 @@ h4 { font-size: 1.2rem; }
   margin: 0 auto;
 }
 
-
-/* Gradient text — RED */
-.gradient-text {
-  background: var(--gradient-blue);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Gradient text — CREAM (premium emphasis) */
+/* Gradient text — RED (premium emphasis) */
 .gradient-text-red {
   background: var(--gradient-cream);
   -webkit-background-clip: text;
@@ -334,6 +325,7 @@ h4 { font-size: 1.2rem; }
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
   border-radius: var(--radius-md);
@@ -345,6 +337,7 @@ h4 { font-size: 1.2rem; }
   transition: var(--transition);
   cursor: pointer;
   border: none;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -659,24 +652,6 @@ select.form-input option { background: var(--bg-card); }
 }
 
 /* Base Button Stability */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  min-height: 46px;
-  height: 46px;
-  padding: 0 1.75rem;
-  border-radius: var(--radius-md);
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
 /* White spinner variant for buttons is now default for .spinner */
 .btn .spinner {
   border-color: rgba(255, 255, 255, 0.1);
@@ -749,8 +724,6 @@ select.form-input option { background: var(--bg-card); }
   gap: 12px;
   flex-shrink: 0;
 }
-
-
 
 /* ─── Table ──────────────────────────────────────────── */
 .table-container {

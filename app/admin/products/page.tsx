@@ -193,7 +193,7 @@ export default function AdminProductsPage() {
           </motion.div>
           <motion.div className={styles.statCard} variants={fadeUp}>
             <div className={styles.statLabel}>Inventory Value</div>
-            <div className={styles.statValue}><span>$</span>{stats.totalValue.toLocaleString()}</div>
+            <div className={styles.statValue}><span>MAD</span>{stats.totalValue.toLocaleString()}</div>
           </motion.div>
         </motion.div>
 
@@ -238,7 +238,7 @@ export default function AdminProductsPage() {
                   </div>
                   
                   <div className={styles.cardFooter}>
-                    <div className={styles.cardPrice}>${p.price.toFixed(2)} dh</div>
+                    <div className={styles.cardPrice}>{p.price.toFixed(2)} MAD</div>
                     <div className={styles.cardActions}>
                       <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(p)} title="Edit Config">⚙️</button>
                       <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p._id)} title="Purge Asset">🗑️</button>
@@ -279,7 +279,7 @@ export default function AdminProductsPage() {
 
                   <div className={styles.formRow}>
                     <div className="form-group">
-                      <label className="form-label">Price ($) *</label>
+                      <label className="form-label">Price (MAD) *</label>
                       <input required type="number" step="0.01" className="form-input" value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} />
                     </div>
                     <div className="form-group">

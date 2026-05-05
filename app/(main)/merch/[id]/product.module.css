@@ -1,5 +1,5 @@
 .productPage {
-  padding-top: 120px;
+  padding-top: 32px;
   padding-bottom: 120px;
   min-height: 100vh;
   background-color: var(--bg-primary);
@@ -89,7 +89,7 @@
 /* INFO SECTION */
 .infoSection {
   position: sticky;
-  top: 120px;
+  top: 32px;
 }
 
 .categoryTag {

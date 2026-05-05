@@ -375,7 +375,7 @@ export default function AdminOrdersPage() {
                     </td>
                     <td>
                       <span style={{ fontWeight: 700, color: 'var(--neon-blue)', fontFamily: 'Rajdhani', fontSize: '1.1rem' }}>
-                        ${o.total.toFixed(2)}
+                        {o.total.toFixed(2)} MAD
                       </span>
                       {o.discountApplied && (
                         <div style={{ fontSize: '0.65rem', color: '#4eff91', fontWeight: 700 }}>−{o.discountApplied}% applied</div>
@@ -573,7 +573,7 @@ export default function AdminOrdersPage() {
                           )}
                         </div>
                       </div>
-                      <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
+                      <div className={styles.itemPrice}>{(item.price * item.quantity).toFixed(2)} MAD</div>
                     </div>
                   );
                 })}
@@ -608,7 +608,7 @@ export default function AdminOrdersPage() {
               </div>
               <div className={styles.totalGroup}>
                 <div className={styles.infoLabel}>Total Valuation</div>
-                <div className={styles.grandTotal}>${selectedOrder.total.toFixed(2)}</div>
+                <div className={styles.grandTotal}>{selectedOrder.total.toFixed(2)} MAD</div>
                 {selectedOrder.discountApplied && (
                   <div style={{ fontSize: '0.75rem', color: '#4eff91', fontWeight: 700, marginTop: '0.25rem' }}>
                     After {selectedOrder.discountApplied}% discount

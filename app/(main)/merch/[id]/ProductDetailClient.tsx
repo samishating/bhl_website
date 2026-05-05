@@ -133,7 +133,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           <div className={styles.infoSection}>
             <div className={styles.categoryTag}>{product.category}</div>
             <h1 className={styles.productName}>{product.name}</h1>
-            <div className={styles.price}>${product.price.toFixed(2)}</div>
+            <div className={styles.price}>{product.price.toFixed(2)} MAD</div>
             
             <div className={styles.descriptionSection}>
               <p>{product.description}</p>

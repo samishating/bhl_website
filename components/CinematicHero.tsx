@@ -78,6 +78,44 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
     };
   }, []);
 
+  // Snap scroll logic: when scrolling past 400px, smoothly slide the Divisions card up
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) return;
+
+    let isAutoScrolling = false;
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      if (isAutoScrolling) {
+        lastScrollY = window.scrollY;
+        return;
+      }
+
+      const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > lastScrollY;
+      const triggerPoint = 400; // user requested 400px threshold
+
+      // If scrolling down past threshold but still in hero space -> snap to divisions
+      if (scrollingDown && currentScrollY > triggerPoint && currentScrollY < window.innerHeight - 50) {
+        isAutoScrolling = true;
+        document.getElementById('divisions')?.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => { isAutoScrolling = false; }, 800);
+      }
+      // If scrolling up from divisions into hero space -> snap back to top
+      else if (!scrollingDown && currentScrollY < window.innerHeight - 50 && currentScrollY > 100) {
+        isAutoScrolling = true;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => { isAutoScrolling = false; }, 800);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // "BROTHERHOOD" = 12 letters × 0.055s = ~0.66s duration
   // Logo starts after brotherhood finishes animating (0.3 + 0.66 = ~1.0s)
   // "LEGACY" starts shortly after logo begins (1.1s)

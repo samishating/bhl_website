@@ -5,7 +5,8 @@ import HomeFixedBackground from '@/components/HomeFixedBackground';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
-  FaApple, FaSoundcloud, FaDiscord, FaGlobe 
+  FaApple, FaSoundcloud, FaDiscord, FaGlobe,
+  FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
@@ -62,6 +63,14 @@ const PLATFORM_ICONS: Record<string, any> = {
   kick: <KickIcon />,
   discord: <FaDiscord />,
   website: <FaGlobe />,
+};
+
+const DIVISION_ICONS: Record<string, any> = {
+  gaming: <FaGamepad />,
+  content: <FaVideo />,
+  music: <FaMusic />,
+  sport: <FaRunning />,
+  staff: <FaShieldAlt />,
 };
 
 function getYouTubeThumbnail(url: string) {
@@ -143,8 +152,10 @@ export default function CommunityPage() {
                     <div className={styles.cardOverlay} />
                   </div>
                   <div className={styles.cardContent}>
-                    <div className={styles.creatorAvatar}>
-                      {creator.avatar ? <img src={creator.avatar} alt={creator.username} /> : creator.username[0]}
+                    <div className={styles.divisionBadge}>
+                      {creator.divisions && creator.divisions.length > 0 
+                        ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
+                        : <FaShieldAlt />}
                     </div>
                     <div className={styles.creatorInfo}>
                       <div className={styles.creatorName}>{creator.username}</div>

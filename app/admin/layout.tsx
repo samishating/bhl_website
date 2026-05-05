@@ -24,7 +24,7 @@ interface AdminLink {
 
 export const adminLinks: AdminLink[] = [
   { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
-  { href: '/admin/members', label: 'Members', icon: '/ICONS/USER.svg' },
+  { href: '/admin/members', label: 'Creators Settings', icon: '/ICONS/USER.svg' },
   { href: '/admin/users', label: 'Users Settings', icon: '/ICONS/USER.svg', superOnly: true },
   { href: '/admin/xp', label: 'XP/Levels', icon: '/ICONS/XP.svg' },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },

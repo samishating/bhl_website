@@ -67,6 +67,7 @@
 .divisionsRow { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
 .cardActions { display: flex; gap: 0.5rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+.cardActions .btn { white-space: nowrap; min-width: 0; }
 
 /* Modal */
 .modalOverlay {

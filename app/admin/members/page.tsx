@@ -7,6 +7,7 @@ import {
   FaApple, FaSoundcloud, FaDiscord, FaGlobe 
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import Modal from '@/components/Modal';
 
 interface User {
   _id: string; username: string; email: string; avatar: string; xp: number; level: number;
@@ -54,16 +55,6 @@ export default function AdminMembersPage() {
       .then(d => { setUsers(d.users || []); setLoading(false); });
   };
   useEffect(load, []);
-
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (editingUser) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [editingUser]);
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
@@ -183,125 +174,118 @@ export default function AdminMembersPage() {
         </div>
       )}
 
-      {editingUser && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3 style={{ fontFamily: 'Rajdhani', fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
-                Configure Creator: {editingUser.username}
-              </h3>
-              <button className="btn-close" onClick={() => setEditingUser(null)}>✕</button>
+      <Modal
+        isOpen={!!editingUser}
+        onClose={() => setEditingUser(null)}
+        title={`Configure Creator: ${editingUser?.username}`}
+        footer={
+          <>
+            <button className="btn btn-ghost" onClick={() => setEditingUser(null)}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleSave}>Save Configuration</button>
+          </>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <ToggleSwitch 
+            checked={editForm.isPublic} 
+            onChange={v => setEditForm({ ...editForm, isPublic: v })}
+            label="Public Visibility"
+            sublabel="Show this member in the community directory"
+          />
+
+          <ToggleSwitch 
+            checked={editForm.isFeatured} 
+            onChange={v => setEditForm({ ...editForm, isFeatured: v })}
+            label="Featured Creator"
+            sublabel="Highlight in the featured section and hub hero"
+          />
+
+          <div className="form-group">
+            <label className="form-label">Display Order Priority</label>
+            <input 
+              type="number"
+              className="form-input" 
+              value={editForm.displayOrder} 
+              onChange={e => setEditForm({ ...editForm, displayOrder: parseInt(e.target.value) || 0 })} 
+            />
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>Higher numbers appear first.</div>
+          </div>
+
+          <div className={styles.featuredSection}>
+            <div className={styles.featuredHeader}>
+              <label className="form-label" style={{ margin: 0 }}>Featured Media</label>
+              <button className="btn btn-primary btn-sm" onClick={() => setEditForm({ ...editForm, featuredLinks: [...editForm.featuredLinks, { title: '', url: '', type: 'youtube', thumbnail: '' }] })}>
+                + Add Content
+              </button>
             </div>
-            <div className="modal-body">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <ToggleSwitch 
-                  checked={editForm.isPublic} 
-                  onChange={v => setEditForm({ ...editForm, isPublic: v })}
-                  label="Public Visibility"
-                  sublabel="Show this member in the community directory"
-                />
-
-                <ToggleSwitch 
-                  checked={editForm.isFeatured} 
-                  onChange={v => setEditForm({ ...editForm, isFeatured: v })}
-                  label="Featured Creator"
-                  sublabel="Highlight in the featured section and hub hero"
-                />
-
-                <div className="form-group">
-                  <label className="form-label">Display Order Priority</label>
-                  <input 
-                    type="number"
-                    className="form-input" 
-                    value={editForm.displayOrder} 
-                    onChange={e => setEditForm({ ...editForm, displayOrder: parseInt(e.target.value) || 0 })} 
-                  />
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>Higher numbers appear first.</div>
-                </div>
-
-                <div className={styles.featuredSection}>
-                  <div className={styles.featuredHeader}>
-                    <label className="form-label" style={{ margin: 0 }}>Featured Media</label>
-                    <button className="btn btn-primary btn-sm" onClick={() => setEditForm({ ...editForm, featuredLinks: [...editForm.featuredLinks, { title: '', url: '', type: 'youtube', thumbnail: '' }] })}>
-                      + Add Content
-                    </button>
-                  </div>
-                  
-                  <div className={styles.mediaCardsList}>
-                    {editForm.featuredLinks.map((link, idx) => (
-                      <div key={idx} className={styles.mediaAdminCard}>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <div style={{ flex: 1 }}>
-                            <input 
-                              className="form-input" 
-                              style={{ marginBottom: '8px' }}
-                              placeholder="Title" 
-                              value={link.title}
-                              onChange={e => {
-                                const nl = [...editForm.featuredLinks];
-                                nl[idx].title = e.target.value;
-                                setEditForm({ ...editForm, featuredLinks: nl });
-                              }}
-                            />
-                            <input 
-                              className="form-input" 
-                              style={{ marginBottom: '8px' }}
-                              placeholder="URL" 
-                              value={link.url}
-                              onChange={e => {
-                                const nl = [...editForm.featuredLinks];
-                                nl[idx].url = e.target.value;
-                                setEditForm({ ...editForm, featuredLinks: nl });
-                              }}
-                            />
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              <select 
-                                className="form-input"
-                                style={{ width: '120px' }}
-                                value={link.type}
-                                onChange={e => {
-                                  const nl = [...editForm.featuredLinks];
-                                  nl[idx].type = e.target.value;
-                                  setEditForm({ ...editForm, featuredLinks: nl });
-                                }}
-                              >
-                                <option value="youtube">YouTube</option>
-                                <option value="spotify">Spotify</option>
-                                <option value="apple">Apple</option>
-                                <option value="soundcloud">SoundCloud</option>
-                                <option value="other">Other</option>
-                              </select>
-                              <input 
-                                className="form-input" 
-                                placeholder="Thumb URL (optional)" 
-                                value={link.thumbnail}
-                                onChange={e => {
-                                  const nl = [...editForm.featuredLinks];
-                                  nl[idx].thumbnail = e.target.value;
-                                  setEditForm({ ...editForm, featuredLinks: nl });
-                                }}
-                              />
-                            </div>
-                          </div>
-                          <button className="btn btn-ghost" onClick={() => setEditForm({ ...editForm, featuredLinks: editForm.featuredLinks.filter((_, i) => i !== idx) })} style={{ height: 'fit-content', color: 'var(--brand-red)' }}>✕</button>
-                        </div>
+            
+            <div className={styles.mediaCardsList}>
+              {editForm.featuredLinks.map((link, idx) => (
+                <div key={idx} className={styles.mediaAdminCard}>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <div style={{ flex: 1 }}>
+                      <input 
+                        className="form-input" 
+                        style={{ marginBottom: '8px' }}
+                        placeholder="Title" 
+                        value={link.title}
+                        onChange={e => {
+                          const nl = [...editForm.featuredLinks];
+                          nl[idx].title = e.target.value;
+                          setEditForm({ ...editForm, featuredLinks: nl });
+                        }}
+                      />
+                      <input 
+                        className="form-input" 
+                        style={{ marginBottom: '8px' }}
+                        placeholder="URL" 
+                        value={link.url}
+                        onChange={e => {
+                          const nl = [...editForm.featuredLinks];
+                          nl[idx].url = e.target.value;
+                          setEditForm({ ...editForm, featuredLinks: nl });
+                        }}
+                      />
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <select 
+                          className="form-input"
+                          style={{ width: '120px' }}
+                          value={link.type}
+                          onChange={e => {
+                            const nl = [...editForm.featuredLinks];
+                            nl[idx].type = e.target.value;
+                            setEditForm({ ...editForm, featuredLinks: nl });
+                          }}
+                        >
+                          <option value="youtube">YouTube</option>
+                          <option value="spotify">Spotify</option>
+                          <option value="apple">Apple</option>
+                          <option value="soundcloud">SoundCloud</option>
+                          <option value="other">Other</option>
+                        </select>
+                        <input 
+                          className="form-input" 
+                          placeholder="Thumb URL (optional)" 
+                          value={link.thumbnail}
+                          onChange={e => {
+                            const nl = [...editForm.featuredLinks];
+                            nl[idx].thumbnail = e.target.value;
+                            setEditForm({ ...editForm, featuredLinks: nl });
+                          }}
+                        />
                       </div>
-                    ))}
-                    {editForm.featuredLinks.length === 0 && (
-                      <div className={styles.mediaEmpty}>No featured content added.</div>
-                    )}
+                    </div>
+                    <button className="btn btn-ghost" onClick={() => setEditForm({ ...editForm, featuredLinks: editForm.featuredLinks.filter((_, i) => i !== idx) })} style={{ height: 'fit-content', color: 'var(--brand-red)' }}>✕</button>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={() => setEditingUser(null)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSave}>Save Configuration</button>
+              ))}
+              {editForm.featuredLinks.length === 0 && (
+                <div className={styles.mediaEmpty}>No featured content added.</div>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

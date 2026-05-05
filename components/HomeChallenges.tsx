@@ -2,7 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer, dropdownAnimation } from '@/lib/animations';
+import Modal from '@/components/Modal';
 import styles from './HomeChallenges.module.css';
 
 const divTagClass: Record<string, string> = {
@@ -21,11 +23,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
   const [confirmJoin, setConfirmJoin] = useState<any | null>(null);
   const [hasMounted, setHasMounted] = useState(false);
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabsRef = useRef<HTMLDivElement>(null);
-  const headerRef = useScrollReveal<HTMLDivElement>();
-
-  const contentRef = useScrollReveal<HTMLDivElement>(true);
 
   const loadChallenges = () => {
     setLoading(true);
@@ -45,16 +43,8 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   }, [filter, initialChallenges]);
 
   useEffect(() => {
-    if (hasMounted) {
-      const activeTab = tabsRef.current?.querySelector(`.${styles.tabActive}`) as HTMLElement;
-      if (activeTab) {
-        setIndicatorStyle({
-          left: activeTab.offsetLeft,
-          width: activeTab.offsetWidth
-        });
-      }
-    }
-  }, [filter, hasMounted]);
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleRefresh = () => {
@@ -172,106 +162,141 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
     <section id="challenges" className="content-band" style={{ borderTop: 'none' }}>
       <div className="section-divider" />
       <div className="content-inner" style={{ paddingTop: '4rem' }}>
-        <div ref={headerRef}>
-          <div data-reveal="header" className="section-header">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeUp}
+        >
+          <div className="section-header">
             <span className="section-tag">Earn XP</span>
             <h2>Active <span className="gradient-text">Challenges</span></h2>
             <p className="section-desc">Complete tasks, submit proof, and level up your legacy.</p>
           </div>
-        </div>
+        </motion.div>
 
-        <div ref={contentRef}>
+        {/* Tabs */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={fadeUp}
+        >
+          <div className={`${styles.tabs} premium-panel`} ref={tabsRef}>
+            {DIVS.map(d => (
+              <button 
+                key={d} 
+                className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
+                onClick={() => setFilter(d)}
+              >
+                {d === 'global' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
+                {filter === d && (
+                  <motion.div 
+                    layoutId="challengeTab"
+                    className={styles.indicator}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        </motion.div>
 
-        <div className={`${styles.tabs} premium-panel`} ref={tabsRef}>
-          {hasMounted && (
-            <div 
-              className={styles.indicator} 
-              style={{ 
-                left: `${indicatorStyle.left}px`, 
-                width: `${indicatorStyle.width}px` 
-              }} 
-            />
+        {/* Grid */}
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div 
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}
+            >
+              <div className="spinner" />
+            </motion.div>
+          ) : (
+            <motion.div 
+              key={`grid-${filter}`}
+              className={styles.grid}
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+            >
+              {challenges.map(c => {
+                const status = submissionStatus[c._id];
+                return (
+                  <motion.div 
+                    key={c._id} 
+                    variants={fadeUp}
+                    className={`${styles.card} premium-panel ${status === 'approved' ? styles.cardDone : ''}`}
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className={styles.cardTop}>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>
+                        {c.allowRepeats && <span className="badge badge-violet" style={{ fontSize: '0.65rem' }}>Repeatable</span>}
+                      </div>
+                      <span className={styles.xpBadge}>+{c.xpReward} XP</span>
+                    </div>
+                    <h3 className={styles.cardTitle}>{c.title}</h3>
+                    <p className={styles.cardDesc}>{c.description}</p>
+                    
+                    {status && !c.allowRepeats ? (
+                      <div className={styles.doneState}>
+                        {status === 'approved' ? '✅ Completed' : status === 'rejected' ? '❌ Rejected' : '⏳ Pending Approval'}
+                      </div>
+                    ) : (
+                      <div className={styles.submitForm}>
+                        {status && c.allowRepeats && (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                            Last status: <span style={{ color: status === 'approved' ? '#22c55e' : 'var(--brand-red)' }}>{status.toUpperCase()}</span>
+                          </div>
+                        )}
+                        <input
+                          type="url"
+                          className="form-input"
+                          placeholder="Paste proof URL…"
+                          value={proofUrls[c._id] || ''}
+                          onChange={e => setProofUrls(prev => ({ ...prev, [c._id]: e.target.value }))}
+                        />
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => handleSubmit(c._id)}
+                          disabled={hasMounted ? submitting === c._id : undefined}
+                        >
+                          {submitting === c._id ? <span className="spinner" /> : 'Submit'}
+                        </button>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           )}
-          {DIVS.map(d => (
-            <button key={d} className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
-              onClick={() => setFilter(d)}>
-              {d === 'global' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}>
-            <div className="spinner" />
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            {challenges.map(c => {
-              const status = submissionStatus[c._id];
-              return (
-                <div key={c._id} className={`${styles.card} premium-panel ${status === 'approved' ? styles.cardDone : ''}`}>
-                  <div className={styles.cardTop}>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>
-                      {c.allowRepeats && <span className="badge badge-violet" style={{ fontSize: '0.65rem' }}>Repeatable</span>}
-                    </div>
-                    <span className={styles.xpBadge}>+{c.xpReward} XP</span>
-                  </div>
-                  <h3 className={styles.cardTitle}>{c.title}</h3>
-                  <p className={styles.cardDesc}>{c.description}</p>
-                  
-                  {status && !c.allowRepeats ? (
-                    <div className={styles.doneState}>
-                      {status === 'approved' ? '✅ Completed' : status === 'rejected' ? '❌ Rejected' : '⏳ Pending Approval'}
-                    </div>
-                  ) : (
-                    <div className={styles.submitForm}>
-                      {status && c.allowRepeats && (
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                          Last status: <span style={{ color: status === 'approved' ? '#22c55e' : 'var(--brand-red)' }}>{status.toUpperCase()}</span>
-                        </div>
-                      )}
-                      <input
-                        type="url"
-                        className="form-input"
-                        placeholder="Paste proof URL…"
-                        value={proofUrls[c._id] || ''}
-                        onChange={e => setProofUrls(prev => ({ ...prev, [c._id]: e.target.value }))}
-                      />
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => handleSubmit(c._id)}
-                        disabled={hasMounted ? submitting === c._id : undefined}
-                      >
-                        {submitting === c._id ? <span className="spinner" /> : 'Submit'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-        </div> {/* close contentRef */}
+        </AnimatePresence>
       </div>
 
-      {/* Custom Join Modal */}
-      {confirmJoin && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <div className={styles.modalIcon}>🛡️</div>
-            <h3 className={styles.modalTitle}>Join Required</h3>
-            <p className={styles.modalText}>
-              This challenge requires the <strong style={{ color: 'var(--neon-blue)' }}>{confirmJoin.division.toUpperCase()}</strong> division. 
-              Join now to complete this challenge?
-            </p>
-            <div className={styles.modalButtons}>
-              <button className="btn btn-ghost" onClick={() => setConfirmJoin(null)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleJoinAndSubmit}>Join & Submit</button>
-            </div>
-          </div>
+      {/* Animated Modal via centralized component */}
+      <Modal 
+        isOpen={!!confirmJoin} 
+        onClose={() => setConfirmJoin(null)}
+        title="Join Required"
+        maxWidth="480px"
+        footer={
+          <>
+            <button className="btn btn-ghost" onClick={() => setConfirmJoin(null)}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleJoinAndSubmit}>Join & Submit</button>
+          </>
+        }
+      >
+        <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🛡️</div>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            This challenge requires the <strong style={{ color: 'var(--brand-red)' }}>{confirmJoin?.division.toUpperCase()}</strong> division. 
+            Join now to complete this challenge?
+          </p>
         </div>
-      )}
+      </Modal>
     </section>
 
   );

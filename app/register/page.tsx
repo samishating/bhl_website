@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { scaleIn, fadeUp } from '@/lib/animations';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,12 +31,19 @@ function RegisterForm() {
   return (
     <div className={styles.page}>
       <div className={styles.glow} />
-      <div className={styles.card}>
-        <Link href="/" className={styles.logo}>
-          <img src="/brand/logo.webp" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
-        </Link>
-        <h2 className={styles.title}>Join the Brotherhood</h2>
-        <p className={styles.sub}>Create your account and start your legacy</p>
+      <motion.div 
+        className={styles.card}
+        initial="hidden"
+        animate="visible"
+        variants={scaleIn}
+      >
+        <motion.div variants={fadeUp}>
+          <Link href="/" className={styles.logo}>
+            <img src="/brand/logo.webp" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
+          </Link>
+          <h2 className={styles.title}>Join the Brotherhood</h2>
+          <p className={styles.sub}>Create your account and start your legacy</p>
+        </motion.div>
 
         {error && <div className={styles.error}>{error}</div>}
 
@@ -62,7 +71,7 @@ function RegisterForm() {
         <p className={styles.link}>
           Already a member? <Link href="/login">Login →</Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

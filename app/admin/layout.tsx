@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './admin.module.css';
 import LoadingScreen from '@/components/LoadingScreen';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, scaleIn, dropdownAnimation } from '@/lib/animations';
 
 const AdminContext = createContext({
   refreshCounts: () => {},
@@ -118,13 +120,35 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Sidebar Overlay */}
-        {mobileNavOpen && <div className={styles.sidebarOverlay} onClick={() => setMobileNavOpen(false)} />}
+        <AnimatePresence>
+          {mobileNavOpen && (
+            <motion.div 
+              className={styles.sidebarOverlay} 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileNavOpen(false)} 
+            />
+          )}
+        </AnimatePresence>
 
-        <aside className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
-          <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px' }}>
+        <motion.aside 
+          className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}
+          animate={{ width: isCollapsed ? 80 : 280 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+        >
+          <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px', overflow: 'hidden' }}>
             <Link href="/" className={styles.sidebarLogo}>
               <img src="/brand/logo.webp" alt="BHL" style={{ height: '32px', objectFit: 'contain' }} />
-              <span>BHL <span style={{ color: '#FFFDBA' }}>ADMIN</span></span>
+              {!isCollapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  BHL <span style={{ color: '#FFFDBA' }}>ADMIN</span>
+                </motion.span>
+              )}
             </Link>
             
             <button 
@@ -133,7 +157,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
               style={{ 
                 position: 'absolute', 
-                right: isCollapsed ? '-12px' : '1rem',
+                right: isCollapsed ? '28px' : '1rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 100,
@@ -141,7 +165,8 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                 border: isCollapsed ? '1px solid var(--border)' : 'none',
                 borderRadius: '50%',
                 width: '24px',
-                height: '24px'
+                height: '24px',
+                transition: 'right 0.4s spring'
               }}
             >
               {isCollapsed ? '▶' : '◀'}
@@ -164,19 +189,35 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                       l.icon
                     )}
                   </span> 
-                  <span>{l.label}</span>
+                  {!isCollapsed && (
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      {l.label}
+                    </motion.span>
+                  )}
                   {badgeCount > 0 && <span className={styles.notificationBadge}>{badgeCount}</span>}
                 </Link>
               );
             })}
           </nav>
           <div className={styles.sidebarFooter}>
-            <Link href="/" className={styles.backLink}>← Back to Site</Link>
+            <Link href="/" className={styles.backLink}>{isCollapsed ? '←' : '← Back to Site'}</Link>
           </div>
-        </aside>
-        <main className={`${styles.main} ${isCollapsed ? styles.mainCollapsed : ''}`}>{children}</main>
+        </motion.aside>
+
+        <motion.main 
+          className={`${styles.main} ${isCollapsed ? styles.mainCollapsed : ''}`}
+          animate={{ paddingLeft: isCollapsed ? 100 : 300 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+        >
+          {children}
+        </motion.main>
       </div>
     </AdminContext.Provider>
+
   );
 }
 

@@ -1,5 +1,7 @@
 'use client';
 import { useState, Suspense } from 'react';
+import { motion } from 'framer-motion';
+import { scaleIn, fadeUp } from '@/lib/animations';
 import LoadingScreen from '@/components/LoadingScreen';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -34,12 +36,19 @@ function LoginForm() {
   return (
     <div className={styles.page}>
       <div className={styles.glow} />
-      <div className={styles.card}>
-        <Link href="/" className={styles.logo}>
-          <img src="/brand/logo.webp" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
-        </Link>
-        <h2 className={styles.title}>Welcome Back</h2>
-        <p className={styles.sub}>Sign in to your Brotherhood account</p>
+      <motion.div 
+        className={styles.card}
+        initial="hidden"
+        animate="visible"
+        variants={scaleIn}
+      >
+        <motion.div variants={fadeUp}>
+          <Link href="/" className={styles.logo}>
+            <img src="/brand/logo.webp" alt="BHL" style={{ height: '60px', objectFit: 'contain' }} />
+          </Link>
+          <h2 className={styles.title}>Welcome Back</h2>
+          <p className={styles.sub}>Sign in to your Brotherhood account</p>
+        </motion.div>
 
         {error && <div className={styles.error}>{error}</div>}
 
@@ -64,7 +73,7 @@ function LoginForm() {
         <p className={styles.link}>
           Don&apos;t have an account? <Link href="/register">Join the Brotherhood →</Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

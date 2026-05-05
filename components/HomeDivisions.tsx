@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import styles from '@/app/(main)/page.module.css';
 
@@ -39,10 +40,6 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
   const [isProcessing, setIsProcessing] = useState(false);
   const [leaders, setLeaders] = useState<Record<string, any> | null>(initialStats?.divisionLeaders || null);
   const [hasMounted, setHasMounted] = useState(false);
-
-  // Scroll-reveal refs
-  const headerRef = useScrollReveal<HTMLDivElement>();
-  const gridRef = useScrollReveal<HTMLDivElement>(true); // stagger cards
 
   const fetchStats = async () => {
     try {
@@ -105,29 +102,41 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
   return (
     <section id="divisions" className={styles.divisionsSection}>
       <div className="content-inner">
-        {/* Header — own reveal element */}
-        <div ref={headerRef}>
-          <div className="section-header" data-reveal="header">
+        {/* Header — Framer Motion Reveal */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeUp}
+        >
+          <div className="section-header">
             <span className="section-tag">Elite Units</span>
             <h2>Our <span className="gradient-text">Divisions</span></h2>
             <p className="section-desc">
               Join a specialized unit. Compete for your colors. Rise to the top of your field.
             </p>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Cards grid — staggered reveal */}
-        <div className={styles.divisionsGrid} ref={gridRef}>
+        {/* Cards grid — Framer Motion Stagger */}
+        <motion.div 
+          className={styles.divisionsGrid}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={staggerContainer}
+        >
           {divisions.map((div) => {
             const isMember = user?.divisions?.includes(div.id);
             const count = divisionCounts?.[div.id];
             return (
-              <div
+              <motion.div
                 key={div.id}
-                data-reveal
+                variants={fadeUp}
                 className={`${styles.divCard} premium-panel`}
                 style={{ '--div-color': div.color } as any}
                 id={`home-division-${div.id}`}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
               >
                 <div className={styles.divCardGlow} />
                 <div className={styles.divCardTop}>
@@ -154,7 +163,7 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
                   {leaders === null ? (
                     /* Still loading */
                     <div className={styles.leaderRow}>
-                      <span className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'block', flexShrink: 0 }} />
+                      <span className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'block', flexShrink: 0 }} />
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
                         <span className="skeleton" style={{ display: 'block', width: '80px', height: '14px' }} />
                         <span className="skeleton" style={{ display: 'block', width: '50px', height: '11px' }} />
@@ -194,10 +203,10 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
                     ? <span className="spinner" />
                     : isMember ? `Leave ${div.label}` : `Join ${div.label}`}
                 </button>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

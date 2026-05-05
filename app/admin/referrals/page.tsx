@@ -4,6 +4,9 @@ import { useAdmin } from '../layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
+import Modal from '@/components/Modal';
 
 interface Referral {
   _id: string;
@@ -106,7 +109,11 @@ export default function AdminReferralsPage() {
 
   return (
     <>
-      <div className="animate-fade-up">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={fadeUp}
+      >
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Referral Codes</h1>
@@ -147,7 +154,12 @@ export default function AdminReferralsPage() {
           </div>
         ) : (
           <div className={styles.tableContainer}>
-            <table className={styles.table}>
+            <motion.table 
+              className={styles.table}
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
               <thead>
                 <tr>
                   <th>Code</th>
@@ -161,7 +173,7 @@ export default function AdminReferralsPage() {
               </thead>
               <tbody>
                 {referrals.map(r => (
-                  <tr key={r._id}>
+                  <motion.tr key={r._id} variants={fadeUp}>
                     <td><span className={styles.code}>{r.code}</span></td>
                     <td><span className={styles.discountBadge}>↓ {r.discountPercentage}%</span></td>
                     <td>
@@ -195,82 +207,75 @@ export default function AdminReferralsPage() {
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
-            </table>
+            </motion.table>
           </div>
         )}
-      </div>
+      </motion.div>
 
-      {/* Create Referral Modal */}
-      {showForm && (
-        <div className="modal-overlay" onClick={() => setShowForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <div>
-                <h3>Create Referral Code</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>Codes will be automatically uppercased</p>
-              </div>
-              <button className="btn-close" onClick={() => setShowForm(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <form id="referral-form" onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Promo Code *</label>
-                  <input
-                    required
-                    className="form-input"
-                    placeholder="e.g. BHL20, SUMMER25"
-                    value={form.code}
-                    onChange={e => setForm(p => ({ ...p, code: e.target.value.toUpperCase() }))}
-                    style={{ textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 700 }}
-                  />
-                </div>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title="Create Referral Code"
+        footer={
+          <>
+            <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowForm(false)}>CANCEL</button>
+            <button type="submit" form="referral-form" className="btn btn-primary" style={{ flex: 1 }} disabled={creating}>
+              {creating ? <span className="spinner" /> : 'CREATE CODE'}
+            </button>
+          </>
+        }
+      >
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Codes will be automatically uppercased</p>
+        <form id="referral-form" onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="form-group">
+            <label className="form-label">Promo Code *</label>
+            <input
+              required
+              className="form-input"
+              placeholder="e.g. BHL20, SUMMER25"
+              value={form.code}
+              onChange={e => setForm(p => ({ ...p, code: e.target.value.toUpperCase() }))}
+              style={{ textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 700 }}
+            />
+          </div>
 
-                <div className="form-group">
-                  <label className="form-label">Discount Percentage *</label>
-                  <input
-                    required
-                    type="number"
-                    min="1"
-                    max="100"
-                    className="form-input"
-                    value={form.discountPercentage}
-                    onChange={e => setForm(p => ({ ...p, discountPercentage: Number(e.target.value) }))}
-                  />
-                  <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Customer gets {form.discountPercentage}% off their total order
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Assign To *</label>
-                  <select
-                    required
-                    className="form-input"
-                    value={form.assignedTo}
-                    onChange={e => setForm(p => ({ ...p, assignedTo: e.target.value }))}
-                  >
-                    <option value="">— Select Admin / Superadmin —</option>
-                    {adminUsers.map(u => (
-                      <option key={u._id} value={u._id}>
-                        {u.username} ({u.role})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </form>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowForm(false)}>CANCEL</button>
-              <button type="submit" form="referral-form" className="btn btn-primary" style={{ flex: 1 }} disabled={creating}>
-                {creating ? <span className="spinner" /> : 'CREATE CODE'}
-              </button>
+          <div className="form-group">
+            <label className="form-label">Discount Percentage *</label>
+            <input
+              required
+              type="number"
+              min="1"
+              max="100"
+              className="form-input"
+              value={form.discountPercentage}
+              onChange={e => setForm(p => ({ ...p, discountPercentage: Number(e.target.value) }))}
+            />
+            <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              Customer gets {form.discountPercentage}% off their total order
             </div>
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label className="form-label">Assign To *</label>
+            <select
+              required
+              className="form-input"
+              value={form.assignedTo}
+              onChange={e => setForm(p => ({ ...p, assignedTo: e.target.value }))}
+            >
+              <option value="">— Select Admin / Superadmin —</option>
+              {adminUsers.map(u => (
+                <option key={u._id} value={u._id}>
+                  {u.username} ({u.role})
+                </option>
+              ))}
+            </select>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

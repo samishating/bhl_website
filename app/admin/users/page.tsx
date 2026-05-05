@@ -4,6 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 
 import { getLevelTitle } from '@/lib/xp';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
+import Modal from '@/components/Modal';
 import styles from './page.module.css';
 
 interface User {
@@ -107,7 +110,11 @@ export default function AdminUsersPage() {
 
   return (
     <>
-      <div className="animate-fade-up">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={fadeUp}
+    >
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>User Management</h1>
@@ -133,9 +140,17 @@ export default function AdminUsersPage() {
             <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning users...</p>
           </div>
         ) : (
-          <div className={styles.userGrid}>
+          <motion.div 
+            className={styles.userGrid}
+            variants={staggerContainer}
+          >
             {filtered.map(u => (
-              <div key={u._id} className={styles.userCard}>
+              <motion.div 
+                key={u._id} 
+                className={styles.userCard}
+                variants={fadeUp}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
                 <div className={styles.userHeader}>
                   <div className={styles.avatarWrapper}>
                     <div className={styles.avatar}>
@@ -155,7 +170,7 @@ export default function AdminUsersPage() {
                 <div className={styles.statsRow}>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>User XP</div>
-                    <div className={styles.statValue}>{u.xp.toLocaleString()}</div>
+                    <div className={styles.statValue}>{u.xp.toLocaleString()} dh</div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statLabel}>Joined</div>
@@ -175,67 +190,63 @@ export default function AdminUsersPage() {
                     <button className="btn btn-primary btn-sm" onClick={() => handleEdit(u)} style={{ flex: 1 }}>Edit</button>
                   )}
                 </div>
-              </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+        )}
+      </motion.div>
+
+
+      <Modal
+        isOpen={!!editingUser}
+        onClose={() => setEditingUser(null)}
+        title={`Edit User: ${editingUser?.username}`}
+        footer={
+          <div style={{ display: 'flex', gap: '20px', width: '100%' }}>
+            <button className="btn btn-ghost" onClick={() => setEditingUser(null)} style={{ flex: 1 }}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleSaveEdit} style={{ flex: 1 }}>Save Changes</button>
+          </div>
+        }
+      >
+        <div className="form-group">
+          <label className="form-label">Username</label>
+          <input 
+            className="form-input" 
+            value={editForm.username} 
+            onChange={e => setEditForm({ ...editForm, username: e.target.value })} 
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">User Role</label>
+          <select 
+            className="form-input" 
+            value={editForm.role} 
+            onChange={e => setEditForm({ ...editForm, role: e.target.value })}
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Divisions</label>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+            {DIVISION_OPTIONS.map(div => (
+              <button
+                key={div.id}
+                type="button"
+                className={`btn btn-sm ${editForm.divisions.includes(div.id) ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => toggleDivision(div.id)}
+                style={{ flex: 1, minWidth: '100px' }}
+              >
+                {div.label}
+              </button>
             ))}
           </div>
-        )}
-      </div>
-
-      {editingUser && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3 className={styles.username} style={{ margin: 0 }}>Edit User: {editingUser.username}</h3>
-              <button className="btn-close" onClick={() => setEditingUser(null)}>✕</button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">Username</label>
-                <input 
-                  className="form-input" 
-                  value={editForm.username} 
-                  onChange={e => setEditForm({ ...editForm, username: e.target.value })} 
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">User Role</label>
-                <select 
-                  className="form-input" 
-                  value={editForm.role} 
-                  onChange={e => setEditForm({ ...editForm, role: e.target.value })}
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Divisions</label>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                  {DIVISION_OPTIONS.map(div => (
-                    <button
-                      key={div.id}
-                      type="button"
-                      className={`btn btn-sm ${editForm.divisions.includes(div.id) ? 'btn-primary' : 'btn-ghost'}`}
-                      onClick={() => toggleDivision(div.id)}
-                      style={{ flex: 1, minWidth: '100px' }}
-                    >
-                      {div.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={() => setEditingUser(null)} style={{ flex: 1 }}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSaveEdit} style={{ flex: 1 }}>Save Changes</button>
-            </div>
-          </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

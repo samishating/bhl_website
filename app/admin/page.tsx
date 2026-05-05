@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useAdmin, adminLinks } from './layout';
 import { useAuth } from '@/contexts/AuthContext';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
 
 export default function AdminPage() {
@@ -37,7 +39,11 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="animate-fade-up">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={fadeUp}
+    >
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Admin Dashboard</h1>
@@ -45,27 +51,45 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className={styles.statsGrid}>
+      <motion.div 
+        className={styles.statsGrid}
+        variants={staggerContainer}
+      >
         {statCards.map(s => (
-          <div key={s.label} className={styles.statCard} style={{ '--card-color': s.color } as React.CSSProperties}>
+          <motion.div 
+            key={s.label} 
+            className={styles.statCard} 
+            variants={fadeUp}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            style={{ '--card-color': s.color } as React.CSSProperties}
+          >
             <img src={s.icon} className={styles.statIcon} alt="" />
             <div className={styles.statValue}>{s.value}</div>
             <div className={styles.statLabel}>{s.label}</div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <div className={styles.quickLinks}>
         <h3 className={styles.sectionTitle}>Management</h3>
-        <div className={styles.qGrid}>
+        <motion.div 
+          className={styles.qGrid}
+          variants={staggerContainer}
+        >
           {adminLinks.filter(l => l.href !== '/admin' && (!l.superOnly || user?.role === 'superadmin')).map(l => (
-            <a key={l.href} href={l.href} className={styles.qCard}>
+            <motion.a 
+              key={l.href} 
+              href={l.href} 
+              className={styles.qCard}
+              variants={fadeUp}
+              whileHover={{ scale: 1.02 }}
+            >
               <img src={l.icon} alt="" />
               {l.label}
-            </a>
+            </motion.a>
           ))}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

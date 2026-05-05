@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/contexts/ToastContext';
 import { useAdmin } from '../layout';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
 
 interface Application {
@@ -62,7 +64,11 @@ export default function ApplicationsInbox() {
   };
 
   return (
-    <div className="animate-fade-up">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={fadeUp}
+    >
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Applications</h1>
@@ -83,9 +89,14 @@ export default function ApplicationsInbox() {
           <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No pending applications</p>
         </div>
       ) : (
-        <div className={styles.appList}>
+        <motion.div 
+          className={styles.appList}
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {apps.map(app => (
-            <div key={app._id} className={styles.appCard}>
+            <motion.div key={app._id} className={styles.appCard} variants={fadeUp}>
               <div className={styles.appDate}>
                 RECEIVED: {new Date(app.createdAt).toLocaleString()}
               </div>
@@ -165,10 +176,10 @@ export default function ApplicationsInbox() {
                   )}
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

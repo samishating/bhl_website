@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { dropdownAnimation } from '@/lib/animations';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import styles from './Navbar.module.css';
@@ -116,39 +118,47 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu */}
-        {menuOpen && (
-          <div className={styles.mobileMenu}>
-            {navLinks.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`${styles.mobileLink} ${pathname === link.href ? styles.active : ''}`}
-                onClick={(e) => {
-                  setMenuOpen(false);
-                  if (link.href === '/') {
-                    handleLogoClick(e as any);
-                  }
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {user ? (
-              <>
-                <div className="section-divider" style={{ margin: '0.5rem 0', opacity: 0.1 }} />
-                <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Profile</Link>
-                {(user.role === 'admin' || user.role === 'superadmin') && <Link href="/admin" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Admin Panel</Link>}
-                <button onClick={() => { handleLogout(); setMenuOpen(false); }} className={styles.mobileLink}>Logout</button>
-              </>
-            ) : (
-              <>
-                <div className="section-divider" style={{ margin: '0.5rem 0', opacity: 0.1 }} />
-                <Link href="/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Login</Link>
-                <Link href="/register" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Join Brotherhood</Link>
-              </>
-            )}
-          </div>
-        )}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div 
+              className={styles.mobileMenu}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={dropdownAnimation}
+            >
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`${styles.mobileLink} ${pathname === link.href ? styles.active : ''}`}
+                  onClick={(e) => {
+                    setMenuOpen(false);
+                    if (link.href === '/') {
+                      handleLogoClick(e as any);
+                    }
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {user ? (
+                <>
+                  <div className="section-divider" style={{ margin: '0.5rem 0', opacity: 0.1 }} />
+                  <Link href="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Profile</Link>
+                  {(user.role === 'admin' || user.role === 'superadmin') && <Link href="/admin" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Admin Panel</Link>}
+                  <button onClick={() => { handleLogout(); setMenuOpen(false); }} className={styles.mobileLink}>Logout</button>
+                </>
+              ) : (
+                <>
+                  <div className="section-divider" style={{ margin: '0.5rem 0', opacity: 0.1 }} />
+                  <Link href="/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Login</Link>
+                  <Link href="/register" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Join Brotherhood</Link>
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </div>
   );

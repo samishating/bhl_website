@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import CreatorVideoCarousel from './CreatorVideoCarousel';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
@@ -123,14 +125,19 @@ export default function CommunityPage() {
       <HomeFixedBackground />
       
       <section className={styles.hero}>
-        <div className="container animate-fade-up">
+        <motion.div 
+          className="container"
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+        >
           <div className="section-tag" style={{ margin: '0 auto 16px' }}>Network</div>
           <h1 className={styles.heroTitle}>BHL <span className="gradient-text">COMMUNITY</span></h1>
           <p className={styles.heroSub}>
             The heartbeat of the Brotherhood. Meet the creators, artists, and warriors 
             shaping the legacy of BHL.
           </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* Featured Video Carousel (Only if featured creators have videos) */}
@@ -153,37 +160,45 @@ export default function CommunityPage() {
               </div>
             </div>
             
-            <div className={styles.creatorScroll}>
+            <motion.div 
+              className={styles.creatorScroll}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={staggerContainer}
+            >
               {featuredCreators.map(creator => (
-                <Link href={`/users/${creator._id}`} key={creator._id} className={styles.creatorCard}>
-                  <div className={styles.cardImage}>
-                    {creator.featuredLinks?.[0] ? (
-                      <img src={getYouTubeThumbnail(creator.featuredLinks[0].url)} alt="" />
-                    ) : (
-                      <img src={creator.avatar || 'https://placehold.co/600x338/111/white?text=BHL+CREATOR'} alt="" />
-                    )}
-                    <div className={styles.cardOverlay} />
-                  </div>
-                  <div className={styles.cardContent}>
-                    <div className={styles.divisionBadge}>
-                      {creator.divisions && creator.divisions.length > 0 
-                        ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
-                        : <FaShieldAlt />}
+                <motion.div key={creator._id} variants={fadeUp}>
+                  <Link href={`/users/${creator._id}`} className={styles.creatorCard}>
+                    <div className={styles.cardImage}>
+                      {creator.featuredLinks?.[0] ? (
+                        <img src={getYouTubeThumbnail(creator.featuredLinks[0].url)} alt="" />
+                      ) : (
+                        <img src={creator.avatar || 'https://placehold.co/600x338/111/white?text=BHL+CREATOR'} alt="" />
+                      )}
+                      <div className={styles.cardOverlay} />
                     </div>
-                    <div className={styles.creatorInfo}>
-                      <div className={styles.creatorName}>{creator.username}</div>
-                      <div className={styles.creatorSocials}>
-                        {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
-                          const url = creator.socialLinks?.[key as keyof SocialLinks];
-                          if (!url) return null;
-                          return <span key={key} className={styles.miniIcon}>{icon}</span>;
-                        })}
+                    <div className={styles.cardContent}>
+                      <div className={styles.divisionBadge}>
+                        {creator.divisions && creator.divisions.length > 0 
+                          ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
+                          : <FaShieldAlt />}
+                      </div>
+                      <div className={styles.creatorInfo}>
+                        <div className={styles.creatorName}>{creator.username}</div>
+                        <div className={styles.creatorSocials}>
+                          {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                            const url = creator.socialLinks?.[key as keyof SocialLinks];
+                            if (!url) return null;
+                            return <span key={key} className={styles.miniIcon}>{icon}</span>;
+                          })}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
@@ -223,9 +238,20 @@ export default function CommunityPage() {
               <p>The community is currently private. Check back soon for approved member profiles.</p>
             </div>
           ) : (
-            <div className={styles.membersGrid}>
+            <motion.div 
+              className={styles.membersGrid}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={staggerContainer}
+            >
               {members.map(member => (
-                <div key={member._id} className={styles.memberCard}>
+                <motion.div 
+                  key={member._id} 
+                  className={styles.memberCard}
+                  variants={fadeUp}
+                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                >
                   <div className={styles.memberAvatar}>
                     {member.avatar ? <img src={member.avatar} alt={member.username} /> : member.username[0].toUpperCase()}
                   </div>
@@ -257,9 +283,9 @@ export default function CommunityPage() {
                   <Link href={`/users/${member._id}`} className={styles.viewProfileBtn}>
                     View Profile
                   </Link>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>

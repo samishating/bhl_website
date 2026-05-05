@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import { useToast } from '@/contexts/ToastContext';
 import Modal from '@/components/Modal';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 
 
 interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; sizes: { size: string, stock: number }[]; isLimitedDrop: boolean; }
@@ -142,7 +144,11 @@ export default function AdminProductsPage() {
 
   return (
     <>
-      <div className="animate-fade-up">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={fadeUp}
+      >
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Product Management</h1>
@@ -164,29 +170,32 @@ export default function AdminProductsPage() {
           </div>
         </div>
 
-        <div className={styles.statsRow}>
-          <div className={styles.statCard}>
+        <motion.div 
+          className={styles.statsRow}
+          variants={staggerContainer}
+        >
+          <motion.div className={styles.statCard} variants={fadeUp}>
             <div className={styles.statLabel}>Total Products</div>
             <div className={styles.statValue}><span>#</span>{stats.total}</div>
-          </div>
-          <div className={styles.statCard}>
+          </motion.div>
+          <motion.div className={styles.statCard} variants={fadeUp}>
             <div className={styles.statLabel}>Exclusive Drops</div>
             <div className={styles.statValue}>
               <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
               {stats.conqueror}
             </div>
-          </div>
-          <div className={styles.statCard}>
+          </motion.div>
+          <motion.div className={styles.statCard} variants={fadeUp}>
             <div className={styles.statLabel}>Low Stock Alert</div>
             <div className={styles.statValue} style={{ color: stats.lowStock > 0 ? 'var(--brand-red)' : 'white' }}>
               <span>⚠️</span>{stats.lowStock}
             </div>
-          </div>
-          <div className={styles.statCard}>
+          </motion.div>
+          <motion.div className={styles.statCard} variants={fadeUp}>
             <div className={styles.statLabel}>Inventory Value</div>
             <div className={styles.statValue}><span>$</span>{stats.totalValue.toLocaleString()}</div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '10rem' }}>
@@ -197,9 +206,17 @@ export default function AdminProductsPage() {
             <p className="loader-text" style={{ marginTop: '2rem' }}>Scanning Products...</p>
           </div>
         ) : (
-          <div className={styles.productGrid}>
+          <motion.div 
+            className={styles.productGrid}
+            variants={staggerContainer}
+          >
             {filteredProducts.map(p => (
-              <div key={p._id} className={styles.productCard}>
+              <motion.div 
+                key={p._id} 
+                className={styles.productCard}
+                variants={fadeUp}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
                 <div className={styles.imageWrapper}>
                   <img src={p.image} alt={p.name} />
                   {p.isLimitedDrop && (
@@ -221,23 +238,23 @@ export default function AdminProductsPage() {
                   </div>
                   
                   <div className={styles.cardFooter}>
-                    <div className={styles.cardPrice}>${p.price.toFixed(2)}</div>
+                    <div className={styles.cardPrice}>${p.price.toFixed(2)} dh</div>
                     <div className={styles.cardActions}>
                       <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(p)} title="Edit Config">⚙️</button>
                       <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p._id)} title="Purge Asset">🗑️</button>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
             {filteredProducts.length === 0 && (
               <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px dashed var(--border)' }}>
                 <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No products found</p>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
       <Modal
         isOpen={showForm}

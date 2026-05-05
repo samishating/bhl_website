@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaYoutube, FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight, Pause } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, scaleIn } from '@/lib/animations';
 import styles from './page.module.css';
 
 const DIVISION_ICONS: Record<string, any> = {
@@ -111,9 +113,11 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
         {groups.length > 1 && (
           <div className={styles.carouselControls}>
             <div className={styles.carouselTimer}>
-              <div 
+              <motion.div 
                 className={styles.carouselTimerBar} 
-                style={{ width: `${progress}%`, transition: isHovered ? 'none' : 'width 50ms linear' }} 
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: isHovered ? 0 : 0.05, ease: "linear" }}
               />
               {isHovered && <Pause size={14} className={styles.pauseIcon} />}
             </div>
@@ -124,58 +128,79 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
         )}
       </div>
 
-      <div className={styles.videoCarouselLayout}>
-        {/* Featured Large Card (First Video) */}
-        <a href={firstVideo.videoUrl} target="_blank" rel="noreferrer" className={styles.videoFeatured}>
-          <img src={firstVideo.thumbnailUrl} alt={firstVideo.title} />
-          <div className={styles.videoFeaturedOverlay}>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-              <div className={styles.divisionBadge} style={{ width: '48px', height: '48px' }}>
-                {creator.divisions && creator.divisions.length > 0 
-                  ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
-                  : <FaShieldAlt />}
-              </div>
-              <div>
-                <div style={{ color: '#fff', fontWeight: 700 }}>{creator.creatorDisplayName}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <FaYoutube style={{ color: '#ff0000', fontSize: '1rem' }} />
-                  {new Date(firstVideo.publishedAt).toLocaleDateString()}
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={activeIndex}
+          className={styles.videoCarouselLayout}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Featured Large Card (First Video) */}
+          <motion.a 
+            href={firstVideo.videoUrl} 
+            target="_blank" 
+            rel="noreferrer" 
+            className={styles.videoFeatured}
+            whileHover={{ scale: 1.01 }}
+          >
+            <img src={firstVideo.thumbnailUrl} alt={firstVideo.title} />
+            <div className={styles.videoFeaturedOverlay}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
+                <div className={styles.divisionBadge} style={{ width: '48px', height: '48px' }}>
+                  {creator.divisions && creator.divisions.length > 0 
+                    ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
+                    : <FaShieldAlt />}
+                </div>
+                <div>
+                  <div style={{ color: '#fff', fontWeight: 700 }}>{creator.creatorDisplayName}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <FaYoutube style={{ color: '#ff0000', fontSize: '1rem' }} />
+                    {new Date(firstVideo.publishedAt).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
+              <div className={styles.videoFeaturedTitle}>{firstVideo.title}</div>
             </div>
-            <div className={styles.videoFeaturedTitle}>{firstVideo.title}</div>
-          </div>
-        </a>
+          </motion.a>
 
-        {/* Grid of Remaining Videos (Up to 4) */}
-        {remainingVideos.length > 0 && (
-          <div className={styles.videoGrid}>
-            {remainingVideos.map((v, idx) => (
-              <div key={idx} className={styles.contentCard} style={{ display: 'flex', flexDirection: 'column' }}>
-                <div className={styles.contentThumb}>
-                  <img src={v.thumbnailUrl} alt={v.title} />
-                  <div className={styles.playOverlay}>
-                    <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>▶</div>
-                  </div>
-                </div>
-                <div className={styles.contentMeta} style={{ flex: 1 }}>
-                  <div className={styles.contentAvatar}>
-                    {creator.avatar ? <img src={creator.avatar} alt="" /> : creator.username[0]}
-                  </div>
-                  <div className={styles.contentText}>
-                    <div className={styles.contentTitle}>{v.title}</div>
-                    <div className={styles.contentAuthor} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      <FaYoutube style={{ color: '#ff0000' }} />
-                      {new Date(v.publishedAt).toLocaleDateString()}
+          {/* Grid of Remaining Videos (Up to 4) */}
+          {remainingVideos.length > 0 && (
+            <div className={styles.videoGrid}>
+              {remainingVideos.map((v, idx) => (
+                <motion.div 
+                  key={idx} 
+                  className={styles.contentCard} 
+                  style={{ display: 'flex', flexDirection: 'column' }}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                >
+                  <div className={styles.contentThumb}>
+                    <img src={v.thumbnailUrl} alt={v.title} />
+                    <div className={styles.playOverlay}>
+                      <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>▶</div>
                     </div>
                   </div>
-                </div>
-                <a href={v.videoUrl} target="_blank" rel="noreferrer" className={styles.fullLink} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                  <div className={styles.contentMeta} style={{ flex: 1 }}>
+                    <div className={styles.contentAvatar}>
+                      {creator.avatar ? <img src={creator.avatar} alt="" /> : creator.username[0]}
+                    </div>
+                    <div className={styles.contentText}>
+                      <div className={styles.contentTitle}>{v.title}</div>
+                      <div className={styles.contentAuthor} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <FaYoutube style={{ color: '#ff0000' }} />
+                        {new Date(v.publishedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                  <a href={v.videoUrl} target="_blank" rel="noreferrer" className={styles.fullLink} />
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
     </div>
   );
 }

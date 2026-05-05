@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
 import { useToast } from '@/contexts/ToastContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
+import Modal from '@/components/Modal';
 
 
 interface Challenge { _id: string; title: string; description: string; xpReward: number; division: string; active: boolean; allowRepeats: boolean; }
@@ -68,7 +71,11 @@ export default function AdminChallengesPage() {
 
   return (
     <>
-      <div className="animate-fade-up">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={fadeUp}
+      >
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Challenges</h1>
@@ -92,9 +99,17 @@ export default function AdminChallengesPage() {
             <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>No active challenges available</p>
           </div>
         ) : (
-          <div className={styles.challengeGrid}>
+          <motion.div 
+            className={styles.challengeGrid}
+            variants={staggerContainer}
+          >
             {challenges.map(c => (
-              <div key={c._id} className={styles.challengeCard}>
+              <motion.div 
+                key={c._id} 
+                className={styles.challengeCard}
+                variants={fadeUp}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
                 <div className={styles.cardHeader}>
                   <div className={styles.challengeTitle}>{c.title}</div>
                   <div className={styles.xpBadge}>+{c.xpReward} XP</div>
@@ -116,72 +131,64 @@ export default function AdminChallengesPage() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      {showForm && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3 className={styles.challengeTitle} style={{ margin: 0 }}>
-                {editingId ? 'Edit Challenge' : 'Create New Challenge'}
-              </h3>
-              <button className="btn-close" onClick={() => setShowForm(false)}>✕</button>
-            </div>
-            
-            <form onSubmit={handleCreate}>
-              <div className="modal-body">
-                <div className="form-group">
-                  <label className="form-label">Challenge Title *</label>
-                  <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" />
-                </div>
-
-                <div className={styles.formRow}>
-                  <div className="form-group">
-                    <label className="form-label">XP Reward</label>
-                    <input type="number" className="form-input" value={form.xpReward} onChange={e => setForm(p => ({ ...p, xpReward: Number(e.target.value) }))} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Division</label>
-                    <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))}>
-                      {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Challenge Description *</label>
-                  <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide clear objectives..." style={{ resize: 'none' }} />
-                </div>
-
-                <div 
-                  className={styles.premiumToggle} 
-                  onClick={() => setForm(p => ({ ...p, allowRepeats: !p.allowRepeats }))}
-                  style={{ marginTop: '24px' }}
-                >
-                  <div className={styles.toggleBox}>
-                    {form.allowRepeats && <div className={styles.checkmark}>✓</div>}
-                  </div>
-                  <div className={styles.toggleContent}>
-                    <div className={styles.toggleLabel}>ALLOW MULTIPLE COMPLETIONS</div>
-                    <div className={styles.toggleSubtext}>Repeatable</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '20px', marginTop: '32px' }}>
-                  <button type="submit" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
-                    {creating ? <span className="spinner" /> : editingId ? 'UPDATE CHALLENGE' : 'CREATE CHALLENGE'}
-                  </button>
-                  <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
-                </div>
-              </div>
-            </form>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title={editingId ? 'Edit Challenge' : 'Create New Challenge'}
+        footer={
+          <div style={{ display: 'flex', gap: '20px', width: '100%' }}>
+            <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>
+            <button type="submit" form="challenge-form" className="btn btn-primary" disabled={creating} style={{ flex: 1 }}>
+              {creating ? <span className="spinner" /> : editingId ? 'UPDATE CHALLENGE' : 'CREATE CHALLENGE'}
+            </button>
           </div>
-        </div>
-      )}
+        }
+      >
+        <form id="challenge-form" onSubmit={handleCreate}>
+          <div className="form-group">
+            <label className="form-label">Challenge Title *</label>
+            <input required className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Challenge title" />
+          </div>
+
+          <div className={styles.formRow}>
+            <div className="form-group">
+              <label className="form-label">XP Reward</label>
+              <input type="number" className="form-input" value={form.xpReward} onChange={e => setForm(p => ({ ...p, xpReward: Number(e.target.value) }))} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Division</label>
+              <select className="form-input" value={form.division} onChange={e => setForm(p => ({ ...p, division: e.target.value }))}>
+                {['gaming', 'music', 'sport', 'content'].map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Challenge Description *</label>
+            <textarea required className="form-input" rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Provide clear objectives..." style={{ resize: 'none' }} />
+          </div>
+
+          <div 
+            className={styles.premiumToggle} 
+            onClick={() => setForm(p => ({ ...p, allowRepeats: !p.allowRepeats }))}
+            style={{ marginTop: '24px', marginBottom: 0 }}
+          >
+            <div className={styles.toggleBox}>
+              {form.allowRepeats && <div className={styles.checkmark}>✓</div>}
+            </div>
+            <div className={styles.toggleContent}>
+              <div className={styles.toggleLabel}>ALLOW MULTIPLE COMPLETIONS</div>
+              <div className={styles.toggleSubtext}>Repeatable</div>
+            </div>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

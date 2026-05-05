@@ -1,3 +1,6 @@
+'use client';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import MerchClient from './MerchClient';
@@ -20,20 +23,25 @@ export default async function MerchPage() {
         <div className={styles.heroBg} aria-hidden="true" />
         <div className={styles.heroVisualZone} aria-hidden="true" />
 
-        <div className={styles.heroTextContainer}>
-          <span className={`${styles.heroTechTag} animate-fade-down`}>[ COLLECTION // 2026 ]</span>
+        <motion.div 
+          className={styles.heroTextContainer}
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
+          <motion.span className={styles.heroTechTag} variants={fadeUp}>[ COLLECTION // 2026 ]</motion.span>
 
           <h1 className={styles.heroTitleBlock}>
-            <span className={`${styles.titleBHL} animate-fade-up`}>BHL</span>
-            <span className={`${styles.titleMerch} animate-fade-up`} style={{ animationDelay: '0.1s' }}>
+            <motion.span className={styles.titleBHL} variants={fadeUp}>BHL</motion.span>
+            <motion.span className={styles.titleMerch} variants={fadeUp}>
               MERCH
-            </span>
+            </motion.span>
           </h1>
 
-          <p className={`${styles.heroSub} animate-fade-up`} style={{ animationDelay: '0.2s' }}>
+          <motion.p className={styles.heroSub} variants={fadeUp}>
             PREMIUM APPAREL & EXCLUSIVE GEAR
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </section>
 
       <div className="container">

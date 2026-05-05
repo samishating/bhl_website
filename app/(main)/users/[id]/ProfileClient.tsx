@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -122,7 +124,13 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
   return (
     <div className={styles.page}>
       <div className="container" style={{ position: 'relative', zIndex: 5, paddingTop: '120px' }}>
-        <div className={styles.profileHeader}>
+        <motion.div 
+          className={styles.profileHeader}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+        >
           <div className={styles.avatarSection}>
             <div className={styles.mainAvatar}>
               {profile.avatar ? <img src={profile.avatar} alt={profile.username} /> : profile.username[0].toUpperCase()}
@@ -151,9 +159,18 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
                 const url = profile.socialLinks?.[key as keyof typeof profile.socialLinks];
                 if (!url) return null;
                 return (
-                  <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
+                  <motion.a 
+                    key={key} 
+                    href={url} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className={styles.socialIconBtn} 
+                    aria-label={key}
+                    whileHover={{ scale: 1.1, backgroundColor: 'rgba(255, 0, 0, 0.15)' }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     {icon}
-                  </a>
+                  </motion.a>
                 );
               })}
             </div>
@@ -177,17 +194,23 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
               })}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Featured Media Gallery */}
         {profile.featuredLinks && profile.featuredLinks.length > 0 && (
           <div className={styles.mediaSection}>
             <h3 className={styles.sectionTitle}>Featured Media</h3>
-            <div className={styles.mediaGrid}>
+            <motion.div 
+              className={styles.mediaGrid}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={staggerContainer}
+            >
               {profile.featuredLinks.map((media, idx) => {
                 const ytId = getYouTubeId(media.url);
                 return (
-                  <div key={idx} className={styles.mediaCard}>
+                  <motion.div key={idx} className={styles.mediaCard} variants={fadeUp}>
                     {ytId ? (
                       <div className={styles.videoWrapper}>
                         <iframe 
@@ -206,10 +229,10 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
                     <div className={styles.mediaInfo}>
                       <div className={styles.mediaTitle}>{media.title || 'Untitled Content'}</div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </div>
         )}
 

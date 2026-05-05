@@ -2,6 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '../layout';
 import { useToast } from '@/contexts/ToastContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
+import Modal from '@/components/Modal';
 import styles from './page.module.css';
 
 interface Order {
@@ -159,7 +162,11 @@ export default function AdminOrdersPage() {
 
   return (
     <>
-      <div className="animate-fade-up">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={fadeUp}
+      >
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Order Management</h1>
@@ -191,20 +198,27 @@ export default function AdminOrdersPage() {
               )}
             </div>
 
-            {/* Suggestions Dropdown */}
+          <AnimatePresence>
             {showSuggestions && (
-              <div style={{
-                position: 'absolute',
-                top: 'calc(100% + 6px)',
-                left: 0,
-                right: 0,
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border)',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                zIndex: 200,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-              }}>
+              <motion.div 
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={scaleIn}
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  left: 0,
+                  right: 0,
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  zIndex: 200,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                  transformOrigin: 'top center'
+                }}
+              >
                 {/* "All Orders" option */}
                 <button
                   onClick={clearFilter}
@@ -279,8 +293,9 @@ export default function AdminOrdersPage() {
                     </button>
                   ))
                 )}
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
           </div>
         </div>
 
@@ -394,220 +409,215 @@ export default function AdminOrdersPage() {
             </table>
           </div>
         )}
-      </div>
+      </motion.div>
+
 
       {selectedOrder && (
-        <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
-          <div className="modal-content" style={{ maxWidth: '700px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <div>
-                <h3 className={styles.modalTitle}>{isEditing ? 'Modify Order' : 'Order Details'}</h3>
-                <p className={styles.modalSub}>#{selectedOrder._id.slice(-8).toUpperCase()} • {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+        <Modal
+          isOpen={!!selectedOrder}
+          onClose={() => { setSelectedOrder(null); setIsEditing(false); }}
+          title={isEditing ? 'Modify Order' : 'Order Details'}
+          maxWidth="700px"
+          footer={
+            isEditing ? (
+              <div style={{ display: 'flex', gap: '20px', width: '100%' }}>
+                <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsEditing(false)}>CANCEL</button>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleUpdateOrder}>SAVE CHANGES</button>
               </div>
-              <button onClick={() => { setSelectedOrder(null); setIsEditing(false); }} className="btn-close">✕</button>
-            </div>
-
-            <div className="modal-body" style={{ gap: '2.5rem' }}>
-              {!isEditing && (
-                <div className={styles.detailSection}>
-                  <div className={styles.sectionLabel}>Customer & Shipping</div>
-                  <div className={styles.shippingGrid}>
-                    <div className={styles.customerCard}>
-                      <div className={styles.avatarPlaceholder}>{selectedOrder.customerInfo.name[0].toUpperCase()}</div>
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{selectedOrder.customerInfo.email}</div>
-                      </div>
-                    </div>
-                    <div className={styles.addressBlock}>
-                      <div className={styles.infoLabel}>Delivery Address</div>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>{selectedOrder.customerInfo.address}</p>
-                      <div style={{ marginTop: '0.75rem', fontWeight: 600, color: 'var(--brand-red)', fontSize: '0.85rem' }}>
-                        📞 {selectedOrder.customerInfo.phone}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className={styles.detailSection}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div className={styles.sectionLabel}>Manifest ({selectedOrder.items.length} items)</div>
-                  {!isEditing && selectedOrder.status === 'pending' && (
-                    <button 
-                      className="btn btn-ghost btn-sm" 
-                      onClick={() => { setEditItems([...selectedOrder.items]); setIsEditing(true); }}
-                      style={{ fontSize: '0.7rem' }}
-                    >
-                      ✏️ EDIT ITEMS
-                    </button>
-                  )}
-                </div>
-                <div className={styles.itemList}>
-                  {selectedOrder.items.map((item, idx) => {
-                    const productInfo = productStocks[item.productId];
-                    const currentSizeStock = productInfo?.sizes?.find((s: any) => s.size === item.size)?.stock ?? productInfo?.stock;
-                    
-                    return (
-                      <div key={idx} className={styles.orderItemRow} style={{ alignItems: 'flex-start' }}>
-                        <div className={styles.itemMain}>
-                          <div className={styles.itemQty}>x{item.quantity}</div>
-                          <div style={{ flex: 1 }}>
-                            <div className={styles.itemName}>
-                              {item.name}
-                              {(!isEditing && item.size) && <span style={{ marginLeft: '8px', color: 'var(--brand-red)', fontSize: '0.8rem', fontWeight: 800 }}>({item.size})</span>}
-                            </div>
-                            
-                            {isEditing ? (
-                              <div style={{ marginTop: '0.75rem' }}>
-                                <label className="form-label" style={{ fontSize: '0.65rem' }}>ADJUST SIZE</label>
-                                <select 
-                                  className="form-input" 
-                                  value={editItems[idx]?.size || ''} 
-                                  onChange={e => {
-                                    const newItems = [...editItems];
-                                    newItems[idx] = { ...newItems[idx], size: e.target.value };
-                                    setEditItems(newItems);
-                                  }}
-                                  style={{ minHeight: '38px', fontSize: '0.85rem', fontFamily: 'Rajdhani', fontWeight: 700 }}
-                                >
-                                  {productInfo?.sizes?.map((s: any) => (
-                                    <option key={s.size} value={s.size}>
-                                      {s.size} ({s.stock} left)
-                                    </option>
-                                  ))}
-                                  {!productInfo?.sizes?.length && <option value="">No sizes available</option>}
-                                </select>
-                              </div>
-                            ) : (
-                              productInfo && (
-                                <div style={{ fontSize: '0.75rem', marginTop: '0.4rem', display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
-                                  <span style={{ color: currentSizeStock < item.quantity ? 'var(--brand-red)' : '#4eff91', fontWeight: 700 }}>
-                                    STOCK LEFT: {currentSizeStock}
-                                  </span>
-                                  {productInfo.sizes && productInfo.sizes.length > 0 && (
-                                    <div style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-muted)' }}>
-                                      (
-                                      {productInfo.sizes.map((s: any) => (
-                                        <span key={s.size} style={{ color: s.size === item.size ? 'white' : 'inherit', fontWeight: s.size === item.size ? 800 : 400 }}>
-                                          {s.size}: {s.stock}
-                                        </span>
-                                      ))}
-                                      )
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                            )}
-                          </div>
-                        </div>
-                        <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {selectedOrder.referralCode && (
-                <div className={styles.detailSection}>
-                  <div className={styles.sectionLabel}>Promo Code Applied</div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '1rem',
-                    background: 'rgba(0,255,100,0.06)', border: '1px solid rgba(0,255,100,0.2)',
-                    borderRadius: '12px', padding: '1rem 1.25rem', marginTop: '0.75rem',
-                  }}>
-                    <div style={{ fontSize: '1.5rem' }}>🏷️</div>
-                    <div>
-                      <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.15em', color: '#4eff91' }}>
-                        {selectedOrder.referralCode}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                        {selectedOrder.discountApplied}% discount applied to this order
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className={styles.summarySection}>
-                <div className={styles.statusGroup}>
-                  <div className={styles.infoLabel}>Logistics Status</div>
-                  <span className={`${styles.statusBadge} ${styles[selectedOrder.status]}`}>{selectedOrder.status}</span>
-                </div>
-                <div className={styles.totalGroup}>
-                  <div className={styles.infoLabel}>Total Valuation</div>
-                  <div className={styles.grandTotal}>${selectedOrder.total.toFixed(2)}</div>
-                  {selectedOrder.discountApplied && (
-                    <div style={{ fontSize: '0.75rem', color: '#4eff91', fontWeight: 700, marginTop: '0.25rem' }}>
-                      After {selectedOrder.discountApplied}% discount
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="modal-footer">
-              {isEditing ? (
-                <>
-                  <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setIsEditing(false)}>CANCEL</button>
-                  <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleUpdateOrder}>SAVE CHANGES</button>
-                </>
-              ) : (
-                <>
-                  <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>CLOSE</button>
-                  
-                  {selectedOrder.status === 'pending' && (
-                    <>
-                      <button 
-                        className="btn btn-ghost" 
-                        style={{ flex: 1, color: 'var(--brand-red)' }}
-                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
-                      >
-                        CANCEL ORDER
-                      </button>
-                      <button 
-                        className="btn btn-primary" 
-                        style={{ flex: 1 }}
-                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'confirmed'); setSelectedOrder(null); }}
-                      >
-                        CONFIRM ORDER
-                      </button>
-                    </>
-                  )}
-
-                  {selectedOrder.status === 'confirmed' && (
-                    <>
-                      <button 
-                        className="btn btn-ghost" 
-                        style={{ flex: 1, color: 'var(--brand-red)' }}
-                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
-                      >
-                        CANCEL ORDER
-                      </button>
-                      <button 
-                        className="btn btn-primary" 
-                        style={{ flex: 1 }}
-                        onClick={() => { handleStatusUpdate(selectedOrder._id, 'shipped'); setSelectedOrder(null); }}
-                      >
-                        SHIPPED
-                      </button>
-                    </>
-                  )}
-
-                  {selectedOrder.status === 'shipped' && (
+            ) : (
+              <div style={{ display: 'flex', gap: '20px', width: '100%' }}>
+                <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setSelectedOrder(null)}>CLOSE</button>
+                
+                {selectedOrder.status === 'pending' && (
+                  <>
                     <button 
                       className="btn btn-ghost" 
                       style={{ flex: 1, color: 'var(--brand-red)' }}
                       onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
                     >
-                      CANCEL & REVERT STOCK
+                      CANCEL ORDER
                     </button>
-                  )}
-                </>
-              )}
+                    <button 
+                      className="btn btn-primary" 
+                      style={{ flex: 1 }}
+                      onClick={() => { handleStatusUpdate(selectedOrder._id, 'confirmed'); setSelectedOrder(null); }}
+                    >
+                      CONFIRM ORDER
+                    </button>
+                  </>
+                )}
+
+                {selectedOrder.status === 'confirmed' && (
+                  <>
+                    <button 
+                      className="btn btn-ghost" 
+                      style={{ flex: 1, color: 'var(--brand-red)' }}
+                      onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
+                    >
+                      CANCEL ORDER
+                    </button>
+                    <button 
+                      className="btn btn-primary" 
+                      style={{ flex: 1 }}
+                      onClick={() => { handleStatusUpdate(selectedOrder._id, 'shipped'); setSelectedOrder(null); }}
+                    >
+                      SHIPPED
+                    </button>
+                  </>
+                )}
+
+                {selectedOrder.status === 'shipped' && (
+                  <button 
+                    className="btn btn-ghost" 
+                    style={{ flex: 1, color: 'var(--brand-red)' }}
+                    onClick={() => { handleStatusUpdate(selectedOrder._id, 'cancelled'); setSelectedOrder(null); }}
+                  >
+                    CANCEL & REVERT STOCK
+                  </button>
+                )}
+              </div>
+            )
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+            {!isEditing && (
+              <div className={styles.detailSection}>
+                <div className={styles.sectionLabel}>Customer & Shipping</div>
+                <div className={styles.shippingGrid}>
+                  <div className={styles.customerCard}>
+                    <div className={styles.avatarPlaceholder}>{selectedOrder.customerInfo.name[0].toUpperCase()}</div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'white' }}>{selectedOrder.customerInfo.name}</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{selectedOrder.customerInfo.email}</div>
+                    </div>
+                  </div>
+                  <div className={styles.addressBlock}>
+                    <div className={styles.infoLabel}>Delivery Address</div>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>{selectedOrder.customerInfo.address}</p>
+                    <div style={{ marginTop: '0.75rem', fontWeight: 600, color: 'var(--brand-red)', fontSize: '0.85rem' }}>
+                      📞 {selectedOrder.customerInfo.phone}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className={styles.detailSection}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className={styles.sectionLabel}>Manifest ({selectedOrder.items.length} items)</div>
+                {!isEditing && selectedOrder.status === 'pending' && (
+                  <button 
+                    className="btn btn-ghost btn-sm" 
+                    onClick={() => { setEditItems([...selectedOrder.items]); setIsEditing(true); }}
+                    style={{ fontSize: '0.7rem' }}
+                  >
+                    ✏️ EDIT ITEMS
+                  </button>
+                )}
+              </div>
+              <div className={styles.itemList}>
+                {selectedOrder.items.map((item, idx) => {
+                  const productInfo = productStocks[item.productId];
+                  const currentSizeStock = productInfo?.sizes?.find((s: any) => s.size === item.size)?.stock ?? productInfo?.stock;
+                  
+                  return (
+                    <div key={idx} className={styles.orderItemRow} style={{ alignItems: 'flex-start' }}>
+                      <div className={styles.itemMain}>
+                        <div className={styles.itemQty}>x{item.quantity}</div>
+                        <div style={{ flex: 1 }}>
+                          <div className={styles.itemName}>
+                            {item.name}
+                            {(!isEditing && item.size) && <span style={{ marginLeft: '8px', color: 'var(--brand-red)', fontSize: '0.8rem', fontWeight: 800 }}>({item.size})</span>}
+                          </div>
+                          
+                          {isEditing ? (
+                            <div style={{ marginTop: '0.75rem' }}>
+                              <label className="form-label" style={{ fontSize: '0.65rem' }}>ADJUST SIZE</label>
+                              <select 
+                                className="form-input" 
+                                value={editItems[idx]?.size || ''} 
+                                onChange={e => {
+                                  const newItems = [...editItems];
+                                  newItems[idx] = { ...newItems[idx], size: e.target.value };
+                                  setEditItems(newItems);
+                                }}
+                                style={{ minHeight: '38px', fontSize: '0.85rem', fontFamily: 'Rajdhani', fontWeight: 700 }}
+                              >
+                                {productInfo?.sizes?.map((s: any) => (
+                                  <option key={s.size} value={s.size}>
+                                    {s.size} ({s.stock} left)
+                                  </option>
+                                ))}
+                                {!productInfo?.sizes?.length && <option value="">No sizes available</option>}
+                              </select>
+                            </div>
+                          ) : (
+                            productInfo && (
+                              <div style={{ fontSize: '0.75rem', marginTop: '0.4rem', display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+                                <span style={{ color: currentSizeStock < item.quantity ? 'var(--brand-red)' : '#4eff91', fontWeight: 700 }}>
+                                  STOCK LEFT: {currentSizeStock}
+                                </span>
+                                {productInfo.sizes && productInfo.sizes.length > 0 && (
+                                  <div style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-muted)' }}>
+                                    (
+                                    {productInfo.sizes.map((s: any) => (
+                                      <span key={s.size} style={{ color: s.size === item.size ? 'white' : 'inherit', fontWeight: s.size === item.size ? 800 : 400 }}>
+                                        {s.size}: {s.stock}
+                                      </span>
+                                    ))}
+                                    )
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                      <div className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {selectedOrder.referralCode && (
+              <div className={styles.detailSection}>
+                <div className={styles.sectionLabel}>Promo Code Applied</div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '1rem',
+                  background: 'rgba(0,255,100,0.06)', border: '1px solid rgba(0,255,100,0.2)',
+                  borderRadius: '12px', padding: '1rem 1.25rem', marginTop: '0.75rem',
+                }}>
+                  <div style={{ fontSize: '1.5rem' }}>🏷️</div>
+                  <div>
+                    <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.15em', color: '#4eff91' }}>
+                      {selectedOrder.referralCode}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                      {selectedOrder.discountApplied}% discount applied to this order
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className={styles.summarySection}>
+              <div className={styles.statusGroup}>
+                <div className={styles.infoLabel}>Logistics Status</div>
+                <span className={`${styles.statusBadge} ${styles[selectedOrder.status]}`}>{selectedOrder.status}</span>
+              </div>
+              <div className={styles.totalGroup}>
+                <div className={styles.infoLabel}>Total Valuation</div>
+                <div className={styles.grandTotal}>${selectedOrder.total.toFixed(2)}</div>
+                {selectedOrder.discountApplied && (
+                  <div style={{ fontSize: '0.75rem', color: '#4eff91', fontWeight: 700, marginTop: '0.25rem' }}>
+                    After {selectedOrder.discountApplied}% discount
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </>
   );

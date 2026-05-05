@@ -8,6 +8,8 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import Modal from '@/components/Modal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 
 interface User {
   _id: string; username: string; email: string; avatar: string; xp: number; level: number;
@@ -91,7 +93,6 @@ export default function AdminMembersPage() {
       youtubeUrl: user.socialLinks?.youtube || '',
       creatorDisplayName: user.creatorDisplayName || '',
     });
-    // Load cached videos for this user
     fetch(`/api/admin/youtube/videos/${user._id}`)
       .then(r => r.json())
       .then(d => setCachedVideos(Array.isArray(d) ? d : []))
@@ -136,7 +137,6 @@ export default function AdminMembersPage() {
       setSyncResult({ videosFetched: data.videosFetched || 0, error: data.error });
       if (!data.error) {
         showToast(`Synced ${data.videosFetched} videos`, 'success');
-        // Refresh cached videos list
         fetch(`/api/admin/youtube/videos/${editingUser._id}`)
           .then(r => r.json())
           .then(d => setCachedVideos(Array.isArray(d) ? d : []));
@@ -167,7 +167,11 @@ export default function AdminMembersPage() {
   );
 
   return (
-    <div className="animate-fade-up">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={fadeUp}
+    >
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Members Management</h1>
@@ -188,7 +192,7 @@ export default function AdminMembersPage() {
         <div style={{ textAlign: 'center', padding: '5rem' }}><span className="spinner" /></div>
       ) : (
         <div className="table-container">
-          <table>
+          <motion.table variants={staggerContainer} initial="hidden" animate="visible">
             <thead>
               <tr>
                 <th>Member</th>
@@ -200,7 +204,7 @@ export default function AdminMembersPage() {
             </thead>
             <tbody>
               {filtered.map(u => (
-                <tr key={u._id}>
+                <motion.tr key={u._id} variants={fadeUp}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <div className="avatar avatar-sm">
@@ -236,10 +240,10 @@ export default function AdminMembersPage() {
                   <td>
                     <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(u)}>Configure</button>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
-          </table>
+          </motion.table>
         </div>
       )}
 
@@ -255,7 +259,6 @@ export default function AdminMembersPage() {
         }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Visibility Toggles */}
           <ToggleSwitch
             checked={editForm.isPublic}
             onChange={v => setEditForm({ ...editForm, isPublic: v })}
@@ -269,7 +272,6 @@ export default function AdminMembersPage() {
             sublabel="Highlight in the featured section and hub hero"
           />
 
-          {/* Creator Display Name */}
           <div className="form-group">
             <label className="form-label">Creator Display Name</label>
             <input
@@ -281,7 +283,6 @@ export default function AdminMembersPage() {
             />
           </div>
 
-          {/* YouTube Section */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
               <FaYoutube style={{ color: '#ff0000', fontSize: '1.3rem' }} />
@@ -308,7 +309,6 @@ export default function AdminMembersPage() {
                   onChange={e => setEditForm({ ...editForm, youtubeChannelId: e.target.value })} />
               </div>
 
-              {/* Sync Button */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <button
                   className="btn btn-primary btn-sm"
@@ -341,15 +341,14 @@ export default function AdminMembersPage() {
             </div>
           </div>
 
-          {/* Cached Videos */}
           {cachedVideos.length > 0 && (
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px' }}>
               <div style={{ fontFamily: 'Rajdhani', fontWeight: 700, fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>
                 Cached Videos ({cachedVideos.length})
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <motion.div variants={staggerContainer} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {cachedVideos.map(v => (
-                  <div key={v.videoId} style={{
+                  <motion.div key={v.videoId} variants={fadeUp} style={{
                     display: 'flex', alignItems: 'center', gap: '12px',
                     padding: '12px', borderRadius: '10px',
                     background: 'rgba(255,255,255,0.02)',
@@ -377,13 +376,12 @@ export default function AdminMembersPage() {
                         title={v.isHidden ? 'Show' : 'Hide'}
                       >{v.isHidden ? '👁' : '🚫'}</button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           )}
 
-          {/* Featured Media Links */}
           <div className={styles.featuredSection}>
             <div className={styles.featuredHeader}>
               <label className="form-label" style={{ margin: 0 }}>Featured Media Links</label>
@@ -425,6 +423,6 @@ export default function AdminMembersPage() {
           </div>
         </div>
       </Modal>
-    </div>
+    </motion.div>
   );
 }

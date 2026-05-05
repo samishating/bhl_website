@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useAdmin } from '../layout';
+import { motion } from 'framer-motion';
+import { fadeUp } from '@/lib/animations';
 import styles from './page.module.css';
 
 import ConfirmationModal from '@/components/ConfirmationModal';
@@ -77,7 +79,11 @@ export default function AdminSubmissionsPage() {
 
   return (
     <>
-      <div className="animate-fade-up">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={fadeUp}
+      >
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Challenge Submissions</h1>
@@ -180,7 +186,8 @@ export default function AdminSubmissionsPage() {
             </table>
           </div>
         )}
-      </div>
+      </motion.div>
+
 
       <ConfirmationModal
         isOpen={!!confirmData}

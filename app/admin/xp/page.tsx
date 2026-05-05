@@ -4,6 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { calculateLevel, getLevelTitle, xpForNextLevel } from '@/lib/xp';
 import Modal from '@/components/Modal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
 
 interface User {
@@ -14,6 +16,8 @@ interface User {
   xp: number;
   level: number;
   role: string;
+  createdAt: string;
+  divisions: string[];
 }
 
 interface ProgressionLevel {
@@ -32,12 +36,10 @@ export default function AdminXPPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   
-  // User XP Editing State
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newXp, setNewXp] = useState<number>(0);
   const [isSavingUser, setIsSavingUser] = useState(false);
 
-  // System Progression State
   const [isSavingSystem, setIsSavingSystem] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempData, setTempData] = useState<ProgressionLevel | null>(null);
@@ -184,31 +186,42 @@ export default function AdminXPPage() {
   }
 
   return (
-    <div className="animate-fade-up">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={fadeUp}
+    >
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Progression Sector</h1>
           <p className={styles.sub}>Manage global level architecture and member experience</p>
         </div>
         <div className={styles.tabContainer}>
-          {/* Sliding Highlight */}
-          <div 
-            className={styles.tabHighlight} 
-            style={{ 
-              transform: `translateX(${activeTab === 'system' ? '0%' : '100%'})` 
-            }} 
-          />
           <button 
             className={`${styles.tabBtn} ${activeTab === 'system' ? styles.active : ''}`}
             onClick={() => setActiveTab('system')}
           >
             Level System
+            {activeTab === 'system' && (
+              <motion.div 
+                layoutId="adminXpTab"
+                className={styles.tabHighlight}
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
           </button>
           <button 
             className={`${styles.tabBtn} ${activeTab === 'users' ? styles.active : ''}`}
             onClick={() => setActiveTab('users')}
           >
             Personnel XP
+            {activeTab === 'users' && (
+              <motion.div 
+                layoutId="adminXpTab"
+                className={styles.tabHighlight}
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
           </button>
         </div>
       </div>
@@ -305,11 +318,19 @@ export default function AdminXPPage() {
             />
           </div>
 
-          <div className={styles.userGrid}>
+          <motion.div 
+            className={styles.userGrid}
+            variants={staggerContainer}
+          >
             {filteredUsers.map(u => {
               const xpData = xpForNextLevel(u.xp, currentThresholds);
               return (
-                <div key={u._id} className={styles.userCard}>
+                <motion.div 
+                  key={u._id} 
+                  className={styles.userCard}
+                  variants={fadeUp}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                >
                   <div className={styles.cardTop}>
                     <div className={styles.avatarContainer}>
                       <div className={styles.avatar}>
@@ -351,10 +372,10 @@ export default function AdminXPPage() {
                       Override XP
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </>
       )}
 
@@ -372,34 +393,34 @@ export default function AdminXPPage() {
           </>
         }
       >
-              <div className={styles.modalXpInfo}>
-                <div>
-                  <div className={styles.previewLabel}>Current XP</div>
-                  <div className={styles.previewValue}>{editingUser?.xp.toLocaleString()}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div className={styles.previewLabel}>Preview Level</div>
-                  <div className={`${styles.previewValue} ${newXp !== editingUser?.xp ? styles.new : ''}`}>
-                    Lv.{previewLevel}
-                  </div>
-                </div>
-              </div>
+        <div className={styles.modalXpInfo}>
+          <div>
+            <div className={styles.previewLabel}>Current XP</div>
+            <div className={styles.previewValue}>{editingUser?.xp.toLocaleString()} dh</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div className={styles.previewLabel}>Preview Level</div>
+            <div className={`${styles.previewValue} ${newXp !== editingUser?.xp ? styles.new : ''}`}>
+              Lv.{previewLevel}
+            </div>
+          </div>
+        </div>
 
-              <div className="form-group">
-                <label className="form-label">Target XP Value</label>
-                <input 
-                  type="number"
-                  className="form-input" 
-                  value={newXp} 
-                  onChange={e => setNewXp(Number(e.target.value))}
-                  disabled={isSavingUser}
-                  min="0"
-                />
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                  Rank: {getLevelTitle(previewLevel, currentTitles)}
-                </p>
-              </div>
+        <div className="form-group">
+          <label className="form-label">Target XP Value</label>
+          <input 
+            type="number"
+            className="form-input" 
+            value={newXp} 
+            onChange={e => setNewXp(Number(e.target.value))}
+            disabled={isSavingUser}
+            min="0"
+          />
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            Rank: {getLevelTitle(previewLevel, currentTitles)}
+          </p>
+        </div>
       </Modal>
-    </div>
+    </motion.div>
   );
 }

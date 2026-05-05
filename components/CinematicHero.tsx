@@ -1,7 +1,7 @@
-'use client';
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion, Variants, BezierDefinition } from 'framer-motion';
 import styles from './CinematicHero.module.css';
 
 interface CinematicHeroProps {
@@ -11,29 +11,45 @@ interface CinematicHeroProps {
   };
 }
 
-// Splits a word into individual letter spans with staggered animation delays
+const customEase: BezierDefinition = [0.215, 0.61, 0.355, 1];
+
+const letterVariants: Variants = {
+  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      delay: i * 0.05,
+      duration: 0.8,
+      ease: customEase,
+    },
+  }),
+};
+
 function SplitWord({
   word,
   className,
-  baseDelay,        // seconds — when the first letter starts
-  letterDelay = 0.055, // seconds between each letter
+  delayOffset = 0,
 }: {
   word: string;
   className: string;
-  baseDelay: number;
-  letterDelay?: number;
+  delayOffset?: number;
 }) {
   return (
     <span className={className} aria-label={word}>
       {word.split('').map((char, i) => (
-        <span
+        <motion.span
           key={i}
           className={styles.letter}
-          style={{ animationDelay: `${baseDelay + i * letterDelay}s` }}
+          custom={i + delayOffset}
+          initial="hidden"
+          animate="visible"
+          variants={letterVariants}
           aria-hidden="true"
         >
           {char}
-        </span>
+        </motion.span>
       ))}
     </span>
   );
@@ -116,15 +132,6 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // "BROTHERHOOD" = 12 letters × 0.055s = ~0.66s duration
-  // Logo starts after brotherhood finishes animating (0.3 + 0.66 = ~1.0s)
-  // "LEGACY" starts shortly after logo begins (1.1s)
-  const brotherhoodStart = 0.3;
-  const brotherhoodLetters = 'Brotherhood'.length;
-  const letterDelay = 0.055;
-  const logoStart = brotherhoodStart + brotherhoodLetters * letterDelay + 0.05;
-  const legacyStart = logoStart + 0.15;
-
   return (
     <section className={styles.hero}>
       {/* Background Image */}
@@ -146,15 +153,24 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
         <SplitWord
           word="Brotherhood"
           className={`${styles.line} ${styles.lineBrotherhood}`}
-          baseDelay={brotherhoodStart}
-          letterDelay={letterDelay}
+          delayOffset={6} // Start after a short initial pause
         />
 
         {/* Rising Logo */}
-        <div
+        <motion.div
           className={styles.logoWrap}
           ref={logoRef}
-          style={{ animationDelay: `${logoStart}s, ${logoStart + 1.1}s` }}
+          initial={{ opacity: 0, scale: 0.8, y: 100 }}
+          animate={{ 
+            opacity: 1, 
+            scale: 1, 
+            y: 0,
+          }}
+          transition={{ 
+            delay: 1.2, 
+            duration: 1.2, 
+            ease: [0.16, 1, 0.3, 1] 
+          }}
         >
           <Image
             src="/brand/logo.webp"
@@ -164,23 +180,45 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
             className={styles.logo}
             priority
           />
-          <div className={styles.logoGlow} />
-        </div>
+          <motion.div 
+            className={styles.logoGlow} 
+            animate={{ 
+              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              duration: 4, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+          />
+        </motion.div>
 
         {/* Line 2 — letter-by-letter */}
         <SplitWord
           word="Legacy"
           className={`${styles.line} ${styles.lineLegacy}`}
-          baseDelay={legacyStart}
-          letterDelay={letterDelay}
+          delayOffset={20} // Start after Brotherhood and Logo have progress
         />
       </div>
 
       {/* Subtitle */}
-      <p className={styles.sub}>Rise. Compete. Dominate.</p>
+      <motion.p 
+        className={styles.sub}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2.2, duration: 1 }}
+      >
+        Rise. Compete. Dominate.
+      </motion.p>
 
       {/* CTAs */}
-      <div className={styles.ctas}>
+      <motion.div 
+        className={styles.ctas}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2.5, duration: 0.8 }}
+      >
         <Link href="/register" className="btn btn-primary btn-lg" id="hero-join-btn">
           Join the Brotherhood
         </Link>
@@ -193,12 +231,17 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
         }}>
           Explore Divisions
         </Link>
-      </div>
+      </motion.div>
 
       {/* Scroll indicator */}
-      <div className={styles.scroll}>
+      <motion.div 
+        className={styles.scroll}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 3, duration: 1 }}
+      >
         <div className={styles.scrollLine} />
-      </div>
+      </motion.div>
     </section>
   );
 }

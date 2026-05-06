@@ -1,8 +1,17 @@
+import type { Metadata } from 'next';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import MerchClient from './MerchClient';
 import MerchHero from './MerchHero';
 import styles from './page.module.css';
+
+export const metadata: Metadata = {
+  title: 'Official Merch Store',
+  description: 'Shop the official Brotherhood Legacy collection. Limited drops, premium apparel, and elite gear for the BHL community.',
+  alternates: {
+    canonical: '/merch',
+  }
+};
 
 
 async function getProducts() {

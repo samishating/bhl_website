@@ -22,13 +22,28 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Brotherhood Legacy — BHL | Community Platform',
-  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, rise through the ranks.',
-  keywords: 'brotherhood legacy, bhl, community, gaming, music, sport, content',
+  metadataBase: new URL('https://bhl-website.vercel.app'),
+  title: {
+    default: 'Brotherhood Legacy — BHL | Community Platform',
+    template: '%s | Brotherhood Legacy — BHL'
+  },
+  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, and build your legacy.',
+  keywords: ['brotherhood legacy', 'bhl', 'gaming community', 'content creators', 'music artists', 'esports', 'ranking system'],
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Brotherhood Legacy — BHL',
     description: 'Join the Brotherhood. Rise through the ranks.',
+    url: 'https://bhl-website.vercel.app',
+    siteName: 'Brotherhood Legacy',
+    locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Brotherhood Legacy — BHL',
+    description: 'Join the Brotherhood. Rise through the ranks.',
   },
 };
 

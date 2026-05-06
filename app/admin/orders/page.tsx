@@ -38,7 +38,8 @@ export default function AdminOrdersPage() {
   const [productStocks, setProductStocks] = useState<Record<string, any>>({});
   const [searchCode, setSearchCode] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null); // null = all
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [showThisMonthOnly, setShowThisMonthOnly] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const { refreshCounts, setGlobalLoading } = useAdmin();
 
@@ -132,9 +133,18 @@ export default function AdminOrdersPage() {
   };
 
   // Filter logic
-  const filtered = activeFilter
-    ? orders.filter(o => o.referralCode === activeFilter)
-    : orders;
+  const filtered = orders.filter(o => {
+    const matchesReferral = !activeFilter || o.referralCode === activeFilter;
+    if (!matchesReferral) return false;
+    
+    if (showThisMonthOnly) {
+      const now = new Date();
+      const orderDate = new Date(o.createdAt);
+      return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+    }
+    
+    return true;
+  });
 
   // Suggestions: filter referrals by search input and enrich with count
   const enriched = referrals.map(r => ({
@@ -173,11 +183,34 @@ export default function AdminOrdersPage() {
             <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} orders pending • {promoCount} with promo code</p>
           </div>
 
-          {/* Referral Code Search Field */}
-          <div ref={searchRef} style={{ position: 'relative', width: '280px' }}>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
-              Filter by Referral Code
-            </label>
+          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-end' }}>
+            {/* This Month Toggle */}
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ display: 'block', fontSize: '0.7rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
+                Timeframe
+              </label>
+              <button 
+                className={`btn ${showThisMonthOnly ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setShowThisMonthOnly(!showThisMonthOnly)}
+                style={{ 
+                  height: '42px', 
+                  minWidth: '140px',
+                  background: showThisMonthOnly ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                  borderColor: showThisMonthOnly ? 'var(--brand-red)' : 'var(--border)',
+                  color: showThisMonthOnly ? 'white' : 'var(--text-muted)',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.1em'
+                }}
+              >
+                {showThisMonthOnly ? '✓ THIS MONTH' : 'ALL TIME'}
+              </button>
+            </div>
+
+            {/* Referral Code Search Field */}
+            <div ref={searchRef} style={{ position: 'relative', width: '280px' }}>
+              <label style={{ display: 'block', fontSize: '0.7rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
+                Filter by Referral Code
+              </label>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <span style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)', fontSize: '0.9rem', pointerEvents: 'none' }}>🔍</span>
               <input
@@ -298,6 +331,7 @@ export default function AdminOrdersPage() {
           </AnimatePresence>
           </div>
         </div>
+      </div>
 
         {/* Active filter pill */}
         {activeFilter && (

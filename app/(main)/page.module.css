@@ -1,8 +1,7 @@
 /* ─── Hero — managed by CinematicHero.module.css ─────────── */
 .heroStickyWrapper {
   position: relative;
-  height: 200vh; /* Hero sticks exactly until the Divisions panel reaches the top of the viewport */
-  margin-bottom: -100vh; /* Collapse the extra 100vh of scroll space so the next section starts immediately */
+  height: auto;
   z-index: 1;
 }
 
@@ -11,7 +10,6 @@
   position: relative;
   z-index: 3;
   min-height: 100vh;
-  margin-top: -2vh; /* very small overlap */
   padding: 120px clamp(24px, 4vw, 60px) 96px;
   background: 
     radial-gradient(ellipse 80% 50% at 50% 10%, rgba(40, 0, 0, 0.4) 0%, transparent 70%),

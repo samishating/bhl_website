@@ -33,6 +33,7 @@ export const adminLinks: AdminLink[] = [
   { href: '/admin/products', label: 'Products', icon: '/ICONS/PRODUCTS.svg' },
   { href: '/admin/orders', label: 'Orders', icon: '/ICONS/LIST PRODUCTS.svg' },
   { href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/REFERRALS.svg', superOnly: true },
+  { href: '/admin/tags', label: 'Tags & Badges', icon: '/ICONS/LIST PRODUCTS.svg' },
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {

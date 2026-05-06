@@ -196,6 +196,13 @@ export default function ProfilePage() {
                       <span className="badge badge-red">Level {user.level}</span>
                       <span className="badge badge-violet">{user.role}</span>
                     </div>
+                    <div className={styles.divisionTags}>
+                      {user.divisions.map(d => (
+                        <span key={d} className={`division-tag tag-${d}`}>
+                          {d.replace(/_/g, ' ')}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

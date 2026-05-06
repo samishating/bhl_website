@@ -60,7 +60,7 @@ const UserSchema = new Schema<IUser>({
     sport: { type: Number, default: 0 },
     content: { type: Number, default: 0 },
   },
-  divisions: [{ type: String, enum: ['gaming', 'music', 'sport', 'content'] }],
+  divisions: [{ type: String, enum: ['gaming', 'music', 'sport', 'content', 'gaming_creator', 'music_creator', 'sport_creator', 'content_creator'] }],
   badges: [{ type: String }],
   role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },
   lastLogin: { type: Date, default: null },

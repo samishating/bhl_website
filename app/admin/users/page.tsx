@@ -180,7 +180,9 @@ export default function AdminUsersPage() {
 
                 <div className={styles.divisionsRow}>
                   {u.divisions.length > 0 ? u.divisions.map(d => (
-                    <span key={d} className={`division-tag ${divTagClass[d] || ''}`}>{d}</span>
+                    <span key={d} className={`division-tag ${divTagClass[d] || ''}`}>
+                      {d.replace(/_/g, ' ')}
+                    </span>
                   )) : <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>No Division Assigned</span>}
                 </div>
 
@@ -215,7 +217,14 @@ export default function AdminUsersPage() {
             className="form-input" 
             value={editForm.username} 
             onChange={e => setEditForm({ ...editForm, username: e.target.value })} 
+            disabled={currentUser?.role !== 'superadmin'}
+            style={currentUser?.role !== 'superadmin' ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
           />
+          {currentUser?.role !== 'superadmin' && (
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              Only Superadmins can modify identities.
+            </p>
+          )}
         </div>
 
         <div className="form-group">

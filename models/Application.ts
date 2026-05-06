@@ -9,6 +9,7 @@ export interface IApplication extends Document {
   motivation: string;
   links: string;
   status: 'pending' | 'approved' | 'rejected';
+  type: 'member' | 'creator';
   processedBy?: mongoose.Types.ObjectId;
   processedAt?: Date;
   createdAt: Date;
@@ -23,6 +24,7 @@ const ApplicationSchema = new Schema<IApplication>({
   motivation: { type: String, required: true },
   links: { type: String, default: '' },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  type: { type: String, enum: ['member', 'creator'], default: 'member' },
   processedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   processedAt: { type: Date },
 }, { timestamps: true });

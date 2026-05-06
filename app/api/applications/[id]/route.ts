@@ -26,7 +26,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (status === 'approved' && application.userId) {
       const { User } = await import('@/models/User');
-      const updateDoc: any = { $addToSet: { divisions: application.division } };
+      const divisionToAdd = application.type === 'creator' ? `${application.division}_creator` : application.division;
+      const updateDoc: any = { $addToSet: { divisions: divisionToAdd } };
       if (makePublic) updateDoc.$set = { isPublic: true };
       await User.findByIdAndUpdate(application.userId, updateDoc);
     }

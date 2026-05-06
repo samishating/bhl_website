@@ -93,6 +93,13 @@
 .badgeRow {
   display: flex;
   gap: 12px;
+  margin-bottom: 8px;
+}
+
+.divisionTags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .sectionTitle {

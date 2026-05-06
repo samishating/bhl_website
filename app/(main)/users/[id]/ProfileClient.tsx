@@ -152,7 +152,9 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
             <p className={styles.bio}>{profile.bio || 'This member hasn\'t added a bio yet.'}</p>
             <div className={styles.divisionTags}>
               {profile.divisions.map(d => (
-                <span key={d} className={`division-tag tag-${d}`}>{d}</span>
+                <span key={d} className={`division-tag tag-${d}`}>
+                  {d.replace(/_/g, ' ')}
+                </span>
               ))}
             </div>
 

@@ -16,6 +16,7 @@ interface Application {
   motivation: string;
   links: string;
   status: 'pending' | 'approved' | 'rejected';
+  type: 'member' | 'creator';
   processedBy?: { username: string };
   createdAt: string;
 }
@@ -114,9 +115,14 @@ export default function ApplicationsInbox() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span className={`${styles.statusBadge} ${styles[app.status + 'Badge']}`}>
-                    {app.status}
-                  </span>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    <span className={`${styles.statusBadge} ${app.type === 'creator' ? styles.creatorBadge : styles.memberBadge}`}>
+                      {app.type || 'MEMBER'}
+                    </span>
+                    <span className={`${styles.statusBadge} ${styles[app.status + 'Badge']}`}>
+                      {app.status}
+                    </span>
+                  </div>
                   {app.processedBy && (
                     <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.5rem', fontWeight: 700 }}>
                       REVIEWED BY: {app.processedBy.username.toUpperCase()}

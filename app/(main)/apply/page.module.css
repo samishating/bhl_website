@@ -5,7 +5,7 @@
 .formGrid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; align-items: start; }
 .stepTitle { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); }
 .stepNum { background: linear-gradient(135deg, #FF0000, #CC0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.5rem; }
-.divisionCards { display: flex; flex-direction: column; gap: 0.75rem; }
+.divisionCards { display: flex; flex-direction: column; gap: 1rem; }
 .divCard { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; text-align: left; position: relative; }
 .divCard:hover { border-color: var(--div-color, var(--brand-red)); background: color-mix(in srgb, var(--div-color, var(--brand-red)) 6%, transparent); }
 .divCardSelected { border-color: var(--div-color, var(--brand-red)) !important; background: color-mix(in srgb, var(--div-color, var(--brand-red)) 10%, transparent) !important; box-shadow: 0 0 16px color-mix(in srgb, var(--div-color, var(--brand-red)) 25%, transparent); }

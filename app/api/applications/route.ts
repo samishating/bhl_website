@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     // userId is optional now
 
     const body = await req.json();
-    const { division, name, email, discord, motivation, links } = body;
+    const { division, name, email, discord, motivation, links, type } = body;
 
     if (!division || !name || !email || !motivation) {
       return NextResponse.json({ error: 'Please fill out all required fields' }, { status: 400 });
@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
       email,
       discord,
       motivation,
-      links
+      links,
+      type: type || 'member'
     });
 
     return NextResponse.json({ application, message: 'Application submitted successfully!' });

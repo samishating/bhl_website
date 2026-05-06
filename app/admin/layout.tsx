@@ -116,7 +116,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <AdminContext.Provider value={{ refreshCounts: fetchCounts, setGlobalLoading }}>
       <div className={styles.layout} style={{ 
-        '--sidebar-width': isCollapsed ? '80px' : '280px' 
+        '--sidebar-width': isCollapsed ? '70px' : '280px' 
       } as any}>
         {(globalLoading || countsLoading) && (
           <LoadingScreen message="Syncing Dashboard..." />
@@ -143,7 +143,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
         <motion.aside 
           className={`${styles.sidebar} ${mobileNavOpen ? styles.sidebarOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}
-          animate={{ width: isCollapsed ? 80 : 280 }}
+          animate={{ width: isCollapsed ? 70 : 280 }}
           transition={{ type: "spring", bounce: 0, duration: 0.4 }}
         >
           <div style={{ position: 'relative', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', minHeight: '70px', overflow: 'hidden' }}>

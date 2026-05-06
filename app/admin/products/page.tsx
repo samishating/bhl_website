@@ -8,7 +8,7 @@ import { fadeUp, staggerContainer } from '@/lib/animations';
 
 
 interface Product { _id: string; name: string; description: string; price: number; category: string; image: string; images: string[]; stock: number; sizes: { size: string, stock: number }[]; isLimitedDrop: boolean; }
-const defaultForm = { name: '', description: '', price: 29.99, image: '', images: [] as string[], stock: 100, sizes: [] as { size: string, stock: number }[], isLimitedDrop: false, category: 'apparel' };
+const defaultForm = { name: '', description: '', price: 0, image: '', images: [] as string[], stock: 100, sizes: [] as { size: string, stock: number }[], isLimitedDrop: false, category: 'apparel' };
 
 /** Compress an image file client-side to max 800px and 75% JPEG quality before upload */
 function compressImage(file: File, maxDim = 800, quality = 0.75): Promise<Blob> {

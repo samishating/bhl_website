@@ -78,7 +78,6 @@ export function getLevelTitle(level: number, titles: string[] = LEVEL_TITLES): s
 }
 
 export const BADGES = {
-  FOUNDER: { id: 'FOUNDER', label: 'Founder', color: '#FFFDBA', description: 'Joined at launch' },
   CHALLENGER: { id: 'CHALLENGER', label: 'Challenger', color: '#FF0000', description: 'First challenge submission' },
   RANKED: { id: 'RANKED', label: 'Ranked', color: '#CC0000', description: 'Reached Level 5' },
   GAMING_ELITE: { id: 'GAMING_ELITE', label: 'Gaming Elite', color: '#FFFDBA', description: 'Gaming division member' },

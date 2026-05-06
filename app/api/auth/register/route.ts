@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       username,
       xp: founderXp,
       level: calculateLevel(founderXp),
-      badges: [BADGES.FOUNDER.id],
+      badges: [],
       lastLogin: new Date(),
     });
 

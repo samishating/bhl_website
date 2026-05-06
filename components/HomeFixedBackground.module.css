@@ -53,11 +53,7 @@
 
 /* Layer 5: Faint Structural Lines */
 .structuralLines {
-  position: absolute;
-  inset: 0;
-  background: 
-    repeating-linear-gradient(90deg, transparent, transparent calc(25vw - 1px), rgba(255, 255, 255, 0.015) calc(25vw - 1px), rgba(255, 255, 255, 0.015) 25vw);
-  z-index: 5;
+  display: none;
 }
 
 /* Layer 6: Drifting Dust Particles */

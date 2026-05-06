@@ -14,7 +14,6 @@ const DIVISIONS = [
 export default function JoinPage() {
   const { showToast } = useToast();
   const [selectedDivision, setSelectedDivision] = useState('');
-  const [applyType] = useState<'member' | 'creator'>('creator');
   const [form, setForm] = useState({ name: '', email: '', discord: '', motivation: '', links: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,7 +27,7 @@ export default function JoinPage() {
       const res = await fetch('/api/applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, division: selectedDivision, type: applyType }),
+        body: JSON.stringify({ ...form, division: selectedDivision, type: 'creator' }),
       });
       if (res.ok) {
         setSubmitted(true);
@@ -44,7 +43,7 @@ export default function JoinPage() {
 
   if (submitted) {
     const divisionLabel = DIVISIONS.find(d => d.id === selectedDivision)?.label;
-    const finalLabel = applyType === 'creator' ? `${divisionLabel} Creator` : `${divisionLabel}`;
+    const finalLabel = `${divisionLabel} Creator`;
     
     return (
       <div className={styles.successPage}>

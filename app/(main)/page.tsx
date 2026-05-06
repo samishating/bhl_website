@@ -54,7 +54,7 @@ export default async function HomePage() {
                 Create Account — It&apos;s Free
               </a>
               <a href="/apply" className="btn btn-ghost btn-lg" id="home-cta-apply-btn">
-                Apply to Join
+                Apply as Creator
               </a>
             </div>
         </div>

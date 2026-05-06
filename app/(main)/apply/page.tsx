@@ -14,7 +14,7 @@ const DIVISIONS = [
 export default function JoinPage() {
   const { showToast } = useToast();
   const [selectedDivision, setSelectedDivision] = useState('');
-  const [applyType, setApplyType] = useState<'member' | 'creator'>('member');
+  const [applyType] = useState<'member' | 'creator'>('creator');
   const [form, setForm] = useState({ name: '', email: '', discord: '', motivation: '', links: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,56 +66,22 @@ export default function JoinPage() {
 
   return (
     <div className={styles.page}>
-      <section className={styles.header}>
+      <header className={styles.header}>
         <div className={styles.headerGlow} />
         <div className="container">
-          <div className="section-tag">Membership</div>
-          <h1>Join the <span className="gradient-text">Brotherhood</span></h1>
+          <div className="section-tag">Creators Program</div>
+          <h1>Join the <span className="gradient-text">Brotherhood</span> as a Creator</h1>
           <p className={styles.headerSub}>
-            Apply to become a member of Brotherhood Legacy. Choose your division and share your story.
+            Apply to become an official Content Creator, Gaming Creator, Music Artist, or Sports Personality within our ecosystem.
           </p>
         </div>
-      </section>
+      </header>
 
       <div className="container">
         <div className={styles.formGrid}>
-          {/* Application Type */}
+          {/* Specialty Select */}
           <div className={styles.divisionSelect}>
-            <h3 className={styles.stepTitle}><span className={styles.stepNum}>01</span> Application Type</h3>
-            <div className="selection-pill-group" style={{ marginBottom: '32px', width: '100%' }}>
-              <button 
-                type="button"
-                className={`selection-pill ${applyType === 'member' ? 'selection-pill-active' : ''}`}
-                style={{ flex: 1 }}
-                onClick={() => setApplyType('member')}
-              >
-                <span className="selection-pill-label">Standard Member</span>
-                {applyType === 'member' && (
-                  <motion.div 
-                    layoutId="applyTab"
-                    className="selection-pill-indicator"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </button>
-              <button 
-                type="button"
-                className={`selection-pill ${applyType === 'creator' ? 'selection-pill-active' : ''}`}
-                style={{ flex: 1 }}
-                onClick={() => setApplyType('creator')}
-              >
-                <span className="selection-pill-label">Content Creator</span>
-                {applyType === 'creator' && (
-                  <motion.div 
-                    layoutId="applyTab"
-                    className="selection-pill-indicator"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </button>
-            </div>
-            
-            <h3 className={styles.stepTitle}><span className={styles.stepNum}>02</span> Choose Your Division</h3>
+            <h3 className={styles.stepTitle}><span className={styles.stepNum}>01</span> Choose Your Specialty</h3>
             <div className={styles.divisionCards}>
               {DIVISIONS.map(d => (
                 <motion.button
@@ -134,7 +100,7 @@ export default function JoinPage() {
                     <span className={styles.divIcon}>{d.icon}</span>
                   )}
                   <span className={styles.divLabel}>
-                    {applyType === 'creator' ? `${d.label} Creator` : d.label}
+                    {d.label} Creator
                   </span>
                   {selectedDivision === d.id && <span className={styles.checkMark}>✓</span>}
                 </motion.button>
@@ -144,7 +110,7 @@ export default function JoinPage() {
 
           {/* Application Form */}
           <form onSubmit={handleSubmit} className={styles.appForm}>
-            <h3 className={styles.stepTitle}><span className={styles.stepNum}>03</span> Your Application</h3>
+            <h3 className={styles.stepTitle}><span className={styles.stepNum}>02</span> Your Application</h3>
             <div className="form-group">
               <label className="form-label">Full Name *</label>
               <input required className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your name" id="join-name" />

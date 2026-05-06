@@ -14,7 +14,11 @@ interface User {
   divisions: string[]; badges: string[]; role: string; isAdmin?: boolean; createdAt: string;
 }
 
-const divTagClass: Record<string, string> = { gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content' };
+const divTagClass: Record<string, string> = { 
+  gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content',
+  gaming_creator: 'tag-gaming_creator', music_creator: 'tag-music_creator', 
+  sport_creator: 'tag-sport_creator', content_creator: 'tag-content_creator',
+};
 
 const DIVISION_OPTIONS = [
   { id: 'gaming', label: 'Gaming' },

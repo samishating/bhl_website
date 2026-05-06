@@ -9,6 +9,8 @@ import styles from './HomeLeaderboard.module.css';
 const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
 const divTagClass: Record<string, string> = {
   gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content',
+  gaming_creator: 'tag-gaming_creator', music_creator: 'tag-music_creator', 
+  sport_creator: 'tag-sport_creator', content_creator: 'tag-content_creator',
 };
 const rankIcons = [
   '/ICONS/MEDAL 1.svg',

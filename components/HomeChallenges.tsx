@@ -9,6 +9,8 @@ import styles from './HomeChallenges.module.css';
 
 const divTagClass: Record<string, string> = {
   gaming: 'tag-gaming', music: 'tag-music', sport: 'tag-sport', content: 'tag-content', global: 'tag-global',
+  gaming_creator: 'tag-gaming_creator', music_creator: 'tag-music_creator', 
+  sport_creator: 'tag-sport_creator', content_creator: 'tag-content_creator',
 };
 const DIVS = ['global', 'gaming', 'music', 'sport', 'content'];
 

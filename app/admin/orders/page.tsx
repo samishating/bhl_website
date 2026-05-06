@@ -180,30 +180,53 @@ export default function AdminOrdersPage() {
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Order Management</h1>
-            <p className={styles.sub}>{orders.filter(o => o.status === 'pending').length} orders pending • {promoCount} with promo code</p>
+            <p className={styles.sub}>
+              {orders.filter(o => o.status === 'pending').length} pending • {filtered.length} matching filters
+            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-end' }}>
-            {/* This Month Toggle */}
+            {/* Timeframe Selection */}
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label style={{ display: 'block', fontSize: '0.7rem', fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
                 Timeframe
               </label>
-              <button 
-                className={`btn ${showThisMonthOnly ? 'btn-primary' : 'btn-ghost'}`}
-                onClick={() => setShowThisMonthOnly(!showThisMonthOnly)}
-                style={{ 
-                  height: '42px', 
-                  minWidth: '140px',
-                  background: showThisMonthOnly ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                  borderColor: showThisMonthOnly ? 'var(--brand-red)' : 'var(--border)',
-                  color: showThisMonthOnly ? 'white' : 'var(--text-muted)',
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.1em'
-                }}
-              >
-                {showThisMonthOnly ? '✓ THIS MONTH' : 'ALL TIME'}
-              </button>
+              <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.03)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)', height: '42px', minWidth: '200px' }}>
+                <button 
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={() => setShowThisMonthOnly(false)}
+                  style={{ 
+                    flex: 1,
+                    background: !showThisMonthOnly ? 'var(--brand-red)' : 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '7px',
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.05em',
+                    transition: '0.2s ease'
+                  }}
+                >
+                  ALL TIME
+                </button>
+                <button 
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={() => setShowThisMonthOnly(true)}
+                  style={{ 
+                    flex: 1,
+                    background: showThisMonthOnly ? 'var(--brand-red)' : 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '7px',
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.05em',
+                    transition: '0.2s ease'
+                  }}
+                >
+                  THIS MONTH
+                </button>
+              </div>
             </div>
 
             {/* Referral Code Search Field */}

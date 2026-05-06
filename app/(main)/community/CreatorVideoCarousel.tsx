@@ -8,9 +8,13 @@ import styles from './page.module.css';
 
 const DIVISION_ICONS: Record<string, any> = {
   gaming: <FaGamepad />,
+  gaming_creator: <FaGamepad />,
   content: <FaVideo />,
+  content_creator: <FaVideo />,
   music: <FaMusic />,
+  music_creator: <FaMusic />,
   sport: <FaRunning />,
+  sport_creator: <FaRunning />,
   staff: <FaShieldAlt />,
 };
 

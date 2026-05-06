@@ -24,8 +24,9 @@ interface AdminLink {
 
 export const adminLinks: AdminLink[] = [
   { href: '/admin', label: 'Overview', icon: '/ICONS/LEADERBOARD.svg' },
-  { href: '/admin/members', label: 'Creators Settings', icon: '/ICONS/CREATORS SETTINGS.svg' },
   { href: '/admin/users', label: 'Users Settings', icon: '/ICONS/USER SETTINGS.svg', superOnly: true },
+  { href: '/admin/members', label: 'Creators Settings', icon: '/ICONS/CREATORS SETTINGS.svg' },
+  { href: '/admin/tags', label: 'Tags & Badges', icon: '/ICONS/LIST PRODUCTS.svg' },
   { href: '/admin/xp', label: 'XP/Levels', icon: '/ICONS/XP.svg' },
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Submissions', icon: '/ICONS/INBOX.svg' },
@@ -33,7 +34,6 @@ export const adminLinks: AdminLink[] = [
   { href: '/admin/products', label: 'Products', icon: '/ICONS/PRODUCTS.svg' },
   { href: '/admin/orders', label: 'Orders', icon: '/ICONS/LIST PRODUCTS.svg' },
   { href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/REFERRALS.svg', superOnly: true },
-  { href: '/admin/tags', label: 'Tags & Badges', icon: '/ICONS/LIST PRODUCTS.svg' },
 ];
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {

@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       isPublic: true,
       $or: [
         { isFeatured: true },
-        { divisions: { $in: ['content', 'gaming', 'music'] } },
+        { divisions: { $in: ['content', 'gaming', 'music', 'sport', 'content_creator', 'gaming_creator', 'music_creator', 'sport_creator'] } },
       ],
     }).select('_id username avatar divisions creatorDisplayName level xp isFeatured')
       .sort({ xp: -1 })

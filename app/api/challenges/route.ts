@@ -12,7 +12,11 @@ export async function GET(req: NextRequest) {
     if (division && division !== 'global') query.division = division;
     
     const challenges = await Challenge.find(query).sort({ createdAt: -1 });
-    return NextResponse.json({ challenges });
+    return NextResponse.json({ challenges }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

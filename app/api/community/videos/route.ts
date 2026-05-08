@@ -78,7 +78,11 @@ export async function GET(req: Request) {
       }
     }
 
-    return NextResponse.json({ featuredGroups, latestGroups });
+    return NextResponse.json({ featuredGroups, latestGroups }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
+    });
   } catch (err: any) {
     console.error('[Community Videos]', err);
     return NextResponse.json({ error: 'Failed to load videos' }, { status: 500 });

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+export const revalidate = 60;
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import mongoose from 'mongoose';

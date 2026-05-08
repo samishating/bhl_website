@@ -17,10 +17,18 @@ export async function GET() {
         title: LEVEL_TITLES[i] || `Level ${i + 1}`,
         xpRequired: xp
       }));
-      return NextResponse.json({ progression: defaultProgression });
+      return NextResponse.json({ progression: defaultProgression }, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+        }
+      });
     }
 
-    return NextResponse.json({ progression: settings.levelProgression });
+    return NextResponse.json({ progression: settings.levelProgression }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
+    });
   } catch (err) {
     console.error('[PROGRESSION_GET_ERROR]', err);
     return NextResponse.json({ error: 'Failed to fetch progression' }, { status: 500 });

@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import CinematicHero from '@/components/CinematicHero';
 import HomeDivisions from '@/components/HomeDivisions';

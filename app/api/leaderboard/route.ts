@@ -16,7 +16,11 @@ export async function GET(req: NextRequest) {
       .sort({ [sortField]: -1 })
       .limit(50);
 
-    return NextResponse.json({ users });
+    return NextResponse.json({ users }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

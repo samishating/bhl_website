@@ -86,10 +86,9 @@ export default function AdminPage() {
               setSyncing(true);
               setSyncResult(null);
               try {
-                const res = await fetch('/api/cron/youtube-sync', {
-                  headers: {
-                    'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || 'manual-trigger'}`
-                  }
+                // Call the dedicated admin sync API instead of the cron endpoint
+                const res = await fetch('/api/admin/youtube/sync', {
+                  method: 'POST'
                 });
                 const data = await res.json();
                 setSyncResult(data);

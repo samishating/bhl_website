@@ -70,8 +70,6 @@
   cursor: pointer; 
 }
 .qCard:hover { border-color: var(--brand-red); color: white; background: rgba(255,0,0,0.06); transform: translateX(8px); }
-.qCard img { width: 22px; height: 22px; filter: grayscale(1) brightness(2); }
-.qCard:hover img { filter: none; }
 
 @media (max-width: 768px) {
   .statsGrid { grid-template-columns: 1fr; }

@@ -1,13 +1,3 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useAdmin, adminLinks } from './layout';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/contexts/ToastContext';
-import { motion } from 'framer-motion';
-import { fadeUp, staggerContainer } from '@/lib/animations';
-import styles from './page.module.css';
-
-export default function AdminPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ users: 0, challenges: 0, products: 0 });
   const [pageLoading, setPageLoading] = useState(true);
@@ -105,8 +95,14 @@ export default function AdminPage() {
             }}
             disabled={syncing}
           >
-            <img src="/ICONS/youtube.svg" alt="" style={{ filter: 'brightness(0) invert(1)' }} />
-            {syncing ? 'Syncing...' : 'Sync YouTube Videos'}
+            <div className={styles.qCardIcon}>
+              {syncing ? (
+                <RefreshCw className={styles.spinner} size={22} />
+              ) : (
+                <Youtube size={22} />
+              )}
+            </div>
+            <span>{syncing ? 'Syncing...' : 'Sync YouTube Videos'}</span>
           </button>
         </div>
       </div>

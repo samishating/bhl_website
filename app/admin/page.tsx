@@ -1,3 +1,14 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { useAdmin, adminLinks } from './layout';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/animations';
+import { Youtube, RefreshCw } from 'lucide-react';
+import styles from './page.module.css';
+
+export default function AdminPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ users: 0, challenges: 0, products: 0 });
   const [pageLoading, setPageLoading] = useState(true);

@@ -96,11 +96,29 @@
             disabled={syncing}
           >
             <div className={styles.qCardIcon}>
-              {syncing ? (
-                <RefreshCw className={styles.spinner} size={22} />
-              ) : (
-                <Youtube size={22} />
-              )}
+              <AnimatePresence mode="wait">
+                {syncing ? (
+                  <motion.div
+                    key="syncing"
+                    initial={{ opacity: 0, scale: 0.8, rotate: -180 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, rotate: 180 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <RefreshCw className={styles.spinner} size={22} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="youtube"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Youtube size={22} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             <span>{syncing ? 'Syncing...' : 'Sync YouTube Videos'}</span>
           </button>

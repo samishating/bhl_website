@@ -5,7 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
-import { Youtube, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+import { FaYoutube } from 'react-icons/fa';
 import styles from './page.module.css';
 
 export default function AdminPage() {
@@ -126,7 +127,7 @@ export default function AdminPage() {
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Youtube size={22} />
+                    <FaYoutube size={22} />
                   </motion.div>
                 )}
               </AnimatePresence>

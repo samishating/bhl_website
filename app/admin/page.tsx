@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAdmin, adminLinks } from './layout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
@@ -11,6 +12,9 @@ export default function AdminPage() {
   const [stats, setStats] = useState({ users: 0, challenges: 0, products: 0 });
   const [pageLoading, setPageLoading] = useState(true);
   const { setGlobalLoading } = useAdmin();
+  const { showToast } = useToast();
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<any>(null);
 
   useEffect(() => {
     setGlobalLoading(true);
@@ -69,6 +73,43 @@ export default function AdminPage() {
           </motion.div>
         ))}
       </motion.div>
+
+      <div className={styles.quickLinks}>
+        <h3 className={styles.sectionTitle}>System Management</h3>
+        <div className={styles.qGrid}>
+          <button 
+            className={`${styles.qCard} ${syncing ? styles.disabled : ''}`} 
+            onClick={async () => {
+              if (syncing) return;
+              setSyncing(true);
+              setSyncResult(null);
+              try {
+                const res = await fetch('/api/cron/youtube-sync', {
+                  headers: {
+                    'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || 'manual-trigger'}`
+                  }
+                });
+                const data = await res.json();
+                setSyncResult(data);
+                if (data.success) {
+                  showToast(`Sync Complete: ${data.creatorsSynced} creators, ${data.videosFetched} videos`, 'success');
+                } else {
+                  showToast(`Sync Failed: ${data.error || 'Unknown error'}`, 'error');
+                }
+              } catch (err) {
+                showToast('Failed to trigger sync. Check console.', 'error');
+                console.error(err);
+              } finally {
+                setSyncing(false);
+              }
+            }}
+            disabled={syncing}
+          >
+            <img src="/ICONS/youtube.svg" alt="" style={{ filter: 'brightness(0) invert(1)' }} />
+            {syncing ? 'Syncing...' : 'Sync YouTube Videos'}
+          </button>
+        </div>
+      </div>
 
       <div className={styles.quickLinks}>
         <h3 className={styles.sectionTitle}>Management</h3>

@@ -231,16 +231,27 @@ export interface SyncAllResult {
 }
 
 export async function syncAllCreators(): Promise<SyncAllResult> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) {
+    console.error('[YouTube Sync] ABORTED: YOUTUBE_API_KEY is not defined in environment variables.');
+    throw new Error('YOUTUBE_API_KEY is not set');
+  }
+
   await connectDB();
 
-  // Eligible: public + (featured OR content/gaming/music division) + has a YouTube link
+  // Eligible: public + (featured OR any creator division) + has a YouTube link
+  const creatorDivisions = [
+    'content', 'gaming', 'music', 'sport', 
+    'content_creator', 'gaming_creator', 'music_creator', 'sport_creator'
+  ];
+
   const eligible = await User.find({
     isPublic: true,
     $and: [
       {
         $or: [
           { isFeatured: true },
-          { divisions: { $in: ['content', 'gaming', 'music'] } },
+          { divisions: { $in: creatorDivisions } },
         ],
       },
       {
@@ -262,22 +273,45 @@ export async function syncAllCreators(): Promise<SyncAllResult> {
     errors: [],
   };
 
-  for (const user of eligible) {
-    // Check if any YouTube link exists
-    const hasYouTube = user.youtubeChannelId || user.youtubeHandle || user.socialLinks?.youtube;
-    if (!hasYouTube) continue;
+  console.log(`[YouTube Sync] START: Processing ${eligible.length} eligible creators...`);
 
-    const res = await syncCreator(user._id.toString());
-    summary.videosFetched += res.videosFetched;
-    summary.videosInserted += res.videosInserted;
-    summary.videosUpdated += res.videosUpdated;
+  const results = await Promise.allSettled(
+    eligible.map(async (user) => {
+      try {
+        const res = await syncCreator(user._id.toString());
+        return res;
+      } catch (err: any) {
+        return {
+          userId: user._id.toString(),
+          username: user.username,
+          videosFetched: 0,
+          videosInserted: 0,
+          videosUpdated: 0,
+          error: err?.message || 'Unknown error'
+        };
+      }
+    })
+  );
 
-    if (res.error) {
-      summary.errors.push({ userId: res.userId, username: res.username, reason: res.error });
+  for (const item of results) {
+    if (item.status === 'fulfilled') {
+      const res = item.value;
+      summary.videosFetched += res.videosFetched;
+      summary.videosInserted += res.videosInserted;
+      summary.videosUpdated += res.videosUpdated;
+
+      if (res.error) {
+        console.warn(`[YouTube Sync] Failed for ${res.username}: ${res.error}`);
+        summary.errors.push({ userId: res.userId, username: res.username, reason: res.error });
+      } else {
+        summary.creatorsSynced++;
+      }
     } else {
-      summary.creatorsSynced++;
+      console.error('[YouTube Sync] Unexpected rejection in parallel sync:', item.reason);
+      summary.errors.push({ userId: '?', username: '?', reason: String(item.reason) });
     }
   }
 
+  console.log(`[YouTube Sync] COMPLETE: ${summary.creatorsSynced}/${summary.creatorsChecked} creators synced. +${summary.videosInserted} new, ${summary.videosUpdated} updated.`);
   return summary;
 }

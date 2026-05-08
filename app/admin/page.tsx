@@ -6,7 +6,6 @@ import { useToast } from '@/contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import { RefreshCw } from 'lucide-react';
-import { FaYoutube } from 'react-icons/fa';
 import styles from './page.module.css';
 
 export default function AdminPage() {
@@ -49,6 +48,7 @@ export default function AdminPage() {
       initial="hidden"
       animate="visible"
       variants={fadeUp}
+      className={styles.container}
     >
       <div className={styles.header}>
         <div>
@@ -76,7 +76,7 @@ export default function AdminPage() {
         ))}
       </motion.div>
 
-      <div className={styles.quickLinks}>
+      <div className={styles.quickLinksSection}>
         <h3 className={styles.sectionTitle}>System Management</h3>
         <div className={styles.qGrid}>
           <button 
@@ -108,36 +108,16 @@ export default function AdminPage() {
             disabled={syncing}
           >
             <div className={styles.qCardIcon}>
-              <AnimatePresence mode="wait">
-                {syncing ? (
-                  <motion.div
-                    key="syncing"
-                    initial={{ opacity: 0, scale: 0.8, rotate: -180 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, rotate: 180 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <RefreshCw className={styles.spinner} size={22} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="youtube"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <FaYoutube size={22} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <RefreshCw className={syncing ? styles.spinner : ''} size={20} />
             </div>
-            <span>{syncing ? 'Syncing...' : 'Sync YouTube Videos'}</span>
+            <span className={styles.qCardText}>
+              {syncing ? 'Syncing...' : 'Sync YouTube Videos'}
+            </span>
           </button>
         </div>
       </div>
 
-      <div className={styles.quickLinks}>
+      <div className={styles.quickLinksSection}>
         <h3 className={styles.sectionTitle}>Management</h3>
         <motion.div 
           className={styles.qGrid}
@@ -151,8 +131,10 @@ export default function AdminPage() {
               variants={fadeUp}
               whileHover={{ scale: 1.02 }}
             >
-              <img src={l.icon} alt="" />
-              {l.label}
+              <div className={styles.qCardIcon}>
+                <img src={l.icon} alt="" />
+              </div>
+              <span className={styles.qCardText}>{l.label}</span>
             </motion.a>
           ))}
         </motion.div>

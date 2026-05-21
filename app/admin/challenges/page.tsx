@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
 import { useToast } from '@/contexts/ToastContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
 import Modal from '@/components/Modal';
 

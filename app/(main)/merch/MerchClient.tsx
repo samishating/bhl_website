@@ -202,7 +202,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         title={quickViewProduct?.name || 'Product Details'}
-        maxWidth="1000px"
+        maxWidth="560px"
         padding="0"
         footer={null}
       >

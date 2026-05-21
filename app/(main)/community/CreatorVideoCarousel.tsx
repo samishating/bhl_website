@@ -187,7 +187,7 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
                   </div>
                   <div className={styles.contentMeta} style={{ flex: 1 }}>
                     <div className={styles.contentAvatar}>
-                      {creator.avatar ? <img src={creator.avatar} alt="" /> : creator.username[0]}
+                      {creator.avatar ? <img src={creator.avatar} alt={creator.username} /> : creator.username[0]}
                     </div>
                     <div className={styles.contentText}>
                       <div className={styles.contentTitle}>{v.title}</div>

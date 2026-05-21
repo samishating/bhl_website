@@ -103,6 +103,7 @@ export default function CheckoutClient() {
       const data = await res.json();
       if (res.ok) {
         clearCart();
+        window.dispatchEvent(new Event('stats-refresh'));
         router.push('/checkout/success');
       } else {
         showToast(data.error || 'Failed to place order', 'error');

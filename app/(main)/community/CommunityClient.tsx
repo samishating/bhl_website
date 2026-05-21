@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import CreatorVideoCarousel from './CreatorVideoCarousel';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
 import styles from './page.module.css';
 import { 
@@ -81,6 +81,8 @@ const DIVISION_ICONS: Record<string, any> = {
   staff: <FaShieldAlt />,
 };
 
+const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
+
 function getYouTubeThumbnail(url: string) {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
@@ -96,33 +98,52 @@ export default function CommunityPage() {
   const [featuredVideoGroups, setFeaturedVideoGroups] = useState<any[]>([]);
   const [latestVideoGroups, setLatestVideoGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
+  const fetchCommunityData = () => {
+    setLoading(true);
+    setError(null);
     fetch('/api/community')
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) throw new Error('Failed to retrieve community members.');
+        return res.json();
+      })
       .then(data => {
         if (data.featuredCreators) setFeaturedCreators(data.featuredCreators);
         if (data.members) setMembers(data.members);
         
-        // Also fetch grouped videos
-        fetch('/api/community/videos')
-          .then(res => res.json())
-          .then(vidData => {
-            if (vidData.featuredGroups) setFeaturedVideoGroups(vidData.featuredGroups);
-            if (vidData.latestGroups) setLatestVideoGroups(vidData.latestGroups);
-            setLoading(false);
-          })
-          .catch(() => setLoading(false));
+        return fetch('/api/community/videos');
+      })
+      .then(async res => {
+        if (res && !res.ok) throw new Error('Failed to retrieve creator broadcasts.');
+        return res ? res.json() : null;
+      })
+      .then(vidData => {
+        if (vidData) {
+          if (vidData.featuredGroups) setFeaturedVideoGroups(vidData.featuredGroups);
+          if (vidData.latestGroups) setLatestVideoGroups(vidData.latestGroups);
+        }
+        setLoading(false);
       })
       .catch(err => {
         console.error('Failed to fetch community data:', err);
+        setError('Community index could not be loaded due to a connection issue.');
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchCommunityData();
   }, []);
 
   const allContent = [...featuredCreators, ...members].flatMap(u => 
     (u.featuredLinks || []).map(link => ({ ...link, user: u }))
   ).sort(() => Math.random() - 0.5); // Randomize content for variety
+
+  const filteredMembers = filter === 'all'
+    ? members
+    : members.filter(m => m.divisions.includes(filter));
 
   return (
     <div className={styles.page}>
@@ -176,9 +197,9 @@ export default function CommunityPage() {
                   <Link href={`/users/${creator._id}`} className={styles.creatorCard}>
                     <div className={styles.cardImage}>
                       {creator.featuredLinks?.[0] ? (
-                        <img src={getYouTubeThumbnail(creator.featuredLinks[0].url)} alt="" />
+                        <img src={getYouTubeThumbnail(creator.featuredLinks[0].url)} alt={`${creator.username} featured video`} />
                       ) : (
-                        <img src={creator.avatar || 'https://placehold.co/600x338/111/white?text=BHL+CREATOR'} alt="" />
+                        <img src={creator.avatar || 'https://placehold.co/600x338/111/white?text=BHL+CREATOR'} alt={`${creator.username} avatar`} />
                       )}
                       <div className={styles.cardOverlay} />
                     </div>
@@ -232,65 +253,143 @@ export default function CommunityPage() {
             </div>
           </div>
 
-          {loading ? (
-            <div className={styles.emptyState}>
-              <div className="spinner" style={{ margin: '0 auto 20px' }} />
-              <p>Scanning community database...</p>
-            </div>
-          ) : members.length === 0 && featuredCreators.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p>The community is currently private. Check back soon for approved member profiles.</p>
-            </div>
-          ) : (
-            <motion.div 
-              className={styles.membersGrid}
+          {/* Tabs */}
+          {!error && !loading && (members.length > 0 || featuredCreators.length > 0) && (
+            <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.1 }}
-              variants={staggerContainer}
+              variants={fadeUp}
             >
-              {members.map(member => (
-                <motion.div 
-                  key={member._id} 
-                  className={styles.memberCard}
-                  variants={fadeUp}
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                >
-                  <div className={styles.memberAvatar}>
-                    {member.avatar ? <img src={member.avatar} alt={member.username} /> : member.username[0].toUpperCase()}
-                  </div>
-                  <div className={styles.memberName}>{member.username}</div>
-                  <div className={styles.memberLevel}>
-                    Level {calculateLevel(member.xp)} • {getLevelTitle(calculateLevel(member.xp))}
-                  </div>
-                  
-                  <div className={styles.memberDivisions}>
-                    {member.divisions.map(div => (
-                      <span key={div} className={`division-tag tag-${div}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{div}</span>
-                    ))}
-                  </div>
-
-                  {member.bio && <p className={styles.memberBio}>{member.bio}</p>}
-
-                  <div className={styles.memberSocials}>
-                    {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
-                      const url = member.socialLinks?.[key as keyof SocialLinks];
-                      if (!url) return null;
-                      return (
-                        <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
-                          {icon}
-                        </a>
-                      );
-                    })}
-                  </div>
-
-                  <Link href={`/users/${member._id}`} className={styles.viewProfileBtn}>
-                    View Profile
-                  </Link>
-                </motion.div>
-              ))}
+              <div className={`${styles.tabs} premium-panel selection-pill-group`}>
+                {DIVISIONS.map(d => (
+                  <button
+                    key={d}
+                    className={`${styles.tab} selection-pill ${filter === d ? `selection-pill-active ${styles.tabActive}` : ''}`}
+                    onClick={() => setFilter(d)}
+                  >
+                    {d === 'all' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
+                    {filter === d && (
+                      <motion.div 
+                        layoutId="communityTab"
+                        className="selection-pill-indicator"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
             </motion.div>
           )}
+
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div 
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.emptyState}
+              >
+                <div className="spinner" style={{ margin: '0 auto 20px' }} />
+                <p>Scanning community database...</p>
+              </motion.div>
+            ) : error ? (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                  textAlign: 'center',
+                  padding: '3rem 2rem',
+                  color: 'var(--text-muted)',
+                  background: 'rgba(255, 0, 0, 0.02)',
+                  border: '1px solid rgba(255, 0, 0, 0.08)',
+                  borderRadius: '16px',
+                  maxWidth: '480px',
+                  margin: '2rem auto',
+                }}
+              >
+                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+                <h4 style={{ color: '#fff', fontFamily: 'Rajdhani', fontSize: '1.25rem', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Connection Interrupted</h4>
+                <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>{error}</p>
+                <button className="btn btn-ghost" onClick={fetchCommunityData}>
+                  Retry Connection
+                </button>
+              </motion.div>
+            ) : members.length === 0 && featuredCreators.length === 0 ? (
+              <motion.div 
+                key="empty-all"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.emptyState}
+              >
+                <p>The community is currently private. Check back soon for approved member profiles.</p>
+              </motion.div>
+            ) : filteredMembers.length === 0 ? (
+              <motion.div 
+                key={`empty-${filter}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.emptyState}
+              >
+                <p>No members found in the {filter} division. Check back later for updates.</p>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key={`grid-${filter}`}
+                className={styles.membersGrid}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={staggerContainer}
+              >
+                {filteredMembers.map(member => (
+                  <motion.div 
+                    key={member._id} 
+                    className={styles.memberCard}
+                    variants={fadeUp}
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className={styles.memberAvatar}>
+                      {member.avatar ? <img src={member.avatar} alt={`${member.username} avatar`} /> : member.username[0].toUpperCase()}
+                    </div>
+                    <div className={styles.memberName}>{member.username}</div>
+                    <div className={styles.memberLevel}>
+                      Level {calculateLevel(member.xp)} • {getLevelTitle(calculateLevel(member.xp))}
+                    </div>
+                    
+                    <div className={styles.memberDivisions}>
+                      {member.divisions.map(div => (
+                        <span key={div} className={`division-tag tag-${div}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{div}</span>
+                      ))}
+                    </div>
+
+                    {member.bio && <p className={styles.memberBio}>{member.bio}</p>}
+
+                    <div className={styles.memberSocials}>
+                      {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                        const url = member.socialLinks?.[key as keyof SocialLinks];
+                        if (!url) return null;
+                        return (
+                          <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
+                            {icon}
+                          </a>
+                        );
+                      })}
+                    </div>
+
+                    <Link href={`/users/${member._id}`} className={styles.viewProfileBtn}>
+                      View Profile
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
     </div>

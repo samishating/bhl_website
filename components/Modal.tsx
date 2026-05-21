@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { scaleIn, fadeIn } from '@/lib/animations';
+import { useMotionConfig } from '@/hooks/useMotionConfig';
 
 interface ModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface ModalProps {
 
 export default function Modal({ isOpen, onClose, title, children, footer, maxWidth, padding }: ModalProps) {
   const [mounted, setMounted] = useState(false);
+  const { shouldReduce } = useMotionConfig();
 
   useEffect(() => {
     setMounted(true);
@@ -38,6 +40,7 @@ export default function Modal({ isOpen, onClose, title, children, footer, maxWid
           animate="visible"
           exit="hidden"
           variants={fadeIn}
+          transition={shouldReduce ? { duration: 0 } : undefined}
           onClick={(e) => e.target === e.currentTarget && onClose()}
         >
           <motion.div 
@@ -46,6 +49,7 @@ export default function Modal({ isOpen, onClose, title, children, footer, maxWid
             animate="visible"
             exit="exit"
             variants={scaleIn}
+            transition={shouldReduce ? { duration: 0 } : undefined}
             style={{ width: `min(${maxWidth || '560px'}, calc(100vw - 32px))`, maxWidth: 'none' }}
           >
             <div className="modal-header">

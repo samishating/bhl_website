@@ -18,16 +18,16 @@ export const fadeIn: Variants = {
 };
 
 export const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.96 },
+  hidden: { opacity: 0, scale: 0.95 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.3, ease: 'easeOut' }
   },
   exit: {
     opacity: 0,
-    scale: 0.96,
-    transition: { duration: 0.2, ease: "easeIn" }
+    scale: 0.95,
+    transition: { duration: 0.2, ease: 'easeIn' }
   }
 };
 

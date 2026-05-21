@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
+
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'Brotherhood Legacy — BHL | Community Platform',
+  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, and build your legacy.',
+  alternates: {
+    canonical: '/',
+  },
+};
 
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import CinematicHero from '@/components/CinematicHero';

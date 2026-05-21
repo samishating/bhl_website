@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import Modal from '@/components/Modal';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 
 interface User {
@@ -209,7 +209,7 @@ export default function AdminMembersPage() {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <div className="avatar avatar-sm">
-                        {u.avatar ? <img src={u.avatar} alt="" /> : u.username[0].toUpperCase()}
+                        {u.avatar ? <img src={u.avatar} alt={`${u.username}'s avatar`} /> : u.username[0].toUpperCase()}
                       </div>
                       <div>
                         <div style={{ fontWeight: 700 }}>{u.username}</div>
@@ -357,7 +357,7 @@ export default function AdminMembersPage() {
                     opacity: v.isHidden ? 0.4 : 1,
                   }}>
                     {v.thumbnailUrl && (
-                      <img src={v.thumbnailUrl} alt="" style={{ width: '80px', height: '45px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
+                      <img src={v.thumbnailUrl} alt={v.title} style={{ width: '80px', height: '45px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</div>

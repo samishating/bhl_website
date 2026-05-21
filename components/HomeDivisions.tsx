@@ -171,11 +171,11 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
                     </div>
                   ) : leaders[div.id] ? (
                     <div className={styles.leaderRow}>
-                      <div className="avatar" style={{ width: '32px', height: '32px' }}>
-                        {leaders[div.id].avatar
-                          ? <img src={leaders[div.id].avatar} alt="" />
-                          : leaders[div.id].username[0]}
-                      </div>
+                    <div className="avatar" style={{ width: '32px', height: '32px' }}>
+                      {leaders[div.id].avatar
+                        ? <img src={leaders[div.id].avatar} alt={`${leaders[div.id].username}'s Avatar`} />
+                        : leaders[div.id].username[0]}
+                    </div>
                       <div className={styles.leaderInfo}>
                         <span className={styles.leaderName}>{leaders[div.id].username}</span>
                         <span className={styles.leaderXp}>{leaders[div.id].xp.toLocaleString()} XP</span>

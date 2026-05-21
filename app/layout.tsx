@@ -37,6 +37,14 @@ export const metadata: Metadata = {
     description: 'Join the Brotherhood. Rise through the ranks.',
     url: 'https://bhl-website.vercel.app',
     siteName: 'Brotherhood Legacy',
+    images: [
+      {
+        url: '/brand/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Brotherhood Legacy Logo',
+      }
+    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -44,13 +52,28 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Brotherhood Legacy — BHL',
     description: 'Join the Brotherhood. Rise through the ranks.',
+    images: ['/brand/logo.png'],
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Brotherhood Legacy',
+    alternateName: 'BHL',
+    url: 'https://bhl-website.vercel.app',
+    logo: 'https://bhl-website.vercel.app/brand/logo.png',
+    description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, and build your legacy.'
+  };
+
   return (
     <html lang="en" className={`${rajdhani.variable} ${inter.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <AuthProvider>
           <CartProvider>
             <ToastProvider>

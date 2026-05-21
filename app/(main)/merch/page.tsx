@@ -6,10 +6,25 @@ import MerchHero from './MerchHero';
 import styles from './page.module.css';
 
 export const metadata: Metadata = {
-  title: 'Official Merch Store',
+  title: 'Official Merch Store | Brotherhood Legacy',
   description: 'Shop the official Brotherhood Legacy collection. Limited drops, premium apparel, and elite gear for the BHL community.',
   alternates: {
-    canonical: '/merch',
+    canonical: 'https://bhl-website.vercel.app/merch',
+  },
+  openGraph: {
+    title: 'Official Merch Store | Brotherhood Legacy',
+    description: 'Shop the official Brotherhood Legacy collection. Limited drops, premium apparel, and elite gear for the BHL community.',
+    url: 'https://bhl-website.vercel.app/merch',
+    siteName: 'Brotherhood Legacy',
+    type: 'website',
+    images: [
+      {
+        url: 'https://bhl-website.vercel.app/brand/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Brotherhood Legacy Merch Store',
+      }
+    ],
   }
 };
 

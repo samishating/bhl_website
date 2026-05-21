@@ -32,7 +32,7 @@ export default function CartDrawer() {
                   {items.map(item => (
                     <div key={item.cartItemId} className={styles.cartItem}>
                       <div className={styles.cartItemImg}>
-                        {item.image ? <img src={item.image} alt="" /> : item.name[0]}
+                        {item.image ? <img src={item.image} alt={item.name} /> : item.name[0]}
                       </div>
                       <div className={styles.cartItemInfo}>
                         <div className={styles.cartItemName}>
@@ -58,7 +58,7 @@ export default function CartDrawer() {
                     </button>
                   ) : (
                     <Link href="/login" className="btn btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} onClick={() => setCartOpen(false)}>
-                      Login to Checkout <img src="/ICONS/CART.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} />
+                      Login to Checkout <img src="/ICONS/CART.svg" alt="Cart Icon" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} />
                     </Link>
                   )}
                 </div>

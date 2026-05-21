@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { useAdmin } from '../layout';
+import { useAdmin } from '../AdminLayoutClient';
 import { motion } from 'framer-motion';
 import { fadeUp } from '@/lib/animations';
 import styles from './page.module.css';
@@ -96,7 +96,7 @@ export default function AdminSubmissionsPage() {
           <div style={{ textAlign: 'center', padding: '10rem' }}>
             <div className="loader-visual" style={{ margin: '0 auto' }}>
               <div className="loader-arc" />
-              <img src="/brand/logo.png" alt="" className="loader-logo" />
+              <img src="/brand/logo.png" alt="BHL Logo" className="loader-logo" />
             </div>
             <p className="loader-text" style={{ marginTop: '2rem' }}>Loading Submissions...</p>
           </div>
@@ -125,7 +125,7 @@ export default function AdminSubmissionsPage() {
                     <td>
                       <a href={`/users/${sub.userId?._id}`} className={styles.userCell}>
                         <div className={styles.avatar}>
-                          {sub.userId?.avatar ? <img src={sub.userId.avatar} alt="" /> : sub.userId?.username?.[0]?.toUpperCase()}
+                           {sub.userId?.avatar ? <img src={sub.userId.avatar} alt={`${sub.userId?.username || 'User'}'s avatar`} /> : sub.userId?.username?.[0]?.toUpperCase()}
                         </div>
                         <span style={{ fontWeight: 600, color: 'white' }}>{sub.userId?.username}</span>
                       </a>

@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 
 import { getLevelTitle } from '@/lib/xp';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import Modal from '@/components/Modal';
 import styles from './page.module.css';

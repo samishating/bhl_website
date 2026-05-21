@@ -33,6 +33,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   const { showToast } = useToast();
   const [challenges, setChallenges] = useState<Challenge[]>(initialChallenges || []);
   const [loading, setLoading] = useState(initialChallenges ? false : true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('global');
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
@@ -41,9 +42,22 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const loadChallenges = useCallback(() => {
+    setLoading(true);
+    setError(null);
     fetch(`/api/challenges?division=${filter}`)
-      .then(r => r.json())
-      .then(d => { setChallenges((d.challenges as Challenge[]) || []); setLoading(false); });
+      .then(async r => {
+        if (!r.ok) throw new Error('Failed to retrieve challenges.');
+        return r.json();
+      })
+      .then(d => {
+        setChallenges((d.challenges as Challenge[]) || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setError('Failed to retrieve mission guidelines. Connection issue.');
+        setLoading(false);
+      });
   }, [filter]);
 
   useEffect(() => {
@@ -227,6 +241,30 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
               style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '6rem 0' }}
             >
               <div className="spinner" />
+            </motion.div>
+          ) : error ? (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                textAlign: 'center',
+                padding: '3rem 2rem',
+                color: 'var(--text-muted)',
+                background: 'rgba(255, 0, 0, 0.02)',
+                border: '1px solid rgba(255, 0, 0, 0.08)',
+                borderRadius: '16px',
+                maxWidth: '480px',
+                margin: '2rem auto',
+              }}
+            >
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+              <h4 style={{ color: '#fff', fontFamily: 'Rajdhani', fontSize: '1.25rem', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Connection Interrupted</h4>
+              <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>{error}</p>
+              <button className="btn btn-ghost" onClick={loadChallenges}>
+                Retry Connection
+              </button>
             </motion.div>
           ) : (
             <motion.div 

@@ -4,6 +4,7 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import mongoose from 'mongoose';
 import ProfileClient from './ProfileClient';
+import type { Metadata } from 'next';
 
 // User XP and Profile should be SSR (fresh)
 export const dynamic = 'force-dynamic';
@@ -32,11 +33,66 @@ async function getProfileData(id: string) {
   };
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const data = await getProfileData(id);
+  if (!data) {
+    return {
+      title: 'Member Profile Not Found | Brotherhood Legacy',
+      description: 'The requested member profile could not be found.'
+    };
+  }
+
+  const username = data.user.username;
+  const level = data.user.level || 1;
+  const bio = data.user.bio || `BHL Member level ${level}. Join the Brotherhood Legacy network.`;
+
+  return {
+    title: `${username} — Profile | Brotherhood Legacy`,
+    description: bio.length > 155 ? bio.slice(0, 155) + '...' : bio,
+    alternates: {
+      canonical: `https://bhl-website.vercel.app/users/${id}`,
+    },
+    openGraph: {
+      title: `${username} — Member Profile`,
+      description: bio,
+      url: `https://bhl-website.vercel.app/users/${id}`,
+      siteName: 'Brotherhood Legacy',
+      type: 'profile',
+      images: [
+        {
+          url: data.user.avatar || 'https://bhl-website.vercel.app/brand/logo.png',
+          alt: `${username}'s Avatar`,
+        }
+      ],
+    }
+  };
+}
+
 export default async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const data = await getProfileData(id);
 
   if (!data) notFound();
 
-  return <ProfileClient initialProfile={data.user} initialSubmissions={data.submissions} />;
+  const user = data.user;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: user.username,
+    description: user.bio || `BHL Member level ${user.level || 1}`,
+    url: `https://bhl-website.vercel.app/users/${user._id}`,
+    image: user.avatar || 'https://bhl-website.vercel.app/brand/logo.png',
+    knowsAbout: user.divisions || []
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProfileClient initialProfile={data.user} initialSubmissions={data.submissions} />
+    </>
+  );
 }

@@ -1,10 +1,10 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
-import { useAdmin, adminLinks } from './layout';
+import { useAdmin, adminLinks } from './AdminLayoutClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import { RefreshCw } from 'lucide-react';
 import styles from './page.module.css';

@@ -2,8 +2,8 @@
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/contexts/ToastContext';
-import { useAdmin } from '../layout';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useAdmin } from '../AdminLayoutClient';
+import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
 

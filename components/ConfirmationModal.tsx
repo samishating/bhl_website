@@ -1,4 +1,6 @@
 'use client';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useMotionConfig } from '@/hooks/useMotionConfig';
 import styles from './ConfirmationModal.module.css';
 
 interface ConfirmationModalProps {
@@ -12,6 +14,18 @@ interface ConfirmationModalProps {
   variant?: 'danger' | 'warning' | 'info';
 }
 
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.2, ease: 'easeOut' as any } },
+  exit:   { opacity: 0, transition: { duration: 0.15, ease: 'easeIn' as any } },
+};
+
+const modalVariants = {
+  hidden:  { opacity: 0, scale: 0.96 },
+  visible: { opacity: 1, scale: 1,   transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] as any } },
+  exit:    { opacity: 0, scale: 0.96, transition: { duration: 0.15, ease: 'easeIn' as any } },
+};
+
 export default function ConfirmationModal({
   isOpen,
   title,
@@ -22,30 +36,55 @@ export default function ConfirmationModal({
   onCancel,
   variant = 'warning'
 }: ConfirmationModalProps) {
-  if (!isOpen) return null;
+  const { shouldReduce } = useMotionConfig();
 
   return (
-    <div className={styles.overlay} onClick={onCancel}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <div className={styles.icon}>
-          {variant === 'danger' && '⚠️'}
-          {variant === 'warning' && '⚡'}
-          {variant === 'info' && 'ℹ️'}
-        </div>
-        <h2 className={styles.title}>{title}</h2>
-        <p className={styles.message}>{message}</p>
-        <div className={styles.actions}>
-          <button className={`${styles.btn} ${styles.btnCancel}`} onClick={onCancel}>
-            {cancelLabel}
-          </button>
-          <button 
-            className={`${styles.btn} ${variant === 'danger' ? styles.btnDanger : styles.btnPrimary}`} 
-            onClick={onConfirm}
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className={styles.overlay}
+          variants={overlayVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          transition={shouldReduce ? { duration: 0 } : undefined}
+          onClick={onCancel}
+        >
+          <motion.div
+            className={styles.modal}
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={shouldReduce ? { duration: 0 } : undefined}
+            onClick={e => e.stopPropagation()}
           >
-            {confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+            {/* Close Button */}
+            <button className={`btn-close ${styles.closeBtn}`} onClick={onCancel} aria-label="Close">
+              ✕
+            </button>
+
+            <div className={styles.icon}>
+              {variant === 'danger'  && '⚠️'}
+              {variant === 'warning' && '⚡'}
+              {variant === 'info'    && 'ℹ️'}
+            </div>
+            <h2 className={styles.title}>{title}</h2>
+            <p className={styles.message}>{message}</p>
+            <div className={styles.actions}>
+              <button className={`${styles.btn} ${styles.btnCancel}`} onClick={onCancel}>
+                {cancelLabel}
+              </button>
+              <button
+                className={`${styles.btn} ${variant === 'danger' ? styles.btnDanger : styles.btnPrimary}`}
+                onClick={onConfirm}
+              >
+                {confirmLabel}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

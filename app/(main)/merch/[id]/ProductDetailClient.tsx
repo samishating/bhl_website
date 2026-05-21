@@ -96,7 +96,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   className={`${styles.thumb} ${activeImg === idx ? styles.thumbActive : ''}`}
                   onClick={() => setActiveImg(idx)}
                 >
-                  <img src={img} alt="" />
+                  <img src={img} alt={`${product.name} gallery image ${idx + 1}`} />
                 </div>
               ))}
             </div>
@@ -122,7 +122,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               />
               {isLocked && (
                 <div className={styles.lockedOverlay}>
-                  <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '40px', height: '40px', marginBottom: '1rem' }} />
+                  <img src="/ICONS/trophy_1.svg" alt="Premium Exclusive Trophy Icon" style={{ width: '40px', height: '40px', marginBottom: '1rem' }} />
                   <span>PREMIUM EXCLUSIVE</span>
                 </div>
               )}

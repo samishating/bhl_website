@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { getLevelTitle } from '@/lib/xp';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -31,24 +31,44 @@ export default function HomeLeaderboard() {
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const fetchLeaderboard = useCallback(() => {
+    setLoading(true);
+    setError(null);
     fetch(`/api/leaderboard?division=${filter}`, { cache: 'no-store' })
-      .then(r => r.json())
+      .then(async r => {
+        if (!r.ok) throw new Error('Failed to retrieve leaderboard standings.');
+        return r.json();
+      })
       .then(d => {
         setUsers((d.users as LeaderboardUser[]) || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setError('Standings could not be loaded due to a connection issue.');
         setLoading(false);
       });
   }, [filter]);
 
   useEffect(() => {
+    fetchLeaderboard();
+  }, [fetchLeaderboard]);
+
+  useEffect(() => {
     const handleSyncRefresh = () => {
       fetch(`/api/leaderboard?division=${filter}`, { cache: 'no-store' })
-        .then(r => r.json())
+        .then(r => {
+          if (!r.ok) throw new Error();
+          return r.json();
+        })
         .then(d => {
           setUsers((d.users as LeaderboardUser[]) || []);
-        });
+          setError(null);
+        })
+        .catch(() => {});
     };
     window.addEventListener('stats-refresh', handleSyncRefresh);
     return () => window.removeEventListener('stats-refresh', handleSyncRefresh);
@@ -148,6 +168,30 @@ export default function HomeLeaderboard() {
               >
                 <div className="spinner" />
               </motion.div>
+            ) : error ? (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                  textAlign: 'center',
+                  padding: '3rem 2rem',
+                  color: 'var(--text-muted)',
+                  background: 'rgba(255, 0, 0, 0.02)',
+                  border: '1px solid rgba(255, 0, 0, 0.08)',
+                  borderRadius: '16px',
+                  maxWidth: '480px',
+                  margin: '2rem auto',
+                }}
+              >
+                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+                <h4 style={{ color: '#fff', fontFamily: 'Rajdhani', fontSize: '1.25rem', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Connection Interrupted</h4>
+                <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>{error}</p>
+                <button className="btn btn-ghost" onClick={fetchLeaderboard}>
+                  Retry Connection
+                </button>
+              </motion.div>
             ) : users.length === 0 ? (
               <motion.div 
                 key="empty"
@@ -189,7 +233,7 @@ export default function HomeLeaderboard() {
                       <div>
                         <div className={styles.memberCell}>
                           <Link href={`/users/${u._id}`} className="avatar">
-                            {u.avatar ? <img src={u.avatar} alt="" /> : u.username[0]}
+                            {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0]}
                           </Link>
                           <div>
                             <Link href={`/users/${u._id}`} className={styles.memberName}>{u.username}</Link>

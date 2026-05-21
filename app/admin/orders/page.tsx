@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef } from 'react';
-import { useAdmin } from '../layout';
+import { useAdmin } from '../AdminLayoutClient';
 import { useToast } from '@/contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, scaleIn } from '@/lib/animations';
@@ -475,7 +475,7 @@ export default function AdminOrdersPage() {
           isOpen={!!selectedOrder}
           onClose={() => { setSelectedOrder(null); setIsEditing(false); }}
           title={isEditing ? 'Modify Order' : 'Order Details'}
-          maxWidth="700px"
+          maxWidth="560px"
           footer={
             isEditing ? (
               <div style={{ display: 'flex', gap: '20px', width: '100%' }}>

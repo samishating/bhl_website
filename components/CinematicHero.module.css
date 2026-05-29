@@ -219,23 +219,16 @@
 .letter {
   display: inline-block;
   will-change: transform, opacity;
+  color: inherit;
 }
 
 .lineBrotherhood {
-  color: #FFFFFF;
-  background: linear-gradient(180deg, #ffffff 0%, #ececec 60%, #c4c4c4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
   /* no animation — handled per-letter */
 }
 
 .lineLegacy {
-  color: #FF0000;
-  background: linear-gradient(180deg, #ff5555 0%, #ff1a1a 55%, #cc0000 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ff2020;
   /* no animation — handled per-letter */
 }
 

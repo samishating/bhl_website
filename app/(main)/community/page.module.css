@@ -435,6 +435,87 @@
   box-shadow: 0 4px 15px rgba(169, 112, 255, 0.35);
 }
 
+.liveSkeleton {
+  margin-bottom: 40px;
+}
+
+.twitchSkeletonCard {
+  pointer-events: none;
+}
+
+.twitchSkeletonCard:hover {
+  transform: none;
+}
+
+.skeletonImage {
+  min-height: 236px;
+  background:
+    linear-gradient(110deg, rgba(255,255,255,0.035) 8%, rgba(255,255,255,0.09) 18%, rgba(255,255,255,0.035) 33%),
+    radial-gradient(circle at 28% 32%, rgba(169,112,255,0.14), transparent 38%),
+    rgba(0, 0, 0, 0.78);
+  background-size: 220% 100%, 100% 100%, 100% 100%;
+  animation: skeletonSweep 1.45s ease-in-out infinite;
+}
+
+.skeletonLiveBadge,
+.skeletonViewerBadge,
+.skeletonPill,
+.skeletonLineStrong,
+.skeletonLine,
+.skeletonButton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.skeletonLiveBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 54px;
+  height: 22px;
+  background: rgba(255, 0, 0, 0.28);
+}
+
+.skeletonViewerBadge {
+  position: absolute;
+  top: 12px;
+  left: 74px;
+  width: 52px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.skeletonPill {
+  width: 148px;
+  height: 22px;
+  background: rgba(169, 112, 255, 0.14);
+}
+
+.skeletonLineStrong {
+  width: 48%;
+  height: 24px;
+}
+
+.skeletonLine {
+  width: 82%;
+  height: 36px;
+}
+
+.skeletonButton {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(169, 112, 255, 0.12);
+}
+
+@keyframes skeletonSweep {
+  0% { background-position: 120% 0, 0 0, 0 0; }
+  100% { background-position: -120% 0, 0 0, 0 0; }
+}
+
 @keyframes livePulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.48; transform: scale(0.82); }

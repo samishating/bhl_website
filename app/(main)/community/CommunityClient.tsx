@@ -125,6 +125,41 @@ function getYouTubeThumbnail(url: string) {
   return url;
 }
 
+function TwitchLiveSkeleton() {
+  return (
+    <div className={styles.liveSkeleton} aria-label="Checking live Twitch streams">
+      <div className={`${styles.sectionHeader} ${styles.liveSectionHeader}`}>
+        <div>
+          <div className={styles.liveTitleRow}>
+            <span className={`section-tag ${styles.liveNowTag}`}>LIVE NOW</span>
+            <h2 className={`${styles.sectionTitle} ${styles.liveTitle}`}>
+              ON <span><FaTwitch /> TWITCH</span>
+            </h2>
+          </div>
+          <p className={styles.sectionSubtitle}>Checking live Brotherhood broadcasts</p>
+        </div>
+      </div>
+
+      <div className={`${styles.creatorScroll} ${styles.liveStreamScroll}`}>
+        <div className={`${styles.creatorItem} ${styles.liveCreatorItem}`}>
+          <div className={`${styles.creatorCard} ${styles.twitchCard} ${styles.twitchSkeletonCard}`}>
+            <div className={`${styles.cardImage} ${styles.skeletonImage}`}>
+              <div className={styles.skeletonLiveBadge} />
+              <div className={styles.skeletonViewerBadge} />
+            </div>
+            <div className={`${styles.cardContent} ${styles.twitchCardContent}`}>
+              <div className={styles.skeletonPill} />
+              <div className={styles.skeletonLineStrong} />
+              <div className={styles.skeletonLine} />
+              <div className={styles.skeletonButton} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CommunityPage() {
   const [featuredCreators, setFeaturedCreators] = useState<User[]>([]);
   const [members, setMembers] = useState<User[]>([]);
@@ -209,10 +244,14 @@ export default function CommunityPage() {
       </section>
 
       {/* Twitch Live Streams Carousel (Only if creators are live) */}
-      {twitchStreams.length > 0 && (
+      {(loading || twitchStreams.length > 0) && !error && (
         <section className={`${styles.section} ${styles.liveSection}`}>
           <div className="container">
-            <TwitchLiveCarousel streams={twitchStreams} />
+            {twitchStreams.length > 0 ? (
+              <TwitchLiveCarousel streams={twitchStreams} />
+            ) : (
+              <TwitchLiveSkeleton />
+            )}
           </div>
         </section>
       )}

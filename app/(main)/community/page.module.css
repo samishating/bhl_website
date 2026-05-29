@@ -270,6 +270,91 @@
   flex: 0 0 min(420px, calc(100vw - 64px));
 }
 
+.twitchPager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.twitchPager button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.twitchPager button:hover {
+  background: rgba(169, 112, 255, 0.12);
+  color: #c29eff;
+}
+
+.twitchPager span {
+  min-width: 42px;
+  color: var(--text-muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.twitchPageLayout {
+  display: grid;
+  grid-template-columns: minmax(360px, 1.15fr) minmax(420px, 0.85fr);
+  gap: 24px;
+  padding: 0 24px 40px;
+}
+
+.twitchCompactGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.twitchRankedCard {
+  min-height: 100%;
+}
+
+.twitchFeaturedCard .twitchRankedMedia {
+  aspect-ratio: 16 / 9;
+}
+
+.twitchCompactCard {
+  border-radius: var(--radius-md);
+}
+
+.twitchCompactCard .twitchRankedMedia {
+  aspect-ratio: 16 / 9;
+}
+
+.twitchCompactCard .twitchCardContent {
+  gap: 8px;
+  padding: 14px;
+}
+
+.twitchCompactCard .streamCreatorName {
+  font-size: 1.05rem;
+}
+
+.twitchCompactCard .streamTitle {
+  height: 2.7em;
+  font-size: 0.78rem;
+}
+
+.twitchCompactCard .watchTwitchButton,
+.twitchCompactCard .offlineTwitchButton {
+  padding: 10px;
+  font-size: 0.75rem;
+}
+
 .twitchCard {
   border-color: rgba(169, 112, 255, 0.28);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(169, 112, 255, 0.05);
@@ -405,6 +490,28 @@
   height: 100%;
   object-fit: cover;
   transform: none !important;
+}
+
+.offlineAvatarFeatured {
+  width: 132px;
+  height: 132px;
+}
+
+.twitchFeaturedBadge {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 10;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 253, 186, 0.28);
+  border-radius: 4px;
+  background: rgba(255, 253, 186, 0.1);
+  color: var(--cream);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .twitchCardContent {
@@ -806,6 +913,14 @@
 }
 
 @media (max-width: 1024px) {
+  .twitchPageLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .twitchCompactGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .videoCarouselLayout {
     flex-direction: column;
   }
@@ -1197,6 +1312,35 @@
 
   .liveTitleRow {
     gap: 12px;
+  }
+
+  .twitchPager {
+    align-self: flex-start;
+  }
+
+  .twitchPageLayout {
+    gap: 16px;
+    padding: 0 16px 32px;
+  }
+
+  .twitchCompactGrid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: x proximity;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .twitchCompactGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .twitchCompactCard {
+    flex: 0 0 min(260px, calc(100vw - 64px));
+    scroll-snap-align: start;
   }
   
   .creatorCard {

@@ -34,6 +34,7 @@ interface User {
   _id: string;
   username: string;
   creatorDisplayName?: string;
+  isFeatured?: boolean;
   avatar: string;
   bio: string;
   level: number;

@@ -52,16 +52,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       user.username = username;
     }
 
+    const oldYoutube = user.socialLinks?.youtube || '';
+    const wasPublic = user.isPublic;
+
     if (bio !== undefined) user.bio = bio;
     if (avatar !== undefined) user.avatar = avatar;
     
+    let youtubeUrlChanged = false;
     if (socialLinks !== undefined) {
-      const oldYoutube = user.socialLinks?.youtube || '';
       const newYoutube = socialLinks.youtube || '';
-      
       user.socialLinks = { ...user.socialLinks, ...socialLinks };
       
       if (newYoutube !== oldYoutube) {
+        youtubeUrlChanged = true;
         // Clear cached channel/uploads playlist IDs and handle
         user.youtubeChannelId = '';
         user.youtubeUploadsPlaylistId = '';
@@ -75,6 +78,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     // Admin-only fields
+    let isPublicEnabled = false;
     if (currentRole === 'admin' || currentRole === 'superadmin') {
       if (isPublic !== undefined) {
         user.isPublic = isPublic;
@@ -82,6 +86,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           // Delete cached videos immediately if creator visibility is disabled
           const { CreatorVideo } = await import('@/models/CreatorVideo');
           await CreatorVideo.deleteMany({ userId: id });
+        } else if (isPublic === true && !wasPublic) {
+          isPublicEnabled = true;
         }
       }
       if (isFeatured !== undefined) user.isFeatured = isFeatured;
@@ -118,6 +124,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     await user.save();
+
+    // Trigger immediate YouTube sync if creator is public and either visibility was enabled or YouTube URL changed
+    if (user.isPublic && (isPublicEnabled || youtubeUrlChanged)) {
+      try {
+        const { syncCreator } = await import('@/lib/server/youtube');
+        await syncCreator(id);
+      } catch (syncErr) {
+        console.error('[YouTube Sync on Update]', syncErr);
+      }
+    }
     
     // Sync division stats for any affected divisions
     if (divisions !== undefined) {

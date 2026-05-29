@@ -606,7 +606,14 @@ export default function AdminOrdersPage() {
                                     {s.size} ({s.stock} left)
                                   </option>
                                 ))}
-                                {!productInfo?.sizes?.length && <option value="">No sizes available</option>}
+                                {item.size && !productInfo?.sizes?.some((s: any) => s.size === item.size) && (
+                                  <option value={item.size}>
+                                    {item.size} (Current)
+                                  </option>
+                                )}
+                                {!productInfo?.sizes?.length && !item.size && (
+                                  <option value="">No sizes available</option>
+                                )}
                               </select>
                             </div>
                           ) : (

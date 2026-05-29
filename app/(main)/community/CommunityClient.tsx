@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import CreatorVideoCarousel from './CreatorVideoCarousel';
+import TwitchLiveCarousel from './TwitchLiveCarousel';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
 import styles from './page.module.css';
@@ -97,6 +98,7 @@ export default function CommunityPage() {
   const [members, setMembers] = useState<User[]>([]);
   const [featuredVideoGroups, setFeaturedVideoGroups] = useState<any[]>([]);
   const [latestVideoGroups, setLatestVideoGroups] = useState<any[]>([]);
+  const [twitchStreams, setTwitchStreams] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
@@ -123,6 +125,18 @@ export default function CommunityPage() {
         if (vidData) {
           if (vidData.featuredGroups) setFeaturedVideoGroups(vidData.featuredGroups);
           if (vidData.latestGroups) setLatestVideoGroups(vidData.latestGroups);
+        }
+        
+        // Fetch Twitch Live streams
+        return fetch('/api/twitch/live');
+      })
+      .then(async res => {
+        if (res && !res.ok) throw new Error('Failed to retrieve Twitch streams.');
+        return res ? res.json() : null;
+      })
+      .then(twitchData => {
+        if (twitchData && twitchData.live) {
+          setTwitchStreams(twitchData.live);
         }
         setLoading(false);
       })
@@ -165,6 +179,15 @@ export default function CommunityPage() {
         </motion.div>
       </section>
 
+      {/* Twitch Live Streams Carousel (Only if creators are live) */}
+      {twitchStreams.length > 0 && (
+        <section className={styles.section} style={{ paddingBottom: '32px', paddingTop: '16px' }}>
+          <div className="container">
+            <TwitchLiveCarousel streams={twitchStreams} />
+          </div>
+        </section>
+      )}
+
       {/* Featured Video Carousel (Only if featured creators have videos) */}
       {featuredVideoGroups.length > 0 && (
         <section className={styles.section} style={{ paddingBottom: '32px' }}>
@@ -192,37 +215,64 @@ export default function CommunityPage() {
               viewport={{ once: true, amount: 0.1 }}
               variants={staggerContainer}
             >
-              {featuredCreators.map(creator => (
-                <motion.div key={creator._id} variants={fadeUp} className={styles.creatorItem}>
-                  <Link href={`/users/${creator._id}`} className={styles.creatorCard}>
-                    <div className={styles.cardImage}>
-                      {creator.featuredLinks?.[0] ? (
-                        <img src={getYouTubeThumbnail(creator.featuredLinks[0].url)} alt={`${creator.username} featured video`} />
-                      ) : (
-                        <img src={creator.avatar || 'https://placehold.co/600x338/111/white?text=BHL+CREATOR'} alt={`${creator.username} avatar`} />
-                      )}
-                      <div className={styles.cardOverlay} />
-                    </div>
-                    <div className={styles.cardContent}>
-                      <div className={styles.divisionBadge}>
-                        {creator.divisions && creator.divisions.length > 0 
-                          ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
-                          : <FaShieldAlt />}
+              {featuredCreators.map(creator => {
+                const isLive = twitchStreams.some(s => s.creatorId === creator._id);
+                return (
+                  <motion.div key={creator._id} variants={fadeUp} className={styles.creatorItem}>
+                    <Link href={`/users/${creator._id}`} className={styles.creatorCard}>
+                      <div className={styles.cardImage}>
+                        {creator.featuredLinks?.[0] ? (
+                          <img src={getYouTubeThumbnail(creator.featuredLinks[0].url)} alt={`${creator.username} featured video`} />
+                        ) : (
+                          <img src={creator.avatar || 'https://placehold.co/600x338/111/white?text=BHL+CREATOR'} alt={`${creator.username} avatar`} />
+                        )}
+                        
+                        {isLive && (
+                          <span style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                            zIndex: 10,
+                            background: '#FF0000',
+                            color: '#fff',
+                            fontSize: '0.6rem',
+                            fontWeight: 900,
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            letterSpacing: '0.05em',
+                            boxShadow: '0 0 10px rgba(255, 0, 0, 0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}>
+                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', animation: 'pulse 1.5s infinite' }} />
+                            LIVE
+                          </span>
+                        )}
+
+                        <div className={styles.cardOverlay} />
                       </div>
-                      <div className={styles.creatorInfo}>
-                        <div className={styles.creatorName}>{creator.username}</div>
-                        <div className={styles.creatorSocials}>
-                          {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
-                            const url = creator.socialLinks?.[key as keyof SocialLinks];
-                            if (!url) return null;
-                            return <span key={key} className={styles.miniIcon}>{icon}</span>;
-                          })}
+                      <div className={styles.cardContent}>
+                        <div className={styles.divisionBadge}>
+                          {creator.divisions && creator.divisions.length > 0 
+                            ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
+                            : <FaShieldAlt />}
+                        </div>
+                        <div className={styles.creatorInfo}>
+                          <div className={styles.creatorName}>{creator.username}</div>
+                          <div className={styles.creatorSocials}>
+                            {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                              const url = creator.socialLinks?.[key as keyof SocialLinks];
+                              if (!url) return null;
+                              return <span key={key} className={styles.miniIcon}>{icon}</span>;
+                            })}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </div>
         </section>
@@ -347,46 +397,72 @@ export default function CommunityPage() {
                 exit="hidden"
                 variants={staggerContainer}
               >
-                {filteredMembers.map(member => (
-                  <motion.div 
-                    key={member._id} 
-                    className={styles.memberCard}
-                    variants={fadeUp}
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className={styles.memberAvatar}>
-                      {member.avatar ? <img src={member.avatar} alt={`${member.username} avatar`} /> : member.username[0].toUpperCase()}
-                    </div>
-                    <div className={styles.memberName}>{member.username}</div>
-                    <div className={styles.memberLevel}>
-                      Level {calculateLevel(member.xp)} • {getLevelTitle(calculateLevel(member.xp))}
-                    </div>
-                    
-                    <div className={styles.memberDivisions}>
-                      {member.divisions.map(div => (
-                        <span key={div} className={`division-tag tag-${div}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{div}</span>
-                      ))}
-                    </div>
+                {filteredMembers.map(member => {
+                  const isLive = twitchStreams.some(s => s.creatorId === member._id);
+                  return (
+                    <motion.div 
+                      key={member._id} 
+                      className={styles.memberCard}
+                      variants={fadeUp}
+                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    >
+                      <div className={styles.memberAvatar}>
+                        {member.avatar ? <img src={member.avatar} alt={`${member.username} avatar`} /> : member.username[0].toUpperCase()}
+                        
+                        {isLive && (
+                          <span style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                            zIndex: 10,
+                            background: '#FF0000',
+                            color: '#fff',
+                            fontSize: '0.55rem',
+                            fontWeight: 900,
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            letterSpacing: '0.05em',
+                            boxShadow: '0 0 8px rgba(255, 0, 0, 0.4)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                          }}>
+                            <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#fff', animation: 'pulse 1.5s infinite' }} />
+                            LIVE
+                          </span>
+                        )}
+                      </div>
+                      <div className={styles.memberName}>{member.username}</div>
+                      <div className={styles.memberLevel}>
+                        Level {calculateLevel(member.xp)} • {getLevelTitle(calculateLevel(member.xp))}
+                      </div>
+                      
+                      <div className={styles.memberDivisions}>
+                        {member.divisions.map(div => (
+                          <span key={div} className={`division-tag tag-${div}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{div}</span>
+                        ))}
+                      </div>
 
-                    {member.bio && <p className={styles.memberBio}>{member.bio}</p>}
+                      {member.bio && <p className={styles.memberBio}>{member.bio}</p>}
 
-                    <div className={styles.memberSocials}>
-                      {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
-                        const url = member.socialLinks?.[key as keyof SocialLinks];
-                        if (!url) return null;
-                        return (
-                          <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
-                            {icon}
-                          </a>
-                        );
-                      })}
-                    </div>
+                      <div className={styles.memberSocials}>
+                        {Object.entries(PLATFORM_ICONS).map(([key, icon]) => {
+                          const url = member.socialLinks?.[key as keyof SocialLinks];
+                          if (!url) return null;
+                          return (
+                            <a key={key} href={url} target="_blank" rel="noreferrer" className={styles.socialIconBtn} aria-label={key}>
+                              {icon}
+                            </a>
+                          );
+                        })}
+                      </div>
 
-                    <Link href={`/users/${member._id}`} className={styles.viewProfileBtn}>
-                      View Profile
-                    </Link>
-                  </motion.div>
-                ))}
+                      <Link href={`/users/${member._id}`} className={styles.viewProfileBtn}>
+                        View Profile
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </motion.div>
             )}
           </AnimatePresence>

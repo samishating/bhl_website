@@ -107,10 +107,6 @@
   align-items: center;
   justify-content: center;
   margin-bottom: -2.5rem;
-  opacity: 0;
-  animation: logoRise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-             logoFloat 5s ease-in-out infinite;
-  /* animationDelay set via inline style in TSX */
 }
 
 .logo {
@@ -134,6 +130,7 @@
   pointer-events: none;
   z-index: 1;
   animation: glowBreathe 3.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
 /* ─── Text ───────────────────────────────────────────────── */
@@ -163,9 +160,7 @@
 /* Individual animated letter */
 .letter {
   display: inline-block;
-  opacity: 0;
-  animation: letterPop 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  /* animationDelay set via inline style in TSX */
+  will-change: transform, opacity;
 }
 
 .lineBrotherhood {
@@ -195,8 +190,7 @@
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
   margin-top: 2rem;
-  opacity: 0;
-  animation: fadeSlideUp 0.6s ease 1.55s forwards;
+  will-change: transform, opacity;
 }
 
 .ctas {
@@ -207,8 +201,7 @@
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 2.5rem;
-  opacity: 0;
-  animation: fadeSlideUp 0.6s ease 1.85s forwards;
+  will-change: transform, opacity;
 }
 
 /* ─── Scroll Hint ────────────────────────────────────────── */
@@ -222,8 +215,7 @@
   align-items: center;
   gap: 8px;
   z-index: 5;
-  opacity: 0;
-  animation: fadeSlideUp 0.6s ease 2.3s forwards;
+  will-change: opacity;
 }
 
 .scrollLabel {
@@ -241,82 +233,30 @@
   animation: scrollDrop 1.8s ease-in-out 2.5s infinite;
 }
 
-/* ─── Mouse Parallax target ─────────────────────────────── */
-.parallaxLogo {
-  transition: transform 0.12s linear;
+/* ─── Mouse Parallax & Float Containers ────────────────── */
+.parallaxContainer {
   will-change: transform;
 }
 
-.parallaxGlow {
-  transition: transform 0.2s linear;
+.floatingContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: logoFloat 5s ease-in-out infinite;
   will-change: transform;
 }
 
 /* ─── Keyframes ─────────────────────────────────────────── */
-
-@keyframes logoRise {
-  from {
-    opacity: 0;
-    transform: translateY(120px) scale(0.85);
-    filter: blur(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
-  }
-}
 
 @keyframes logoFloat {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-8px); }
 }
 
-@keyframes textReveal {
-  from {
-    opacity: 0;
-    transform: translateY(42px);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
-  }
-}
-
-/* Per-letter typewriter pop */
-@keyframes letterPop {
-  0% {
-    opacity: 0;
-    transform: translateY(28px) scaleY(0.85);
-    filter: blur(6px);
-  }
-  60% {
-    opacity: 1;
-    filter: blur(0px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scaleY(1);
-    filter: blur(0px);
-  }
-}
-
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes glowBreathe {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.06); }
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.85; }
 }
 
 @keyframes scrollDrop {

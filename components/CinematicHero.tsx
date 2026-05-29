@@ -12,17 +12,17 @@ interface CinematicHeroProps {
   };
 }
 
-const customEase: BezierDefinition = [0.215, 0.61, 0.355, 1];
+const customEase: BezierDefinition = [0.16, 1, 0.3, 1];
 
 const letterVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.9, filter: 'blur(10px)' },
+  hidden: { opacity: 0, y: 15, scale: 0.95 },
   visible: (i: number) => ({
     opacity: 1,
+    y: 0,
     scale: 1,
-    filter: 'blur(0px)',
     transition: {
-      delay: i * 0.05,
-      duration: 0.8,
+      delay: i * 0.03,
+      duration: 0.5,
       ease: customEase,
     },
   }),
@@ -117,60 +117,55 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
         <SplitWord
           word="Brotherhood"
           className={`${styles.line} ${styles.lineBrotherhood}`}
-          delayOffset={6} // Start after a short initial pause
+          delayOffset={0} // Start immediately on load
         />
 
-        {/* Rising Logo */}
+        {/* Rising Logo with Isolated Transform Layers */}
         <motion.div
           className={styles.logoWrap}
-          ref={logoRef}
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, y: 40, scale: 0.9 }}
           animate={{ 
             opacity: 1, 
+            y: 0,
             scale: 1, 
           }}
           transition={{ 
-            delay: 1.2, 
-            duration: 1.2, 
+            delay: 0.4, 
+            duration: 0.8, 
             ease: [0.16, 1, 0.3, 1] 
           }}
         >
-          <Image
-            src="/brand/logo.png"
-            alt="BHL"
-            width={220}
-            height={220}
-            className={styles.logo}
-            priority
-          />
-          <motion.div 
-            className={styles.logoGlow} 
-            animate={{ 
-              opacity: [0.3, 0.6, 0.3],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{ 
-              duration: 4, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-          />
+          {/* Middle Parallax Container: JS mouse move sets transform here */}
+          <div ref={logoRef} className={styles.parallaxContainer}>
+            {/* Inner Bobbing Container: CSS keyframes bob up and down */}
+            <div className={styles.floatingContainer}>
+              <Image
+                src="/brand/logo.png"
+                alt="BHL"
+                width={220}
+                height={220}
+                className={styles.logo}
+                priority
+              />
+              <div className={styles.logoGlow} />
+            </div>
+          </div>
         </motion.div>
 
         {/* Line 2 — letter-by-letter */}
         <SplitWord
           word="Legacy"
           className={`${styles.line} ${styles.lineLegacy}`}
-          delayOffset={20} // Start after Brotherhood and Logo have progress
+          delayOffset={8} // Starts slightly staggered with Brotherhood
         />
       </div>
 
       {/* Subtitle */}
       <motion.p 
         className={styles.sub}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.2, duration: 1 }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         Rise. Compete. Dominate.
       </motion.p>
@@ -178,9 +173,9 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
       {/* CTAs */}
       <motion.div 
         className={styles.ctas}
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 2.5, duration: 0.8 }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <Link href="/register" className="btn btn-primary btn-lg" id="hero-join-btn">
           Join the Brotherhood
@@ -201,7 +196,7 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
         className={styles.scroll}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 3, duration: 1 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
       >
         <div className={styles.scrollLine} />
       </motion.div>

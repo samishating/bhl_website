@@ -33,11 +33,12 @@
     radial-gradient(ellipse 60% 40% at 50% 100%, rgba(200, 0, 0, 0.03) 0%, transparent 50%);
   z-index: 3;
   animation: hazeBreathe 8s ease-in-out infinite alternate;
+  will-change: opacity;
 }
 
 @keyframes hazeBreathe {
-  0% { opacity: 0.6; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1.05); }
+  0% { opacity: 0.4; }
+  100% { opacity: 0.85; }
 }
 
 /* Layer 4: Subtle Texture (Grain) */
@@ -68,7 +69,8 @@
   background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.2);
-  animation: drift float linear infinite;
+  animation: float linear infinite;
+  will-change: transform, opacity;
 }
 
 /* Base floating animation */

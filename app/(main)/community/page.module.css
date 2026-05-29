@@ -4,11 +4,26 @@
   padding-bottom: 80px;
 }
 
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 0, 0, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(8, 0, 0, 0.18) 42%, rgba(0, 0, 0, 0.22) 100%);
+  z-index: 1;
+}
+
 .hero {
-  padding: 40px 24px 60px;
+  padding: 96px 24px 64px;
   text-align: center;
   position: relative;
   z-index: 2;
+}
+
+.heroTag {
+  margin: 0 auto 16px;
 }
 
 .heroTitle {
@@ -16,7 +31,7 @@
   font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   line-height: 0.9;
   margin-bottom: 16px;
 }
@@ -33,6 +48,25 @@
   padding: 64px 0;
   position: relative;
   z-index: 2;
+}
+
+.section::before {
+  content: '';
+  display: block;
+  width: min(720px, calc(100% - 48px));
+  height: 1px;
+  margin: 0 auto 64px;
+  background: radial-gradient(circle at center, rgba(255, 0, 0, 0.24), transparent 72%);
+}
+
+.hero + .liveSection::before,
+.hero + .section::before {
+  display: none;
+}
+
+.liveSection {
+  padding-top: 16px;
+  padding-bottom: 32px;
 }
 
 .sectionHeader {
@@ -68,6 +102,8 @@
   overflow-x: auto;
   padding: 20px 24px 40px;
   scroll-behavior: smooth;
+  scroll-padding-inline: 24px;
+  scroll-snap-type: x proximity;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -79,12 +115,13 @@
 .creatorItem {
   flex: 0 0 340px;
   display: flex;
+  scroll-snap-align: start;
 }
 
 .creatorCard {
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: 20px;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
@@ -99,8 +136,8 @@
 
 .creatorCard:hover {
   transform: translateY(-8px);
-  border-color: var(--brand-red);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 0, 85, 0.1);
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 0, 0, 0.1);
 }
 
 .cardImage {
@@ -143,22 +180,22 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(255, 0, 85, 0.05);
-  border: 1px solid rgba(255, 0, 85, 0.2);
+  background: rgba(255, 0, 0, 0.05);
+  border: 1px solid rgba(255, 0, 0, 0.2);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--brand-red);
   font-size: 1.2rem;
-  box-shadow: inset 0 0 10px rgba(255, 0, 85, 0.1), 0 0 15px rgba(255, 0, 85, 0.1);
+  box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.1), 0 0 15px rgba(255, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .creatorCard:hover .divisionBadge {
-  background: rgba(255, 0, 85, 0.1);
-  border-color: rgba(255, 0, 85, 0.4);
-  box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.2), 0 0 20px rgba(255, 0, 85, 0.2);
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.4);
+  box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.2), 0 0 20px rgba(255, 0, 0, 0.2);
   transform: scale(1.05);
 }
 
@@ -185,6 +222,222 @@
 .miniIcon {
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+/* Twitch Live */
+.liveCarousel {
+  margin-bottom: 40px;
+}
+
+.liveSectionHeader {
+  margin-bottom: 16px;
+}
+
+.liveTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.liveNowTag {
+  margin: 0;
+  padding: 4px 10px;
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+.liveTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.liveTitle span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #a970ff;
+}
+
+.liveStreamScroll {
+  padding-top: 24px;
+}
+
+.liveCreatorItem {
+  flex: 0 0 min(420px, calc(100vw - 64px));
+}
+
+.twitchCard {
+  border-color: rgba(169, 112, 255, 0.28);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(169, 112, 255, 0.05);
+}
+
+.twitchCard:hover {
+  border-color: rgba(169, 112, 255, 0.56);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.42), 0 0 24px rgba(169, 112, 255, 0.12);
+}
+
+.liveMetaBadges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 24px);
+}
+
+.liveStatusBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #ff0000;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.52);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.liveMetaBadges .liveStatusBadge {
+  position: static;
+}
+
+.liveStatusBadge span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+.memberLiveBadge {
+  top: 8px;
+  left: 8px;
+  padding: 3px 6px;
+  font-size: 0.55rem;
+}
+
+.memberLiveBadge span {
+  width: 4px;
+  height: 4px;
+}
+
+.viewerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.twitchCardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.streamGameRow {
+  display: flex;
+  min-width: 0;
+}
+
+.streamGameBadge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(169, 112, 255, 0.25);
+  background: rgba(169, 112, 255, 0.08);
+  color: #c29eff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.streamText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.streamCreatorName {
+  overflow: hidden;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.streamTitle {
+  display: -webkit-box;
+  height: 2.8em;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.watchTwitchButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(169, 112, 255, 0.25);
+  border-radius: var(--radius-md);
+  background: rgba(169, 112, 255, 0.1);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.twitchCard:hover .watchTwitchButton {
+  background: #a970ff;
+  border-color: #a970ff;
+  box-shadow: 0 4px 15px rgba(169, 112, 255, 0.35);
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.48; transform: scale(0.82); }
 }
 
 /* Carousel Header & Controls */
@@ -519,15 +772,17 @@
 /* Members Grid */
 .membersGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   padding: 0 24px;
 }
 
 .memberCard {
-  background: rgba(255, 255, 255, 0.03);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(10, 10, 10, 0.42);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 32px;
   display: flex;
@@ -540,9 +795,9 @@
 
 .memberCard:hover {
   background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--border-hover);
   transform: translateY(-8px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.34), 0 0 20px rgba(255,0,0,0.08);
 }
 
 .memberAvatar {
@@ -560,6 +815,7 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  position: relative;
 }
 
 .memberAvatar img {
@@ -574,6 +830,51 @@
   font-size: 1.5rem;
   color: #fff;
   margin-bottom: 8px;
+}
+
+.memberStatsBlock {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 0, 0, 0.12);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 0, 0, 0.12), transparent 62%),
+    rgba(255, 255, 255, 0.025);
+}
+
+.memberPrimaryStat {
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.memberSecondaryStat {
+  margin-top: 4px;
+  color: var(--brand-red);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.memberXpStat {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .memberLevel {
@@ -666,9 +967,56 @@
   color: var(--text-muted);
 }
 
+.errorIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 0, 0, 0.18);
+  border-radius: var(--radius-md);
+  background: rgba(255, 0, 0, 0.08);
+  color: var(--brand-red);
+  font-size: 1.35rem;
+}
+
 @media (max-width: 768px) {
+  .hero {
+    padding: 88px 16px 48px;
+  }
+
   .heroTitle {
     font-size: 3rem;
+    line-height: 0.95;
+  }
+
+  .heroSub {
+    font-size: 1rem;
+  }
+
+  .section {
+    padding: 48px 0;
+  }
+
+  .section::before {
+    margin-bottom: 48px;
+  }
+
+  .sectionHeader,
+  .carouselHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 16px;
+  }
+
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+
+  .liveTitleRow {
+    gap: 12px;
   }
   
   .creatorCard {
@@ -676,7 +1024,17 @@
   }
 
   .creatorItem {
-    flex: 0 0 280px;
+    flex: 0 0 min(300px, calc(100vw - 48px));
+  }
+
+  .liveCreatorItem {
+    flex-basis: min(360px, calc(100vw - 48px));
+  }
+
+  .creatorScroll {
+    gap: 16px;
+    padding: 16px 16px 32px;
+    scroll-padding-inline: 16px;
   }
 
   .contentGrid {
@@ -687,6 +1045,11 @@
   .membersGrid {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 0 16px;
+  }
+
+  .memberCard {
+    padding: 24px;
   }
 }
 

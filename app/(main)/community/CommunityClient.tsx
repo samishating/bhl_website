@@ -1,16 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
 import CreatorVideoCarousel from './CreatorVideoCarousel';
 import TwitchLiveCarousel from './TwitchLiveCarousel';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, staggerContainer, scaleIn } from '@/lib/animations';
+import { fadeUp, staggerContainer } from '@/lib/animations';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
   FaApple, FaSoundcloud, FaDiscord, FaGlobe,
-  FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt
+  FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt, FaExclamationTriangle
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { calculateLevel, getLevelTitle } from '@/lib/xp';
@@ -41,6 +42,37 @@ interface User {
   featuredLinks?: { title: string; url: string; type?: string }[];
 }
 
+interface Video {
+  videoId: string;
+  title: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  publishedAt: string;
+  isFeatured: boolean;
+}
+
+interface VideoGroup {
+  creator: {
+    username: string;
+    creatorDisplayName: string;
+    avatar: string;
+    divisions: string[];
+  };
+  videos: Video[];
+}
+
+interface TwitchLiveStream {
+  creatorId: string;
+  twitchLogin: string;
+  displayName: string;
+  title: string;
+  game: string;
+  viewers: number;
+  startedAt: string;
+  thumbnail: string;
+  url: string;
+}
+
 const KickIcon = ({ size = 14 }: { size?: number }) => (
   <div style={{ 
     width: `${size}px`, 
@@ -56,7 +88,7 @@ const KickIcon = ({ size = 14 }: { size?: number }) => (
   }}>K</div>
 );
 
-const PLATFORM_ICONS: Record<string, any> = {
+const PLATFORM_ICONS: Record<string, ReactNode> = {
   twitter: <FaXTwitter />,
   youtube: <FaYoutube />,
   twitch: <FaTwitch />,
@@ -70,7 +102,7 @@ const PLATFORM_ICONS: Record<string, any> = {
   website: <FaGlobe />,
 };
 
-const DIVISION_ICONS: Record<string, any> = {
+const DIVISION_ICONS: Record<string, ReactNode> = {
   gaming: <FaGamepad />,
   gaming_creator: <FaGamepad />,
   content: <FaVideo />,
@@ -96,9 +128,9 @@ function getYouTubeThumbnail(url: string) {
 export default function CommunityPage() {
   const [featuredCreators, setFeaturedCreators] = useState<User[]>([]);
   const [members, setMembers] = useState<User[]>([]);
-  const [featuredVideoGroups, setFeaturedVideoGroups] = useState<any[]>([]);
-  const [latestVideoGroups, setLatestVideoGroups] = useState<any[]>([]);
-  const [twitchStreams, setTwitchStreams] = useState<any[]>([]);
+  const [featuredVideoGroups, setFeaturedVideoGroups] = useState<VideoGroup[]>([]);
+  const [latestVideoGroups, setLatestVideoGroups] = useState<VideoGroup[]>([]);
+  const [twitchStreams, setTwitchStreams] = useState<TwitchLiveStream[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
@@ -148,12 +180,9 @@ export default function CommunityPage() {
   };
 
   useEffect(() => {
-    fetchCommunityData();
+    const timer = window.setTimeout(fetchCommunityData, 0);
+    return () => window.clearTimeout(timer);
   }, []);
-
-  const allContent = [...featuredCreators, ...members].flatMap(u => 
-    (u.featuredLinks || []).map(link => ({ ...link, user: u }))
-  ).sort(() => Math.random() - 0.5); // Randomize content for variety
 
   const filteredMembers = filter === 'all'
     ? members
@@ -170,7 +199,7 @@ export default function CommunityPage() {
           animate="visible"
           variants={fadeUp}
         >
-          <div className="section-tag" style={{ margin: '0 auto 16px' }}>Network</div>
+          <div className={`section-tag ${styles.heroTag}`}>Network</div>
           <h1 className={styles.heroTitle}>BHL <span className="gradient-text">COMMUNITY</span></h1>
           <p className={styles.heroSub}>
             The heartbeat of the Brotherhood. Meet the creators, artists, and warriors 
@@ -181,7 +210,7 @@ export default function CommunityPage() {
 
       {/* Twitch Live Streams Carousel (Only if creators are live) */}
       {twitchStreams.length > 0 && (
-        <section className={styles.section} style={{ paddingBottom: '32px', paddingTop: '16px' }}>
+        <section className={`${styles.section} ${styles.liveSection}`}>
           <div className="container">
             <TwitchLiveCarousel streams={twitchStreams} />
           </div>
@@ -228,24 +257,8 @@ export default function CommunityPage() {
                         )}
                         
                         {isLive && (
-                          <span style={{
-                            position: 'absolute',
-                            top: '12px',
-                            left: '12px',
-                            zIndex: 10,
-                            background: '#FF0000',
-                            color: '#fff',
-                            fontSize: '0.6rem',
-                            fontWeight: 900,
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            letterSpacing: '0.05em',
-                            boxShadow: '0 0 10px rgba(255, 0, 0, 0.5)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                          }}>
-                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff', animation: 'pulse 1.5s infinite' }} />
+                          <span className={styles.liveStatusBadge}>
+                            <span />
                             LIVE
                           </span>
                         )}
@@ -352,16 +365,16 @@ export default function CommunityPage() {
                 exit={{ opacity: 0 }}
                 style={{
                   textAlign: 'center',
-                  padding: '3rem 2rem',
+                  padding: '48px 32px',
                   color: 'var(--text-muted)',
                   background: 'rgba(255, 0, 0, 0.02)',
                   border: '1px solid rgba(255, 0, 0, 0.08)',
-                  borderRadius: '16px',
+                  borderRadius: 'var(--radius-lg)',
                   maxWidth: '480px',
-                  margin: '2rem auto',
+                  margin: '32px auto',
                 }}
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+                <div className={styles.errorIcon}><FaExclamationTriangle /></div>
                 <h4 style={{ color: '#fff', fontFamily: 'Rajdhani', fontSize: '1.25rem', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Connection Interrupted</h4>
                 <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>{error}</p>
                 <button className="btn btn-ghost" onClick={fetchCommunityData}>
@@ -410,7 +423,7 @@ export default function CommunityPage() {
                         {member.avatar ? <img src={member.avatar} alt={`${member.username} avatar`} /> : member.username[0].toUpperCase()}
                         
                         {isLive && (
-                          <span style={{
+                          <span className={`${styles.liveStatusBadge} ${styles.memberLiveBadge}`} style={{
                             position: 'absolute',
                             top: '12px',
                             left: '12px',
@@ -433,8 +446,10 @@ export default function CommunityPage() {
                         )}
                       </div>
                       <div className={styles.memberName}>{member.username}</div>
-                      <div className={styles.memberLevel}>
-                        Level {calculateLevel(member.xp)} • {getLevelTitle(calculateLevel(member.xp))}
+                      <div className={styles.memberStatsBlock}>
+                        <div className={styles.memberPrimaryStat}>Level {calculateLevel(member.xp)}</div>
+                        <div className={styles.memberSecondaryStat}>{getLevelTitle(calculateLevel(member.xp))}</div>
+                        <div className={styles.memberXpStat}>{member.xp.toLocaleString()} XP</div>
                       </div>
                       
                       <div className={styles.memberDivisions}>

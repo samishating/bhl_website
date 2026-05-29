@@ -1,12 +1,12 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { FaYoutube, FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt } from 'react-icons/fa';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { FaYoutube, FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt, FaPlay } from 'react-icons/fa';
 import { ChevronLeft, ChevronRight, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, scaleIn } from '@/lib/animations';
 import styles from './page.module.css';
 
-const DIVISION_ICONS: Record<string, any> = {
+const DIVISION_ICONS: Record<string, ReactNode> = {
   gaming: <FaGamepad />,
   gaming_creator: <FaGamepad />,
   content: <FaVideo />,
@@ -47,6 +47,16 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
   
   const CYCLE_DURATION = 15000; // 15 seconds
 
+  const handleNext = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % groups.length);
+    setProgress(0);
+  }, [groups.length]);
+
+  const handlePrev = useCallback(() => {
+    setActiveIndex((prev) => (prev === 0 ? groups.length - 1 : prev - 1));
+    setProgress(0);
+  }, [groups.length]);
+
   // Handle auto-cycling logic
   useEffect(() => {
     if (groups.length <= 1) return; // Don't cycle if only 1 group
@@ -72,17 +82,7 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
     return () => {
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
-  }, [activeIndex, isHovered, groups.length]);
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % groups.length);
-    setProgress(0);
-  };
-
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? groups.length - 1 : prev - 1));
-    setProgress(0);
-  };
+  }, [activeIndex, handleNext, isHovered, groups.length]);
 
   if (!groups || groups.length === 0) return null;
 
@@ -125,9 +125,13 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
               />
               {isHovered && <Pause size={14} className={styles.pauseIcon} />}
             </div>
-            <button onClick={handlePrev} className={styles.carouselBtn}><ChevronLeft size={20} /></button>
+            <button onClick={handlePrev} className={styles.carouselBtn} aria-label="Previous creator videos" title="Previous">
+              <ChevronLeft size={20} />
+            </button>
             <span className={styles.carouselCounter}>{activeIndex + 1} / {groups.length}</span>
-            <button onClick={handleNext} className={styles.carouselBtn}><ChevronRight size={20} /></button>
+            <button onClick={handleNext} className={styles.carouselBtn} aria-label="Next creator videos" title="Next">
+              <ChevronRight size={20} />
+            </button>
           </div>
         )}
       </div>
@@ -182,7 +186,9 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
                   <div className={styles.contentThumb}>
                     <img src={v.thumbnailUrl} alt={v.title} />
                     <div className={styles.playOverlay}>
-                      <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>▶</div>
+                      <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>
+                        <FaPlay />
+                      </div>
                     </div>
                   </div>
                   <div className={styles.contentMeta} style={{ flex: 1 }}>

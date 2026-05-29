@@ -33,6 +33,7 @@ interface SocialLinks {
 interface User {
   _id: string;
   username: string;
+  creatorDisplayName?: string;
   avatar: string;
   bio: string;
   level: number;
@@ -223,6 +224,8 @@ export default function CommunityPage() {
     ? members
     : members.filter(m => m.divisions.includes(filter));
 
+  const twitchCreators = [...featuredCreators, ...members].filter(user => Boolean(user.socialLinks?.twitch));
+
   return (
     <div className={styles.page}>
       <HomeFixedBackground />
@@ -244,11 +247,11 @@ export default function CommunityPage() {
       </section>
 
       {/* Twitch Live Streams Carousel (Only if creators are live) */}
-      {(loading || twitchStreams.length > 0) && !error && (
+      {(loading || twitchCreators.length > 0) && !error && (
         <section className={`${styles.section} ${styles.liveSection}`}>
           <div className="container">
-            {twitchStreams.length > 0 ? (
-              <TwitchLiveCarousel streams={twitchStreams} />
+            {!loading && twitchCreators.length > 0 ? (
+              <TwitchLiveCarousel streams={twitchStreams} creators={twitchCreators} />
             ) : (
               <TwitchLiveSkeleton />
             )}

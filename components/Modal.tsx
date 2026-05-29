@@ -13,9 +13,19 @@ interface ModalProps {
   footer?: React.ReactNode;
   maxWidth?: string;
   padding?: string;
+  closeOnOverlayClick?: boolean;
 }
 
-export default function Modal({ isOpen, onClose, title, children, footer, maxWidth, padding }: ModalProps) {
+export default function Modal({ 
+  isOpen, 
+  onClose, 
+  title, 
+  children, 
+  footer, 
+  maxWidth, 
+  padding,
+  closeOnOverlayClick = false
+}: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const { shouldReduce } = useMotionConfig();
 
@@ -41,7 +51,11 @@ export default function Modal({ isOpen, onClose, title, children, footer, maxWid
           exit="hidden"
           variants={fadeIn}
           transition={shouldReduce ? { duration: 0 } : undefined}
-          onClick={(e) => e.target === e.currentTarget && onClose()}
+          onClick={(e) => {
+            if (closeOnOverlayClick && e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
         >
           <motion.div 
             className="modal-content" 

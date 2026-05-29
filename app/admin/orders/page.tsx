@@ -475,7 +475,7 @@ export default function AdminOrdersPage() {
           isOpen={!!selectedOrder}
           onClose={() => { setSelectedOrder(null); setIsEditing(false); }}
           title={isEditing ? 'Modify Order' : 'Order Details'}
-          maxWidth="560px"
+          maxWidth="800px"
           footer={
             isEditing ? (
               <div style={{ display: 'flex', gap: '20px', width: '100%' }}>

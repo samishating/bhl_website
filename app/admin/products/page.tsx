@@ -261,7 +261,7 @@ export default function AdminProductsPage() {
         isOpen={showForm}
         onClose={() => { setShowForm(false); cleanupPreviews(); }}
         title={editingId ? 'Edit Product' : 'Create New Product'}
-        maxWidth="560px"
+        maxWidth="800px"
         footer={
           <>
             <button type="button" className="btn btn-ghost" onClick={() => { setShowForm(false); cleanupPreviews(); }} style={{ minWidth: '120px' }}>CANCEL</button>

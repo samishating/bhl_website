@@ -54,11 +54,36 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (bio !== undefined) user.bio = bio;
     if (avatar !== undefined) user.avatar = avatar;
-    if (socialLinks !== undefined) user.socialLinks = { ...user.socialLinks, ...socialLinks };
+    
+    if (socialLinks !== undefined) {
+      const oldYoutube = user.socialLinks?.youtube || '';
+      const newYoutube = socialLinks.youtube || '';
+      
+      user.socialLinks = { ...user.socialLinks, ...socialLinks };
+      
+      if (newYoutube !== oldYoutube) {
+        // Clear cached channel/uploads playlist IDs and handle
+        user.youtubeChannelId = '';
+        user.youtubeUploadsPlaylistId = '';
+        user.youtubeHandle = '';
+        user.youtubeLastSynced = null;
+
+        // Delete all cached videos for this creator to clear old cache
+        const { CreatorVideo } = await import('@/models/CreatorVideo');
+        await CreatorVideo.deleteMany({ userId: id });
+      }
+    }
 
     // Admin-only fields
     if (currentRole === 'admin' || currentRole === 'superadmin') {
-      if (isPublic !== undefined) user.isPublic = isPublic;
+      if (isPublic !== undefined) {
+        user.isPublic = isPublic;
+        if (isPublic === false) {
+          // Delete cached videos immediately if creator visibility is disabled
+          const { CreatorVideo } = await import('@/models/CreatorVideo');
+          await CreatorVideo.deleteMany({ userId: id });
+        }
+      }
       if (isFeatured !== undefined) user.isFeatured = isFeatured;
       if (displayOrder !== undefined) user.displayOrder = displayOrder;
       if (featuredLinks !== undefined) user.featuredLinks = featuredLinks;

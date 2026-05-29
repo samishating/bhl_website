@@ -1,8 +1,13 @@
-.page { min-height: 100vh; background-color: #000; }
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 0, 0, 0.08), transparent 34%),
+    linear-gradient(180deg, #050505 0%, #000 58%, #080303 100%);
+}
  
 .heroSection { 
   position: relative; 
-  min-height: 80vh;
+  min-height: 78vh;
   display: flex; 
   align-items: center; 
   justify-content: space-between;
@@ -30,7 +35,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: max(0px, calc(100% - 360px));
+  top: max(0px, calc(100% - 420px));
   bottom: 0;
   background: linear-gradient(
     to bottom,
@@ -64,7 +69,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 80px 100px;
+  padding: 104px 100px 80px;
   z-index: 4;
   /* Removed background and blur to show background image clearly */
   text-align: left;
@@ -96,7 +101,7 @@
   font-size: clamp(5.9rem, 7vw, 8rem);
   font-weight: 800;
   line-height: 0.9;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .titleMerch {
@@ -104,7 +109,7 @@
   font-size: clamp(8.6rem, 10vw, 11.6rem);
   font-weight: 900;
   line-height: 0.88;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   margin-top: -6px;
 }
 
@@ -173,22 +178,65 @@
   }
 
   .tabs {
-    margin-top: -1.4rem;
-    margin-bottom: 4rem;
+    margin-top: 0;
+    margin-bottom: 40px;
   }
+}
+
+.storefront {
+  width: min(1280px, calc(100% - 48px));
+  margin: 0 auto;
+  padding-bottom: 96px;
+  position: relative;
+  z-index: 5;
+}
+
+.storefront::before {
+  content: '';
+  display: block;
+  width: min(760px, 100%);
+  height: 1px;
+  margin: 0 auto 48px;
+  background: radial-gradient(circle at center, rgba(255, 0, 0, 0.24), transparent 72%);
+}
+
+.storefrontHeader {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.storefrontHeader :global(.section-tag) {
+  margin: 0;
+}
+
+.storefrontHeader h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.storefrontHeader p {
+  max-width: 620px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .tabs { 
   justify-content: center; 
-  margin-top: -2.1rem;
-  margin-bottom: 5rem; 
+  margin-top: 0;
+  margin-bottom: 56px; 
   flex-wrap: wrap; 
   width: fit-content;
-  max-width: 92vw;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   position: relative;
   z-index: 5;
+  border-radius: var(--radius-lg);
 }
 
 .tab { 
@@ -197,11 +245,28 @@
   min-width: 132px;
 }
 
+.tabLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.5rem; padding-bottom: 5rem; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+  justify-content: center;
+  gap: 32px;
+  padding-bottom: 0;
+}
+
+.gridSparse {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 404px));
+}
 
 .productCard { 
-  background: var(--bg-card); 
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(15, 15, 15, 0.82);
   border: 1px solid var(--border); 
   border-radius: var(--radius-lg); 
   overflow: hidden; 
@@ -229,7 +294,7 @@
 
 .quickViewOverlay { position: absolute; bottom: 0; left: 0; width: 100%; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 30; }
 .productCard:hover .quickViewOverlay { transform: translateY(0); }
-.quickViewBtn { width: 100%; background: var(--brand-red); color: white; border: none; padding: 1rem; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.quickViewBtn { width: 100%; background: var(--brand-red); color: white; border: none; padding: 16px; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
 .quickViewBtn:hover { background: var(--brand-red-dark); }
 .quickViewBtn:disabled { background: #333; color: #888; cursor: not-allowed; }
 
@@ -257,10 +322,40 @@
   z-index: 25;
 }
 
-.productInfo { padding: 1.5rem 1rem; flex: 1; display: flex; flex-direction: column; background: var(--bg-card); }
+.productInfo {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0)),
+    rgba(14, 14, 14, 0.96);
+}
 .productCategory { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem; }
-.productName { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-transform: uppercase; letter-spacing: 0.02em; }
-.productPrice { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 500; color: white; }
+.productMetaRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.productName { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 800; margin: 0; color: white; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1.1; }
+.productPrice { flex-shrink: 0; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 800; color: var(--brand-red); white-space: nowrap; }
+
+.lockedOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
 
 /* Modal Styles */
 .cartOverlay { 
@@ -322,6 +417,26 @@
 .lockedTitle { font-family: 'Rajdhani', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
 .lockedDesc { color: var(--text-secondary); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.6; }
 
+.lockedProgress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.lockedProgress :global(.xp-bar-container) {
+  width: min(300px, calc(100vw - 64px));
+  height: 12px;
+}
+
+.lockedProgress span {
+  color: var(--brand-red);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 900px) {
@@ -330,20 +445,48 @@
   .detailInfo { padding: 2rem; }
 }
 @media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
+  .storefront {
+    width: min(100% - 32px, 1280px);
+    padding-bottom: 72px;
+  }
+
+  .storefront::before {
+    margin-bottom: 40px;
+  }
+
+  .storefrontHeader {
+    margin-bottom: 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
   .tabs {
     flex-wrap: nowrap;
     justify-content: flex-start;
     overflow-x: auto;
-    border-radius: 16px;
+    width: 100%;
+    border-radius: var(--radius-lg);
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    margin-bottom: 40px;
   }
   .tabs::-webkit-scrollbar {
     display: none;
   }
   .tab {
-    min-width: 0;
+    min-width: 128px;
+  }
+
+  .productInfo {
+    padding: 20px;
+  }
+
+  .productMetaRow {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 

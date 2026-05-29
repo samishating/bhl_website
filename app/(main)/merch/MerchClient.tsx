@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import Modal from '@/components/Modal';
+import { Eye, Lock, Minus, Plus, ShoppingBag, Trophy } from 'lucide-react';
 import styles from './page.module.css';
 
 interface Product {
@@ -29,7 +30,6 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const { addItem } = useCart();
   const [filter, setFilter] = useState('all');
   const { showToast } = useToast();
-  const tabsRef = useRef<HTMLDivElement>(null);
 
   // Quick View Modal State
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
@@ -47,18 +47,20 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
 
   return (
     <>
-      <div className="container">
-        <div className={`${styles.tabs} selection-pill-group`} ref={tabsRef}>
+      <section className={styles.storefront}>
+        <div className={styles.storefrontHeader}>
+          <span className="section-tag">Store</span>
+          <h2>Official Drops</h2>
+          <p>Premium apparel and Brotherhood gear built for daily wear, event days, and limited member releases.</p>
+        </div>
+
+        <div className={`${styles.tabs} selection-pill-group`}>
           {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
             <button key={c} className={`${styles.tab} selection-pill ${filter === c ? 'selection-pill-active' : ''}`}
               onClick={() => setFilter(c)} id={`merch-tab-${c}`}>
               {c === 'drop' ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <img src="/ICONS/trophy_1.svg" alt="" style={{ 
-                    width: '20px', 
-                    height: '20px', 
-                    filter: filter === 'drop' ? 'brightness(0) invert(1)' : 'grayscale(1) opacity(0.5)' 
-                  }} />
+                <span className={styles.tabLabel}>
+                  <Trophy size={16} />
                   PREMIUM DROPS
                 </span>
               ) : c.toUpperCase()}
@@ -91,11 +93,11 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                 Premium drops are reserved for our most dedicated members. 
                 You need at least <strong>{REQUIRED_XP} XP</strong> to access this exclusive collection.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
-                <div className="xp-bar-container" style={{ width: '300px', height: '12px' }}>
+              <div className={styles.lockedProgress}>
+                <div className="xp-bar-container">
                   <div className="xp-bar-fill" style={{ width: `${Math.min(100, ((user?.xp || 0) / REQUIRED_XP) * 100)}%` }} />
                 </div>
-                <span style={{ fontFamily: 'Rajdhani', fontWeight: 700, color: 'var(--brand-red)', fontSize: '1.2rem' }}>
+                <span>
                   {user?.xp?.toLocaleString() || 0} / {REQUIRED_XP.toLocaleString()} XP
                 </span>
               </div>
@@ -116,7 +118,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           ) : (
             <motion.div 
               key={`grid-${filter}`}
-              className={styles.grid}
+              className={`${styles.grid} ${filtered.length < 3 ? styles.gridSparse : ''}`}
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
@@ -163,8 +165,9 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                       )}
                       {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>ONLY {p.stock} REMAINING</span>}
                       {isItemLocked && (
-                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontFamily: 'Rajdhani', letterSpacing: '0.1em', zIndex: 20 }}>
-                          LOCKED (INSUFFICIENT XP)
+                        <div className={styles.lockedOverlay}>
+                          <Lock size={18} />
+                          LOCKED
                         </div>
                       )}
                       <div className={styles.quickViewOverlay}>
@@ -179,14 +182,16 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                           }}
                           disabled={p.stock === 0 || isItemLocked}
                         >
-                          {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : 'QUICK VIEW ↗'}
+                          {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : <><Eye size={18} /> QUICK VIEW</>}
                         </button>
                       </div>
                     </div>
                     <div className={styles.productInfo}>
-                      <div className={styles.productCategory}>{p.category} | SHOP</div>
-                      <h3 className={styles.productName}>{p.name}</h3>
-                      <span className={styles.productPrice}>{p.price.toFixed(2)} MAD</span>
+                      <div className={styles.productCategory}>{p.category} / SHOP</div>
+                      <div className={styles.productMetaRow}>
+                        <h3 className={styles.productName}>{p.name}</h3>
+                        <span className={styles.productPrice}>{p.price.toFixed(2)} MAD</span>
+                      </div>
                     </div>
                     </Link>
                   </motion.div>
@@ -196,7 +201,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           )}
         </AnimatePresence>
 
-      </div>
+      </section>
 
       <Modal
         isOpen={!!quickViewProduct}
@@ -238,7 +243,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
               {/* Right: Details Container */}
               <div style={{ flex: '1', padding: '2.5rem', position: 'relative', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                  {p.category} | SHOP
+                  {p.category} / SHOP
                 </div>
                 <h2 style={{ fontFamily: 'Rajdhani', fontWeight: 800, fontSize: '2.2rem', marginBottom: '0.2rem', lineHeight: 1.1, color: 'white' }}>{p.name}</h2>
                 <div style={{ fontFamily: 'Inter', fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--brand-red)', fontWeight: 700 }}>{p.price.toFixed(2)} MAD</div>
@@ -278,14 +283,18 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
 
                   <div style={{ marginBottom: '0.6rem', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'Rajdhani', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>Quantity</div>
                   <div className={styles.qtyControl} style={{ marginBottom: '1.5rem' }}>
-                    <button onClick={() => setQuickViewQty(Math.max(1, quickViewQty - 1))}>−</button>
+                    <button onClick={() => setQuickViewQty(Math.max(1, quickViewQty - 1))} aria-label="Decrease quantity">
+                      <Minus size={16} />
+                    </button>
                     <span style={{ minWidth: '40px', textAlign: 'center' }}>{quickViewQty}</span>
                     <button onClick={() => {
                       const maxStock = hasSizes && quickViewSize 
                         ? p.sizes!.find(s => s.size === quickViewSize)?.stock || 0
                         : (hasSizes ? 99 : p.stock);
                       if (quickViewQty < maxStock) setQuickViewQty(quickViewQty + 1);
-                    }}>+</button>
+                    }} aria-label="Increase quantity">
+                      <Plus size={16} />
+                    </button>
                   </div>
                   
                   {((hasSizes && quickViewSize) || (!hasSizes)) && (
@@ -303,7 +312,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     disabled={isSoldOut || isLocked}
                     style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}
                   >
-                    {isSoldOut ? 'SOLD OUT' : isLocked ? 'LOCKED (LEVEL UP REQUIRED)' : 'ADD TO SECURE CART'}
+                    {isSoldOut ? 'SOLD OUT' : isLocked ? <><Lock size={18} /> LEVEL UP REQUIRED</> : <><ShoppingBag size={18} /> ADD TO SECURE CART</>}
                   </button>
 
                   <Link href={`/merch/${p._id}`} className={styles.viewFullLink} onClick={() => setQuickViewProduct(null)} style={{ marginTop: '1.5rem', display: 'block', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'underline' }}>

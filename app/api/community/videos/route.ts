@@ -71,9 +71,10 @@ export async function GET(req: Request) {
           videos,
         };
 
-        latestGroups.push(groupObj);
         if (creator.isFeatured) {
           featuredGroups.push(groupObj);
+        } else {
+          latestGroups.push(groupObj);
         }
       }
     }

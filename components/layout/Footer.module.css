@@ -44,7 +44,37 @@
 .links a { color: var(--text-muted); font-size: 0.88rem; transition: color 0.2s ease; }
 .links a:hover { color: var(--brand-red); }
 .bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-.bottom p { color: var(--text-muted); font-size: 0.82rem; }
+.bottom p { color: var(--text-muted); font-size: 0.82rem; display: flex; align-items: center; flex-wrap: wrap; }
+.divider {
+  margin: 0 0.5rem;
+  color: rgba(255, 255, 255, 0.15);
+}
+.creatorLink {
+  color: var(--brand-red);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  margin-left: 0.25rem;
+}
+.creatorLink::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--brand-red);
+  box-shadow: 0 0 8px var(--brand-red);
+  transition: width 0.3s ease;
+}
+.creatorLink:hover {
+  color: #FF3333;
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+}
+.creatorLink:hover::after {
+  width: 100%;
+}
 .divisionTags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
 @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } .brand { grid-column: 1 / -1; } }

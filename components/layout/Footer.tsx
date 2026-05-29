@@ -48,7 +48,19 @@ export default function Footer() {
         </div>
 
         <div className={styles.bottom}>
-          <p>© {new Date().getFullYear()} Brotherhood Legacy. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Brotherhood Legacy. All rights reserved.
+            <span className={styles.divider}>|</span>
+            Created by{' '}
+            <a
+              href="https://sami-portfolio-professionel.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.creatorLink}
+            >
+              SAM
+            </a>
+          </p>
           <div className={styles.divisionTags}>
             <span className="division-tag tag-gaming">Gaming</span>
             <span className="division-tag tag-music">Music</span>

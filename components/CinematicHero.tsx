@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, Variants, BezierDefinition } from 'framer-motion';
+import { motion, useReducedMotion, Variants, BezierDefinition } from 'framer-motion';
 import styles from './CinematicHero.module.css';
 
 interface CinematicHeroProps {
@@ -27,6 +27,12 @@ const letterVariants: Variants = {
     },
   }),
 };
+
+function formatHeroStat(value: number) {
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+  return value.toLocaleString();
+}
 
 function SplitWord({
   word,
@@ -56,13 +62,14 @@ function SplitWord({
   );
 }
 
-export default function CinematicHero({ statsData: _statsData }: CinematicHeroProps) {
+export default function CinematicHero({ statsData }: CinematicHeroProps) {
   const logoRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
   // Subtle mouse parallax — desktop only
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
-    if (isMobile) return;
+    if (isMobile || reduceMotion) return;
 
     let rafId: number;
     let targetX = 0;
@@ -93,7 +100,7 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [reduceMotion]);
 
 
   return (
@@ -109,6 +116,30 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
           className={styles.bgImage}
         />
       </div>
+      <div className={styles.bgGlow} />
+      <div className={styles.bgNoise} />
+      <div className={styles.bgLines} />
+      <div className={styles.scanline} />
+
+      <motion.div
+        className={styles.statDock}
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 1.05, duration: 0.45, ease: customEase }}
+      >
+        <div className={styles.statCard}>
+          <span>{formatHeroStat(statsData.members)}</span>
+          <small>Members</small>
+        </div>
+        <div className={styles.statCard}>
+          <span>{formatHeroStat(statsData.xp)}</span>
+          <small>Total XP</small>
+        </div>
+        <div className={styles.statCard}>
+          <span>4</span>
+          <small>Divisions</small>
+        </div>
+      </motion.div>
 
       {/* Composition: BROTHERHOOD → LOGO → LEGACY */}
       <div className={styles.textBlock}>
@@ -139,6 +170,7 @@ export default function CinematicHero({ statsData: _statsData }: CinematicHeroPr
           <div ref={logoRef} className={styles.parallaxContainer}>
             {/* Inner Bobbing Container: CSS keyframes bob up and down */}
             <div className={styles.floatingContainer}>
+              <div className={styles.logoRing} />
               <Image
                 src="/brand/logo.png"
                 alt="BHL"

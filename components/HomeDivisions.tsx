@@ -1,7 +1,7 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { motion } from 'framer-motion';
@@ -32,16 +32,29 @@ const divisions = [
   },
 ];
 
-export default function HomeDivisions({ initialStats }: { initialStats?: any }) {
+interface DivisionLeader {
+  username: string;
+  avatar?: string;
+  xp: number;
+}
+
+interface DivisionStats {
+  divisionCounts?: Record<string, number>;
+  divisionLeaders?: Record<string, DivisionLeader | undefined>;
+}
+
+type DivisionStyle = CSSProperties & { '--div-color': string };
+
+export default function HomeDivisions({ initialStats }: { initialStats?: DivisionStats }) {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
   const [divisionCounts, setDivisionCounts] = useState<Record<string, number> | null>(initialStats?.divisionCounts || null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [leaders, setLeaders] = useState<Record<string, any> | null>(initialStats?.divisionLeaders || null);
+  const [leaders, setLeaders] = useState<Record<string, DivisionLeader | undefined> | null>(initialStats?.divisionLeaders || null);
   const [hasMounted, setHasMounted] = useState(false);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const res = await fetch('/api/stats', { cache: 'no-store' });
       const data = await res.json();
@@ -50,17 +63,19 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    setHasMounted(true);
-    if (!initialStats) {
-      fetchStats();
-    }
+    const mountTimer = window.setTimeout(() => setHasMounted(true), 0);
+    const statsTimer = !initialStats ? window.setTimeout(fetchStats, 0) : undefined;
 
     window.addEventListener('stats-refresh', fetchStats);
-    return () => window.removeEventListener('stats-refresh', fetchStats);
-  }, []);
+    return () => {
+      window.clearTimeout(mountTimer);
+      if (statsTimer) window.clearTimeout(statsTimer);
+      window.removeEventListener('stats-refresh', fetchStats);
+    };
+  }, [fetchStats, initialStats]);
 
   const handleToggleDivision = async (divId: string) => {
     if (!user) {
@@ -93,7 +108,7 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
       } else {
         showToast(isMember ? 'Failed to leave division' : 'Failed to join division', 'error');
       }
-    } catch (e) {
+    } catch {
       showToast('Error updating division', 'error');
     }
     setIsProcessing(false);
@@ -129,19 +144,23 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
           {divisions.map((div) => {
             const isMember = user?.divisions?.includes(div.id);
             const count = divisionCounts?.[div.id];
+            const leader = leaders?.[div.id];
             return (
               <motion.div
                 key={div.id}
                 variants={fadeUp}
                 className={`${styles.divCard} premium-panel`}
-                style={{ '--div-color': div.color } as any}
+                style={{ '--div-color': div.color } as DivisionStyle}
                 id={`home-division-${div.id}`}
                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
               >
                 <div className={styles.divCardGlow} />
+                <div className={styles.cardIndex}>{String(divisions.findIndex(item => item.id === div.id) + 1).padStart(2, '0')}</div>
                 <div className={styles.divCardTop}>
                   {div.image ? (
-                    <img src={div.image} alt={div.label} style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
+                    <span className={styles.divisionMark}>
+                      <img src={div.image} alt={div.label} />
+                    </span>
                   ) : (
                     <span className={styles.divIcon}>{div.icon}</span>
                   )}
@@ -157,6 +176,11 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
 
                 <p className={styles.divDesc}>{div.desc}</p>
 
+                <div className={styles.activityRail}>
+                  <span />
+                  <strong>{isMember ? 'Active unit' : 'Open recruitment'}</strong>
+                </div>
+
                 {/* Leader — skeleton while loading, nothing if no leader */}
                 <div className={styles.divLeader}>
                   <div className={styles.perksTitle}>Division Leader</div>
@@ -169,16 +193,16 @@ export default function HomeDivisions({ initialStats }: { initialStats?: any }) 
                         <span className="skeleton" style={{ display: 'block', width: '50px', height: '11px' }} />
                       </div>
                     </div>
-                  ) : leaders[div.id] ? (
+                  ) : leader ? (
                     <div className={styles.leaderRow}>
                     <div className="avatar" style={{ width: '32px', height: '32px' }}>
-                      {leaders[div.id].avatar
-                        ? <img src={leaders[div.id].avatar} alt={`${leaders[div.id].username}'s Avatar`} />
-                        : leaders[div.id].username[0]}
+                      {leader.avatar
+                        ? <img src={leader.avatar} alt={`${leader.username}'s Avatar`} />
+                        : leader.username[0]}
                     </div>
                       <div className={styles.leaderInfo}>
-                        <span className={styles.leaderName}>{leaders[div.id].username}</span>
-                        <span className={styles.leaderXp}>{leaders[div.id].xp.toLocaleString()} XP</span>
+                        <span className={styles.leaderName}>{leader.username}</span>
+                        <span className={styles.leaderXp}>{leader.xp.toLocaleString()} XP</span>
                       </div>
                     </div>
                   ) : (

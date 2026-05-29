@@ -858,14 +858,14 @@ tbody tr:last-child td { border-bottom: none; }
   width: 100%;
   position: relative;
   z-index: 2;
-  padding: 120px 24px;
+  padding: 104px 24px;
   /* Liquid glass: layered translucent panel */
   background:
     linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.018) 0%,
-      rgba(10, 5, 5, 0.80) 20%,
-      rgba(8, 3, 3, 0.88) 100%
+      rgba(10, 5, 5, 0.78) 20%,
+      rgba(8, 3, 3, 0.9) 100%
     );
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
@@ -877,6 +877,33 @@ tbody tr:last-child td { border-bottom: none; }
     0 -30px 80px rgba(0, 0, 0, 0.5),
     0 30px 80px rgba(0, 0, 0, 0.5),
     inset 0 0 60px rgba(255, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.content-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 44% 22% at 50% 0%, rgba(255, 0, 0, 0.09), transparent 72%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 112px);
+  opacity: 0.62;
+  mask-image: linear-gradient(180deg, black, transparent 78%);
+}
+
+.content-band::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 112px;
+  background: linear-gradient(to bottom, rgba(255, 0, 0, 0.35), transparent);
+  box-shadow:
+    -320px 32px 0 rgba(255, 0, 0, 0.08),
+    320px 56px 0 rgba(255, 0, 0, 0.08);
+  pointer-events: none;
 }
 
 .content-inner {

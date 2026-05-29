@@ -1,11 +1,52 @@
 .tabs { 
   max-width: 100%;
-  margin: 0 auto 4rem auto;
+  margin: 0 auto 32px auto;
 }
 .tab { 
   min-width: 124px;
 }
 .tabActive {}
+
+.rankPulse {
+  width: min(920px, 100%);
+  margin: 0 auto 32px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rankPulse > div {
+  min-height: 80px;
+  padding: 16px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 0, 0, 0.035)),
+    rgba(10, 7, 7, 0.54);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 36px rgba(0, 0, 0, 0.24);
+}
+
+.rankPulse span {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.rankPulse strong {
+  display: block;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+}
 
 /* Podium */
 .podium { display: flex; align-items: flex-end; justify-content: center; gap: 1rem; margin-bottom: 3rem; height: 200px; }
@@ -18,7 +59,7 @@
 .podiumFirst .podiumBase { background: linear-gradient(to bottom, rgba(255,253,186,0.25), rgba(255,253,186,0.04)); border-color: rgba(255,253,186,0.3); }
 .podiumRank { font-size: 1.5rem; }
 
-.tableSection { margin-top: 1rem; }
+.tableSection { margin-top: 16px; }
 .loadingState, .emptyState { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
 .topRow { background: rgba(255,0,0,0.03); }
 .rank { font-size: 1.2rem; }
@@ -45,17 +86,35 @@
 }
 
 .gridRow {
+  position: relative;
   display: grid;
   grid-template-columns: 70px minmax(200px, 2fr) 100px minmax(160px, 1fr) 100px;
   padding: 1.25rem 2rem;
   border-bottom: 1px solid rgba(255,255,255,0.03);
   align-items: center;
   transition: background 0.2s;
+  overflow: hidden;
 }
 .gridRow:hover { background: rgba(255,0,0,0.03); }
 .gridRow:last-child { border-bottom: none; }
 
+.rowCharge {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  min-width: 24px;
+  background: linear-gradient(90deg, rgba(255, 0, 0, 0.75), rgba(255, 253, 186, 0.45), transparent);
+  box-shadow: 0 0 14px rgba(255, 0, 0, 0.24);
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
+  .rankPulse {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
   .gridHeader, .gridRow {
     grid-template-columns: 50px 1fr 80px 100px;
     padding: 1rem 1.25rem;

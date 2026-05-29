@@ -33,6 +33,8 @@ export default function HomeLeaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const topUser = users[0];
+  const totalVisibleXp = users.reduce((sum, user) => sum + user.xp, 0);
 
   const fetchLeaderboard = useCallback(() => {
     setLoading(true);
@@ -54,7 +56,8 @@ export default function HomeLeaderboard() {
   }, [filter]);
 
   useEffect(() => {
-    fetchLeaderboard();
+    const timer = window.setTimeout(fetchLeaderboard, 0);
+    return () => window.clearTimeout(timer);
   }, [fetchLeaderboard]);
 
   useEffect(() => {
@@ -120,6 +123,28 @@ export default function HomeLeaderboard() {
             ))}
           </div>
         </motion.div>
+
+        {!loading && users.length > 0 && (
+          <motion.div
+            className={styles.rankPulse}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32 }}
+          >
+            <div>
+              <span>Current leader</span>
+              <strong>{topUser?.username}</strong>
+            </div>
+            <div>
+              <span>Visible XP</span>
+              <strong>{totalVisibleXp.toLocaleString()}</strong>
+            </div>
+            <div>
+              <span>Active board</span>
+              <strong>{filter === 'all' ? 'Global' : filter}</strong>
+            </div>
+          </motion.div>
+        )}
 
         {/* Podium */}
         <AnimatePresence mode="wait">
@@ -220,7 +245,13 @@ export default function HomeLeaderboard() {
                 </div>
                 <div className={styles.gridBody}>
                   {users.map((u, i) => (
-                    <div key={u._id} className={`${styles.gridRow} ${i < 3 ? styles.topRow : ''}`}>
+                    <motion.div
+                      key={u._id}
+                      className={`${styles.gridRow} ${i < 3 ? styles.topRow : ''}`}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.28 }}
+                    >
                       <div>
                         <span className={styles.rank}>
                           {i < 3 ? (
@@ -254,7 +285,8 @@ export default function HomeLeaderboard() {
                         </div>
                       </div>
                       <div><span className={styles.xpValue}>{u.xp.toLocaleString()}</span></div>
-                    </div>
+                      <span className={styles.rowCharge} style={{ width: `${Math.min(100, Math.max(8, topUser ? (u.xp / Math.max(topUser.xp, 1)) * 100 : 8))}%` }} />
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>

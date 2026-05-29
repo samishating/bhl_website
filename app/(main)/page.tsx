@@ -53,9 +53,9 @@ export default async function HomePage() {
       <HomeChallenges initialChallenges={challenges} />
 
       {/* CTA SECTION BAND */}
-      <section className="content-band" style={{ borderTop: 'none', paddingBottom: '160px' }}>
+      <section className={`content-band ${styles.finalCtaBand}`} style={{ borderTop: 'none' }}>
         <div className="section-divider" />
-        <div className="content-inner" style={{ paddingTop: '5rem' }}>
+        <div className="content-inner">
           <div className="section-header">
             <span className="section-tag">Final Step</span>
             <h2>Ready to Write Your <span className="gradient-text">Legacy?</span></h2>

@@ -10,9 +10,10 @@
   position: relative;
   z-index: 3;
   min-height: 100vh;
-  padding: 120px clamp(24px, 4vw, 60px) 96px;
+  padding: 104px clamp(24px, 4vw, 64px) 96px;
   background: 
-    radial-gradient(ellipse 80% 50% at 50% 10%, rgba(40, 0, 0, 0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 10%, rgba(72, 0, 0, 0.34) 0%, transparent 70%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.05) 50%, transparent 100%),
     linear-gradient(
       to bottom,
       rgba(12, 0, 0, 0.98) 0%,
@@ -25,6 +26,19 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
+}
+
+.divisionsSection::before {
+  content: '';
+  position: absolute;
+  inset: 48px 0 auto;
+  height: 240px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 96px),
+    linear-gradient(180deg, rgba(255, 0, 0, 0.08), transparent);
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 72%);
 }
 
 /* Header typography is now handled globally by .section-header, .section-tag, .section-desc */
@@ -32,7 +46,7 @@
 .divisionsGrid { 
   display: grid; 
   grid-template-columns: repeat(2, minmax(300px, 420px)); 
-  gap: clamp(16px, 2vh, 24px); 
+  gap: 24px; 
   justify-content: center;
   align-items: stretch;
   max-width: 960px;
@@ -41,8 +55,8 @@
 }
 
 .divCard {
-  padding: clamp(16px, 2vh, 24px);
-  display: flex; flex-direction: column; gap: clamp(0.75rem, 1.5vh, 1.25rem); 
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 16px; 
   animation: fadeUp 0.6s ease both;
 }
 
@@ -55,7 +69,9 @@
 .divCard:hover { 
   border-color: var(--div-color); 
   transform: translateY(-5px); 
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.38),
+    0 0 32px color-mix(in srgb, var(--div-color) 18%, transparent);
 }
 
 .divCardGlow { 
@@ -65,10 +81,67 @@
 }
 .divCard:hover .divCardGlow { opacity: 1; }
 
-.divCardTop { display: flex; align-items: center; gap: 0.85rem; }
+.divCard::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(to bottom, transparent, var(--div-color), transparent);
+  opacity: 0.52;
+}
+
+.cardIndex {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: color-mix(in srgb, var(--div-color) 24%, transparent);
+}
+
+.divCardTop { display: flex; align-items: center; gap: 16px; padding-right: 48px; }
+.divisionMark {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--div-color) 28%, transparent);
+  background: color-mix(in srgb, var(--div-color) 8%, rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.divisionMark img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
 .divIcon { font-size: clamp(1.5rem, 2vh, 2rem); }
 .memberCount { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.1rem; }
 .divDesc { color: var(--text-secondary); font-size: clamp(0.8rem, 0.85vw, 0.85rem); line-height: 1.45; flex: 1; }
+
+.activityRail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  color: color-mix(in srgb, var(--div-color) 68%, #fff);
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.activityRail span {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--div-color);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--div-color) 80%, transparent);
+  animation: railPulse 2s ease-in-out infinite;
+}
 
 .divPerks {
   display: flex; flex-direction: column; gap: 0.4rem;
@@ -123,6 +196,45 @@
 .ctaContent h2 { font-size: clamp(2.5rem, 5vw, 4rem); }
 .ctaContent p { color: var(--text-secondary); font-size: 1.2rem; margin: 1.5rem 0 3rem; }
 .ctaBtns { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+
+.finalCtaBand {
+  padding-top: 96px !important;
+  padding-bottom: 160px !important;
+  background:
+    radial-gradient(ellipse 58% 46% at 50% 34%, rgba(255, 0, 0, 0.13), transparent 70%),
+    linear-gradient(180deg, rgba(9, 5, 5, 0.72), rgba(6, 2, 2, 0.94)) !important;
+}
+
+.finalCtaBand :global(.content-inner) {
+  position: relative;
+  padding: 64px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 0, 0, 0.035)),
+    rgba(10, 7, 7, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 80px rgba(0, 0, 0, 0.3),
+    0 0 44px rgba(255, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.finalCtaBand :global(.content-inner)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.16), transparent),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 96px);
+  opacity: 0.5;
+}
+
+@keyframes railPulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.55; }
+  50% { transform: scale(1); opacity: 1; }
+}
 
 @media (max-width: 1100px) { .divisionsGrid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px)  { 

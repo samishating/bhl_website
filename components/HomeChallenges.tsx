@@ -61,9 +61,13 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   }, [filter]);
 
   useEffect(() => {
+    let timer: number | undefined;
     if (!(filter === 'global' && initialChallenges && initialChallenges.length > 0)) {
-      loadChallenges();
+      timer = window.setTimeout(loadChallenges, 0);
     }
+    return () => {
+      if (timer) window.clearTimeout(timer);
+    };
   }, [filter, initialChallenges, loadChallenges]);
 
   useEffect(() => {
@@ -230,6 +234,27 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           </div>
         </motion.div>
 
+        <motion.div
+          className={styles.missionStrip}
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.32 }}
+        >
+          <div>
+            <span>Mission feed</span>
+            <strong>{filter === 'global' ? 'Global' : filter}</strong>
+          </div>
+          <div>
+            <span>Open tasks</span>
+            <strong>{loading ? '...' : challenges.length}</strong>
+          </div>
+          <div>
+            <span>XP window</span>
+            <strong>{loading ? '...' : challenges.reduce((sum, challenge) => sum + challenge.xpReward, 0).toLocaleString()}</strong>
+          </div>
+        </motion.div>
+
         {/* Grid */}
         <AnimatePresence mode="wait">
           {loading ? (
@@ -283,6 +308,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
                     className={`${styles.card} premium-panel ${status === 'approved' ? styles.cardDone : ''}`}
                     whileHover={{ y: -5, transition: { duration: 0.2 } }}
                   >
+                    <span className={styles.cardBeam} />
                     <div className={styles.cardTop}>
                       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>

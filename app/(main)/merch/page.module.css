@@ -490,24 +490,151 @@
   }
 }
 
-/* Quick View Modal Sizes */
-.sizeSection { margin-bottom: 2rem; }
-.sizeHeader { display: flex; justify-content: space-between; margin-bottom: 1rem; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: white; }
-.sizeGrid { display: flex; flex-wrap: wrap; gap: 10px; }
-.sizeBtn { background: transparent; border: 1px solid var(--border); color: white; padding: 0.75rem 1.2rem; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; min-width: 60px; text-align: center; }
-.sizeBtn:hover:not(:disabled) { border-color: var(--brand-red); }
-.sizeBtnActive { border-color: var(--brand-red); color: var(--brand-red); box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.1); }
+/* Quick View Modal */
+.quickViewLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  min-height: 520px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.025), rgba(255, 0, 0, 0.025)),
+    var(--bg-secondary);
+}
+
+.quickViewImagePane {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+  border-right: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255, 0, 0, 0.12), transparent 42%),
+    #050505;
+  overflow: hidden;
+}
+
+.quickViewImagePane img {
+  width: 100%;
+  height: 100%;
+  max-height: 620px;
+  object-fit: contain;
+}
+
+.quickViewBadge {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--brand-red);
+  color: #fff;
+  box-shadow: var(--glow-red);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.quickViewDetails {
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 0, 0, 0.08), transparent 38%),
+    rgba(8, 8, 8, 0.92);
+}
+
+.quickViewMeta {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.quickViewTitle {
+  margin: 0;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.quickViewPrice {
+  margin-top: 8px;
+  color: var(--brand-red);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.quickViewNote {
+  max-width: 280px;
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.quickViewForm {
+  flex: 1;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.sizeSection { margin-bottom: 24px; }
+.sizeHeader { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); }
+.sizeHeader span:last-child { color: var(--brand-red); }
+.sizeGrid { display: flex; flex-wrap: wrap; gap: 12px; }
+.sizeBtn { background: rgba(255,255,255,0.025); border: 1px solid var(--border); border-radius: var(--radius-md); color: white; padding: 12px 16px; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; min-width: 64px; min-height: 44px; text-align: center; }
+.sizeBtn:hover:not(:disabled) { border-color: var(--border-hover); background: rgba(255, 0, 0, 0.06); }
+.sizeBtnActive { border-color: var(--brand-red); color: #fff; background: rgba(255, 0, 0, 0.1); box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.1), 0 0 14px rgba(255, 0, 0, 0.12); }
 .sizeBtnSoldOut { color: var(--text-muted); cursor: not-allowed; position: relative; overflow: hidden; }
 .sizeBtnSoldOut::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top right, transparent calc(50% - 1px), var(--border) calc(50% - 1px), var(--border) calc(50% + 1px), transparent calc(50% + 1px)); }
 
-.qtyControl { display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 1rem; width: fit-content; margin-bottom: 2rem; }
-.qtyControl button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0 0.5rem; transition: 0.2s; }
+.quantityLabel { margin-bottom: 8px; color: var(--text-secondary); font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.qtyControl { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 6px; margin-bottom: 16px; }
+.qtyControl button { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.04); border: 1px solid transparent; border-radius: 8px; color: white; cursor: pointer; padding: 0; transition: 0.2s; }
 .qtyControl button:hover { color: var(--brand-red); }
-.qtyControl span { font-weight: 800; font-family: 'Rajdhani', sans-serif; min-width: 20px; text-align: center; color: white; }
+.qtyControl span { font-weight: 900; font-family: 'Rajdhani', sans-serif; min-width: 40px; text-align: center; color: white; }
 
-.quickBuyBtn { width: 100%; padding: 1.25rem; font-size: 1.1rem; margin-bottom: 1rem; }
-.viewFullLink { display: block; text-align: center; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.1em; color: var(--text-secondary); text-decoration: underline; text-underline-offset: 4px; transition: 0.2s; }
+.stockLine { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; color: var(--text-muted); font-size: 0.85rem; }
+.stockLine :global(.status-dot) { width: 6px; height: 6px; flex-shrink: 0; }
+
+.quickBuyBtn { width: 100%; padding: 16px; font-size: 1rem; margin-bottom: 16px; }
+.viewFullLink { display: block; margin-top: 24px; text-align: center; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.1em; color: var(--text-secondary); text-decoration: underline; text-underline-offset: 4px; transition: 0.2s; }
 .viewFullLink:hover { color: white; }
+
+@media (max-width: 820px) {
+  .quickViewLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .quickViewImagePane {
+    min-height: auto;
+    aspect-ratio: 4 / 3;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quickViewImagePane img {
+    object-fit: contain;
+  }
+
+  .quickViewDetails {
+    padding: 32px 24px;
+  }
+}
 
 /* Sidebar Cart Styles */
 .cart {

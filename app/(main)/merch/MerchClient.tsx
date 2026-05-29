@@ -207,7 +207,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         title={quickViewProduct?.name || 'Product Details'}
-        maxWidth="560px"
+        maxWidth="800px"
         padding="0"
         footer={null}
       >
@@ -228,33 +228,29 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           };
 
           return (
-            <div style={{ display: 'flex', flexDirection: 'row', background: 'var(--bg-secondary)', minHeight: '500px' }}>
-              {/* Left: Image Container */}
-              <div style={{ flex: '1.2', background: '#000', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--border)' }}>
-                <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div className={styles.quickViewLayout}>
+              <div className={styles.quickViewImagePane}>
+                <img src={p.image} alt={p.name} />
                 {p.isLimitedDrop && (
-                  <div className={styles.dropBadge} style={{ top: '1.5rem', left: '1.5rem' }}>
-                    <img src="/ICONS/trophy_1.svg" alt="" style={{ width: '14px', height: '14px' }} />
+                  <div className={styles.quickViewBadge}>
+                    <Trophy size={14} />
                     Premium
                   </div>
                 )}
               </div>
 
-              {/* Right: Details Container */}
-              <div style={{ flex: '1', padding: '2.5rem', position: 'relative', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                  {p.category} / SHOP
-                </div>
-                <h2 style={{ fontFamily: 'Rajdhani', fontWeight: 800, fontSize: '2.2rem', marginBottom: '0.2rem', lineHeight: 1.1, color: 'white' }}>{p.name}</h2>
-                <div style={{ fontFamily: 'Inter', fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--brand-red)', fontWeight: 700 }}>{p.price.toFixed(2)} MAD</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>Tax included. Shipping calculated at checkout.</div>
+              <div className={styles.quickViewDetails}>
+                <div className={styles.quickViewMeta}>{p.category} / SHOP</div>
+                <h2 className={styles.quickViewTitle}>{p.name}</h2>
+                <div className={styles.quickViewPrice}>{p.price.toFixed(2)} MAD</div>
+                <div className={styles.quickViewNote}>Tax included. Shipping calculated at checkout.</div>
 
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', flex: 1 }}>
+                <div className={styles.quickViewForm}>
                   {hasSizes && (
-                    <div className={styles.sizeSection} style={{ marginBottom: '1.5rem' }}>
-                      <div className={styles.sizeHeader} style={{ fontSize: '0.9rem', marginBottom: '0.8rem' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Size Selector</span>
-                        {quickViewSize && <span style={{ color: 'var(--brand-red)', fontWeight: 800 }}>{quickViewSize}</span>}
+                    <div className={styles.sizeSection}>
+                      <div className={styles.sizeHeader}>
+                        <span>Size Selector</span>
+                        {quickViewSize && <span>{quickViewSize}</span>}
                       </div>
                       <div className={styles.sizeGrid}>
                         {p.sizes!.map((s, idx) => {
@@ -263,7 +259,6 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                             <button
                               key={idx}
                               className={`${styles.sizeBtn} ${quickViewSize === s.size ? styles.sizeBtnActive : ''} ${outOfStock ? styles.sizeBtnSoldOut : ''}`}
-                              style={{ padding: '0.6rem 1rem', fontSize: '0.85rem' }}
                               onClick={() => {
                                 if (!outOfStock) {
                                   setQuickViewSize(s.size);
@@ -281,12 +276,12 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     </div>
                   )}
 
-                  <div style={{ marginBottom: '0.6rem', fontSize: '0.9rem', fontWeight: 700, fontFamily: 'Rajdhani', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>Quantity</div>
-                  <div className={styles.qtyControl} style={{ marginBottom: '1.5rem' }}>
+                  <div className={styles.quantityLabel}>Quantity</div>
+                  <div className={styles.qtyControl}>
                     <button onClick={() => setQuickViewQty(Math.max(1, quickViewQty - 1))} aria-label="Decrease quantity">
                       <Minus size={16} />
                     </button>
-                    <span style={{ minWidth: '40px', textAlign: 'center' }}>{quickViewQty}</span>
+                    <span>{quickViewQty}</span>
                     <button onClick={() => {
                       const maxStock = hasSizes && quickViewSize 
                         ? p.sizes!.find(s => s.size === quickViewSize)?.stock || 0
@@ -298,8 +293,8 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                   </div>
                   
                   {((hasSizes && quickViewSize) || (!hasSizes)) && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '-1rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span className="status-dot" style={{ background: '#22c55e', width: '6px', height: '6px' }} />
+                    <div className={styles.stockLine}>
+                      <span className="status-dot status-online" />
                       {hasSizes 
                         ? `${p.sizes!.find(s => s.size === quickViewSize)?.stock || 0} units ready for dispatch`
                         : `${p.stock} units ready for dispatch`}
@@ -310,12 +305,11 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     className={`btn btn-primary ${styles.quickBuyBtn}`}
                     onClick={handleModalAddToCart}
                     disabled={isSoldOut || isLocked}
-                    style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}
                   >
                     {isSoldOut ? 'SOLD OUT' : isLocked ? <><Lock size={18} /> LEVEL UP REQUIRED</> : <><ShoppingBag size={18} /> ADD TO SECURE CART</>}
                   </button>
 
-                  <Link href={`/merch/${p._id}`} className={styles.viewFullLink} onClick={() => setQuickViewProduct(null)} style={{ marginTop: '1.5rem', display: 'block', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'underline' }}>
+                  <Link href={`/merch/${p._id}`} className={styles.viewFullLink} onClick={() => setQuickViewProduct(null)}>
                     EXPLORE FULL SPECIFICATIONS
                   </Link>
                 </div>

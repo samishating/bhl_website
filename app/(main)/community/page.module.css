@@ -654,7 +654,6 @@
 }
 
 .skeletonImage {
-  min-height: 236px;
   background:
     linear-gradient(110deg, rgba(255,255,255,0.035) 8%, rgba(255,255,255,0.09) 18%, rgba(255,255,255,0.035) 33%),
     radial-gradient(circle at 28% 32%, rgba(169,112,255,0.14), transparent 38%),

@@ -128,6 +128,8 @@ function getYouTubeThumbnail(url: string) {
 }
 
 function TwitchLiveSkeleton() {
+  const compactSkeletons = Array.from({ length: 4 }, (_, index) => index);
+
   return (
     <div className={styles.liveSkeleton} aria-label="Checking live Twitch streams">
       <div className={`${styles.sectionHeader} ${styles.liveSectionHeader}`}>
@@ -142,21 +144,32 @@ function TwitchLiveSkeleton() {
         </div>
       </div>
 
-      <div className={`${styles.creatorScroll} ${styles.liveStreamScroll}`}>
-        <div className={`${styles.creatorItem} ${styles.liveCreatorItem}`}>
-          <div className={`${styles.creatorCard} ${styles.twitchCard} ${styles.twitchSkeletonCard}`}>
-            <div className={`${styles.cardImage} ${styles.skeletonImage}`}>
-              <div className={styles.skeletonLiveBadge} />
-              <div className={styles.skeletonViewerBadge} />
-            </div>
-            <div className={`${styles.cardContent} ${styles.twitchCardContent}`}>
-              <div className={styles.skeletonPill} />
-              <div className={styles.skeletonLineStrong} />
-              <div className={styles.skeletonLine} />
-              <div className={styles.skeletonButton} />
-            </div>
-          </div>
+      <div className={styles.twitchPageLayout}>
+        <TwitchSkeletonCard variant="featured" />
+        <div className={styles.twitchCompactGrid}>
+          {compactSkeletons.map(index => (
+            <TwitchSkeletonCard key={index} variant="compact" />
+          ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function TwitchSkeletonCard({ variant }: { variant: 'featured' | 'compact' }) {
+  const isCompact = variant === 'compact';
+
+  return (
+    <div className={`${styles.creatorCard} ${styles.twitchCard} ${styles.twitchSkeletonCard} ${styles.twitchRankedCard} ${isCompact ? styles.twitchCompactCard : styles.twitchFeaturedCard}`}>
+      <div className={`${styles.cardImage} ${styles.twitchRankedMedia} ${styles.skeletonImage}`}>
+        <div className={styles.skeletonLiveBadge} />
+        <div className={styles.skeletonViewerBadge} />
+      </div>
+      <div className={`${styles.cardContent} ${styles.twitchCardContent}`}>
+        <div className={styles.skeletonPill} />
+        <div className={styles.skeletonLineStrong} />
+        <div className={styles.skeletonLine} />
+        <div className={styles.skeletonButton} />
       </div>
     </div>
   );

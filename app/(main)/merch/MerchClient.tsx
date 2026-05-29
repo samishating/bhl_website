@@ -306,7 +306,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                     onClick={handleModalAddToCart}
                     disabled={isSoldOut || isLocked}
                   >
-                    {isSoldOut ? 'SOLD OUT' : isLocked ? <><Lock size={18} /> LEVEL UP REQUIRED</> : <><ShoppingBag size={18} /> ADD TO SECURE CART</>}
+                    {isSoldOut ? 'SOLD OUT' : isLocked ? <><Lock size={18} /> LEVEL UP REQUIRED</> : <><ShoppingBag size={18} /> ADD TO CART</>}
                   </button>
 
                   <Link href={`/merch/${p._id}`} className={styles.viewFullLink} onClick={() => setQuickViewProduct(null)}>

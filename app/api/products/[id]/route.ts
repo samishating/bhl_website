@@ -4,6 +4,19 @@ import { Product } from '@/models/Product';
 import { verifyAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    const product = await Product.findById(id);
+    if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    return NextResponse.json({ product });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const admin = await verifyAdmin(req);

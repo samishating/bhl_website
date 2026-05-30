@@ -4,6 +4,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import Link from 'next/link';
+import { ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import styles from './product.module.css';
 
 interface Product {
@@ -207,6 +208,21 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   You currently have {user?.xp?.toLocaleString() || 0} XP.
                 </p>
               )}
+            </div>
+
+            <div className={styles.trustStrip}>
+              <span className={styles.trustItem}>
+                <ShieldCheck size={14} />
+                Secure Checkout
+              </span>
+              <span className={styles.trustItem}>
+                <Truck size={14} />
+                Fast Shipping
+              </span>
+              <span className={styles.trustItem}>
+                <RotateCcw size={14} />
+                30-Day Returns
+              </span>
             </div>
 
             <div className={styles.specs}>

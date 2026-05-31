@@ -43,8 +43,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     
-    // Trigger revalidation
+    // Trigger revalidation for all affected pages
     revalidatePath('/merch');
+    revalidatePath('/admin/products');
 
     return NextResponse.json({ product });
   } catch (err) {

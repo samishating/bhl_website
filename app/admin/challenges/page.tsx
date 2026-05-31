@@ -28,7 +28,7 @@ export default function AdminChallengesPage() {
 
   const load = () => {
     setLoading(true);
-    fetch('/api/challenges')
+    fetch('/api/challenges', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setChallenges(d.challenges || []); setLoading(false); });
   };

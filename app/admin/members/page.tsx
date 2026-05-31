@@ -74,7 +74,7 @@ export default function AdminMembersPage() {
 
   const load = () => {
     setLoading(true);
-    fetch('/api/users')
+    fetch('/api/users', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setUsers(d.users || []); setLoading(false); });
   };

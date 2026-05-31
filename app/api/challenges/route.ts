@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Challenge } from '@/models/Challenge';
 import { verifyAdmin } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     const challenges = await Challenge.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ challenges }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
       }
     });
   } catch (err) {
@@ -39,6 +40,10 @@ export async function POST(req: NextRequest) {
       division: division || 'global',
       allowRepeats: !!allowRepeats 
     });
+
+    // Revalidate admin page so new challenge is visible immediately
+    revalidatePath('/admin/challenges');
+
     return NextResponse.json({ challenge }, { status: 201 });
   } catch (err) {
     console.error(err);

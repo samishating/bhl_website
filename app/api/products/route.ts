@@ -12,7 +12,7 @@ export async function GET() {
     const products = await Product.find().sort({ createdAt: -1 });
     return NextResponse.json({ products }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
       }
     });
   } catch (err) {
@@ -40,8 +40,9 @@ export async function POST(req: NextRequest) {
       stock: totalStock, sizes: sizes || [], isLimitedDrop, category 
     });
     
-    // Trigger revalidation
+    // Trigger revalidation for all affected pages
     revalidatePath('/merch');
+    revalidatePath('/admin/products');
 
     return NextResponse.json({ product }, { status: 201 });
   } catch (err) {
@@ -61,8 +62,9 @@ export async function DELETE(req: NextRequest) {
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
     await Product.findByIdAndDelete(id);
     
-    // Trigger revalidation
+    // Trigger revalidation for all affected pages
     revalidatePath('/merch');
+    revalidatePath('/admin/products');
 
     return NextResponse.json({ message: 'Product deleted' });
   } catch (err) {

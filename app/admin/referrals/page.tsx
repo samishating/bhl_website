@@ -41,8 +41,8 @@ export default function AdminReferralsPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/admin/referrals').then(r => r.json()),
-      fetch('/api/users').then(r => r.json()),
+      fetch('/api/admin/referrals', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/users', { cache: 'no-store' }).then(r => r.json()),
     ]).then(([referralData, userData]) => {
       setReferrals(referralData.referrals || []);
       // Filter users to admin and superadmin only
@@ -64,7 +64,7 @@ export default function AdminReferralsPage() {
       const data = await res.json();
       if (!res.ok) return showToast(data.error || 'Failed to create referral', 'error');
       
-      const updated = await fetch('/api/admin/referrals').then(r => r.json());
+      const updated = await fetch('/api/admin/referrals', { cache: 'no-store' }).then(r => r.json());
       setReferrals(updated.referrals || []);
       setForm(defaultForm);
       setShowForm(false);

@@ -47,8 +47,8 @@ export default function AdminXPPage() {
 
   useEffect(() => {
     void Promise.all([
-      fetch('/api/users'),
-      fetch('/api/progression')
+      fetch('/api/users', { cache: 'no-store' }),
+      fetch('/api/progression', { cache: 'no-store' })
     ])
       .then(async ([usersRes, progRes]) => {
         const usersData = await usersRes.json();
@@ -89,7 +89,7 @@ export default function AdminXPPage() {
       if (res.ok) {
         showToast(`XP synchronized for ${editingUser.username}`, 'success');
         setEditingUser(null);
-        const updatedUsers = await fetch('/api/users').then(r => r.json());
+        const updatedUsers = await fetch('/api/users', { cache: 'no-store' }).then(r => r.json());
         setUsers(updatedUsers.users || []);
       } else {
         const data = await res.json();

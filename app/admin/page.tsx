@@ -21,9 +21,9 @@ export default function AdminPage() {
   useEffect(() => {
     setGlobalLoading(true);
     Promise.all([
-      fetch('/api/leaderboard').then(r => r.json()),
-      fetch('/api/challenges').then(r => r.json()),
-      fetch('/api/products').then(r => r.json()),
+      fetch('/api/leaderboard', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/challenges', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/products', { cache: 'no-store' }).then(r => r.json()),
     ]).then(([lb, ch, pr]) => {
       setStats({
         users: lb.users?.length || 0,

@@ -34,7 +34,7 @@ export default function AdminSubmissionsPage() {
   }, []);
 
   const fetchSubmissions = async () => {
-    const res = await fetch('/api/admin/submissions');
+    const res = await fetch('/api/admin/submissions', { cache: 'no-store' });
     const data = await res.json();
     if (data.submissions) setSubmissions(data.submissions);
     setLoading(false);

@@ -37,8 +37,8 @@ export default function AdminUsersPage() {
   const [editForm, setEditForm] = useState({ username: '', role: '', divisions: [] as string[] });
   const { showToast } = useToast();
 
-  useEffect(() => {
-    fetch('/api/users')
+  const loadUsers = () => {
+    fetch('/api/users', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { 
         setUsers(d.users || []); 
@@ -48,6 +48,10 @@ export default function AdminUsersPage() {
         console.error('[AdminUsers] Fetch error:', err);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    loadUsers();
   }, []);
 
   const filtered = users.filter(u =>
@@ -94,7 +98,7 @@ export default function AdminUsersPage() {
         }
       }
 
-      const fetchRes = await fetch('/api/users');
+      const fetchRes = await fetch('/api/users', { cache: 'no-store' });
       const fetchData = await fetchRes.json();
       setUsers(fetchData.users || []);
       setEditingUser(null);

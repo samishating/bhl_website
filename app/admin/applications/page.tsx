@@ -31,7 +31,7 @@ export default function ApplicationsInbox() {
 
   const load = () => {
     setLoading(true);
-    fetch('/api/applications')
+    fetch('/api/applications', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setApps(d.applications || []); setLoading(false); });
   };

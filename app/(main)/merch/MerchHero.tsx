@@ -15,7 +15,7 @@ export default function MerchHero() {
         animate="visible"
         variants={staggerContainer}
       >
-        <motion.span className={styles.heroTechTag} variants={fadeUp}>[ COLLECTION // 2026 ]</motion.span>
+        <motion.span className={styles.heroTechTag} variants={fadeUp}>Official BHL Collection</motion.span>
 
         <h1 className={styles.heroTitleBlock}>
           <motion.span className={styles.titleBHL} variants={fadeUp}>BHL</motion.span>
@@ -25,7 +25,7 @@ export default function MerchHero() {
         </h1>
 
         <motion.p className={styles.heroSub} variants={fadeUp}>
-          PREMIUM APPAREL & EXCLUSIVE GEAR
+          Apparel and gear for BHL members and supporters.
         </motion.p>
       </motion.div>
     </section>

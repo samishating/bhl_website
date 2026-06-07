@@ -102,14 +102,13 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
     };
   }, [reduceMotion]);
 
-
   return (
     <section className={styles.hero}>
       {/* Background Image */}
       <div className={styles.bgImageWrapper}>
-        <Image 
-          src="/backgrounds/herobackground.png" 
-          alt="" 
+        <Image
+          src="/backgrounds/herobackground.png"
+          alt=""
           fill
           priority
           quality={100}
@@ -118,9 +117,8 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
       </div>
       <div className={styles.bgGlow} />
       <div className={styles.bgNoise} />
-      <div className={styles.bgLines} />
-      <div className={styles.scanline} />
 
+      {/* Live stat dock — real data from DB */}
       <motion.div
         className={styles.statDock}
         initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -148,39 +146,25 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
         <SplitWord
           word="Brotherhood"
           className={`${styles.line} ${styles.lineBrotherhood}`}
-          delayOffset={0} // Start immediately on load
+          delayOffset={0}
         />
 
-        {/* Rising Logo with Isolated Transform Layers */}
+        {/* Logo — static, parallax only via mouse move */}
         <motion.div
           className={styles.logoWrap}
           initial={{ opacity: 0, y: 40, scale: 0.9 }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            scale: 1, 
-          }}
-          transition={{ 
-            delay: 0.4, 
-            duration: 0.8, 
-            ease: [0.16, 1, 0.3, 1] 
-          }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Middle Parallax Container: JS mouse move sets transform here */}
           <div ref={logoRef} className={styles.parallaxContainer}>
-            {/* Inner Bobbing Container: CSS keyframes bob up and down */}
-            <div className={styles.floatingContainer}>
-              <div className={styles.logoRing} />
-              <Image
-                src="/brand/logo.png"
-                alt="BHL"
-                width={220}
-                height={220}
-                className={styles.logo}
-                priority
-              />
-              <div className={styles.logoGlow} />
-            </div>
+            <Image
+              src="/brand/logo.png"
+              alt="BHL"
+              width={220}
+              height={220}
+              className={styles.logo}
+              priority
+            />
           </div>
         </motion.div>
 
@@ -188,22 +172,22 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
         <SplitWord
           word="Legacy"
           className={`${styles.line} ${styles.lineLegacy}`}
-          delayOffset={8} // Starts slightly staggered with Brotherhood
+          delayOffset={8}
         />
       </div>
 
-      {/* Subtitle */}
-      <motion.p 
+      {/* Subtitle — specific product description */}
+      <motion.p
         className={styles.sub}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        Rise. Compete. Dominate.
+        Members apply, join divisions, earn XP, and compete — managed through one platform.
       </motion.p>
 
       {/* CTAs */}
-      <motion.div 
+      <motion.div
         className={styles.ctas}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -212,19 +196,24 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
         <Link href="/register" className="btn btn-primary btn-lg" id="hero-join-btn">
           Join the Brotherhood
         </Link>
-        <Link href="/#divisions" className="btn btn-secondary btn-lg" id="hero-explore-btn" onClick={(e) => {
-          if (typeof window !== 'undefined' && window.location.pathname === '/') {
-            e.preventDefault();
-            document.getElementById('divisions')?.scrollIntoView({ behavior: 'smooth' });
-            window.history.pushState(null, '', '/#divisions');
-          }
-        }}>
-          Explore Divisions
+        <Link
+          href="/#leaderboard"
+          className="btn btn-secondary btn-lg"
+          id="hero-leaderboard-btn"
+          onClick={(e) => {
+            if (typeof window !== 'undefined' && window.location.pathname === '/') {
+              e.preventDefault();
+              document.getElementById('leaderboard')?.scrollIntoView({ behavior: 'smooth' });
+              window.history.pushState(null, '', '/#leaderboard');
+            }
+          }}
+        >
+          View Leaderboard
         </Link>
       </motion.div>
 
       {/* Scroll indicator */}
-      <motion.div 
+      <motion.div
         className={styles.scroll}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

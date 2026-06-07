@@ -124,35 +124,27 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
           viewport={{ once: true, amount: 0.3 }}
           variants={fadeUp}
         >
-          <div className="section-header">
-            <span className="section-tag">Elite Units</span>
+          <div className="section-header" style={{ textAlign: 'left' }}>
+            <span className="section-tag">Divisions</span>
             <h2>Our <span className="gradient-text">Divisions</span></h2>
-            <p className="section-desc">
-              Join a specialized unit. Compete for your colors. Rise to the top of your field.
+            <p className="section-desc" style={{ marginLeft: 0, marginRight: 0 }}>
+              Join a unit. Compete for your colors. Rise to the top of your field.
             </p>
           </div>
         </motion.div>
 
         {/* Cards grid — Framer Motion Stagger */}
-        <motion.div 
-          className={styles.divisionsGrid}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          variants={staggerContainer}
-        >
+        <div className={styles.divisionsGrid}>
           {divisions.map((div) => {
             const isMember = user?.divisions?.includes(div.id);
             const count = divisionCounts?.[div.id];
             const leader = leaders?.[div.id];
             return (
-              <motion.div
+              <div
                 key={div.id}
-                variants={fadeUp}
                 className={`${styles.divCard} premium-panel`}
                 style={{ '--div-color': div.color } as DivisionStyle}
                 id={`home-division-${div.id}`}
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
               >
                 <div className={styles.divCardGlow} />
                 <div className={styles.cardIndex}>{String(divisions.findIndex(item => item.id === div.id) + 1).padStart(2, '0')}</div>
@@ -227,10 +219,10 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
                     ? <span className="spinner" />
                     : isMember ? `Leave ${div.label}` : `Join ${div.label}`}
                 </button>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -57,18 +57,18 @@ export default async function HomePage() {
         <div className="section-divider" />
         <div className="content-inner">
           <div className="section-header">
-            <span className="section-tag">Final Step</span>
-            <h2>Ready to Write Your <span className="gradient-text">Legacy?</span></h2>
-            <p className="section-desc">Join hundreds of members already building their story in the Brotherhood.</p>
+            <span className="section-tag">Get Started</span>
+            <h2>Apply. Earn XP. <span className="gradient-text">Build your rank.</span></h2>
+            <p className="section-desc">Create an account to track your XP, appear on the leaderboard, submit challenges, and apply to creator programs.</p>
           </div>
           <div className={styles.ctaBtns}>
-              <a href="/register" className="btn btn-primary btn-lg" id="home-cta-join-btn">
-                Create Account — It&apos;s Free
-              </a>
-              <a href="/apply" className="btn btn-ghost btn-lg" id="home-cta-apply-btn">
-                Apply as Creator
-              </a>
-            </div>
+            <a href="/register" className="btn btn-primary btn-lg" id="home-cta-join-btn">
+              Create Account — It&apos;s Free
+            </a>
+            <a href="/apply" className="btn btn-ghost btn-lg" id="home-cta-apply-btn">
+              Apply as Creator
+            </a>
+          </div>
         </div>
       </section>
     </div>

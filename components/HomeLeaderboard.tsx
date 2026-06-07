@@ -87,10 +87,10 @@ export default function HomeLeaderboard() {
           viewport={{ once: true, amount: 0.3 }}
           variants={fadeUp}
         >
-          <div className="section-header">
+          <div className="section-header" style={{ textAlign: 'left' }}>
             <span className="section-tag">Rankings</span>
             <h2>Global <span className="gradient-text">Leaderboard</span></h2>
-            <p className="section-desc">Top members ranked by XP across all divisions</p>
+            <p className="section-desc" style={{ marginLeft: 0 }}>Top members ranked by XP across all divisions</p>
           </div>
         </motion.div>
 
@@ -245,12 +245,9 @@ export default function HomeLeaderboard() {
                 </div>
                 <div className={styles.gridBody}>
                   {users.map((u, i) => (
-                    <motion.div
+                    <div
                       key={u._id}
                       className={`${styles.gridRow} ${i < 3 ? styles.topRow : ''}`}
-                      initial={{ opacity: 0, x: -12 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.28 }}
                     >
                       <div>
                         <span className={styles.rank}>
@@ -286,7 +283,7 @@ export default function HomeLeaderboard() {
                       </div>
                       <div><span className={styles.xpValue}>{u.xp.toLocaleString()}</span></div>
                       <span className={styles.rowCharge} style={{ width: `${Math.min(100, Math.max(8, topUser ? (u.xp / Math.max(topUser.xp, 1)) * 100 : 8))}%` }} />
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </motion.div>

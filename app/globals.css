@@ -168,7 +168,6 @@ h4 { font-size: 1.2rem; }
 .premium-panel:hover {
   border-color: rgba(255, 0, 0, 0.15);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.05);
-  transform: translateY(-2px);
 }
 
 /* Shared Selection Pills */
@@ -432,7 +431,6 @@ h4 { font-size: 1.2rem; }
 }
 .card:hover {
   border-color: var(--border-hover);
-  transform: translateY(-4px);
   box-shadow: var(--glow-red);
 }
 .card:hover::before { opacity: 1; }

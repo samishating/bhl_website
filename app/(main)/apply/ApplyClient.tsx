@@ -57,7 +57,7 @@ export default function JoinPage() {
             <strong>{finalLabel}</strong> has been submitted.
             The Brotherhood will review your application and reach out via Discord.
           </p>
-          <p className={styles.successSub}>May your legacy begin here.</p>
+          <p className={styles.successSub}>Your application is under review. We&apos;ll contact you via Discord within 48 hours.</p>
         </div>
       </div>
     );

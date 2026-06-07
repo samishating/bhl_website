@@ -54,32 +54,21 @@
   width: 100%;
 }
 
+
 .divCard {
   padding: 24px;
   display: flex; flex-direction: column; gap: 16px; 
   animation: fadeUp 0.6s ease both;
-}
-
-/* Per-division logo color hover theme */
-.divCard {
   border-color: color-mix(in srgb, var(--div-color) 15%, transparent);
   background: color-mix(in srgb, var(--div-color) 4%, rgba(10, 10, 10, 0.4));
 }
 
 .divCard:hover { 
   border-color: var(--div-color); 
-  transform: translateY(-5px); 
   box-shadow:
-    0 18px 34px rgba(0, 0, 0, 0.38),
-    0 0 32px color-mix(in srgb, var(--div-color) 18%, transparent);
+    0 8px 20px rgba(0, 0, 0, 0.28),
+    0 0 16px color-mix(in srgb, var(--div-color) 12%, transparent);
 }
-
-.divCardGlow { 
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at top right, color-mix(in srgb, var(--div-color) 12%, transparent), transparent 70%);
-  pointer-events: none; transition: opacity 0.4s ease; opacity: 0.4;
-}
-.divCard:hover .divCardGlow { opacity: 1; }
 
 .divCard::before {
   content: '';
@@ -139,8 +128,6 @@
   height: 8px;
   border-radius: 3px;
   background: var(--div-color);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--div-color) 80%, transparent);
-  animation: railPulse 2s ease-in-out infinite;
 }
 
 .divPerks {
@@ -231,10 +218,7 @@
   opacity: 0.5;
 }
 
-@keyframes railPulse {
-  0%, 100% { transform: scale(0.85); opacity: 0.55; }
-  50% { transform: scale(1); opacity: 1; }
-}
+
 
 @media (max-width: 1100px) { .divisionsGrid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px)  { 

@@ -306,9 +306,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
                     key={c._id} 
                     variants={fadeUp}
                     className={`${styles.card} premium-panel ${status === 'approved' ? styles.cardDone : ''}`}
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
                   >
-                    <span className={styles.cardBeam} />
                     <div className={styles.cardTop}>
                       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         <span className={`division-tag ${divTagClass[c.division] || 'tag-global'}`}>{c.division}</span>

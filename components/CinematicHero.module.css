@@ -13,6 +13,7 @@
   background: #050505;
   padding: 120px 24px 104px;
   margin-top: -88px; /* cancel layout paddingTop — hero is full-screen */
+  gap: 0;
 }
 
 .bgImageWrapper {
@@ -160,6 +161,8 @@
   grid-template-columns: 1fr;
   gap: 8px;
   width: min(176px, calc(100vw - 48px));
+  /* On desktop: absolutely positioned to bottom-right */
+  order: 0;
 }
 
 .statCard {
@@ -243,10 +246,14 @@
 
 @media (max-width: 768px) {
   .hero {
-    position: relative;
-    top: auto;
-    padding: 100px 20px 80px;
-    justify-content: center;
+    padding: 88px 20px 72px;
+    justify-content: flex-start;
+    padding-top: max(100px, calc(88px + env(safe-area-inset-top)));
+  }
+
+  .textBlock {
+    order: 1;
+    margin-top: 0;
   }
 
   .line {
@@ -263,62 +270,79 @@
   }
 
   .sub {
-    letter-spacing: 0.15em;
-    font-size: 0.8rem;
-    margin-top: 1.5rem;
+    order: 2;
+    letter-spacing: 0.06em;
+    font-size: clamp(0.72rem, 3.2vw, 0.88rem);
+    margin-top: 1.25rem;
+    padding: 0 8px;
+    text-align: center;
   }
 
   .ctas {
+    order: 3;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    margin-top: 2rem;
+    margin-top: 1.75rem;
   }
 
+  /* Stat dock moves BELOW CTAs on mobile */
   .statDock {
+    order: 4;
     position: relative;
     right: auto;
     bottom: auto;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: min(100%, 420px);
-    margin-top: 24px;
+    /* Always show as 3 horizontal cards — never stack vertically */
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    max-width: 360px;
+    gap: 8px;
+    margin-top: 28px;
   }
 
   .statCard {
-    padding: 12px 8px;
+    padding: 10px 6px;
     text-align: center;
   }
 
   .statCard span {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
 
   .statCard small {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
   }
 
   .ctas :global(.btn) {
     width: 100%;
     max-width: 300px;
   }
-}
-
-@media (max-width: 480px) {
-  .line {
-    font-size: clamp(2.2rem, 11vw, 3.5rem);
-  }
-
-  .logo {
-    width: clamp(70px, 24vw, 110px);
-  }
 
   .scroll {
     display: none;
   }
+}
+
+@media (max-width: 390px) {
+  .hero {
+    padding: 80px 16px 60px;
+  }
+
+  .line {
+    font-size: clamp(2.4rem, 11vw, 3.2rem);
+  }
+
+  .logo {
+    width: clamp(70px, 24vw, 100px);
+  }
+
+  .sub {
+    font-size: 0.7rem;
+  }
 
   .statDock {
-    grid-template-columns: 1fr;
-    max-width: 220px;
+    max-width: 100%;
   }
 }
 

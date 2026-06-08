@@ -52,6 +52,9 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     loadUsers();
+    window.addEventListener('stats-refresh', loadUsers);
+    return () => window.removeEventListener('stats-refresh', loadUsers);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = users.filter(u =>

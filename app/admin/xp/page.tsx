@@ -45,7 +45,7 @@ export default function AdminXPPage() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempData, setTempData] = useState<ProgressionLevel | null>(null);
 
-  useEffect(() => {
+  const loadData = () => {
     void Promise.all([
       fetch('/api/users', { cache: 'no-store' }),
       fetch('/api/progression', { cache: 'no-store' })
@@ -64,6 +64,13 @@ export default function AdminXPPage() {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    loadData();
+    window.addEventListener('stats-refresh', loadData);
+    return () => window.removeEventListener('stats-refresh', loadData);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredUsers = users.filter(u =>

@@ -31,6 +31,9 @@ export default function AdminSubmissionsPage() {
 
   useEffect(() => {
     fetchSubmissions();
+    window.addEventListener('stats-refresh', fetchSubmissions);
+    return () => window.removeEventListener('stats-refresh', fetchSubmissions);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchSubmissions = async () => {

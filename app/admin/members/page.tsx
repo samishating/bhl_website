@@ -78,7 +78,12 @@ export default function AdminMembersPage() {
       .then(r => r.json())
       .then(d => { setUsers(d.users || []); setLoading(false); });
   };
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+    window.addEventListener('stats-refresh', load);
+    return () => window.removeEventListener('stats-refresh', load);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleEdit = (user: User) => {
     setEditingUser(user);

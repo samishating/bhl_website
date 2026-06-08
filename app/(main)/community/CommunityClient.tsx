@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
@@ -185,7 +185,7 @@ export default function CommunityPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
 
-  const fetchCommunityData = () => {
+  const fetchCommunityData = useCallback(() => {
     setLoading(true);
     setError(null);
     fetch('/api/community')
@@ -227,12 +227,16 @@ export default function CommunityPage() {
         setError('Community index could not be loaded due to a connection issue.');
         setLoading(false);
       });
-  };
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(fetchCommunityData, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
+    window.addEventListener('stats-refresh', fetchCommunityData);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('stats-refresh', fetchCommunityData);
+    };
+  }, [fetchCommunityData]);
 
   const filteredMembers = filter === 'all'
     ? members

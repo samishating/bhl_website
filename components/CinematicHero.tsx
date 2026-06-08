@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion, Variants, BezierDefinition } from 'framer-motion';
@@ -65,6 +65,24 @@ function SplitWord({
 export default function CinematicHero({ statsData }: CinematicHeroProps) {
   const logoRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  const [liveStats, setLiveStats] = useState(statsData);
+
+  // Subscribe to global stats-refresh to keep hero numbers live
+  useEffect(() => {
+    const fetchStats = () => {
+      fetch('/api/stats', { cache: 'no-store' })
+        .then(r => (r.ok ? r.json() : null))
+        .then(data => {
+          if (data && data.totalMembers !== undefined) {
+            setLiveStats({ members: data.totalMembers, xp: data.totalXP ?? 0 });
+          }
+        })
+        .catch(() => {});
+    };
+
+    window.addEventListener('stats-refresh', fetchStats);
+    return () => window.removeEventListener('stats-refresh', fetchStats);
+  }, []);
 
   // Subtle mouse parallax — desktop only
   useEffect(() => {
@@ -118,7 +136,7 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
       <div className={styles.bgGlow} />
       <div className={styles.bgNoise} />
 
-      {/* Live stat dock — real data from DB */}
+      {/* Live stat dock — real data from DB, refreshes every 30s */}
       <motion.div
         className={styles.statDock}
         initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -126,11 +144,11 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
         transition={{ delay: 1.05, duration: 0.45, ease: customEase }}
       >
         <div className={styles.statCard}>
-          <span>{formatHeroStat(statsData.members)}</span>
+          <span>{formatHeroStat(liveStats.members)}</span>
           <small>Members</small>
         </div>
         <div className={styles.statCard}>
-          <span>{formatHeroStat(statsData.xp)}</span>
+          <span>{formatHeroStat(liveStats.xp)}</span>
           <small>Total XP</small>
         </div>
         <div className={styles.statCard}>

@@ -1,54 +1,40 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+
+const REFRESH_INTERVAL_MS = 30_000; // Forced 30-second refresh
 
 export default function SyncListener() {
-  const router = useRouter();
-  const lastUpdatedRef = useRef<number | null>(null);
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    const dispatchRefresh = () => {
+      window.dispatchEvent(new Event('stats-refresh'));
+    };
+
+    // Debounced version for SSE realtime events (avoid double-fires in rapid succession)
     const triggerRefresh = () => {
       if (refreshTimeoutRef.current) return;
-
       refreshTimeoutRef.current = setTimeout(() => {
         refreshTimeoutRef.current = null;
-        window.dispatchEvent(new Event('stats-refresh'));
+        dispatchRefresh();
       }, 150);
     };
 
-    const checkUpdates = async () => {
-      try {
-        const res = await fetch('/api/stats', { cache: 'no-store' });
-        if (!res.ok) return;
-
-        const data = await res.json();
-        
-        if (lastUpdatedRef.current !== null && data.lastUpdated > lastUpdatedRef.current) {
-          window.dispatchEvent(new Event('stats-refresh'));
-        }
-
-        lastUpdatedRef.current = data.lastUpdated;
-      } catch {
-        // Ignore fallback polling errors.
-      }
-    };
-
+    // SSE realtime channel — immediate event-driven refresh
     const eventSource = new EventSource('/api/realtime');
     eventSource.addEventListener('sync', triggerRefresh);
 
-    const interval = setInterval(checkUpdates, 60000);
-    checkUpdates();
+    // Forced 30-second interval — always fires regardless of data changes
+    const interval = setInterval(dispatchRefresh, REFRESH_INTERVAL_MS);
 
     return () => {
       if (refreshTimeoutRef.current) {
         clearTimeout(refreshTimeoutRef.current);
       }
-
       eventSource.close();
       clearInterval(interval);
     };
-  }, [router]);
+  }, []);
 
   return null;
 }

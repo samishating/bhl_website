@@ -78,6 +78,8 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (user?.role === 'admin' || user?.role === 'superadmin') {
       fetchCounts();
+      window.addEventListener('stats-refresh', fetchCounts);
+      return () => window.removeEventListener('stats-refresh', fetchCounts);
     }
   }, [user, fetchCounts]);
 

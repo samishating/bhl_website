@@ -40,177 +40,231 @@ interface VideoGroup {
 }
 
 export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Only include groups that actually have videos
+  const validGroups = groups.filter(g => g.videos && g.videos.length > 0);
+
+  const [creatorIndex, setCreatorIndex] = useState(0);
+  const [videoIndex, setVideoIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const CYCLE_DURATION = 15000; // 15 seconds
+  const filmstripRef = useRef<HTMLDivElement>(null);
 
-  const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % groups.length);
+  const CYCLE_DURATION = 15000; // 15 seconds per creator
+
+  const handleNextCreator = useCallback(() => {
+    setCreatorIndex((prev) => (prev + 1) % validGroups.length);
+    setVideoIndex(0);
     setProgress(0);
-  }, [groups.length]);
+  }, [validGroups.length]);
 
-  const handlePrev = useCallback(() => {
-    setActiveIndex((prev) => (prev === 0 ? groups.length - 1 : prev - 1));
+  const handlePrevCreator = useCallback(() => {
+    setCreatorIndex((prev) => (prev === 0 ? validGroups.length - 1 : prev - 1));
+    setVideoIndex(0);
     setProgress(0);
-  }, [groups.length]);
+  }, [validGroups.length]);
 
-  // Handle auto-cycling logic
+  // Auto-cycle through creators
   useEffect(() => {
-    if (groups.length <= 1) return; // Don't cycle if only 1 group
-    
+    if (validGroups.length <= 1) return;
     if (isHovered) {
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
       return;
     }
-
-    const intervalStep = 50; // Update progress every 50ms for smooth bar
+    const intervalStep = 50;
     const progressPerStep = (intervalStep / CYCLE_DURATION) * 100;
-
     progressIntervalRef.current = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
-          handleNext();
+          handleNextCreator();
           return 0;
         }
         return prev + progressPerStep;
       });
     }, intervalStep);
-
     return () => {
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
-  }, [activeIndex, handleNext, isHovered, groups.length]);
+  }, [creatorIndex, handleNextCreator, isHovered, validGroups.length]);
 
-  if (!groups || groups.length === 0) return null;
+  // Scroll filmstrip to active video card
+  useEffect(() => {
+    if (!filmstripRef.current) return;
+    const cards = filmstripRef.current.querySelectorAll<HTMLElement>('[data-video-card]');
+    if (cards[videoIndex]) {
+      cards[videoIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [videoIndex]);
 
-  const currentGroup = groups[activeIndex];
+  if (!validGroups || validGroups.length === 0) return null;
+
+  const currentGroup = validGroups[creatorIndex];
   const { creator, videos } = currentGroup;
-
-  const firstVideo = videos[0];
-  const remainingVideos = videos.slice(1, 5);
+  const activeVideo = videos[videoIndex];
 
   return (
-    <div 
-      className={styles.carouselContainer} 
-      onMouseEnter={() => setIsHovered(true)} 
+    <div
+      className={styles.carouselContainer}
+      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Controls & Creator Header */}
+      {/* Creator Header Row */}
       <div className={styles.carouselHeader}>
         <div className={styles.carouselCreatorInfo}>
           <div className={styles.carouselAvatar}>
-            {creator.avatar ? <img src={creator.avatar} alt={creator.username} /> : creator.username[0]}
+            {creator.avatar
+              ? <img src={creator.avatar} alt={creator.username} />
+              : creator.username[0].toUpperCase()
+            }
           </div>
           <div className={styles.carouselCreatorText}>
-            <div className={styles.carouselCreatorName}>
-              {creator.creatorDisplayName}
-            </div>
-            <div className={styles.carouselCreatorSubtitle}>
-              Now Showing
-            </div>
+            <div className={styles.carouselCreatorName}>{creator.creatorDisplayName || creator.username}</div>
+            <div className={styles.carouselCreatorSubtitle}>Now Showing</div>
           </div>
         </div>
 
-        {groups.length > 1 && (
+        {validGroups.length > 1 && (
           <div className={styles.carouselControls}>
             <div className={styles.carouselTimer}>
-              <motion.div 
-                className={styles.carouselTimerBar} 
+              <motion.div
+                className={styles.carouselTimerBar}
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: isHovered ? 0 : 0.05, ease: "linear" }}
+                transition={{ duration: isHovered ? 0 : 0.05, ease: 'linear' }}
               />
               {isHovered && <Pause size={14} className={styles.pauseIcon} />}
             </div>
-            <button onClick={handlePrev} className={styles.carouselBtn} aria-label="Previous creator videos" title="Previous">
+            <button onClick={handlePrevCreator} className={styles.carouselBtn} aria-label="Previous creator" title="Previous creator">
               <ChevronLeft size={20} />
             </button>
-            <span className={styles.carouselCounter}>{activeIndex + 1} / {groups.length}</span>
-            <button onClick={handleNext} className={styles.carouselBtn} aria-label="Next creator videos" title="Next">
+            <span className={styles.carouselCounter}>{creatorIndex + 1} / {validGroups.length}</span>
+            <button onClick={handleNextCreator} className={styles.carouselBtn} aria-label="Next creator" title="Next creator">
               <ChevronRight size={20} />
             </button>
           </div>
         )}
       </div>
 
+      {/* Video Content */}
       <AnimatePresence mode="wait">
-        <motion.div 
-          key={activeIndex}
+        <motion.div
+          key={creatorIndex}
           className={styles.videoCarouselLayout}
-          initial={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ opacity: 0, x: -30 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Featured Large Card (First Video) */}
-          <motion.a 
-            href={firstVideo.videoUrl} 
-            target="_blank" 
-            rel="noreferrer" 
+          {/* Featured Preview (active video) */}
+          <motion.a
+            href={activeVideo.videoUrl}
+            target="_blank"
+            rel="noreferrer"
             className={styles.videoFeatured}
             whileHover={{ scale: 1.01 }}
           >
-            <img src={firstVideo.thumbnailUrl} alt={firstVideo.title} />
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={videoIndex}
+                src={activeVideo.thumbnailUrl}
+                alt={activeVideo.title}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.85 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              />
+            </AnimatePresence>
             <div className={styles.videoFeaturedOverlay}>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-                <div className={styles.divisionBadge} style={{ width: '48px', height: '48px' }}>
-                  {creator.divisions && creator.divisions.length > 0 
+                <div className={styles.divisionBadge} style={{ width: '44px', height: '44px' }}>
+                  {creator.divisions && creator.divisions.length > 0
                     ? (DIVISION_ICONS[creator.divisions[0]] || <FaShieldAlt />)
                     : <FaShieldAlt />}
                 </div>
                 <div>
-                  <div style={{ color: '#fff', fontWeight: 700 }}>{creator.creatorDisplayName}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <FaYoutube style={{ color: '#ff0000', fontSize: '1rem' }} />
-                    {new Date(firstVideo.publishedAt).toLocaleDateString()}
+                  <div style={{ color: '#fff', fontWeight: 700, fontSize: '0.95rem' }}>{creator.creatorDisplayName || creator.username}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <FaYoutube style={{ color: '#ff0000' }} />
+                    {new Date(activeVideo.publishedAt).toLocaleDateString()}
                   </div>
                 </div>
               </div>
-              <div className={styles.videoFeaturedTitle}>{firstVideo.title}</div>
+              <div className={styles.videoFeaturedTitle}>{activeVideo.title}</div>
+              {/* Video index dots */}
+              {videos.length > 1 && (
+                <div className={styles.videoDots}>
+                  {videos.map((_, i) => (
+                    <button
+                      key={i}
+                      className={`${styles.videoDot} ${i === videoIndex ? styles.videoDotActive : ''}`}
+                      onClick={(e) => { e.preventDefault(); setVideoIndex(i); }}
+                      aria-label={`Video ${i + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Play icon overlay */}
+            <div className={styles.featuredPlayOverlay}>
+              <div className={styles.featuredPlayIcon}><FaPlay /></div>
             </div>
           </motion.a>
 
-          {/* Grid of Remaining Videos (Up to 4) */}
-          {remainingVideos.length > 0 && (
-            <div className={styles.videoGrid}>
-              {remainingVideos.map((v, idx) => (
-                <motion.div 
-                  key={idx} 
-                  className={styles.contentCard} 
-                  style={{ display: 'flex', flexDirection: 'column' }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+          {/* Filmstrip Rail (5 videos) */}
+          <div className={styles.filmstripWrapper}>
+            <button
+              className={styles.filmstripNavBtn}
+              onClick={() => setVideoIndex(prev => Math.max(0, prev - 1))}
+              disabled={videoIndex === 0}
+              aria-label="Previous video"
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <div className={styles.filmstrip} ref={filmstripRef}>
+              {videos.map((v, idx) => (
+                <button
+                  key={v.videoId}
+                  data-video-card="true"
+                  className={`${styles.filmstripCard} ${idx === videoIndex ? styles.filmstripCardActive : ''}`}
+                  onClick={() => setVideoIndex(idx)}
+                  aria-label={`Select video: ${v.title}`}
                 >
-                  <div className={styles.contentThumb}>
+                  <div className={styles.filmstripThumb}>
                     <img src={v.thumbnailUrl} alt={v.title} />
-                    <div className={styles.playOverlay}>
-                      <div className={styles.playIcon} style={{ width: '40px', height: '40px', fontSize: '1rem' }}>
-                        <FaPlay />
-                      </div>
+                    {idx === videoIndex && (
+                      <motion.div
+                        layoutId={`filmstrip-active-${creatorIndex}`}
+                        className={styles.filmstripActiveGlow}
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                      />
+                    )}
+                    <div className={styles.filmstripPlayOverlay}>
+                      <FaPlay size={12} />
                     </div>
                   </div>
-                  <div className={styles.contentMeta} style={{ flex: 1 }}>
-                    <div className={styles.contentAvatar}>
-                      {creator.avatar ? <img src={creator.avatar} alt={creator.username} /> : creator.username[0]}
-                    </div>
-                    <div className={styles.contentText}>
-                      <div className={styles.contentTitle}>{v.title}</div>
-                      <div className={styles.contentAuthor} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <FaYoutube style={{ color: '#ff0000' }} />
-                        {new Date(v.publishedAt).toLocaleDateString()}
-                      </div>
+                  <div className={styles.filmstripMeta}>
+                    <div className={styles.filmstripTitle}>{v.title}</div>
+                    <div className={styles.filmstripDate}>
+                      <FaYoutube style={{ color: '#ff0000', flexShrink: 0 }} />
+                      {new Date(v.publishedAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <a href={v.videoUrl} target="_blank" rel="noreferrer" className={styles.fullLink} />
-                </motion.div>
+                </button>
               ))}
             </div>
-          )}
+
+            <button
+              className={styles.filmstripNavBtn}
+              onClick={() => setVideoIndex(prev => Math.min(videos.length - 1, prev + 1))}
+              disabled={videoIndex === videos.length - 1}
+              aria-label="Next video"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </motion.div>
       </AnimatePresence>
-
     </div>
   );
 }

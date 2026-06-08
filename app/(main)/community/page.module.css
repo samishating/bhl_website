@@ -848,12 +848,12 @@
 /* YouTube Video Carousel */
 .videoCarouselLayout {
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  gap: 20px;
   padding: 0 24px;
 }
 
 .videoFeatured {
-  flex: 0 0 55%;
   position: relative;
   border-radius: 20px;
   overflow: hidden;
@@ -862,6 +862,7 @@
   display: block;
   text-decoration: none;
   background: #000;
+  aspect-ratio: 21/8;
 }
 
 .videoFeatured img {
@@ -880,27 +881,242 @@
 .videoFeaturedOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 55%, transparent 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 32px;
+  padding: 28px 32px;
+  pointer-events: none;
 }
 
 .videoFeaturedTitle {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 700;
   color: #fff;
   line-height: 1.1;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-transform: uppercase;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
 
+.featuredPlayOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+  pointer-events: none;
+}
+
+.videoFeatured:hover .featuredPlayOverlay {
+  background: rgba(0,0,0,0.18);
+}
+
+.featuredPlayIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.4rem;
+  box-shadow: 0 0 24px rgba(255, 0, 0, 0.5);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  padding-left: 4px;
+}
+
+.videoFeatured:hover .featuredPlayIcon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Video index dots */
+.videoDots {
+  display: flex;
+  gap: 6px;
+  pointer-events: all;
+}
+
+.videoDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.videoDot:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.videoDotActive {
+  background: var(--brand-red) !important;
+  width: 18px;
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
+}
+
+/* Filmstrip Rail */
+.filmstripWrapper {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.filmstripNavBtn {
+  flex-shrink: 0;
+  width: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: stretch;
+}
+
+.filmstripNavBtn:hover:not(:disabled) {
+  background: rgba(255, 0, 0, 0.12);
+  border-color: rgba(255, 0, 0, 0.3);
+  color: var(--brand-red);
+}
+
+.filmstripNavBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.filmstrip {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 4px 2px;
+}
+
+.filmstrip::-webkit-scrollbar {
+  display: none;
+}
+
+.filmstripCard {
+  flex: 0 0 calc(20% - 10px);
+  min-width: 160px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: left;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.filmstripCard:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.filmstripCardActive {
+  border-color: rgba(255, 0, 0, 0.5) !important;
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.18), 0 6px 24px rgba(0,0,0,0.4) !important;
+  background: rgba(255, 0, 0, 0.04) !important;
+}
+
+.filmstripThumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  overflow: hidden;
+}
+
+.filmstripThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.filmstripCard:hover .filmstripThumb img {
+  transform: scale(1.06);
+}
+
+.filmstripActiveGlow {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(255, 0, 0, 0.7);
+  border-radius: 0;
+  pointer-events: none;
+}
+
+.filmstripPlayOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.filmstripCard:hover .filmstripPlayOverlay,
+.filmstripCardActive .filmstripPlayOverlay {
+  opacity: 1;
+}
+
+.filmstripMeta {
+  padding: 8px 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filmstripTitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.filmstripDate {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
 }
 
 .videoGrid {
@@ -920,12 +1136,13 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .videoCarouselLayout {
-    flex-direction: column;
-  }
   .videoFeatured {
-    flex: none;
     aspect-ratio: 16/9;
+  }
+
+  .filmstripCard {
+    flex: 0 0 200px;
+    min-width: 200px;
   }
 }
 
@@ -944,6 +1161,13 @@
   }
   .contentCard {
     flex: 0 0 280px;
+  }
+  .filmstripCard {
+    flex: 0 0 160px;
+    min-width: 160px;
+  }
+  .videoCarouselLayout {
+    padding: 0 16px;
   }
 }
 

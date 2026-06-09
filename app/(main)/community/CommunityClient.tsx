@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { calculateLevel, getLevelTitle } from '@/lib/xp';
+import { useProgression } from '@/lib/useProgression';
 
 interface SocialLinks {
   twitter?: string;
@@ -184,6 +185,7 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
+  const levelTitles = useProgression();
 
   const fetchCommunityData = useCallback(() => {
     setLoading(true);
@@ -508,7 +510,7 @@ export default function CommunityPage() {
                       <div className={styles.memberName}>{member.username}</div>
                       <div className={styles.memberStatsBlock}>
                         <div className={styles.memberPrimaryStat}>Level {calculateLevel(member.xp)}</div>
-                        <div className={styles.memberSecondaryStat}>{getLevelTitle(calculateLevel(member.xp))}</div>
+                        <div className={styles.memberSecondaryStat}>{getLevelTitle(calculateLevel(member.xp), levelTitles)}</div>
                         <div className={styles.memberXpStat}>{member.xp.toLocaleString()} XP</div>
                       </div>
                       

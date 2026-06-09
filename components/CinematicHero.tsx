@@ -67,7 +67,7 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
   const reduceMotion = useReducedMotion();
   const [liveStats, setLiveStats] = useState(statsData);
 
-  // Subscribe to global stats-refresh to keep hero numbers live
+  // Subscribe to global stats-refresh AND poll every 30 s to keep hero numbers live
   useEffect(() => {
     const fetchStats = () => {
       fetch('/api/stats', { cache: 'no-store' })
@@ -81,7 +81,12 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
     };
 
     window.addEventListener('stats-refresh', fetchStats);
-    return () => window.removeEventListener('stats-refresh', fetchStats);
+    const interval = window.setInterval(fetchStats, 30_000);
+
+    return () => {
+      window.removeEventListener('stats-refresh', fetchStats);
+      window.clearInterval(interval);
+    };
   }, []);
 
   // Subtle mouse parallax — desktop only

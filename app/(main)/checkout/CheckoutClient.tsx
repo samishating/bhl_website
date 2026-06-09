@@ -14,9 +14,8 @@ export default function CheckoutClient() {
   const router = useRouter();
 
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', address: '' });
-  const [dialCode, setDialCode] = useState('+33');
+  const [dialCode, setDialCode] = useState('+212');
   const [phone, setPhone] = useState('');
-  const [countries, setCountries] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Promo code state
@@ -32,11 +31,6 @@ export default function CheckoutClient() {
     }
   }, [user]);
 
-  useEffect(() => {
-    fetch('/api/countries').then(r => r.json()).then(d => {
-      if (d.countries) setCountries(d.countries);
-    }).catch(console.error);
-  }, []);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -184,18 +178,16 @@ export default function CheckoutClient() {
                 <div className="form-group">
                   <label className="form-label">Phone Number *</label>
                   <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <select
+                    <input
+                      type="text"
                       className="form-input"
-                      style={{ width: '160px', flexShrink: 0, cursor: 'pointer' }}
+                      style={{ width: '100px', flexShrink: 0 }}
+                      placeholder="+212"
                       value={dialCode}
                       onChange={e => setDialCode(e.target.value)}
-                    >
-                      {countries.map(c => (
-                        <option key={c.code} value={c.dial_code}>
-                          {c.flag} {c.name} ({c.dial_code})
-                        </option>
-                      ))}
-                    </select>
+                      maxLength={6}
+                      aria-label="Dial code"
+                    />
                     <input
                       required
                       type="tel"

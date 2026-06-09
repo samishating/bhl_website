@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { getLevelTitle, BADGES } from '@/lib/xp';
+import { useProgression } from '@/lib/useProgression';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
@@ -113,7 +114,8 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
 
   const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
   const isSuper = currentUser?.role === 'superadmin';
-  const levelTitle = getLevelTitle(profile.level);
+  const levelTitles = useProgression();
+  const levelTitle = getLevelTitle(profile.level, levelTitles);
 
   const getYouTubeId = (url: string) => {
     const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;

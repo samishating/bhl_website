@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { getLevelTitle } from '@/lib/xp';
+import { useProgression } from '@/lib/useProgression';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp } from '@/lib/animations';
 import styles from './HomeLeaderboard.module.css';
@@ -33,6 +34,7 @@ export default function HomeLeaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const levelTitles = useProgression();
   const topUser = users[0];
   const totalVisibleXp = users.reduce((sum, user) => sum + user.xp, 0);
 
@@ -265,7 +267,7 @@ export default function HomeLeaderboard() {
                           </Link>
                           <div>
                             <Link href={`/users/${u._id}`} className={styles.memberName}>{u.username}</Link>
-                            <div className={styles.memberTitle}>{getLevelTitle(u.level)}</div>
+                            <div className={styles.memberTitle}>{getLevelTitle(u.level, levelTitles)}</div>
                           </div>
                         </div>
                       </div>

@@ -4,7 +4,7 @@ import { Submission } from '@/models/Submission';
 import { User } from '@/models/User';
 import { Challenge } from '@/models/Challenge';
 import { getUserFromRequest } from '@/lib/auth';
-import { calculateLevel, BADGES } from '@/lib/xp';
+import { BADGES } from '@/lib/xp';
 
 export async function POST(req: NextRequest) {
   try {

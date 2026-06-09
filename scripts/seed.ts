@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { calculateLevel } from '../lib/xp';
+import { getDynamicProgression } from '../lib/progression-server';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/brotherhood-legacy';
 
@@ -19,7 +20,7 @@ async function seed() {
   const adminPass  = await bcrypt.hash('admin123', 12);
 
   // Users
-  const usersData = [
+  const rawUsers = [
     { email: 'superadmin@bhl.gg', password: adminPass, username: 'SuperAdmin', xp: 9999, divisions: ['gaming', 'music', 'sport', 'content'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'], role: 'superadmin' },
     { email: 'admin@bhl.gg', password: adminPass, username: 'Admin', xp: 9999, divisions: ['gaming', 'music', 'sport', 'content'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'], role: 'admin' },
     { email: 'xenon@bhl.gg', password: hashedPass, username: 'XenonX', xp: 4200, divisions: ['gaming'], badges: ['FOUNDER', 'RANKED', 'CHALLENGER', 'GAMING_ELITE'] },
@@ -31,7 +32,9 @@ async function seed() {
     { email: 'ghost@bhl.gg', password: hashedPass, username: 'Ghost7', xp: 750, divisions: ['gaming'], badges: ['FOUNDER', 'GAMING_ELITE'] },
     { email: 'viper@bhl.gg', password: hashedPass, username: 'ViperFit', xp: 400, divisions: ['sport'], badges: ['FOUNDER', 'SPORT_BEAST'] },
     { email: 'nova@bhl.gg', password: hashedPass, username: 'NovaClip', xp: 150, divisions: ['content'], badges: ['FOUNDER', 'CONTENT_KING'] },
-  ].map(u => ({ ...u, level: calculateLevel(u.xp), lastLogin: new Date() }));
+  ];
+  const { thresholds } = await getDynamicProgression();
+  const usersData = rawUsers.map((u: any) => ({ ...u, level: calculateLevel(u.xp, thresholds), lastLogin: new Date() }));
 
   await mongoose.connection.db!.collection('users').insertMany(usersData);
   console.log(`👥 Seeded ${usersData.length} users`);

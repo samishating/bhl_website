@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { LEVEL_TITLES } from '@/lib/xp';
 
 let cachedTitles: string[] | null = null;
 let cachePromise: Promise<string[]> | null = null;
@@ -8,7 +7,7 @@ let cachePromise: Promise<string[]> | null = null;
 /**
  * Fetches the current level title list from the database (via /api/progression).
  * Results are module-level cached so multiple components share one fetch per page load.
- * Falls back to the hardcoded LEVEL_TITLES if the request fails.
+ * Returns [] if DB has no progression configured yet.
  */
 async function fetchTitles(): Promise<string[]> {
   if (cachedTitles) return cachedTitles;
@@ -22,12 +21,12 @@ async function fetchTitles(): Promise<string[]> {
         cachedTitles = titles;
         return titles;
       }
-      cachedTitles = LEVEL_TITLES;
-      return LEVEL_TITLES;
+      cachedTitles = [];
+      return [];
     })
     .catch(() => {
-      cachedTitles = LEVEL_TITLES;
-      return LEVEL_TITLES;
+      cachedTitles = [];
+      return [];
     });
 
   return cachePromise;
@@ -35,10 +34,10 @@ async function fetchTitles(): Promise<string[]> {
 
 /**
  * Hook — returns the DB-sourced level titles array.
- * Until resolved, returns the hardcoded defaults so UI never shows undefined.
+ * Returns [] until resolved; components should handle the empty case gracefully.
  */
 export function useProgression(): string[] {
-  const [titles, setTitles] = useState<string[]>(cachedTitles ?? LEVEL_TITLES);
+  const [titles, setTitles] = useState<string[]>(cachedTitles ?? []);
 
   useEffect(() => {
     let cancelled = false;

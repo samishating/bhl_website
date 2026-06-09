@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { getUserFromRequest } from '@/lib/auth';
 import { calculateLevel, getDivisionBadge, XP_ACTIONS } from '@/lib/xp';
+import { getDynamicProgression } from '@/lib/progression-server';
 import { publishRealtimeUpdate } from '@/lib/realtime-updates';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -120,7 +121,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
       }
 
-      user.level = calculateLevel(user.xp);
+      const { thresholds } = await getDynamicProgression();
+      user.level = calculateLevel(user.xp, thresholds);
     }
 
     await user.save();

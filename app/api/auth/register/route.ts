@@ -4,6 +4,7 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { signToken } from '@/lib/auth';
 import { XP_ACTIONS, calculateLevel, BADGES } from '@/lib/xp';
+import { getDynamicProgression } from '@/lib/progression-server';
 
 
 export async function POST(req: NextRequest) {
@@ -25,12 +26,13 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const founderXp = XP_ACTIONS.DAILY_LOGIN;
+    const { thresholds } = await getDynamicProgression();
     const user = await User.create({
       email,
       password: hashedPassword,
       username,
       xp: founderXp,
-      level: calculateLevel(founderXp),
+      level: calculateLevel(founderXp, thresholds),
       badges: [],
       lastLogin: new Date(),
     });

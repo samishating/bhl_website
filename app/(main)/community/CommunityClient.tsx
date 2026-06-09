@@ -14,7 +14,7 @@ import {
   FaGamepad, FaVideo, FaMusic, FaRunning, FaShieldAlt, FaExclamationTriangle
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { calculateLevel, getLevelTitle } from '@/lib/xp';
+import { getLevelTitle } from '@/lib/xp';
 import { useProgression } from '@/lib/useProgression';
 
 interface SocialLinks {
@@ -509,8 +509,8 @@ export default function CommunityPage() {
                       </div>
                       <div className={styles.memberName}>{member.username}</div>
                       <div className={styles.memberStatsBlock}>
-                        <div className={styles.memberPrimaryStat}>Level {calculateLevel(member.xp)}</div>
-                        <div className={styles.memberSecondaryStat}>{getLevelTitle(calculateLevel(member.xp), levelTitles)}</div>
+                        <div className={styles.memberPrimaryStat}>Level {member.level}</div>
+                        <div className={styles.memberSecondaryStat}>{getLevelTitle(member.level, levelTitles)}</div>
                         <div className={styles.memberXpStat}>{member.xp.toLocaleString()} XP</div>
                       </div>
                       

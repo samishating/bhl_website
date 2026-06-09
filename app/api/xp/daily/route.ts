@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { getUserFromRequest } from '@/lib/auth';
 import { XP_ACTIONS, calculateLevel } from '@/lib/xp';
+import { getDynamicProgression } from '@/lib/progression-server';
 import { publishRealtimeUpdate } from '@/lib/realtime-updates';
 
 export async function POST(req: NextRequest) {
@@ -24,7 +25,8 @@ export async function POST(req: NextRequest) {
     }
 
     user.xp += XP_ACTIONS.DAILY_LOGIN;
-    user.level = calculateLevel(user.xp);
+    const { thresholds } = await getDynamicProgression();
+    user.level = calculateLevel(user.xp, thresholds);
     user.lastLogin = today;
     await user.save();
 

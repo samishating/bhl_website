@@ -16,11 +16,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ progression: settings.levelProgression }, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
-      }
-    });
+    return NextResponse.json({ progression: settings.levelProgression });
   } catch (err) {
     console.error('[PROGRESSION_GET_ERROR]', err);
     return NextResponse.json({ error: 'Failed to fetch progression' }, { status: 500 });

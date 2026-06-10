@@ -18,8 +18,10 @@ export async function sendResetPasswordEmail(email: string, token: string) {
     },
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  // NEXT_PUBLIC_APP_URL must be set in Vercel env vars to the canonical domain
+  // e.g. https://bhl-website.vercel.app — never rely on VERCEL_URL which resolves
+  // to random preview deployment hostnames.
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
 

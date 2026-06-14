@@ -183,7 +183,7 @@
 
 /* Burger */
 .burger {
-  display: none; width: 38px; height: 38px;
+  display: none; width: 36px; height: 36px;
   align-items: center; justify-content: center;
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border-subtle);
@@ -275,5 +275,11 @@
   .username,
   .levelBadge {
     display: none;
+  }
+  .userAvatarBtn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
   }
 }

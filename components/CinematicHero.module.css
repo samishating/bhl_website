@@ -246,9 +246,10 @@
 
 @media (max-width: 768px) {
   .hero {
-    min-height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
     padding: 88px 20px 48px;
-    justify-content: flex-start;
+    justify-content: center;
     padding-top: max(100px, calc(88px + env(safe-area-inset-top)));
   }
 

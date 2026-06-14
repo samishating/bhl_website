@@ -22,16 +22,6 @@ BHL operates on a fully organic, XP-driven meritocracy. Every action on the plat
 
 The Brotherhood uses a **fully admin-configurable rank system** powered by `lib/xp.ts`. Level thresholds and titles are stored in `SystemSettings.levelProgression` and managed through the admin XP panel — no hardcoded caps.
 
-Sample milestone ranks:
-
-| Level | Title | Milestone |
-| :--- | :--- | :--- |
-| 1 | **Recruit** | Entry into the Brotherhood |
-| 5 | **Member** | **Ranked Badge** unlocked |
-| 15 | **Legend** | **Veteran Status** achieved |
-| 23 | **Conqueror** | **Exclusive Drop Access** (Merch Lock) |
-| 25 | **Immortal** | Elite circle membership |
-| 30 | **Eternal Legacy** | Ultimate Ascension |
 
 > [!IMPORTANT]
 > **Conqueror Drops**: Premium merchandise and limited-edition releases are strictly reserved for members at **Conqueror rank (40,000+ XP)**. Lower-ranked members cannot purchase locked products even if they find the URL.

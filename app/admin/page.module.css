@@ -50,13 +50,12 @@
   position: absolute;
   top: 0; left: 0; width: 4px; height: 100%;
   background: var(--card-color, var(--brand-red));
-  box-shadow: 0 0 15px var(--card-color, var(--brand-red));
 }
 
 .statCard:hover { 
   border-color: var(--card-color, var(--brand-red)); 
   transform: translateY(-5px); 
-  box-shadow: var(--glow-red); 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); 
 }
 
 .statIcon { 

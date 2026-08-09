@@ -386,19 +386,19 @@ export default function CommunityPage() {
               viewport={{ once: true, amount: 0.1 }}
               variants={fadeUp}
             >
-              <div className={`${styles.tabs} premium-panel selection-pill-group`}>
+              <div className={styles.tabs}>
                 {DIVISIONS.map(d => (
                   <button
                     key={d}
-                    className={`${styles.tab} selection-pill ${filter === d ? `selection-pill-active ${styles.tabActive}` : ''}`}
+                    className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
                     onClick={() => setFilter(d)}
                   >
                     {d === 'all' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
                     {filter === d && (
                       <motion.div 
                         layoutId="communityTab"
-                        className="selection-pill-indicator"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                        className={styles.tabIndicator}
+                        transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
                       />
                     )}
                   </button>

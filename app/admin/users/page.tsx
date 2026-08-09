@@ -263,7 +263,11 @@ export default function AdminUsersPage() {
                   className={`multi-chip ${active ? 'multi-chip-active' : ''}`}
                   onClick={() => toggleDivision(div.id)}
                 >
-                  {active && <span className="multi-chip-check">✓</span>}
+                  {active && (
+                    <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px', color: 'var(--brand-red)' }}>
+                      <polygon points="3,0 6,3 3,6 0,3" />
+                    </svg>
+                  )}
                   {div.label}
                 </button>
               );

@@ -378,7 +378,11 @@ export default function AdminProductsPage() {
                     style={{ marginBottom: 0 }}
                   >
                     <div className={styles.toggleBox}>
-                      {form.isLimitedDrop && <div className={styles.checkmark}>✓</div>}
+                      {form.isLimitedDrop && (
+                        <svg width="8" height="8" viewBox="0 0 6 6" fill="currentColor" style={{ display: 'block', margin: 'auto', color: 'var(--brand-red)' }}>
+                          <polygon points="3,0 6,3 3,6 0,3" />
+                        </svg>
+                      )}
                     </div>
                     <div className={styles.toggleContent}>
                       <div className={styles.toggleLabel}>PREMIUM DROP</div>

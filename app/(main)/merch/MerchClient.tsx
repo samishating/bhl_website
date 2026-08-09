@@ -25,13 +25,6 @@ interface Product {
 
 const CATEGORIES = ['all', 'apparel', 'accessories', 'gear', 'digital'];
 
-const MOCK_PRODUCTS = [
-  { _id: 'mock1', name: 'BHL Legacy Hoodie', description: 'Premium heavyweight hoodie with embroidered Brotherhood Legacy logo. Streetwear grade quality.', price: 79.99, image: 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=500&q=80', stock: 0, isLimitedDrop: false, category: 'apparel', images: [] },
-  { _id: 'mock2', name: 'BHL Neon Jersey', description: 'Gaming-inspired team jersey with neon blue accents and your username printed on the back.', price: 59.99, image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80', stock: 0, isLimitedDrop: true, category: 'apparel', images: [] },
-  { _id: 'mock3', name: 'Brotherhood Cap', description: 'Embroidered snapback cap. Adjustable fit, premium material. Rep BHL everywhere you go.', price: 34.99, image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500&q=80', stock: 0, isLimitedDrop: false, category: 'accessories', images: [] },
-  { _id: 'mock4', name: 'BHL Gaming Mousepad XL', description: 'Extra-large gaming mousepad with BHL Brotherhood Legacy artwork. Non-slip base, stitched edges.', price: 44.99, image: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=500&q=80', stock: 0, isLimitedDrop: false, category: 'gear', images: [] }
-];
-
 export default function MerchClient({ initialProducts }: { initialProducts: Product[] }) {
   const { user } = useAuth();
   const { addItem } = useCart();
@@ -44,11 +37,30 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const [quickViewQty, setQuickViewQty] = useState(1);
 
   const REQUIRED_XP = 40000;
+
+  if (initialProducts.length === 0) {
+    return (
+      <section className={styles.comingSoonSection}>
+        <div className={styles.comingSoonContainer}>
+          <span className="section-tag">Store</span>
+          <h2>Official drops <span className="gradient-text">coming soon</span></h2>
+          <p className={styles.comingSoonText}>
+            BHL drops are earned, not bought. The official storefront is currently locked.
+            Complete challenges, build your division rank, and earn XP to unlock access when the first limited drop drops.
+          </p>
+          <div style={{ marginTop: '2rem' }}>
+            <Link href="/#challenges" className="btn btn-primary btn-lg notch-corner">
+              Earn XP &amp; Prepare
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isLocked = filter === 'drop' && (user?.xp || 0) < REQUIRED_XP;
 
-  const products = initialProducts.length > 0 ? initialProducts : MOCK_PRODUCTS;
-
-  const filtered = products.filter(p => {
+  const filtered = initialProducts.filter(p => {
     if (filter === 'all') return true;
     if (filter === 'drop') return p.isLimitedDrop;
     return p.category === filter;
@@ -176,11 +188,7 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                           Premium
                         </span>
                       )}
-                      {p._id.startsWith('mock') ? (
-                        <span className={styles.comingSoonBadge}>COMING SOON</span>
-                      ) : (
-                        p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>ONLY {p.stock} REMAINING</span>
-                      )}
+                      {p.stock < 10 && p.stock > 0 && <span className={styles.stockBadge}>ONLY {p.stock} REMAINING</span>}
                       {isItemLocked && (
                         <div className={styles.lockedOverlay}>
                           <Lock size={18} />
@@ -197,9 +205,9 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
                             setQuickViewSize(null); 
                             setQuickViewQty(1); 
                           }}
-                          disabled={p.stock === 0 || isItemLocked || p._id.startsWith('mock')}
+                          disabled={p.stock === 0 || isItemLocked}
                         >
-                          {p._id.startsWith('mock') ? 'COMING SOON' : p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : <><Eye size={18} /> QUICK VIEW</>}
+                          {p.stock === 0 ? 'SOLD OUT' : isItemLocked ? 'LOCKED' : <><Eye size={18} /> QUICK VIEW</>}
                         </button>
                       </div>
                     </div>

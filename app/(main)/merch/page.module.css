@@ -297,22 +297,37 @@
   justify-content: center;
 }
 
-/* Coming Soon Badge for unreleased placeholders */
-.comingSoonBadge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 150, 0, 0.08);
-  color: #ffa500;
-  border: 1px solid rgba(255, 150, 0, 0.2);
-  padding: 0.25rem 0.75rem;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.65rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  z-index: 3;
+/* Store Coming Soon Section */
+.comingSoonSection {
+  min-height: 52vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 120px;
+  position: relative;
+  z-index: 5;
+  text-align: center;
 }
+
+.comingSoonContainer {
+  max-width: 600px;
+  background: rgba(8, 5, 5, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 3px solid var(--brand-red);
+  padding: 48px 32px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.comingSoonText {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-top: 1.5rem;
+}
+
 
 
 /* ─── PRODUCT GRID ───────────────────────────────────────── */

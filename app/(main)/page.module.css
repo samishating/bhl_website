@@ -11,17 +11,14 @@
   z-index: 3;
   min-height: 100vh;
   padding: 104px clamp(24px, 4vw, 64px) 96px;
-  background: 
-    radial-gradient(ellipse 80% 50% at 50% 10%, rgba(72, 0, 0, 0.34) 0%, transparent 70%),
-    linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.05) 50%, transparent 100%),
+  background:
     linear-gradient(
       to bottom,
-      rgba(12, 0, 0, 0.98) 0%,
-      rgba(6, 2, 2, 1) 15%,
+      rgba(10, 2, 2, 0.98) 0%,
+      rgba(5, 0, 0, 1) 15%,
       rgba(4, 0, 0, 1) 85%,
       rgba(5, 0, 0, 1) 100%
     );
-  /* Massive soft dark shadow pulling upwards to feather the transition */
   box-shadow: 0 -80px 120px rgba(10, 0, 0, 1);
   display: flex;
   flex-direction: column;
@@ -30,15 +27,7 @@
 }
 
 .divisionsSection::before {
-  content: '';
-  position: absolute;
-  inset: 48px 0 auto;
-  height: 240px;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 96px),
-    linear-gradient(180deg, rgba(255, 0, 0, 0.08), transparent);
-  mask-image: radial-gradient(ellipse at center, black 0%, transparent 72%);
+  display: none; /* Grid/glow overlay removed */
 }
 
 /* Header typography is now handled globally by .section-header, .section-tag, .section-desc */
@@ -57,17 +46,16 @@
 
 .divCard {
   padding: 24px;
-  display: flex; flex-direction: column; gap: 16px; 
+  display: flex; flex-direction: column; gap: 16px;
   animation: fadeUp 0.6s ease both;
-  border-color: color-mix(in srgb, var(--div-color) 15%, transparent);
-  background: color-mix(in srgb, var(--div-color) 4%, rgba(10, 10, 10, 0.4));
+  /* No uniform border — rely on left-accent line + spacing */
+  border-color: transparent;
+  background: color-mix(in srgb, var(--div-color) 3%, rgba(8, 5, 5, 0.6));
 }
 
-.divCard:hover { 
-  border-color: var(--div-color); 
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.28),
-    0 0 16px color-mix(in srgb, var(--div-color) 12%, transparent);
+.divCard:hover {
+  border-color: color-mix(in srgb, var(--div-color) 30%, transparent);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .divCard::before {
@@ -96,10 +84,11 @@
   height: 48px;
   display: grid;
   place-items: center;
-  border-radius: var(--radius-md);
-  border: 1px solid color-mix(in srgb, var(--div-color) 28%, transparent);
-  background: color-mix(in srgb, var(--div-color) 8%, rgba(255, 255, 255, 0.03));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  /* Angular diamond notch — matches dragon geometry */
+  clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+  border-radius: 0;
+  border: 1px solid color-mix(in srgb, var(--div-color) 40%, transparent);
+  background: color-mix(in srgb, var(--div-color) 10%, rgba(255, 255, 255, 0.02));
 }
 .divisionMark img {
   width: 38px;
@@ -156,16 +145,18 @@
   width: 100%; height: 44px; min-height: 44px;
   background: var(--div-color);
   color: #0a0a0a;
-  border-radius: var(--radius-md);
+  /* Angular notch matching dragon geometry */
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  border-radius: 0;
   font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem;
   text-transform: uppercase; letter-spacing: 0.12em;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  border: none;
   display: flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
 .joinBtn:hover:not(:disabled) {
-  filter: brightness(1.1);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--div-color) 40%, transparent);
+  filter: brightness(1.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 .joinBtn:disabled {
   cursor: not-allowed;
@@ -187,35 +178,24 @@
 .finalCtaBand {
   padding-top: 96px !important;
   padding-bottom: 160px !important;
-  background:
-    radial-gradient(ellipse 58% 46% at 50% 34%, rgba(255, 0, 0, 0.13), transparent 70%),
-    linear-gradient(180deg, rgba(9, 5, 5, 0.72), rgba(6, 2, 2, 0.94)) !important;
+  background: linear-gradient(180deg, rgba(7, 4, 4, 0.9), rgba(4, 2, 2, 1)) !important;
 }
 
 .finalCtaBand :global(.content-inner) {
   position: relative;
-  padding: 64px 24px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 0, 0, 0.035)),
-    rgba(10, 7, 7, 0.58);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 24px 80px rgba(0, 0, 0, 0.3),
-    0 0 44px rgba(255, 0, 0, 0.08);
+  padding: 64px 48px;
+  /* Hard left border accent — no glow */
+  border-left: 3px solid var(--brand-red);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: none;
+  border-bottom: none;
+  background: rgba(8, 5, 5, 0.7);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
   overflow: hidden;
 }
 
 .finalCtaBand :global(.content-inner)::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.16), transparent),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 96px);
-  opacity: 0.5;
+  display: none; /* Vertical gradient lines removed */
 }
 
 

@@ -103,11 +103,11 @@ export default function HomeLeaderboard() {
           viewport={{ once: true, amount: 0.1 }}
           variants={fadeUp}
         >
-          <div className={`${styles.tabs} premium-panel selection-pill-group`} ref={tabsRef}>
+          <div className={styles.tabs} ref={tabsRef}>
             {DIVISIONS.map(d => (
               <button
                 key={d}
-                className={`${styles.tab} selection-pill ${filter === d ? `selection-pill-active ${styles.tabActive}` : ''}`}
+                className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
                 onClick={() => {
                   setLoading(true);
                   setFilter(d);
@@ -115,10 +115,10 @@ export default function HomeLeaderboard() {
               >
                 {d === 'all' ? 'Global' : d.charAt(0).toUpperCase() + d.slice(1)}
                 {filter === d && (
-                  <motion.div 
+                  <motion.div
                     layoutId="activeTab"
-                    className="selection-pill-indicator"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    className={styles.tabIndicator}
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
                   />
                 )}
               </button>
@@ -162,17 +162,20 @@ export default function HomeLeaderboard() {
               {[users[1], users[0], users[2]].map((u, idx) => {
                 const podiumOrder = [2, 1, 3];
                 const rank = podiumOrder[idx];
-                const heightPct = rank === 1 ? '100%' : rank === 2 ? '80%' : '65%';
+                // Steeper height delta — 1st clearly dominant
+                const heightPct = rank === 1 ? '100%' : rank === 2 ? '68%' : '52%';
+                // 1st place gets a much larger avatar frame
+                const avatarSizeClass = rank === 1 ? 'avatar-xxl' : 'avatar-lg';
                 return (
                   <div key={u._id} className={`${styles.podiumItem} ${rank === 1 ? styles.podiumFirst : ''}`}>
-                    <Link href={`/users/${u._id}`} className={`avatar avatar-lg ${styles.podiumAvatar}`}>
+                    <Link href={`/users/${u._id}`} className={`avatar ${avatarSizeClass} ${styles.podiumAvatar}`}>
                       {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
                     </Link>
                     <Link href={`/users/${u._id}`} className={styles.podiumName}>{u.username}</Link>
                     <div className={styles.podiumXp}>{u.xp.toLocaleString()} XP</div>
                     <div className={styles.podiumBase} style={{ height: heightPct }}>
                       <span className={styles.podiumRank}>
-                        <img src={rankIcons[rank - 1]} alt={`Rank ${rank}`} style={{ width: '40px', height: '40px' }} />
+                        <img src={rankIcons[rank - 1]} alt={`Rank ${rank}`} style={{ width: '36px', height: '36px' }} />
                       </span>
                     </div>
                   </div>

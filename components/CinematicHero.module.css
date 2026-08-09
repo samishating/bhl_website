@@ -6,13 +6,13 @@
   width: 100%;
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
   background: #050505;
-  padding: 120px 24px 104px;
-  margin-top: -88px; /* cancel layout paddingTop — hero is full-screen */
+  padding: 120px clamp(32px, 6vw, 96px) 104px;
+  margin-top: -88px;
   gap: 0;
 }
 
@@ -40,17 +40,9 @@
   filter: blur(3px) brightness(0.82) saturate(1.08); /* Soft blur and depth darkening */
 }
 
-/* ─── Atmospheric Background ─────────────────────────────── */
+/* ─── Atmospheric Background: GLOW REMOVED ───────────────── */
 .bgGlow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  /* Soft, ambient deep red glow — static, no breathing */
-  background:
-    radial-gradient(ellipse 76% 34% at 50% 72%, rgba(255, 0, 0, 0.18) 0%, transparent 58%),
-    radial-gradient(ellipse 42% 30% at 50% 46%, rgba(255, 253, 186, 0.08) 0%, transparent 58%),
-    radial-gradient(ellipse 120% 80% at 50% 100%, rgba(80, 0, 0, 0.1) 0%, transparent 50%);
+  display: none; /* Ambient glow eliminated — replaced by hard background */
 }
 
 .bgNoise {
@@ -70,31 +62,33 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: -2.5rem;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
 }
 
 .logo {
-  width: clamp(115px, 18.5vw, 250px);
+  width: clamp(200px, 32vw, 480px);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.45))
-          drop-shadow(0 0 18px rgba(255, 0, 0, 0.18));
+  /* Hard-edged — no drop-shadow glow */
   position: relative;
   z-index: 2;
+  opacity: 0.92;
 }
 
 
-/* ─── Text ───────────────────────────────────────────────── */
+/* ─── Left Content Column ────────────────────────────────── */
 .textBlock {
   position: relative;
   z-index: 5;
-  text-align: center;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 0;
-  width: 100%;
+  max-width: clamp(340px, 52vw, 680px);
+  flex-shrink: 0;
 }
 
 .line {
@@ -119,26 +113,41 @@
 
 .lineBrotherhood {
   color: #ffffff;
-  /* no animation — handled per-letter */
 }
 
 .lineLegacy {
   color: #ff2020;
-  /* no animation — handled per-letter */
 }
+
+/* ─── Eyebrow label ──────────────────────────────────────── */
+.eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(0.58rem, 0.9vw, 0.68rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 0, 0, 0.8);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 5;
+}
+
 
 /* ─── Sub-content ────────────────────────────────────────── */
 .sub {
   position: relative;
   z-index: 5;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
-  margin-top: 2rem;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: clamp(0.7rem, 1.3vw, 0.82rem);
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 1.5rem;
   will-change: transform, opacity;
+  max-width: 480px;
+  line-height: 1.6;
+  text-transform: none;
 }
 
 .ctas {
@@ -146,56 +155,68 @@
   z-index: 5;
   display: flex;
   gap: 16px;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   will-change: transform, opacity;
 }
 
 .statDock {
-  position: absolute;
-  right: clamp(24px, 5vw, 72px);
-  bottom: clamp(96px, 11vh, 144px);
+  position: relative;
+  right: auto;
+  bottom: auto;
   z-index: 6;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  width: min(176px, calc(100vw - 48px));
-  /* On desktop: absolutely positioned to bottom-right */
-  order: 0;
+  grid-template-columns: repeat(3, auto);
+  gap: 0;
+  margin-top: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* Angled separators via box-shadow */
+  width: fit-content;
 }
 
 .statCard {
   display: grid;
-  gap: 2px;
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 0, 0, 0.035)),
-    rgba(8, 5, 5, 0.68);
-  backdrop-filter: blur(16px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 28px rgba(0, 0, 0, 0.32),
-    0 0 18px rgba(255, 0, 0, 0.06);
+  gap: 3px;
+  padding: 14px 24px;
+  background: rgba(6, 4, 4, 0.85);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+.statCard:last-child {
+  border-right: none;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--brand-red);
+  opacity: 0;
+}
+
+.statCard:first-child::before {
+  opacity: 1;
 }
 
 .statCard span {
-  font-family: var(--font-rajdhani), sans-serif;
-  font-size: 1.35rem;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1;
   color: #fff;
+  letter-spacing: -0.02em;
 }
 
 .statCard small {
   font-family: var(--font-rajdhani), sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.54);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 /* ─── Scroll Hint ────────────────────────────────────────── */
@@ -244,81 +265,81 @@
 
 /* ─── Responsive ─────────────────────────────────────────── */
 
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 100px 24px 56px;
+    gap: 24px;
+  }
+
+  .textBlock {
+    max-width: 100%;
+    order: 2;
+  }
+
+  .logoWrap {
+    justify-content: flex-start;
+    flex: none;
+    order: 1;
+    width: 100%;
+  }
+
+  .logo {
+    width: clamp(100px, 28vw, 180px);
+  }
+}
+
 @media (max-width: 768px) {
   .hero {
     min-height: 100vh;
     min-height: 100dvh;
     padding: 88px 20px 48px;
-    justify-content: center;
+    align-items: flex-start;
     padding-top: max(100px, calc(88px + env(safe-area-inset-top)));
   }
 
   .textBlock {
-    order: 1;
-    margin-top: 0;
+    align-items: flex-start;
+    text-align: left;
   }
 
   .line {
-    font-size: clamp(3rem, 13vw, 5rem);
+    font-size: clamp(2.8rem, 12vw, 4.8rem);
     white-space: nowrap;
   }
 
-  .logo {
-    width: clamp(80px, 22vw, 140px);
-  }
-
-  .logoWrap {
-    margin-bottom: -1rem;
-  }
-
   .sub {
-    order: 2;
-    letter-spacing: 0.06em;
-    font-size: clamp(0.72rem, 3.2vw, 0.88rem);
-    margin-top: 1.25rem;
-    padding: 0 8px;
-    text-align: center;
+    font-size: clamp(0.65rem, 2.8vw, 0.78rem);
+    margin-top: 1rem;
+    text-align: left;
+    padding: 0;
   }
 
   .ctas {
-    order: 3;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    margin-top: 1.75rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 1.5rem;
   }
 
-  /* Stat dock moves BELOW CTAs on mobile */
   .statDock {
-    order: 4;
-    position: relative;
-    right: auto;
-    bottom: auto;
-    /* Always show as 3 horizontal cards — never stack vertically */
-    grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-    max-width: 360px;
-    gap: 8px;
-    margin-top: 28px;
+    grid-template-columns: repeat(3, auto);
+    width: fit-content;
+    margin-top: 20px;
   }
 
   .statCard {
-    padding: 10px 6px;
-    text-align: center;
+    padding: 10px 14px;
   }
 
   .statCard span {
-    font-size: 1.05rem;
+    font-size: 0.9rem;
   }
 
   .statCard small {
-    font-size: 0.58rem;
-    letter-spacing: 0.1em;
-  }
-
-  .ctas :global(.btn) {
-    width: 100%;
-    max-width: 300px;
+    font-size: 0.52rem;
   }
 
   .scroll {
@@ -328,23 +349,19 @@
 
 @media (max-width: 390px) {
   .hero {
-    padding: 80px 16px 60px;
+    padding: 80px 16px 56px;
   }
 
   .line {
-    font-size: clamp(2.4rem, 11vw, 3.2rem);
+    font-size: clamp(2.2rem, 10vw, 2.8rem);
   }
 
   .logo {
-    width: clamp(70px, 24vw, 100px);
+    width: clamp(80px, 26vw, 120px);
   }
 
   .sub {
-    font-size: 0.7rem;
-  }
-
-  .statDock {
-    max-width: 100%;
+    font-size: 0.64rem;
   }
 }
 

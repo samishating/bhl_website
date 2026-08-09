@@ -89,9 +89,9 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
     };
   }, []);
 
-  // Subtle mouse parallax — desktop only
+  // Subtle mouse parallax on logo — desktop only
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.innerWidth < 900;
     if (isMobile || reduceMotion) return;
 
     let rafId: number;
@@ -110,7 +110,7 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
       currentY += (targetY - currentY) * 0.06;
 
       if (logoRef.current) {
-        logoRef.current.style.transform = `translate(${currentX * 10}px, ${currentY * 5}px)`;
+        logoRef.current.style.transform = `translate(${currentX * 8}px, ${currentY * 4}px)`;
       }
 
       rafId = requestAnimationFrame(tick);
@@ -138,101 +138,113 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
           className={styles.bgImage}
         />
       </div>
-      <div className={styles.bgGlow} />
+      {/* bgGlow intentionally removed */}
       <div className={styles.bgNoise} />
 
-      {/* Live stat dock — real data from DB, refreshes every 30s */}
-      <motion.div
-        className={styles.statDock}
-        initial={{ opacity: 0, y: 16, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: 1.05, duration: 0.45, ease: customEase }}
-      >
-        <div className={styles.statCard}>
-          <span>{formatHeroStat(liveStats.members)}</span>
-          <small>Members</small>
-        </div>
-        <div className={styles.statCard}>
-          <span>{formatHeroStat(liveStats.xp)}</span>
-          <small>Total XP</small>
-        </div>
-        <div className={styles.statCard}>
-          <span>4</span>
-          <small>Divisions</small>
-        </div>
-      </motion.div>
-
-      {/* Composition: BROTHERHOOD → LOGO → LEGACY */}
+      {/* ── Left column: type lockup + CTAs + stats ── */}
       <div className={styles.textBlock}>
 
-        {/* Line 1 — letter-by-letter */}
+        {/* Eyebrow label */}
+        <motion.span
+          className={styles.eyebrow}
+          initial={{ opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1, duration: 0.5, ease: customEase }}
+        >
+          Gaming · Music · Sport · Content
+        </motion.span>
+
+        {/* BROTHERHOOD — letter-by-letter */}
         <SplitWord
           word="Brotherhood"
           className={`${styles.line} ${styles.lineBrotherhood}`}
           delayOffset={0}
         />
 
-        {/* Logo — static, parallax only via mouse move */}
-        <motion.div
-          className={styles.logoWrap}
-          initial={{ opacity: 0, y: 40, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div ref={logoRef} className={styles.parallaxContainer}>
-            <Image
-              src="/brand/logo.png"
-              alt="BHL"
-              width={220}
-              height={220}
-              className={styles.logo}
-              priority
-            />
-          </div>
-        </motion.div>
-
-        {/* Line 2 — letter-by-letter */}
+        {/* LEGACY — letter-by-letter */}
         <SplitWord
           word="Legacy"
           className={`${styles.line} ${styles.lineLegacy}`}
           delayOffset={8}
         />
+
+        {/* Subtitle — specific, plain, machine-readable feel */}
+        <motion.p
+          className={styles.sub}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6, ease: customEase }}
+        >
+          Four divisions. One ranked community. Apply, earn XP
+          across Gaming, Music, Sport &amp; Content — and let your
+          name speak for itself on the leaderboard.
+        </motion.p>
+
+        {/* CTAs — notched angular buttons */}
+        <motion.div
+          className={styles.ctas}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.95, duration: 0.6, ease: customEase }}
+        >
+          <Link href="/register" className={`btn btn-primary btn-lg notch-corner`} id="hero-join-btn">
+            Join the Brotherhood
+          </Link>
+          <Link
+            href="/#leaderboard"
+            className={`btn btn-secondary btn-lg notch-corner`}
+            id="hero-leaderboard-btn"
+            onClick={(e) => {
+              if (typeof window !== 'undefined' && window.location.pathname === '/') {
+                e.preventDefault();
+                document.getElementById('leaderboard')?.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, '', '/#leaderboard');
+              }
+            }}
+          >
+            View Leaderboard
+          </Link>
+        </motion.div>
+
+        {/* Live stat bar — real data from DB, inline below CTAs */}
+        <motion.div
+          className={styles.statDock}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.15, duration: 0.45, ease: customEase }}
+        >
+          <div className={styles.statCard}>
+            <span className="stat-num">{formatHeroStat(liveStats.members)}</span>
+            <small>Members</small>
+          </div>
+          <div className={styles.statCard}>
+            <span className="stat-num">{formatHeroStat(liveStats.xp)}</span>
+            <small>Total XP</small>
+          </div>
+          <div className={styles.statCard}>
+            <span className="stat-num">4</span>
+            <small>Divisions</small>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Subtitle — specific product description */}
-      <motion.p
-        className={styles.sub}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      >
-        Members apply, join divisions, earn XP, and compete — managed through one platform.
-      </motion.p>
-
-      {/* CTAs */}
+      {/* ── Right column: dragon logo ── */}
       <motion.div
-        className={styles.ctas}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className={styles.logoWrap}
+        initial={{ opacity: 0, x: 40, scale: 0.94 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ delay: 0.3, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
-        <Link href="/register" className="btn btn-primary btn-lg" id="hero-join-btn">
-          Join the Brotherhood
-        </Link>
-        <Link
-          href="/#leaderboard"
-          className="btn btn-secondary btn-lg"
-          id="hero-leaderboard-btn"
-          onClick={(e) => {
-            if (typeof window !== 'undefined' && window.location.pathname === '/') {
-              e.preventDefault();
-              document.getElementById('leaderboard')?.scrollIntoView({ behavior: 'smooth' });
-              window.history.pushState(null, '', '/#leaderboard');
-            }
-          }}
-        >
-          View Leaderboard
-        </Link>
+        <div ref={logoRef} className={styles.parallaxContainer}>
+          <Image
+            src="/brand/logo.png"
+            alt="BHL Brotherhood Legacy"
+            width={480}
+            height={480}
+            className={styles.logo}
+            priority
+          />
+        </div>
       </motion.div>
 
       {/* Scroll indicator */}
@@ -240,7 +252,7 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
         className={styles.scroll}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
+        transition={{ delay: 1.3, duration: 0.6 }}
       >
         <div className={styles.scrollLine} />
       </motion.div>

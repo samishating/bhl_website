@@ -56,21 +56,26 @@ export default async function HomePage() {
       <section className={`content-band ${styles.finalCtaBand}`} style={{ borderTop: 'none' }}>
         <div className="section-divider" />
         <div className="content-inner">
-          <div className="section-header">
+          <div className="section-header" style={{ textAlign: 'left' }}>
             <span className="section-tag">Get Started</span>
-            <h2>Apply. Earn XP. <span className="gradient-text">Build your rank.</span></h2>
-            <p className="section-desc">Create an account to track your XP, appear on the leaderboard, submit challenges, and apply to creator programs.</p>
+            <h2>Four Divisions.<br /><span className="gradient-text">One Brotherhood.</span></h2>
+            <p className="section-desc" style={{ marginLeft: 0, maxWidth: 520 }}>
+              Gaming, Music, Sport, Content — BHL runs four active divisions with real members,
+              real XP rankings, and real challenges. Create an account, apply to a division,
+              and let your name speak on the leaderboard.
+            </p>
           </div>
-          <div className={styles.ctaBtns}>
-            <a href="/register" className="btn btn-primary btn-lg" id="home-cta-join-btn">
-              Create Account — It&apos;s Free
+          <div className={styles.ctaBtns} style={{ justifyContent: 'flex-start' }}>
+            <a href="/register" className="btn btn-primary btn-lg notch-corner" id="home-cta-join-btn">
+              Join the Brotherhood
             </a>
-            <a href="/apply" className="btn btn-ghost btn-lg" id="home-cta-apply-btn">
+            <a href="/apply" className="btn btn-ghost btn-lg notch-corner" id="home-cta-apply-btn">
               Apply as Creator
             </a>
           </div>
         </div>
       </section>
+
     </div>
   );
 }

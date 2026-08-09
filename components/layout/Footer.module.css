@@ -23,15 +23,13 @@
 }
 .glow {
   position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 600px; height: 1px;
-  background: linear-gradient(90deg, transparent, #CC0000, #FF0000, #CC0000, transparent);
-  box-shadow: 0 0 40px 10px rgba(255, 0, 0, 0.15);
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #FF0000, transparent);
 }
 .grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
 .brand .logo { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
-.logoIcon { font-size: 1.5rem; filter: drop-shadow(0 0 8px #FF0000); }
+.logoIcon { font-size: 1.5rem; }
 .logoText {
   font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: 0.05em;
   background: linear-gradient(135deg, #FF0000, #CC0000);
@@ -65,12 +63,10 @@
   width: 0;
   height: 1px;
   background-color: var(--brand-red);
-  box-shadow: 0 0 8px var(--brand-red);
   transition: width 0.3s ease;
 }
 .creatorLink:hover {
   color: #FF3333;
-  text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
 }
 .creatorLink:hover::after {
   width: 100%;

@@ -97,12 +97,10 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
       });
 
       if (res.ok) {
-        // Parallel refresh of user data and global stats
         await Promise.all([
           refreshUser(),
           fetchStats()
         ]);
-        // Trigger global refresh for other components (Leaderboard, Challenges)
         window.dispatchEvent(new Event('stats-refresh'));
         showToast(isMember ? 'Left division' : 'Successfully joined division!', isMember ? 'info' : 'success');
       } else {
@@ -117,7 +115,6 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
   return (
     <section id="divisions" className={styles.divisionsSection}>
       <div className="content-inner">
-        {/* Header — Framer Motion Reveal */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -133,7 +130,6 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
           </div>
         </motion.div>
 
-        {/* Cards grid — Framer Motion Stagger */}
         <div className={styles.divisionsGrid}>
           {divisions.map((div) => {
             const isMember = user?.divisions?.includes(div.id);
@@ -173,11 +169,9 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
                   <strong>{isMember ? 'Active unit' : 'Open recruitment'}</strong>
                 </div>
 
-                {/* Leader — skeleton while loading, nothing if no leader */}
                 <div className={styles.divLeader}>
                   <div className={styles.perksTitle}>Division Leader</div>
                   {leaders === null ? (
-                    /* Still loading */
                     <div className={styles.leaderRow}>
                       <span className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '10px', display: 'block', flexShrink: 0 }} />
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
@@ -187,11 +181,11 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
                     </div>
                   ) : leader ? (
                     <div className={styles.leaderRow}>
-                    <div className="avatar" style={{ width: '32px', height: '32px' }}>
-                      {leader.avatar
-                        ? <img src={leader.avatar} alt={`${leader.username}'s Avatar`} />
-                        : leader.username[0]}
-                    </div>
+                      <div className="avatar" style={{ width: '32px', height: '32px' }}>
+                        {leader.avatar
+                          ? <img src={leader.avatar} alt={`${leader.username}'s Avatar`} />
+                          : leader.username[0]}
+                      </div>
                       <div className={styles.leaderInfo}>
                         <span className={styles.leaderName}>{leader.username}</span>
                         <span className={styles.leaderXp}>{leader.xp.toLocaleString()} XP</span>
@@ -205,7 +199,11 @@ export default function HomeDivisions({ initialStats }: { initialStats?: Divisio
                 <div className={styles.divPerks}>
                   {div.perks.map(p => (
                     <div key={p} className={styles.perk}>
-                      <span className={styles.perkBullet}>✓</span> {p}
+                      <span className={styles.perkBullet}>
+                        <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <polygon points="3,0 6,3 3,6 0,3" />
+                        </svg>
+                      </span> {p}
                     </div>
                   ))}
                 </div>

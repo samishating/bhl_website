@@ -21,11 +21,22 @@ export const getGlobalStats = unstable_cache(
     try {
       await connectDB();
       
-      const [totalMembers, xpResult, divisionStatsRaw, completedChallenges] = await Promise.all([
+      const DIVISIONS = ['gaming', 'music', 'sport', 'content'] as const;
+      const [totalMembers, xpResult, divisionStatsRaw, completedChallenges, leaderResults] = await Promise.all([
         User.countDocuments(),
         User.aggregate<{ totalXP: number }>([{ $group: { _id: null, totalXP: { $sum: '$xp' } } }]),
         mongoose.connection.db!.collection('divisionstats').find({}).toArray(),
-        mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' })
+        mongoose.connection.db!.collection('submissions').countDocuments({ status: 'approved' }),
+        Promise.all(
+          DIVISIONS.map((divId) =>
+            User.findOne(
+              { divisions: divId, xp: { $gt: 0 } },
+              { username: 1, avatar: 1, xp: 1 }
+            )
+              .sort({ xp: -1 })
+              .lean<Pick<IUser, 'username' | 'avatar' | 'xp'> & { _id: unknown }>()
+          )
+        )
       ]);
 
       const divisionStats = divisionStatsRaw as unknown as DivisionStatDoc[];
@@ -37,8 +48,17 @@ export const getGlobalStats = unstable_cache(
         if (divisionCounts[stat.divisionId as keyof typeof divisionCounts] !== undefined) {
           divisionCounts[stat.divisionId as keyof typeof divisionCounts] = stat.memberCount || 0;
         }
-        if (stat.leader) {
-          divisionLeaders[stat.divisionId] = stat.leader;
+      });
+
+      DIVISIONS.forEach((divId, i) => {
+        const u = leaderResults[i];
+        if (u && u.xp > 0) {
+          divisionLeaders[divId] = {
+            userId: String(u._id),
+            username: u.username,
+            avatar: u.avatar,
+            xp: u.xp,
+          };
         }
       });
 
@@ -75,31 +95,55 @@ export const getLiveStats = async () => {
     await connectDB();
     const divisionStatsRaw = await mongoose.connection.db!.collection('divisionstats').find({}).toArray();
     const divisionStats = divisionStatsRaw as unknown as DivisionStatDoc[];
-    
+
     const divisionCounts = { gaming: 0, music: 0, sport: 0, content: 0 };
-    const divisionLeaders: Record<string, DivisionStatDoc['leader']> = {};
 
     divisionStats.forEach((stat) => {
       if (divisionCounts[stat.divisionId as keyof typeof divisionCounts] !== undefined) {
         divisionCounts[stat.divisionId as keyof typeof divisionCounts] = stat.memberCount || 0;
       }
-      if (stat.leader) {
-        divisionLeaders[stat.divisionId] = stat.leader;
-      }
     });
 
-    const lastUpdated = divisionStats.length > 0 
+    const lastUpdated = divisionStats.length > 0
       ? Math.max(...divisionStats.map((s) => new Date(s.lastUpdated || Date.now()).getTime()))
       : Date.now();
 
-    // Get the cached global stats for the heavy numbers (members, xp)
+    // Re-derive division leaders live from actual user data.
+    // This bypasses the stale divisionstats.leader cache and always returns
+    // the real current top-XP member for each division.
+    const DIVISIONS = ['gaming', 'music', 'sport', 'content'] as const;
+    const leaderResults = await Promise.all(
+      DIVISIONS.map((divId) =>
+        User.findOne(
+          { divisions: divId, xp: { $gt: 0 } },
+          { username: 1, avatar: 1, xp: 1 }
+        )
+          .sort({ xp: -1 })
+          .lean<Pick<IUser, 'username' | 'avatar' | 'xp'> & { _id: unknown }>()
+      )
+    );
+
+    const divisionLeaders: Record<string, DivisionStatDoc['leader']> = {};
+    DIVISIONS.forEach((divId, i) => {
+      const u = leaderResults[i];
+      if (u && u.xp > 0) {
+        divisionLeaders[divId] = {
+          userId: String(u._id),
+          username: u.username,
+          avatar: u.avatar,
+          xp: u.xp,
+        };
+      }
+    });
+
+    // Get the cached global stats for the heavy numbers (members, total xp)
     const globalStats = await getGlobalStats();
 
     return {
       ...globalStats,
       divisionCounts,
       divisionLeaders,
-      lastUpdated
+      lastUpdated,
     };
   } catch (error) {
     console.error('Failed to fetch live stats:', error);

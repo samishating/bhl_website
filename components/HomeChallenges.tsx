@@ -135,7 +135,6 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
     setSubmitting(challengeId);
 
     try {
-      // Correct API endpoint as used in HomeDivisions.tsx
       const newDivisions = [...(user.divisions || []), divId];
       const joinRes = await fetch(`/api/users/${user.id}`, {
         method: 'PATCH',
@@ -144,13 +143,8 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
       });
 
       if (joinRes.ok) {
-        // Trigger global refresh (AuthContext now listens to this)
         window.dispatchEvent(new Event('stats-refresh'));
         
-        // Wait a tiny bit for the context to update or just proceed
-        // Since the server now knows we are in the division, the submission will succeed.
-        
-        // Now proceed with submission
         const proof = proofUrls[challengeId]?.trim();
         if (!proof) {
           showToast(`Joined ${divId}! Enter proof and submit again.`, 'success');
@@ -178,9 +172,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
     } finally {
       setSubmitting(null);
     }
-
   };
-
 
   return (
     <section id="challenges" className="content-band" style={{ borderTop: 'none' }}>
@@ -195,22 +187,22 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           <div className="section-header">
             <span className="section-tag">Earn XP</span>
             <h2>Active <span className="gradient-text">Challenges</span></h2>
-            <p className="section-desc">Complete tasks, submit proof, and level up your legacy.</p>
+            <p className="section-desc">Post clips. Drop beats. Submit proof. Every completed mission builds your rank — and your reputation in the Brotherhood.</p>
           </div>
         </motion.div>
 
-        {/* Tabs */}
+        {/* Tabs — Flat Bar design */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
           variants={fadeUp}
         >
-          <div className={`${styles.tabs} premium-panel selection-pill-group`} ref={tabsRef}>
+          <div className={styles.tabs} ref={tabsRef}>
             {DIVS.map(d => (
               <button 
                 key={d} 
-                className={`${styles.tab} selection-pill ${filter === d ? `selection-pill-active ${styles.tabActive}` : ''}`}
+                className={`${styles.tab} ${filter === d ? styles.tabActive : ''}`}
                 onClick={() => {
                   if (d === 'global' && initialChallenges && initialChallenges.length > 0) {
                     setChallenges(initialChallenges);
@@ -225,8 +217,8 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
                 {filter === d && (
                   <motion.div 
                     layoutId="challengeTab"
-                    className="selection-pill-indicator"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    className={styles.tabIndicator}
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
                   />
                 )}
               </button>
@@ -234,6 +226,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           </div>
         </motion.div>
 
+        {/* Visually Differentiated Mission Strip Cards */}
         <motion.div
           className={styles.missionStrip}
           initial={{ opacity: 0, y: 14 }}
@@ -241,17 +234,29 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.32 }}
         >
-          <div>
+          <div className={styles.feedCard}>
             <span>Mission feed</span>
             <strong>{filter === 'global' ? 'Global' : filter}</strong>
           </div>
-          <div>
+          <div className={styles.tasksCard}>
             <span>Open tasks</span>
             <strong>{loading ? '...' : challenges.length}</strong>
           </div>
-          <div>
-            <span>XP window</span>
-            <strong>{loading ? '...' : challenges.reduce((sum, challenge) => sum + challenge.xpReward, 0).toLocaleString()}</strong>
+          <div className={styles.xpCard}>
+            <div>
+              <span>XP window</span>
+              <strong>{loading ? '...' : `${challenges.reduce((sum, challenge) => sum + challenge.xpReward, 0).toLocaleString()} XP`}</strong>
+            </div>
+            <div className={styles.xpProgressContainer}>
+              <div
+                className={styles.xpProgressBar}
+                style={{
+                  width: loading
+                    ? '0%'
+                    : `${Math.min(100, Math.max(10, (challenges.reduce((sum, c) => sum + c.xpReward, 0) / 1000) * 100))}%`
+                }}
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -336,7 +341,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
                           onChange={e => setProofUrls(prev => ({ ...prev, [c._id]: e.target.value }))}
                         />
                         <button
-                          className="btn btn-primary"
+                          className="btn btn-primary notch-corner"
                           onClick={() => handleSubmit(c._id)}
                           disabled={submitting === c._id}
                         >
@@ -374,6 +379,5 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
         </div>
       </Modal>
     </section>
-
   );
 }

@@ -293,7 +293,8 @@ export default function CommunityPage() {
         <section className={styles.section}>
           <div className="container">
             <div className={styles.sectionHeader}>
-              <div>
+              <div className={styles.sectionHeaderInner}>
+                <span className={styles.sectionEyebrow}>Featured</span>
                 <h2 className={styles.sectionTitle}>Featured Creators</h2>
                 <p className={styles.sectionSubtitle}>Premier talent driving the vision</p>
               </div>
@@ -358,7 +359,8 @@ export default function CommunityPage() {
         <section className={styles.section} style={{ paddingTop: 0 }}>
           <div className="container">
             <div className={styles.sectionHeader}>
-              <div>
+              <div className={styles.sectionHeaderInner}>
+                <span className={styles.sectionEyebrow}>Latest</span>
                 <h2 className={styles.sectionTitle}>Latest from the Brotherhood</h2>
                 <p className={styles.sectionSubtitle}>Recent uploads from platform creators</p>
               </div>
@@ -369,13 +371,12 @@ export default function CommunityPage() {
         </section>
       )}
       {/* Community Directory Section */}
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.directorySection}`}>
         <div className="container">
-          <div className={styles.sectionHeader}>
-            <div>
-              <h2 className={styles.sectionTitle}>Brotherhood Directory</h2>
-              <p className={styles.sectionSubtitle}>Approved platform personnel</p>
-            </div>
+          <div className={styles.directoryHeader}>
+            <div className={styles.directoryEyebrow}>Directory</div>
+            <h2 className={styles.directoryTitle}>Brotherhood Directory</h2>
+            <p className={styles.directorySubtitle}>Approved platform personnel</p>
           </div>
 
           {/* Tabs */}

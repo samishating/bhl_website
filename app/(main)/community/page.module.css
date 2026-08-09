@@ -18,7 +18,7 @@
 }
 
 .hero {
-  padding: 100px 24px 72px;
+  padding: 64px 24px 32px;
   text-align: center;
   position: relative;
   z-index: 2;
@@ -30,7 +30,7 @@
   display: block;
   width: min(480px, calc(100% - 48px));
   height: 1px;
-  margin: 48px auto 0;
+  margin: 24px auto 0;
   background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.4) 50%, transparent 100%);
 }
 

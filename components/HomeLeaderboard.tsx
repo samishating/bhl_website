@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { getLevelTitle } from '@/lib/xp';
 import { useProgression } from '@/lib/useProgression';
@@ -173,12 +174,17 @@ export default function HomeLeaderboard() {
                       {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
                     </Link>
                     <Link href={`/users/${u._id}`} className={styles.podiumName}>{u.username}</Link>
-                    <div className={styles.podiumXp}>{u.xp.toLocaleString()} XP</div>
-                    <div className={styles.podiumBase} style={{ height: heightPct }}>
+                    <div className={styles.podiumXp}><AnimatedCounter value={u.xp} duration={1000} suffix=" XP" /></div>
+                    <motion.div
+                      className={styles.podiumBase}
+                      initial={{ height: 0 }}
+                      animate={{ height: heightPct }}
+                      transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    >
                       <span className={styles.podiumRank}>
                         <img src={rankIcons[rank - 1]} alt={`Rank ${rank}`} style={{ width: '36px', height: '36px' }} />
                       </span>
-                    </div>
+                    </motion.div>
                   </div>
                 );
               })}
@@ -254,13 +260,14 @@ export default function HomeLeaderboard() {
                     <div
                       key={u._id}
                       className={`${styles.gridRow} ${i < 3 ? styles.topRow : ''}`}
+                      style={{ '--xp-fill': `${Math.min(100, Math.max(4, topUser ? (u.xp / Math.max(topUser.xp, 1)) * 100 : 4))}%` } as CSSProperties & { '--xp-fill': string }}
                     >
                       <div>
                         <span className={styles.rank}>
                           {i < 3 ? (
                             <img src={rankIcons[i]} alt={`Rank ${i+1}`} style={{ width: '24px', height: '24px' }} />
                           ) : (
-                            i + 1
+                            <span className={styles.rankNum}>{i + 1}</span>
                           )}
                         </span>
                       </div>
@@ -287,8 +294,7 @@ export default function HomeLeaderboard() {
                           )}
                         </div>
                       </div>
-                      <div><span className={styles.xpValue}>{u.xp.toLocaleString()}</span></div>
-                      <span className={styles.rowCharge} style={{ width: `${Math.min(100, Math.max(8, topUser ? (u.xp / Math.max(topUser.xp, 1)) * 100 : 8))}%` }} />
+                      <div><span className={styles.xpValue}><AnimatedCounter value={u.xp} duration={900} /></span></div>
                     </div>
                   ))}
                 </div>

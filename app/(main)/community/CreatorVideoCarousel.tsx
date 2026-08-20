@@ -87,13 +87,17 @@ export default function CreatorVideoCarousel({ groups }: { groups: VideoGroup[] 
     };
   }, [creatorIndex, handleNextCreator, isHovered, validGroups.length]);
 
-  // Scroll filmstrip to active video card
+  // Scroll filmstrip to active video card — scrolls the filmstrip's own scrollLeft directly
+  // (never scrollIntoView, which walks every scrollable ancestor including the page itself
+  // and was previously yanking the whole page down to this section on load).
   useEffect(() => {
-    if (!filmstripRef.current) return;
-    const cards = filmstripRef.current.querySelectorAll<HTMLElement>('[data-video-card]');
-    if (cards[videoIndex]) {
-      cards[videoIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
+    const filmstrip = filmstripRef.current;
+    if (!filmstrip) return;
+    const cards = filmstrip.querySelectorAll<HTMLElement>('[data-video-card]');
+    const card = cards[videoIndex];
+    if (!card) return;
+    const targetScrollLeft = card.offsetLeft - (filmstrip.clientWidth - card.clientWidth) / 2;
+    filmstrip.scrollTo({ left: Math.max(0, targetScrollLeft), behavior: 'smooth' });
   }, [videoIndex]);
 
   if (!validGroups || validGroups.length === 0) return null;

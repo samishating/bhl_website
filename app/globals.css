@@ -298,7 +298,12 @@ h4 { font-size: 1.2rem; }
   margin: 0 auto;
 }
 
-/* Cream emphasis text (was gradient-clip; flat color reads cleaner) */
+/* Red emphasis text — the standard heading accent word (was gradient-clip; flat color reads cleaner) */
+.gradient-text {
+  color: var(--brand-red);
+}
+
+/* Cream emphasis text — used for price/premium accents */
 .gradient-text-red {
   color: var(--cream);
 }

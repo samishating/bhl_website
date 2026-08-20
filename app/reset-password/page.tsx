@@ -4,6 +4,7 @@ import ResetPasswordClient from './ResetPasswordClient';
 export const metadata: Metadata = {
   title: 'Reset Password | Brotherhood Legacy',
   description: 'Configure a secure new password for your Brotherhood Legacy account to restore access.',
+  robots: { index: false, follow: true },
   alternates: {
     canonical: 'https://bhl-website.vercel.app/reset-password',
   },

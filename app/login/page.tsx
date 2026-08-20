@@ -4,6 +4,7 @@ import LoginClient from './LoginClient';
 export const metadata: Metadata = {
   title: 'Login | Brotherhood Legacy',
   description: 'Access your Brotherhood Legacy account to track your progress, participate in challenges, and manage your profile.',
+  robots: { index: false, follow: true },
   alternates: {
     canonical: 'https://bhl-website.vercel.app/login',
   },

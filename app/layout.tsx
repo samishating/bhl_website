@@ -74,12 +74,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, and build your legacy.'
   };
 
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Brotherhood Legacy',
+    alternateName: ['BHL', 'BHL Website', 'Brotherhood Legacy Website'],
+    url: 'https://bhl-website.vercel.app',
+  };
+
   return (
     <html lang="en" className={`${rajdhani.variable} ${inter.variable} ${spaceMono.variable}`}>
       <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <AuthProvider>
           <CartProvider>

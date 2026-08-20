@@ -311,10 +311,14 @@ The `/admin` command center is role-gated (`admin` / `superadmin` only):
 | **Alerts** | No `alert()`, `confirm()`, or `prompt()`. Use custom modals |
 | **Single Select** | Use `.selection-pill` / `.selection-pill-group` (shared `layoutId`) |
 | **Multi Select** | Use `.multi-chip-group` / `.multi-chip` (independent toggles) |
-| **Motion** | Framer Motion — `fadeUp`, `scaleIn`, `stagger` variants. Respect `useReducedMotion()` |
+| **Motion** | Framer Motion — `fadeUp`, `scaleIn`, `stagger` variants. Respect `useReducedMotion()`. Numeric stats count up via `AnimatedCounter`; progress bars use a >=1s eased width transition |
 | **State Sync** | All global mutations must dispatch `stats-refresh` event and call `publishRealtimeUpdate()` |
 | **Production** | Validate at `https://bhl-website.vercel.app` — never localhost |
 | **Level Config** | Thresholds and titles are managed via Admin → XP panel. Never hardcode rank data |
+| **Color & Depth** | Flat brand-red (`--brand-red`) / cream (`--cream`) accents only — no `background-clip: text` gradient text, no neon glow (`box-shadow` blur > ~20px on a saturated color). Depth comes from small neutral elevation shadows; never drop a hover/active shadow to nothing |
+| **Tab Bars** | Horizontally-scrolling filter/tab rows must be centered, use `overflow-x: auto` with a hidden scrollbar, and show a sticky swipe-hint arrow when they can overflow on mobile |
+| **Stat Card Rows** | Sibling stat cards in the same row (e.g. a 3-up metrics strip) must share one identical shape/border/radius — never mix a notch-clip, a left-bar, and a plain card in one row |
+| **SEO** | `app/robots.ts` blocks only `/admin` and `/api/`; `app/sitemap.ts` dynamically includes all public products/profiles. Transactional/private pages (`/checkout`, `/login`, `/register`, `/profile`, etc.) use `robots: { index: false, follow: true }` rather than a robots.txt disallow |
 
 ---
 

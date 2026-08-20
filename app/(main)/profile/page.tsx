@@ -4,6 +4,7 @@ import ProfileClient from './ProfileClient';
 export const metadata: Metadata = {
   title: 'Your Profile | Brotherhood Legacy',
   description: 'Manage your digital presence, social links, biography, and division badges within the Brotherhood Legacy community network.',
+  robots: { index: false, follow: true },
   alternates: {
     canonical: 'https://bhl-website.vercel.app/profile',
   },

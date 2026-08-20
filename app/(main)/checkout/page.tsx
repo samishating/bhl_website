@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Checkout | Brotherhood Legacy',
   description: 'Complete your Brotherhood Legacy order securely.',
+  robots: { index: false, follow: true },
   alternates: {
     canonical: 'https://bhl-website.vercel.app/checkout',
   },

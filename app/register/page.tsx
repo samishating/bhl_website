@@ -4,6 +4,7 @@ import RegisterClient from './RegisterClient';
 export const metadata: Metadata = {
   title: 'Join the Brotherhood | Brotherhood Legacy',
   description: 'Create your account and begin your journey. Earn XP, rise through the ranks, and join an elite community of creators.',
+  robots: { index: false, follow: true },
   alternates: {
     canonical: 'https://bhl-website.vercel.app/register',
   },

@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Order Confirmed | Brotherhood Legacy',
+  robots: { index: false, follow: true },
 };
 
 export default function CheckoutSuccessPage() {

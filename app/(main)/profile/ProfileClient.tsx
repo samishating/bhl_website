@@ -273,15 +273,6 @@ export default function ProfileClient() {
                         style={{ resize: 'none', minHeight: '130px' }}
                       />
                     </div>
-
-                    <div className={styles.formActions}>
-                      <button type="submit" className="btn btn-primary" disabled={loading || uploading} style={{ flex: 1 }}>
-                        {loading ? 'Saving...' : 'Save Changes'}
-                      </button>
-                      <button type="button" className="btn btn-ghost" onClick={() => setEditMode(false)} style={{ flex: 1 }}>
-                        Cancel
-                      </button>
-                    </div>
                   </div>
 
                   {/* Right Column: Social Links */}
@@ -317,6 +308,15 @@ export default function ProfileClient() {
                       ))}
                     </div>
                   </div>
+                </div>
+
+                <div className={styles.formActions}>
+                  <button type="submit" className="btn btn-primary" disabled={loading || uploading} style={{ flex: 1 }}>
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button type="button" className="btn btn-ghost" onClick={() => setEditMode(false)} style={{ flex: 1 }}>
+                    Cancel
+                  </button>
                 </div>
               </form>
             )}

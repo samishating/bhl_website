@@ -154,19 +154,21 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
           Gaming · Music · Sport · Content
         </motion.span>
 
-        {/* BROTHERHOOD — letter-by-letter */}
-        <SplitWord
-          word="Brotherhood"
-          className={`${styles.line} ${styles.lineBrotherhood}`}
-          delayOffset={0}
-        />
-
-        {/* LEGACY — letter-by-letter */}
-        <SplitWord
-          word="Legacy"
-          className={`${styles.line} ${styles.lineLegacy}`}
-          delayOffset={8}
-        />
+        {/* BROTHERHOOD LEGACY — the page's one <h1>. display:contents keeps the two
+            SplitWord lines as direct flex children of .textBlock (no layout impact)
+            while giving the site's primary brand phrase real heading semantics. */}
+        <h1 style={{ display: 'contents' }} aria-label="Brotherhood Legacy">
+          <SplitWord
+            word="Brotherhood"
+            className={`${styles.line} ${styles.lineBrotherhood}`}
+            delayOffset={0}
+          />
+          <SplitWord
+            word="Legacy"
+            className={`${styles.line} ${styles.lineLegacy}`}
+            delayOffset={8}
+          />
+        </h1>
 
         {/* Subtitle — specific, plain, machine-readable feel */}
         <motion.p

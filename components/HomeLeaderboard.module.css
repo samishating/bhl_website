@@ -11,8 +11,9 @@
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
-  width: 100%;
+  width: fit-content;
   display: flex;
+  justify-content: center;
   gap: 0 !important;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -90,13 +91,20 @@
 
 .rankPulse > div {
   min-height: 80px;
-  padding: 16px 24px;
+  padding: 18px 24px;
+  border: 1px solid var(--border-subtle);
   border-top: 2px solid var(--brand-red);
-  border-right: none;
-  border-bottom: none;
-  border-left: none;
-  background: rgba(8, 5, 5, 0.6);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.rankPulse > div:hover {
+  border-color: var(--border-subtle-hover);
+  background: rgba(255, 255, 255, 0.045);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
 .rankPulse span {

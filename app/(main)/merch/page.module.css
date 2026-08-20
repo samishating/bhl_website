@@ -796,6 +796,7 @@
   border-color: var(--brand-red) !important;
   color: #fff !important;
   background: rgba(255, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .sizeBtnSoldOut {

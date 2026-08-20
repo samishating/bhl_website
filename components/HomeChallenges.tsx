@@ -5,6 +5,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import Modal from '@/components/Modal';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import styles from './HomeChallenges.module.css';
 
 const divTagClass: Record<string, string> = {
@@ -40,6 +41,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
   const [confirmJoin, setConfirmJoin] = useState<Challenge | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const totalXp = challenges.reduce((sum, c) => sum + c.xpReward, 0);
 
   const loadChallenges = useCallback(() => {
     setLoading(true);
@@ -226,7 +228,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           </div>
         </motion.div>
 
-        {/* Visually Differentiated Mission Strip Cards */}
+        {/* Mission Strip Cards — unified premium treatment */}
         <motion.div
           className={styles.missionStrip}
           initial={{ opacity: 0, y: 14 }}
@@ -240,12 +242,12 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           </div>
           <div className={styles.tasksCard}>
             <span>Open tasks</span>
-            <strong>{loading ? '...' : challenges.length}</strong>
+            <strong>{loading ? '...' : <AnimatedCounter value={challenges.length} duration={700} />}</strong>
           </div>
           <div className={styles.xpCard}>
             <div>
               <span>XP window</span>
-              <strong>{loading ? '...' : `${challenges.reduce((sum, challenge) => sum + challenge.xpReward, 0).toLocaleString()} XP`}</strong>
+              <strong>{loading ? '...' : <AnimatedCounter value={totalXp} duration={1100} suffix=" XP" />}</strong>
             </div>
             <div className={styles.xpProgressContainer}>
               <div
@@ -253,7 +255,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
                 style={{
                   width: loading
                     ? '0%'
-                    : `${Math.min(100, Math.max(10, (challenges.reduce((sum, c) => sum + c.xpReward, 0) / 1000) * 100))}%`
+                    : `${Math.min(100, Math.max(10, (totalXp / 1000) * 100))}%`
                 }}
               />
             </div>

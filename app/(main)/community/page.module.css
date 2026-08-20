@@ -247,12 +247,14 @@
   justify-content: center;
   color: var(--brand-red);
   font-size: 1.2rem;
+  box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
 .creatorCard:hover .divisionBadge {
   background: rgba(255, 0, 0, 0.1);
   border-color: rgba(255, 0, 0, 0.4);
+  box-shadow: inset 0 0 14px rgba(255, 0, 0, 0.15);
   transform: scale(1.05);
 }
 
@@ -1592,6 +1594,7 @@
   background: rgba(255, 0, 0, 0.1);
   border-color: rgba(255, 0, 0, 0.4);
   color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .emptyState {

@@ -5,6 +5,7 @@ import { getLevelTitle } from '@/lib/xp';
 import { useProgression } from '@/lib/useProgression';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp } from '@/lib/animations';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import styles from './HomeLeaderboard.module.css';
 
 const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
@@ -139,7 +140,7 @@ export default function HomeLeaderboard() {
             </div>
             <div>
               <span>Visible XP</span>
-              <strong>{totalVisibleXp.toLocaleString()}</strong>
+              <strong><AnimatedCounter value={totalVisibleXp} duration={1200} /></strong>
             </div>
             <div>
               <span>Active board</span>

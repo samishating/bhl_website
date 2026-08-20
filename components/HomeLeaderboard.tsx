@@ -164,8 +164,11 @@ export default function HomeLeaderboard() {
               {[users[1], users[0], users[2]].map((u, idx) => {
                 const podiumOrder = [2, 1, 3];
                 const rank = podiumOrder[idx];
-                // Steeper height delta — 1st clearly dominant
-                const heightPct = rank === 1 ? '100%' : rank === 2 ? '68%' : '52%';
+                // Steeper height delta — 1st clearly dominant.
+                // Pixel values, not percentages: .podiumBase's parent (.podiumItem) has no
+                // explicit height, so a percentage height can't resolve against it and every
+                // bar silently collapses to the 40px min-height floor — the "flat podium" bug.
+                const baseHeight = rank === 1 ? 116 : rank === 2 ? 76 : 56;
                 // 1st place gets a much larger avatar frame
                 const avatarSizeClass = rank === 1 ? 'avatar-xxl' : 'avatar-lg';
                 return (
@@ -178,7 +181,7 @@ export default function HomeLeaderboard() {
                     <motion.div
                       className={styles.podiumBase}
                       initial={{ height: 0 }}
-                      animate={{ height: heightPct }}
+                      animate={{ height: baseHeight }}
                       transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
                     >
                       <span className={styles.podiumRank}>

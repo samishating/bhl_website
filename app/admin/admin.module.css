@@ -128,7 +128,6 @@
   min-width: 1.5rem;
   text-align: center;
   line-height: 1.2;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
 
 .sidebarCollapsed .notificationBadge {

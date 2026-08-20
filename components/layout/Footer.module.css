@@ -32,8 +32,7 @@
 .logoIcon { font-size: 1.5rem; }
 .logoText {
   font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #FF0000, #CC0000);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  color: var(--brand-red);
 }
 .tagline { font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--brand-red); font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.75rem; }
 .desc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }

@@ -55,7 +55,7 @@
   letter-spacing: 0.1em; 
   text-transform: uppercase; 
 }
-.superadmin { background: linear-gradient(90deg, #ff0055, #cc0000); color: white; box-shadow: 0 0 10px rgba(255,0,85,0.3); }
+.superadmin { background: var(--brand-red-dark); color: white; }
 .admin { background: rgba(255,0,0,0.1); color: var(--brand-red); border: 1px solid rgba(255,0,0,0.3); }
 .user { background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.1); }
 

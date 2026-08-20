@@ -292,9 +292,8 @@
 
 @media (max-width: 768px) {
   .hero {
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: 88px 20px 48px;
+    min-height: 0;
+    padding: 88px 20px 64px;
     align-items: flex-start;
     padding-top: max(100px, calc(88px + env(safe-area-inset-top)));
   }

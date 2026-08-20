@@ -247,14 +247,12 @@
   justify-content: center;
   color: var(--brand-red);
   font-size: 1.2rem;
-  box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.1), 0 0 15px rgba(255, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .creatorCard:hover .divisionBadge {
   background: rgba(255, 0, 0, 0.1);
   border-color: rgba(255, 0, 0, 0.4);
-  box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.2), 0 0 20px rgba(255, 0, 0, 0.2);
   transform: scale(1.05);
 }
 
@@ -416,12 +414,12 @@
 
 .twitchCard {
   border-color: rgba(169, 112, 255, 0.28);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(169, 112, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .twitchCard:hover {
   border-color: rgba(169, 112, 255, 0.56);
-  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.42), 0 0 24px rgba(169, 112, 255, 0.12);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.42);
 }
 
 .twitchOfflineCard {
@@ -432,7 +430,7 @@
 
 .twitchOfflineCard:hover {
   border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.42), 0 0 18px rgba(255, 255, 255, 0.045);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.42);
 }
 
 .liveMetaBadges {
@@ -458,7 +456,6 @@
   border-radius: 4px;
   background: #ff0000;
   color: #fff;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.52);
   font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -891,7 +888,7 @@
 }
 
 .carouselBtn:hover {
-  background: rgba(255, 0, 85, 0.2);
+  background: rgba(255, 0, 0, 0.15);
   color: var(--brand-red);
 }
 
@@ -916,8 +913,8 @@
   position: relative;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255, 0, 85, 0.3);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,0,85,0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
   display: block;
   text-decoration: none;
   background: #000;
@@ -988,7 +985,6 @@
   justify-content: center;
   color: #fff;
   font-size: 1.4rem;
-  box-shadow: 0 0 24px rgba(255, 0, 0, 0.5);
   opacity: 0;
   transform: scale(0.8);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -1027,7 +1023,6 @@
   background: var(--brand-red) !important;
   width: 18px;
   border-radius: 3px;
-  box-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
 }
 
 /* Filmstrip Rail */
@@ -1101,7 +1096,7 @@
 
 .filmstripCardActive {
   border-color: rgba(255, 0, 0, 0.5) !important;
-  box-shadow: 0 0 16px rgba(255, 0, 0, 0.18), 0 6px 24px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4) !important;
   background: rgba(255, 0, 0, 0.04) !important;
 }
 
@@ -1289,7 +1284,6 @@
   justify-content: center;
   font-size: 1.2rem;
   padding-left: 4px;
-  box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
 }
 
 .contentMeta {
@@ -1437,7 +1431,7 @@
 
 .memberCard:hover .memberAvatar {
   border-color: rgba(255, 0, 0, 0.35);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 16px rgba(255,0,0,0.12);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 }
 
 .memberAvatar img {
@@ -1598,7 +1592,6 @@
   background: rgba(255, 0, 0, 0.1);
   border-color: rgba(255, 0, 0, 0.4);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(255, 0, 0, 0.15);
 }
 
 .emptyState {
@@ -1789,10 +1782,44 @@
   gap: 0;
   position: relative;
   z-index: 5;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .tabs::after {
+    content: '\203A';
+    position: sticky;
+    right: 2px;
+    align-self: center;
+    margin-left: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding-bottom: 2px;
+    background: rgba(16, 8, 8, 0.9);
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    border-radius: 50%;
+    color: var(--brand-red);
+    font-size: 0.9rem;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 3;
+  }
 }
 
 .tab {
   min-width: 110px;
+  flex-shrink: 0;
   position: relative;
   border-radius: 0;
   padding: 14px 24px;
@@ -1820,5 +1847,4 @@
   height: 2px;
   background: var(--brand-red);
   clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
 }

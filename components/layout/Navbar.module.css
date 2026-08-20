@@ -65,16 +65,13 @@
 
 /* Logo */
 .logo { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-.logoIcon { font-size: 1.5rem; filter: drop-shadow(0 0 8px #FF0000); }
+.logoIcon { font-size: 1.5rem; }
 .logoText {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
   letter-spacing: 0.1em;
-  background: linear-gradient(135deg, #FF0000, #CC0000);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--brand-red);
 }
 
 /* Nav Links */

@@ -147,11 +147,10 @@
 }
 
 .socialIconBtn:hover {
-  background: rgba(255, 0, 85, 0.1);
+  background: rgba(255, 0, 0, 0.08);
   border-color: var(--brand-red);
   color: #fff;
   transform: translateY(-4px);
-  box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3);
 }
 
 .mutedText {

@@ -177,7 +177,7 @@ export default function ApplicationsInbox() {
                     </button>
                   </div>
                   {app.userId && (
-                    <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved', true)} disabled={actioning === app._id} style={{ width: '100%', background: 'linear-gradient(90deg, #ff0055, #cc0000)', border: 'none', color: '#fff' }}>
+                    <button className="btn btn-primary" onClick={() => handleAction(app._id, 'approved', true)} disabled={actioning === app._id} style={{ width: '100%' }}>
                       APPROVE & SHOW ON COMMUNITY PAGE
                     </button>
                   )}

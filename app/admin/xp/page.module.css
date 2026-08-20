@@ -68,7 +68,6 @@
 
 .userCard:hover .avatar {
   border-color: var(--brand-red);
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
 }
 
 .mainInfo { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; }

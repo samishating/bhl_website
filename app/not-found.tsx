@@ -12,9 +12,9 @@ export default function NotFound() {
       background: '#050505',
       padding: '2rem'
     }}>
-      <div style={{ fontSize: '8rem', fontWeight: 900, color: 'rgba(255,0,85,0.1)', position: 'absolute', zIndex: 0, userSelect: 'none' }}>404</div>
+      <div style={{ fontSize: '8rem', fontWeight: 900, color: 'rgba(255,0,0,0.1)', position: 'absolute', zIndex: 0, userSelect: 'none' }}>404</div>
       <h1 style={{ fontFamily: 'var(--font-rajdhani)', fontSize: '3rem', marginBottom: '1rem', position: 'relative' }}>
-        LOST IN THE <span className="gradient-text">VOID</span>
+        LOST IN THE <span style={{ color: 'var(--brand-red)' }}>VOID</span>
       </h1>
       <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', marginBottom: '2.5rem', position: 'relative' }}>
         The page you are looking for has been archived or never existed in the Brotherhood archives.

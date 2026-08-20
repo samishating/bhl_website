@@ -127,6 +127,18 @@
   letter-spacing: -0.02em;
 }
 
+/* AnimatedCounter renders its value in a <span> — override the label-span rule above */
+.rankPulse strong span {
+  display: inline;
+  margin-bottom: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  color: inherit;
+}
+
 /* Podium */
 .podium {
   display: flex;

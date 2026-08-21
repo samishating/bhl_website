@@ -150,45 +150,44 @@ export default function HomeLeaderboard() {
           </motion.div>
         )}
 
-        {/* Podium */}
+        {/* Top 3 — equal-height cards, not a stacked podium. More breathing room, one shape. */}
         <AnimatePresence mode="wait">
           {!loading && users.length >= 3 && (
-            <motion.div 
-              key={`podium-${filter}`}
-              className={styles.podium}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
+            <motion.div
+              key={`top3-${filter}`}
+              className={styles.topThree}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 14 }}
               transition={{ duration: 0.35 }}
             >
-              {[users[1], users[0], users[2]].map((u, idx) => {
-                const podiumOrder = [2, 1, 3];
-                const rank = podiumOrder[idx];
-                // Steeper height delta — 1st clearly dominant.
-                // Pixel values, not percentages: .podiumBase's parent (.podiumItem) has no
-                // explicit height, so a percentage height can't resolve against it and every
-                // bar silently collapses to the 40px min-height floor — the "flat podium" bug.
-                const baseHeight = rank === 1 ? 116 : rank === 2 ? 76 : 56;
-                // 1st place gets a much larger avatar frame
-                const avatarSizeClass = rank === 1 ? 'avatar-xxl' : 'avatar-lg';
+              {users.slice(0, 3).map((u, i) => {
+                const rank = i + 1;
                 return (
-                  <div key={u._id} className={`${styles.podiumItem} ${rank === 1 ? styles.podiumFirst : ''}`}>
-                    <Link href={`/users/${u._id}`} className={`avatar ${avatarSizeClass} ${styles.podiumAvatar}`}>
+                  <motion.div
+                    key={u._id}
+                    className={`${styles.topCard} ${rank === 1 ? styles.topCardFirst : ''}`}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.08 }}
+                  >
+                    <span className={styles.topCardBadge}>
+                      <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '28px', height: '28px' }} />
+                    </span>
+                    <Link href={`/users/${u._id}`} className={`avatar avatar-lg ${styles.topCardAvatar}`}>
                       {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
                     </Link>
-                    <Link href={`/users/${u._id}`} className={styles.podiumName}>{u.username}</Link>
-                    <div className={styles.podiumXp}><AnimatedCounter value={u.xp} duration={1000} suffix=" XP" /></div>
-                    <motion.div
-                      className={styles.podiumBase}
-                      initial={{ height: 0 }}
-                      animate={{ height: baseHeight }}
-                      transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <span className={styles.podiumRank}>
-                        <img src={rankIcons[rank - 1]} alt={`Rank ${rank}`} style={{ width: '36px', height: '36px' }} />
-                      </span>
-                    </motion.div>
-                  </div>
+                    <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>
+                    <div className={styles.topCardTitle}>{getLevelTitle(u.level, levelTitles)}</div>
+                    <div className={styles.topCardXp}><AnimatedCounter value={u.xp} duration={1000} suffix=" XP" /></div>
+                    {u.divisions && u.divisions.length > 0 && (
+                      <div className={styles.topCardDivisions}>
+                        {u.divisions.map((d: string) => (
+                          <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
                 );
               })}
             </motion.div>
@@ -242,8 +241,8 @@ export default function HomeLeaderboard() {
               >
                 No members yet in this division.
               </motion.div>
-            ) : (
-              <motion.div 
+            ) : users.length <= 3 ? null : (
+              <motion.div
                 key={`table-${filter}`}
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -259,19 +258,18 @@ export default function HomeLeaderboard() {
                   <div>XP</div>
                 </div>
                 <div className={styles.gridBody}>
-                  {users.map((u, i) => (
+                  {/* Ranks 1-3 already have their own cards above — the table picks up at 4 to avoid showing everyone twice */}
+                  {(users.length >= 3 ? users.slice(3) : users).map((u, idx) => {
+                    const i = users.length >= 3 ? idx + 3 : idx;
+                    return (
                     <div
                       key={u._id}
-                      className={`${styles.gridRow} ${i < 3 ? styles.topRow : ''}`}
+                      className={styles.gridRow}
                       style={{ '--xp-fill': `${Math.min(100, Math.max(4, topUser ? (u.xp / Math.max(topUser.xp, 1)) * 100 : 4))}%` } as CSSProperties & { '--xp-fill': string }}
                     >
                       <div>
                         <span className={styles.rank}>
-                          {i < 3 ? (
-                            <img src={rankIcons[i]} alt={`Rank ${i+1}`} style={{ width: '24px', height: '24px' }} />
-                          ) : (
-                            <span className={styles.rankNum}>{i + 1}</span>
-                          )}
+                          <span className={styles.rankNum}>{i + 1}</span>
                         </span>
                       </div>
                       <div>
@@ -299,7 +297,7 @@ export default function HomeLeaderboard() {
                       </div>
                       <div><span className={styles.xpValue}><AnimatedCounter value={u.xp} duration={900} /></span></div>
                     </div>
-                  ))}
+                  );})}
                 </div>
               </motion.div>
             )}

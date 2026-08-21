@@ -39,6 +39,12 @@ export default function HomeLeaderboard() {
   const levelTitles = useProgression();
   const topUser = users[0];
   const totalVisibleXp = users.reduce((sum, user) => sum + user.xp, 0);
+  // Top-3 cards only render once there are 3+ members (a "top 3" of 1-2 people doesn't make
+  // sense). Below that threshold the table must show everyone, or 1-2-member divisions would
+  // render nothing at all -- neither the cards (need 3+) nor a rank-4-onward table (nothing left).
+  const showTopThree = users.length >= 3;
+  const tableUsers = showTopThree ? users.slice(3) : users;
+  const tableRankOffset = showTopThree ? 3 : 0;
 
   const fetchLeaderboard = useCallback(() => {
     setLoading(true);
@@ -152,7 +158,7 @@ export default function HomeLeaderboard() {
 
         {/* Top 3 — equal-height cards, not a stacked podium. More breathing room, one shape. */}
         <AnimatePresence mode="wait">
-          {!loading && users.length >= 3 && (
+          {!loading && showTopThree && (
             <motion.div
               key={`top3-${filter}`}
               className={styles.topThree}
@@ -232,7 +238,7 @@ export default function HomeLeaderboard() {
                 </button>
               </motion.div>
             ) : users.length === 0 ? (
-              <motion.div 
+              <motion.div
                 key="empty"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -241,7 +247,7 @@ export default function HomeLeaderboard() {
               >
                 No members yet in this division.
               </motion.div>
-            ) : users.length <= 3 ? null : (
+            ) : tableUsers.length === 0 ? null : (
               <motion.div
                 key={`table-${filter}`}
                 initial={{ opacity: 0, scale: 0.98 }}
@@ -258,9 +264,11 @@ export default function HomeLeaderboard() {
                   <div>XP</div>
                 </div>
                 <div className={styles.gridBody}>
-                  {/* Ranks 1-3 already have their own cards above — the table picks up at 4 to avoid showing everyone twice */}
-                  {(users.length >= 3 ? users.slice(3) : users).map((u, idx) => {
-                    const i = users.length >= 3 ? idx + 3 : idx;
+                  {/* When there are 3+ members, ranks 1-3 already have their own cards above and
+                      this table picks up at 4. Below that threshold (1-2 members, no cards shown)
+                      it lists everyone so nobody disappears. */}
+                  {tableUsers.map((u, idx) => {
+                    const i = idx + tableRankOffset;
                     return (
                     <div
                       key={u._id}

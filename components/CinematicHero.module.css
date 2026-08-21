@@ -285,7 +285,11 @@
     padding: 100px 24px 56px;
   }
 
+  /* position: static so .logoWrap's position: absolute below resolves against .hero
+     (the whole section) instead of this column, letting the logo act as a full-bleed
+     faded backdrop rather than a small badge competing with the text for space */
   .heroContent {
+    position: static;
     flex-direction: column;
     align-items: flex-start;
     max-width: 100%;
@@ -294,18 +298,22 @@
 
   .textBlock {
     max-width: 100%;
-    order: 2;
   }
 
+  /* Faded background watermark instead of a small standalone badge above the text */
   .logoWrap {
-    justify-content: flex-start;
-    flex: none;
-    order: 1;
-    width: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
   }
 
   .logo {
-    width: clamp(100px, 28vw, 180px);
+    width: clamp(280px, 92vw, 460px);
+    opacity: 0.14;
   }
 }
 
@@ -372,10 +380,6 @@
 
   .line {
     font-size: clamp(2.2rem, 10vw, 2.8rem);
-  }
-
-  .logo {
-    width: clamp(80px, 26vw, 120px);
   }
 
   .sub {

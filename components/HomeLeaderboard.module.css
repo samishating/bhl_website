@@ -253,7 +253,7 @@
 
 .gridHeader {
   display: grid;
-  grid-template-columns: 70px minmax(200px, 2fr) 100px minmax(160px, 1fr) 100px;
+  grid-template-columns: 64px minmax(200px, 1.3fr) 90px minmax(150px, 0.9fr) 110px;
   padding: 0 1.75rem 0.9rem;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
@@ -261,6 +261,13 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+.gridHeader > div:nth-child(3),
+.gridHeader > div:nth-child(5),
+.gridRow > div:nth-child(3),
+.gridRow > div:nth-child(5) {
+  text-align: center;
 }
 
 .gridBody {
@@ -272,7 +279,7 @@
 .gridRow {
   position: relative;
   display: grid;
-  grid-template-columns: 70px minmax(200px, 2fr) 100px minmax(160px, 1fr) 100px;
+  grid-template-columns: 64px minmax(200px, 1.3fr) 90px minmax(150px, 0.9fr) 110px;
   padding: 1.5rem 1.75rem;
   align-items: center;
   border: 1px solid var(--border-subtle);

@@ -141,6 +141,12 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
       {/* bgGlow intentionally removed */}
       <div className={styles.bgNoise} />
 
+      {/* Caps the text+logo row at a max-width so the gap between them can't grow
+          indefinitely on ultra-wide monitors -- the logo would otherwise stay pinned
+          to the far right edge while the title's font-size caps out, breaking the
+          overlap effect on anything wider than ~1900px. */}
+      <div className={styles.heroContent}>
+
       {/* ── Left column: type lockup + CTAs + stats ── */}
       <div className={styles.textBlock}>
 
@@ -248,6 +254,7 @@ export default function CinematicHero({ statsData }: CinematicHeroProps) {
           />
         </div>
       </motion.div>
+      </div>
 
       {/* Scroll indicator */}
       <motion.div

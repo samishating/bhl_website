@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import Modal from '@/components/Modal';
 import AnimatedCounter from '@/components/AnimatedCounter';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import styles from './HomeChallenges.module.css';
 
 const divTagClass: Record<string, string> = {
@@ -41,6 +42,7 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
   const [submissionStatus, setSubmissionStatus] = useState<Record<string, string>>({});
   const [confirmJoin, setConfirmJoin] = useState<Challenge | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const { atStart: tabsAtStart, atEnd: tabsAtEnd } = useScrollEdges(tabsRef);
   const totalXp = challenges.reduce((sum, c) => sum + c.xpReward, 0);
 
   const loadChallenges = useCallback(() => {
@@ -200,7 +202,10 @@ export default function HomeChallenges({ initialChallenges }: { initialChallenge
           viewport={{ once: true, amount: 0.1 }}
           variants={fadeUp}
         >
-          <div className={styles.tabs} ref={tabsRef}>
+          <div
+            className={`${styles.tabs} ${tabsAtStart ? styles.tabsAtStart : ''} ${tabsAtEnd ? styles.tabsAtEnd : ''}`}
+            ref={tabsRef}
+          >
             {DIVS.map(d => (
               <button 
                 key={d} 

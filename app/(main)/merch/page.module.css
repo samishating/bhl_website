@@ -967,27 +967,39 @@
     display: none;
   }
 
+  .tabs::before,
   .tabs::after {
-    content: '\203A';
     position: sticky;
-    right: 2px;
     align-self: center;
-    margin-left: auto;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
-    padding-bottom: 2px;
-    background: rgba(16, 8, 8, 0.9);
-    border: 1px solid rgba(255, 0, 0, 0.35);
-    border-radius: 50%;
+    width: 24px;
+    height: 32px;
     color: var(--brand-red);
-    font-size: 0.9rem;
+    font-size: 1.4rem;
     font-weight: 900;
     pointer-events: none;
     z-index: 3;
+  }
+
+  .tabsAtStart::before,
+  .tabsAtEnd::after {
+    display: none;
+  }
+
+  .tabs::before {
+    content: '\2039';
+    left: 0;
+    background: linear-gradient(to right, rgba(10, 5, 5, 0.92) 40%, transparent);
+  }
+
+  .tabs::after {
+    content: '\203A';
+    right: 0;
+    margin-left: auto;
+    background: linear-gradient(to left, rgba(10, 5, 5, 0.92) 40%, transparent);
   }
 
   .tab {

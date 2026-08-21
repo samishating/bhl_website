@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -29,6 +30,8 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
   const { user } = useAuth();
   const { addItem } = useCart();
   const [filter, setFilter] = useState('all');
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const { atStart: tabsAtStart, atEnd: tabsAtEnd } = useScrollEdges(tabsRef);
   const { showToast } = useToast();
 
   // Quick View Modal State
@@ -75,7 +78,10 @@ export default function MerchClient({ initialProducts }: { initialProducts: Prod
           <p>BHL drops are earned, not bought. Rep your division. Wear the Brotherhood.</p>
         </div>
 
-        <div className={styles.tabs}>
+        <div
+          className={`${styles.tabs} ${tabsAtStart ? styles.tabsAtStart : ''} ${tabsAtEnd ? styles.tabsAtEnd : ''}`}
+          ref={tabsRef}
+        >
           {['all', ...CATEGORIES.slice(1), 'drop'].map(c => (
             <button
               key={c}

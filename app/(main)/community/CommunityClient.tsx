@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
@@ -185,6 +186,8 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const { atStart: tabsAtStart, atEnd: tabsAtEnd } = useScrollEdges(tabsRef);
   const levelTitles = useProgression();
 
   const fetchCommunityData = useCallback(() => {
@@ -387,7 +390,10 @@ export default function CommunityPage() {
               viewport={{ once: true, amount: 0.1 }}
               variants={fadeUp}
             >
-              <div className={styles.tabs}>
+              <div
+                className={`${styles.tabs} ${tabsAtStart ? styles.tabsAtStart : ''} ${tabsAtEnd ? styles.tabsAtEnd : ''}`}
+                ref={tabsRef}
+              >
                 {DIVISIONS.map(d => (
                   <button
                     key={d}

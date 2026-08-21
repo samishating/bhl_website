@@ -7,6 +7,7 @@ import { useProgression } from '@/lib/useProgression';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp } from '@/lib/animations';
 import AnimatedCounter from '@/components/AnimatedCounter';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import styles from './HomeLeaderboard.module.css';
 
 const DIVISIONS = ['all', 'gaming', 'music', 'sport', 'content'];
@@ -37,6 +38,7 @@ export default function HomeLeaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const { atStart: tabsAtStart, atEnd: tabsAtEnd } = useScrollEdges(tabsRef);
   const levelTitles = useProgression();
   // The API sorts division-filtered results by divisionXp.<division>, not global xp (a user can
   // rank #1 in Gaming XP while having less total XP than someone below them) -- so the number we
@@ -119,7 +121,10 @@ export default function HomeLeaderboard() {
           viewport={{ once: true, amount: 0.1 }}
           variants={fadeUp}
         >
-          <div className={styles.tabs} ref={tabsRef}>
+          <div
+            className={`${styles.tabs} ${tabsAtStart ? styles.tabsAtStart : ''} ${tabsAtEnd ? styles.tabsAtEnd : ''}`}
+            ref={tabsRef}
+          >
             {DIVISIONS.map(d => (
               <button
                 key={d}

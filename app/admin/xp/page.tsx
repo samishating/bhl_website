@@ -1,6 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import type { ChangeEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { calculateLevel, getLevelTitle, xpForNextLevel } from '@/lib/xp';
@@ -27,6 +28,28 @@ interface ProgressionLevel {
   xpRequired: number;
 }
 
+/**
+ * Accepts an array of { title, xpRequired } (level is optional and ignored --
+ * calculateLevel() walks the thresholds array assuming ascending order, so
+ * levels are always reassigned 1..N by sorted xpRequired rather than trusting
+ * whatever order/level numbers the file happened to contain).
+ */
+function normalizeProgressionImport(data: unknown): ProgressionLevel[] | null {
+  if (!Array.isArray(data) || data.length === 0) return null;
+  const rows: { title: string; xpRequired: number }[] = [];
+  for (const item of data) {
+    if (!item || typeof item !== 'object') return null;
+    const rawTitle = (item as Record<string, unknown>).title;
+    const rawXp = (item as Record<string, unknown>).xpRequired;
+    const title = typeof rawTitle === 'string' ? rawTitle.trim() : '';
+    const xpRequired = Number(rawXp);
+    if (!title || !Number.isFinite(xpRequired) || xpRequired < 0) return null;
+    rows.push({ title, xpRequired });
+  }
+  rows.sort((a, b) => a.xpRequired - b.xpRequired);
+  return rows.map((r, i) => ({ level: i + 1, title: r.title, xpRequired: r.xpRequired }));
+}
+
 export default function AdminXPPage() {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
@@ -44,6 +67,7 @@ export default function AdminXPPage() {
   const [isSavingSystem, setIsSavingSystem] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempData, setTempData] = useState<ProgressionLevel | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const loadData = () => {
     void Promise.all([
@@ -131,6 +155,47 @@ export default function AdminXPPage() {
       setEditingIndex(null);
       setTempData(null);
     }
+  };
+
+  const handleImportClick = () => {
+    importInputRef.current?.click();
+  };
+
+  const handleImportFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Reset immediately so re-selecting the same file re-fires onChange
+    e.target.value = '';
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        const normalized = normalizeProgressionImport(parsed);
+        if (!normalized) {
+          showToast('Invalid format — expected a JSON array of { title, xpRequired }', 'error');
+          return;
+        }
+        setProgression(normalized);
+        setEditingIndex(null);
+        setTempData(null);
+        showToast(`Loaded ${normalized.length} ranks from file — click Deploy System to save`, 'success');
+      } catch {
+        showToast('Could not parse that file as JSON', 'error');
+      }
+    };
+    reader.onerror = () => showToast('Failed to read file', 'error');
+    reader.readAsText(file);
+  };
+
+  const handleExportProgression = () => {
+    const blob = new Blob([JSON.stringify(progression, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'bhl-level-progression.json';
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const startEditing = (index: number) => {
@@ -239,6 +304,17 @@ export default function AdminXPPage() {
               <p>Define levels, titles, and XP thresholds for the entire platform.</p>
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={handleImportFile}
+                style={{ display: 'none' }}
+              />
+              <button className="btn btn-ghost btn-sm" onClick={handleExportProgression} disabled={progression.length === 0}>
+                Export JSON
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={handleImportClick}>Import JSON</button>
               <button className="btn btn-ghost btn-sm" onClick={handleAddLevel}>+ Add Rank</button>
               <button className="btn btn-primary btn-sm" onClick={handleSaveSystem} disabled={isSavingSystem}>
                 {isSavingSystem ? 'Saving...' : 'Deploy System'}

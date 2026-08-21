@@ -28,6 +28,7 @@ interface LeaderboardUser {
   xp: number;
   level: number;
   divisions: string[];
+  divisionXp?: Record<string, number>;
 }
 
 export default function HomeLeaderboard() {
@@ -37,8 +38,15 @@ export default function HomeLeaderboard() {
   const [error, setError] = useState<string | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const levelTitles = useProgression();
+  // The API sorts division-filtered results by divisionXp.<division>, not global xp (a user can
+  // rank #1 in Gaming XP while having less total XP than someone below them) -- so the number we
+  // display per user must be the same metric it's sorted by, or the order looks "wrong."
+  const getDisplayXp = useCallback(
+    (u: LeaderboardUser) => (filter === 'all' ? u.xp : u.divisionXp?.[filter] ?? 0),
+    [filter]
+  );
   const topUser = users[0];
-  const totalVisibleXp = users.reduce((sum, user) => sum + user.xp, 0);
+  const totalVisibleXp = users.reduce((sum, user) => sum + getDisplayXp(user), 0);
   // Top-3 cards only render once there are 3+ members (a "top 3" of 1-2 people doesn't make
   // sense). Below that threshold the table must show everyone, or 1-2-member divisions would
   // render nothing at all -- neither the cards (need 3+) nor a rank-4-onward table (nothing left).
@@ -185,7 +193,7 @@ export default function HomeLeaderboard() {
                     </Link>
                     <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>
                     <div className={styles.topCardTitle}>{getLevelTitle(u.level, levelTitles)}</div>
-                    <div className={styles.topCardXp}><AnimatedCounter value={u.xp} duration={1000} suffix=" XP" /></div>
+                    <div className={styles.topCardXp}><AnimatedCounter value={getDisplayXp(u)} duration={1000} suffix=" XP" /></div>
                     {u.divisions && u.divisions.length > 0 && (
                       <div className={styles.topCardDivisions}>
                         {u.divisions.map((d: string) => (
@@ -273,7 +281,7 @@ export default function HomeLeaderboard() {
                     <div
                       key={u._id}
                       className={styles.gridRow}
-                      style={{ '--xp-fill': `${Math.min(100, Math.max(4, topUser ? (u.xp / Math.max(topUser.xp, 1)) * 100 : 4))}%` } as CSSProperties & { '--xp-fill': string }}
+                      style={{ '--xp-fill': `${Math.min(100, Math.max(4, topUser ? (getDisplayXp(u) / Math.max(getDisplayXp(topUser), 1)) * 100 : 4))}%` } as CSSProperties & { '--xp-fill': string }}
                     >
                       <div>
                         <span className={styles.rank}>
@@ -303,7 +311,7 @@ export default function HomeLeaderboard() {
                           )}
                         </div>
                       </div>
-                      <div><span className={styles.xpValue}><AnimatedCounter value={u.xp} duration={900} /></span></div>
+                      <div><span className={styles.xpValue}><AnimatedCounter value={getDisplayXp(u)} duration={900} /></span></div>
                     </div>
                   );})}
                 </div>

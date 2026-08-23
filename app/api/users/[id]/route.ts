@@ -45,8 +45,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       if (currentRole !== 'superadmin') {
         return NextResponse.json({ error: 'Only superadmins can change usernames' }, { status: 403 });
       }
-      // Check if username is already taken
-      const existingUser = await User.findOne({ username, _id: { $ne: id } });
+      // Check if username is already taken (case-insensitive, matching the register route)
+      const existingUser = await User.findOne({
+        username: { $regex: `^${username.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' },
+        _id: { $ne: id },
+      });
       if (existingUser) {
         return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
       }

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import HomeFixedBackground from '@/components/HomeFixedBackground';
+import Modal from '@/components/Modal';
 import styles from './page.module.css';
 import { 
   FaYoutube, FaTwitch, FaInstagram, FaTiktok, FaSpotify, 
@@ -53,6 +54,13 @@ export default function ProfileClient() {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
+  // Change Email State
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [currentPasswordInput, setCurrentPasswordInput] = useState('');
+  const [newEmailInput, setNewEmailInput] = useState('');
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
+  const [emailChangeError, setEmailChangeError] = useState('');
 
   const [form, setForm] = useState({
     bio: '',
@@ -166,6 +174,38 @@ export default function ProfileClient() {
     }
   };
 
+  const openEmailModal = () => {
+    setCurrentPasswordInput('');
+    setNewEmailInput('');
+    setEmailChangeError('');
+    setShowEmailModal(true);
+  };
+
+  const handleChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmailChangeError('');
+    setIsChangingEmail(true);
+    try {
+      const res = await fetch('/api/auth/change-email', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: currentPasswordInput, newEmail: newEmailInput }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast('Email updated successfully', 'success');
+        setShowEmailModal(false);
+        refreshUser();
+      } else {
+        setEmailChangeError(data.error || 'Failed to update email');
+      }
+    } catch {
+      setEmailChangeError('Connection error');
+    } finally {
+      setIsChangingEmail(false);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -209,6 +249,16 @@ export default function ProfileClient() {
                 <div className={styles.bioSection}>
                   <h3 className={styles.sectionTitle}>BIO</h3>
                   <p className={styles.bioText}>{user.bio || 'No bio provided yet.'}</p>
+                </div>
+
+                <div className={styles.bioSection}>
+                  <h3 className={styles.sectionTitle}>ACCOUNT EMAIL</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                    <p className={styles.bioText} style={{ marginBottom: 0 }}>{user.email}</p>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={openEmailModal}>
+                      Change Email
+                    </button>
+                  </div>
                 </div>
 
                 <div className={styles.socialGrid}>
@@ -323,6 +373,66 @@ export default function ProfileClient() {
           </div>
         </div>
       </div>
+
+      {/* Change Email Modal — requires current password to verify identity */}
+      <Modal
+        isOpen={showEmailModal}
+        onClose={() => !isChangingEmail && setShowEmailModal(false)}
+        title="Change Email"
+        maxWidth="480px"
+        footer={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => setShowEmailModal(false)} disabled={isChangingEmail} style={{ flex: 1 }}>
+              Cancel
+            </button>
+            <button type="submit" form="change-email-form" className="btn btn-primary" disabled={isChangingEmail} style={{ flex: 1 }}>
+              {isChangingEmail ? 'Updating...' : 'Update Email'}
+            </button>
+          </>
+        }
+      >
+        <form id="change-email-form" onSubmit={handleChangeEmail}>
+          {emailChangeError && (
+            <div style={{
+              background: 'rgba(255, 0, 0, 0.08)',
+              border: '1px solid rgba(255, 0, 0, 0.3)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.75rem 1rem',
+              color: 'var(--brand-red)',
+              fontSize: '0.88rem',
+              marginBottom: '1.25rem',
+            }}>
+              {emailChangeError}
+            </div>
+          )}
+          <div className="form-group">
+            <label className="form-label">Current Password</label>
+            <input
+              type="password"
+              className="form-input"
+              value={currentPasswordInput}
+              onChange={e => setCurrentPasswordInput(e.target.value)}
+              placeholder="Confirm it's you"
+              autoComplete="current-password"
+              disabled={isChangingEmail}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">New Email</label>
+            <input
+              type="email"
+              className="form-input"
+              value={newEmailInput}
+              onChange={e => setNewEmailInput(e.target.value)}
+              placeholder="new@email.com"
+              autoComplete="email"
+              disabled={isChangingEmail}
+              required
+            />
+          </div>
+        </form>
+      </Modal>
 
       {/* Cropper Modal */}
       {imageToCrop && (

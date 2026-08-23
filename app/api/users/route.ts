@@ -13,7 +13,18 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
     const users = await User.find().select('-password').sort({ xp: -1 });
-    
+
+    // Emails are visible to superadmins only -- strip for plain admins so the
+    // restriction can't be bypassed by calling this endpoint directly.
+    if (admin.role !== 'superadmin') {
+      const sanitized = users.map(u => {
+        const obj = u.toObject();
+        delete obj.email;
+        return obj;
+      });
+      return NextResponse.json({ users: sanitized });
+    }
+
     return NextResponse.json({ users });
   } catch (err) {
     console.error(err);

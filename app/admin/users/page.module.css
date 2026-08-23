@@ -43,6 +43,58 @@
   border: 2px solid var(--bg-card);
 }
 
+/* XP mini progress bar (ported from the old Personnel XP tab) */
+.progressSection { display: flex; flex-direction: column; gap: 0.35rem; }
+.xpMeta { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
+.xpCount { color: var(--text-secondary); }
+.xpCount strong { color: white; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; }
+.xpPercent { font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.miniXpBar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); overflow: hidden; }
+.miniXpFill { height: 100%; background: var(--brand-red); transition: width 0.4s ease; }
+
+.statusChip {
+  display: inline-flex; align-items: center;
+  padding: 0.15rem 0.5rem; border-radius: 4px;
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 0.08em;
+  border: 1px solid; background: rgba(255,255,255,0.02);
+}
+
+.sectionHeading {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.05rem;
+  text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin: 0 0 16px;
+}
+
+/* XP override preview (ported from admin/xp) */
+.modalXpInfo {
+  display: flex; justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02); padding: 1rem;
+  border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-subtle);
+}
+.previewLabel { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; }
+.previewValue { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.2rem; }
+.previewValue.new { color: var(--brand-red); }
+
+/* Custom switch toggle + featured media (ported from admin/members) */
+.toggleRow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px; background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle); border-radius: 12px; cursor: pointer;
+  transition: all 0.2s ease;
+}
+.toggleRow:hover { background: rgba(255, 255, 255, 0.05); border-color: var(--border-subtle-hover); }
+.toggleLabel { font-weight: 700; color: #fff; margin-bottom: 2px; opacity: 0.9; }
+.toggleSublabel { font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; }
+.switch { width: 44px; height: 22px; background: #333; border-radius: 11px; position: relative; flex-shrink: 0; transition: all 0.3s ease; }
+.switchOn { background: var(--brand-red); }
+.switchHandle { width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
+.switchOn .switchHandle { transform: translateX(22px); }
+
+.featuredSection { margin-top: 8px; display: flex; flex-direction: column; gap: 16px; }
+.featuredHeader { display: flex; justify-content: space-between; align-items: center; }
+.mediaCardsList { display: flex; flex-direction: column; gap: 12px; }
+.mediaAdminCard { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; }
+.mediaEmpty { text-align: center; padding: 24px; border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 12px; color: var(--text-muted); font-size: 0.9rem; }
+
 .userInfo { flex: 1; min-width: 0; }
 .username { font-family: 'Rajdhani', sans-serif; font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 0.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .email { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

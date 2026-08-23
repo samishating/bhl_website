@@ -202,7 +202,7 @@ export default function HomeLeaderboard() {
                     {u.divisions && u.divisions.length > 0 && (
                       <div className={styles.topCardDivisions}>
                         {u.divisions.map((d: string) => (
-                          <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
+                          <span key={d} className={`division-tag ${divTagClass[d]}`}>{d.replace(/_/g, ' ')}</span>
                         ))}
                       </div>
                     )}
@@ -309,7 +309,7 @@ export default function HomeLeaderboard() {
                         <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                           {u.divisions && u.divisions.length > 0 ? (
                             u.divisions.map((d: string) => (
-                              <span key={d} className={`division-tag ${divTagClass[d]}`}>{d}</span>
+                              <span key={d} className={`division-tag ${divTagClass[d]}`}>{d.replace(/_/g, ' ')}</span>
                             ))
                           ) : (
                             <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>

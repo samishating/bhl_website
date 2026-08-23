@@ -263,6 +263,19 @@
 }
 
 .tableSection { margin-top: 16px; }
+
+/* Drop the outer boxed frame -- individual rows already read as their own
+   cards (border, radius, background), so the enclosing panel just added a
+   second, redundant outline around the whole table. Keeps table-container's
+   overflow/scrollbar behavior, loses its visual chrome. */
+.tableFrame {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
 .loadingState, .emptyState { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
 .rank { font-size: 1.2rem; display: flex; align-items: center; }
 .rankNum {

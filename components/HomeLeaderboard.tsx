@@ -268,7 +268,7 @@ export default function HomeLeaderboard() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.3 }}
-                className="table-container premium-panel"
+                className={`table-container ${styles.tableFrame}`}
               >
                 <div className={styles.gridHeader}>
                   <div>#</div>

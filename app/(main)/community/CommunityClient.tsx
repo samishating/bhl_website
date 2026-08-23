@@ -243,9 +243,14 @@ export default function CommunityPage() {
     };
   }, [fetchCommunityData]);
 
+  // Featured creators get their own showcase above, but they're still platform
+  // personnel and belong in the tabbed directory too -- excluding them made
+  // any division with only featured members ("no members found") when in
+  // fact there were creators there, just not visible in this list.
+  const directoryPool = [...featuredCreators, ...members];
   const filteredMembers = filter === 'all'
-    ? members
-    : members.filter(m => m.divisions.includes(filter) || m.divisions.includes(`${filter}_creator`));
+    ? directoryPool
+    : directoryPool.filter(m => m.divisions.includes(filter) || m.divisions.includes(`${filter}_creator`));
 
   const twitchCreators = [...featuredCreators, ...members].filter(user => Boolean(user.socialLinks?.twitch));
 
@@ -523,7 +528,7 @@ export default function CommunityPage() {
                       
                       <div className={styles.memberDivisions}>
                         {member.divisions.map(div => (
-                          <span key={div} className={`division-tag tag-${div}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{div}</span>
+                          <span key={div} className={`division-tag tag-${div}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>{div.replace(/_/g, ' ')}</span>
                         ))}
                       </div>
 

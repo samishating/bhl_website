@@ -182,10 +182,11 @@ export default function HomeLeaderboard() {
             >
               {users.slice(0, 3).map((u, i) => {
                 const rank = i + 1;
+                const rankClass = rank === 1 ? styles.topCardRank1 : rank === 2 ? styles.topCardRank2 : styles.topCardRank3;
                 return (
                   <motion.div
                     key={u._id}
-                    className={`${styles.topCard} ${rank === 1 ? styles.topCardFirst : ''}`}
+                    className={`${styles.topCard} ${rankClass} ${rank === 1 ? styles.topCardFirst : ''}`}
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: i * 0.08 }}
@@ -193,7 +194,7 @@ export default function HomeLeaderboard() {
                     <span className={styles.topCardBadge}>
                       <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '28px', height: '28px' }} />
                     </span>
-                    <Link href={`/users/${u._id}`} className={`avatar avatar-lg ${styles.topCardAvatar}`}>
+                    <Link href={`/users/${u._id}`} className={`avatar ${rank === 1 ? 'avatar-xl' : 'avatar-lg'} ${styles.topCardAvatar}`}>
                       {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
                     </Link>
                     <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>

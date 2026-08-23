@@ -130,8 +130,11 @@ function getYouTubeThumbnail(url: string) {
 }
 
 function TwitchLiveSkeleton() {
-  const compactSkeletons = Array.from({ length: 4 }, (_, index) => index);
-
+  // Only the featured card's size is guaranteed -- how many compact cards
+  // (if any) show up depends on how many creators end up live, so guessing
+  // a fixed grid of 4 made the skeleton a different shape than what loads in
+  // for the common case of 1 (or a handful) of live streamers. Reserving
+  // space for just the one card we know will render avoids that mismatch.
   return (
     <div className={styles.liveSkeleton} aria-label="Checking live Twitch streams">
       <div className={`${styles.sectionHeader} ${styles.liveSectionHeader}`}>
@@ -148,11 +151,6 @@ function TwitchLiveSkeleton() {
 
       <div className={styles.twitchPageLayout}>
         <TwitchSkeletonCard variant="featured" />
-        <div className={styles.twitchCompactGrid}>
-          {compactSkeletons.map(index => (
-            <TwitchSkeletonCard key={index} variant="compact" />
-          ))}
-        </div>
       </div>
     </div>
   );

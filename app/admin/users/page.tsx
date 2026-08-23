@@ -429,20 +429,31 @@ export default function AdminUsersPage() {
             </div>
             <div className="form-group">
               <label className="form-label">Role</label>
-              <select
-                className="form-input"
-                value={identityForm.role}
-                onChange={e => setIdentityForm({ ...identityForm, role: e.target.value })}
-                disabled={!isSuperadmin}
-                style={!isSuperadmin ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-              {!isSuperadmin && (
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Only superadmins can change roles.
-                </p>
+              {managingUser?.role === 'superadmin' ? (
+                <>
+                  <input className="form-input" value="Superadmin" disabled readOnly style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    Superadmin roles are protected and can&apos;t be changed here.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <select
+                    className="form-input"
+                    value={identityForm.role}
+                    onChange={e => setIdentityForm({ ...identityForm, role: e.target.value })}
+                    disabled={!isSuperadmin}
+                    style={!isSuperadmin ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  {!isSuperadmin && (
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      Only superadmins can change roles.
+                    </p>
+                  )}
+                </>
               )}
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>

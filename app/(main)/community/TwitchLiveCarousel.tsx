@@ -89,7 +89,8 @@ export default function TwitchLiveCarousel({ streams, creators }: TwitchLiveCaro
       });
   }, [creators, streams]);
 
-  if (rankedCreators.length === 0) return null;
+  const hasLiveStream = rankedCreators.some(creator => creator.isLive);
+  if (rankedCreators.length === 0 || !hasLiveStream) return null;
 
   const totalPages = Math.max(1, Math.ceil(rankedCreators.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);

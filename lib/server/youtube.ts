@@ -178,11 +178,18 @@ export async function syncCreator(userId: string): Promise<SyncCreatorResult> {
     for (const v of videos) {
       const existing = await CreatorVideo.findOne({ videoId: v.videoId });
       if (existing) {
-        // Update metadata but PRESERVE isFeatured and isHidden
+        // Update metadata but PRESERVE isFeatured and isHidden. Also reassign
+        // userId/channelId -- a videoId can only genuinely belong to one
+        // uploader, so if this doc is left over from a deleted or
+        // re-registered account, re-syncing the real owner's channel must
+        // reclaim it instead of silently refreshing an orphaned record that
+        // never shows up for anyone.
         await CreatorVideo.updateOne(
           { videoId: v.videoId },
           {
             $set: {
+              userId: user._id,
+              channelId,
               title: v.title,
               description: v.description,
               thumbnailUrl: v.thumbnailUrl,

@@ -245,7 +245,7 @@ export default function CommunityPage() {
 
   const filteredMembers = filter === 'all'
     ? members
-    : members.filter(m => m.divisions.includes(filter));
+    : members.filter(m => m.divisions.includes(filter) || m.divisions.includes(`${filter}_creator`));
 
   const twitchCreators = [...featuredCreators, ...members].filter(user => Boolean(user.socialLinks?.twitch));
 

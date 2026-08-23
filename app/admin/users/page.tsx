@@ -419,6 +419,8 @@ export default function AdminUsersPage() {
                 value={identityForm.username}
                 onChange={e => setIdentityForm({ ...identityForm, username: e.target.value })}
                 disabled={!isSuperadmin}
+                pattern="[a-zA-Z0-9_-]+"
+                title="Letters, numbers, hyphens, and underscores only"
                 style={!isSuperadmin ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
               />
               {!isSuperadmin && (

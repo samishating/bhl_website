@@ -18,6 +18,10 @@ function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!/^[a-zA-Z0-9_-]+$/.test(form.username)) {
+      setError('Username can only contain letters, numbers, hyphens, and underscores');
+      return;
+    }
     if (form.password.length < 6) { setError('Password must be at least 6 characters'); return; }
     setLoading(true);
     const result = await register(form.email, form.password, form.username);
@@ -50,7 +54,7 @@ function RegisterForm() {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className="form-group">
             <label className="form-label">Username</label>
-            <input className="form-input" required value={form.username} onChange={e => setForm(p => ({ ...p, username: e.target.value }))} placeholder="YourLegacyName" id="register-username" />
+            <input className="form-input" required pattern="[a-zA-Z0-9_-]+" title="Letters, numbers, hyphens, and underscores only" value={form.username} onChange={e => setForm(p => ({ ...p, username: e.target.value }))} placeholder="YourLegacyName" id="register-username" />
           </div>
           <div className="form-group">
             <label className="form-label">Email</label>

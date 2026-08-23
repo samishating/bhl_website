@@ -11,6 +11,8 @@ function escapeRegex(str: string) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+const USERNAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
@@ -32,6 +34,9 @@ export async function POST(req: NextRequest) {
 
     if (!normalizedEmail || !normalizedUsername) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
+    }
+    if (!USERNAME_PATTERN.test(normalizedUsername)) {
+      return NextResponse.json({ error: 'Username can only contain letters, numbers, hyphens, and underscores' }, { status: 400 });
     }
 
     const exists = await User.findOne({

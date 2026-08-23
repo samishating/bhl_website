@@ -292,6 +292,14 @@
   margin-bottom: 16px;
 }
 
+/* This header lays the tag and heading out in a row (.liveTitleRow), not the
+   stacked eyebrow/heading layout the base accent bar assumes -- the bar reads
+   as a stray line cutting through the row instead of framing it, so drop it
+   here only. */
+.liveSectionHeader::before {
+  display: none;
+}
+
 .liveTitleRow {
   display: flex;
   align-items: center;

@@ -6,6 +6,8 @@ import { calculateLevel, getDivisionBadge, XP_ACTIONS } from '@/lib/xp';
 import { getDynamicProgression } from '@/lib/progression-server';
 import { publishRealtimeUpdate } from '@/lib/realtime-updates';
 
+const USERNAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
@@ -44,6 +46,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (username !== undefined && username.trim() !== '' && username !== user.username) {
       if (currentRole !== 'superadmin') {
         return NextResponse.json({ error: 'Only superadmins can change usernames' }, { status: 403 });
+      }
+      if (!USERNAME_PATTERN.test(username.trim())) {
+        return NextResponse.json({ error: 'Username can only contain letters, numbers, hyphens, and underscores' }, { status: 400 });
       }
       // Check if username is already taken (case-insensitive, matching the register route)
       const existingUser = await User.findOne({

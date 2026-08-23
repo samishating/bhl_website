@@ -752,6 +752,16 @@ select.form-input option { background: var(--bg-card); }
   border-radius: var(--radius-md);
   overflow: hidden;
   overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Horizontal drag-to-scroll stays functional on narrow screens; the global
+   red-pill scrollbar (below) just reads as stray chrome bleeding out of the
+   card here, same reasoning as every other horizontal strip on the site
+   (tabs, filmstrips) that already hides its own scrollbar. */
+.table-container::-webkit-scrollbar {
+  display: none;
 }
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 thead {

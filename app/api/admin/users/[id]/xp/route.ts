@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
-import { verifyAdmin } from '@/lib/auth';
+import { verifySuperAdmin } from '@/lib/auth';
 import { calculateLevel } from '@/lib/xp';
 
 export async function PATCH(
@@ -9,9 +9,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await verifyAdmin(req);
+    const admin = await verifySuperAdmin(req);
     if (!admin) {
-      return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden. Superadmin only.' }, { status: 403 });
     }
 
     await connectDB();

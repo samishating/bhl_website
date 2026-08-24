@@ -380,6 +380,49 @@
   padding: 0 24px 40px;
 }
 
+.twitchOfflineState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  margin: 0 24px 40px;
+  padding: 64px 32px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.twitchOfflineIcon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: rgba(169, 112, 255, 0.08);
+  border: 1px solid rgba(169, 112, 255, 0.2);
+  color: #a970ff;
+  font-size: 1.5rem;
+}
+
+.twitchOfflineTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+
+.twitchOfflineSubtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  max-width: 380px;
+  line-height: 1.5;
+}
+
 .twitchCompactGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

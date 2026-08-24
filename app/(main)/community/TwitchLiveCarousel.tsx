@@ -89,12 +89,14 @@ export default function TwitchLiveCarousel({ streams, creators }: TwitchLiveCaro
       });
   }, [creators, streams]);
 
+  if (rankedCreators.length === 0) return null;
   const hasLiveStream = rankedCreators.some(creator => creator.isLive);
-  if (rankedCreators.length === 0 || !hasLiveStream) return null;
 
-  const totalPages = Math.max(1, Math.ceil(rankedCreators.length / PAGE_SIZE));
+  const totalPages = hasLiveStream ? Math.max(1, Math.ceil(rankedCreators.length / PAGE_SIZE)) : 1;
   const safePage = Math.min(page, totalPages - 1);
-  const pageCreators = rankedCreators.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+  const pageCreators = hasLiveStream
+    ? rankedCreators.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE)
+    : [];
   const featuredCreator = pageCreators[0];
   const compactCreators = pageCreators.slice(1);
 
@@ -111,7 +113,9 @@ export default function TwitchLiveCarousel({ streams, creators }: TwitchLiveCaro
               ON <span><FaTwitch /> TWITCH</span>
             </h2>
           </div>
-          <p className={styles.sectionSubtitle}>Live creators first, then Brotherhood Twitch creators by level</p>
+          <p className={styles.sectionSubtitle}>
+            {hasLiveStream ? 'Live creators first, then Brotherhood Twitch creators by level' : 'No one’s live right now — check back soon'}
+          </p>
         </div>
 
         {totalPages > 1 && (
@@ -127,27 +131,52 @@ export default function TwitchLiveCarousel({ streams, creators }: TwitchLiveCaro
         )}
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={safePage}
-          className={styles.twitchPageLayout}
-          initial={{ opacity: 0, x: 18 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -18 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <TwitchCreatorCard creator={featuredCreator} variant="featured" />
+      {hasLiveStream ? (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={safePage}
+            className={styles.twitchPageLayout}
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <TwitchCreatorCard creator={featuredCreator} variant="featured" />
 
-          {compactCreators.length > 0 && (
-            <div className={styles.twitchCompactGrid}>
-              {compactCreators.map(creator => (
-                <TwitchCreatorCard key={creator._id} creator={creator} variant="compact" />
-              ))}
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+            {compactCreators.length > 0 && (
+              <div className={styles.twitchCompactGrid}>
+                {compactCreators.map(creator => (
+                  <TwitchCreatorCard key={creator._id} creator={creator} variant="compact" />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        <TwitchOfflineState creatorCount={rankedCreators.length} />
+      )}
     </div>
+  );
+}
+
+function TwitchOfflineState({ creatorCount }: { creatorCount: number }) {
+  return (
+    <motion.div
+      className={styles.twitchOfflineState}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      <div className={styles.twitchOfflineIcon}>
+        <FaTwitch />
+      </div>
+      <div className={styles.twitchOfflineTitle}>Nobody&rsquo;s live right now</div>
+      <p className={styles.twitchOfflineSubtitle}>
+        {creatorCount === 1
+          ? 'Our Brotherhood Twitch creator isn’t streaming at the moment.'
+          : `None of our ${creatorCount} Brotherhood Twitch creators are streaming at the moment.`} Check back soon.
+      </p>
+    </motion.div>
   );
 }
 

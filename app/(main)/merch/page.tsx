@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Official Merch Store | Brotherhood Legacy',
+  title: 'Official Merch Store',
   description: 'Shop the official Brotherhood Legacy collection. Limited drops, premium apparel, and elite gear for the BHL community.',
   alternates: {
     canonical: 'https://bhl-website.vercel.app/merch',

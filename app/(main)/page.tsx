@@ -3,8 +3,7 @@ import type { Metadata } from 'next';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Brotherhood Legacy — BHL | Community Platform',
-  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, and build your legacy.',
+  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, track your rank, and build your legacy today.',
   alternates: {
     canonical: '/',
   },

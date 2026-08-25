@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import LoginClient from './LoginClient';
 
 export const metadata: Metadata = {
-  title: 'Login | Brotherhood Legacy',
+  title: 'Login',
   description: 'Access your Brotherhood Legacy account to track your progress, participate in challenges, and manage your profile.',
   robots: { index: false, follow: true },
   alternates: {

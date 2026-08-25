@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Order Confirmed | Brotherhood Legacy',
+  title: 'Order Confirmed',
   robots: { index: false, follow: true },
 };
 

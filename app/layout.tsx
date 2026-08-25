@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     default: 'Brotherhood Legacy — BHL | Community Platform',
     template: '%s | Brotherhood Legacy — BHL'
   },
-  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, and build your legacy.',
+  description: 'The premier community platform for Gaming, Music, Sport & Content creators. Join the Brotherhood, earn XP, track your rank, and build your legacy today.',
   keywords: ['brotherhood legacy', 'bhl', 'gaming community', 'content creators', 'music artists', 'esports', 'ranking system'],
   alternates: {
     canonical: '/',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Brotherhood Legacy — BHL',
     description: 'Join the Brotherhood. Rise through the ranks.',
-    url: 'https://bhl-website.vercel.app',
+    url: 'https://bhl-website.vercel.app/',
     siteName: 'Brotherhood Legacy',
     images: [
       {

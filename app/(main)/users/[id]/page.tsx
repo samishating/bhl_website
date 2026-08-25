@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const data = await getProfileData(id);
   if (!data) {
     return {
-      title: 'Member Profile Not Found | Brotherhood Legacy',
+      title: 'Member Profile Not Found',
       description: 'The requested member profile could not be found.'
     };
   }
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const bio = data.user.bio || `BHL Member level ${level}. Join the Brotherhood Legacy network.`;
 
   return {
-    title: `${username} — Profile | Brotherhood Legacy`,
+    title: `${username} — Profile`,
     description: bio.length > 155 ? bio.slice(0, 155) + '...' : bio,
     alternates: {
       canonical: `https://bhl-website.vercel.app/users/${id}`,

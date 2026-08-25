@@ -23,22 +23,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!product) {
     return {
-      title: 'Product Not Found | Brotherhood Legacy',
+      title: 'Product Not Found',
       description: 'The requested product could not be found.'
     };
   }
 
-  const title = `${product.name} | Brotherhood Legacy Merch`;
   const desc = product.description.length > 155 ? product.description.slice(0, 155) + '...' : product.description;
 
   return {
-    title,
+    title: product.name,
     description: desc,
     alternates: {
       canonical: `https://bhl-website.vercel.app/merch/${id}`,
     },
     openGraph: {
-      title,
+      title: `${product.name} | Brotherhood Legacy Merch`,
       description: product.description,
       url: `https://bhl-website.vercel.app/merch/${id}`,
       siteName: 'Brotherhood Legacy',

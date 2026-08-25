@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import ForgotPasswordClient from './ForgotPasswordClient';
 
 export const metadata: Metadata = {
-  title: 'Forgot Password | Brotherhood Legacy',
+  title: 'Forgot Password',
   description: 'Recover your account password. Enter your registered email address to receive a secure recovery link.',
   robots: { index: false, follow: true },
   alternates: {

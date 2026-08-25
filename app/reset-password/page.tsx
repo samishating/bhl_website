@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import ResetPasswordClient from './ResetPasswordClient';
 
 export const metadata: Metadata = {
-  title: 'Reset Password | Brotherhood Legacy',
+  title: 'Reset Password',
   description: 'Configure a secure new password for your Brotherhood Legacy account to restore access.',
   robots: { index: false, follow: true },
   alternates: {

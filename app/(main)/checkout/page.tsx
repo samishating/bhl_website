@@ -5,7 +5,7 @@ import CheckoutClient from './CheckoutClient';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Checkout | Brotherhood Legacy',
+  title: 'Checkout',
   description: 'Complete your Brotherhood Legacy order securely.',
   robots: { index: false, follow: true },
   alternates: {

@@ -107,7 +107,10 @@
     width: 280px; z-index: 1100;
     box-shadow: 20px 0 50px rgba(0,0,0,0.5);
   }
-  .sidebarOpen { left: 0; }
+  /* !important: Next.js's CSS chunking doesn't reliably preserve source
+     order between this and the .sidebar rule above at build time, so
+     equal-specificity cascade order isn't dependable here. */
+  .sidebarOpen { left: 0 !important; }
   .sidebarOverlay { 
     display: block; position: fixed; inset: 0; 
     background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1050; 

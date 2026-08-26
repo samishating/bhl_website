@@ -2,8 +2,11 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  width: 100vw;
-  height: 100vh;
+  /* inset:0 already sizes this to the viewport -- an explicit 100vw/100vh is
+     redundant and, on iOS Safari, 100vw can resolve wider than the real
+     visual viewport, making this fixed layer itself poke past the edge and
+     become part of the page's scrollable width (invisible since it's
+     pointer-events:none and just background, but still draggable into). */
   pointer-events: none;
   overflow: hidden;
   background: transparent;

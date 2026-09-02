@@ -59,9 +59,20 @@
 
 .avatarWrapper {
   flex-shrink: 0;
+  position: relative;
+  width: 190px;
+  aspect-ratio: 1048 / 1008;
+  background-image: url('/ICONS/backgroundCard.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
 }
 
 .avatarLarge {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 120px;
   height: 120px;
   border-radius: 20px;

@@ -194,9 +194,11 @@ export default function HomeLeaderboard() {
                     <span className={styles.topCardBadge}>
                       <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '28px', height: '28px' }} />
                     </span>
-                    <Link href={`/users/${u._id}`} className={`avatar ${rank === 1 ? 'avatar-xl' : 'avatar-lg'} ${styles.topCardAvatar}`}>
-                      {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                    </Link>
+                    <div className={`${styles.avatarShield} ${rank === 1 ? styles.avatarShieldLg : ''}`}>
+                      <Link href={`/users/${u._id}`} className={`avatar ${rank === 1 ? 'avatar-xl' : 'avatar-lg'} ${styles.topCardAvatar}`}>
+                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                      </Link>
+                    </div>
                     <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>
                     <div className={styles.topCardTitle}>{getLevelTitle(u.level, levelTitles)}</div>
                     <div className={styles.topCardXp}><AnimatedCounter value={getDisplayXp(u)} duration={1000} suffix=" XP" /></div>

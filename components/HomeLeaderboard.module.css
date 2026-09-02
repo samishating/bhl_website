@@ -226,6 +226,31 @@
   box-shadow: 0 0 0 4px rgba(255, 253, 186, 0.12) !important;
 }
 
+/* Trading-card style backdrop behind each podium avatar */
+.avatarShield {
+  position: relative;
+  width: 150px;
+  aspect-ratio: 1048 / 1008;
+  margin: 0 auto -8px;
+  background-image: url('/ICONS/backgroundCard.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+  display: flex;
+  justify-content: center;
+}
+
+.avatarShieldLg {
+  width: 190px;
+}
+
+.avatarShield .topCardAvatar {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .topCardName {
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;

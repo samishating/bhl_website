@@ -14,14 +14,29 @@
   margin-bottom: 40px;
 }
 
+/* The shield PNG canvas is 1048x1008 but the shield art itself only
+   occupies the middle ~63% of that width (transparent padding either
+   side) -- so the photo and stats need to be sized well inside the
+   shield's actual visible silhouette, not the container's full width. */
 .avatarSection {
   position: relative;
+  width: 220px;
+  aspect-ratio: 1048 / 1008;
+  flex-shrink: 0;
+  background-image: url('/ICONS/backgroundCard.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
 }
 
 .mainAvatar {
-  width: 200px !important;
-  height: 200px !important;
-  border-radius: var(--radius-md) !important;
+  position: absolute !important;
+  top: 9%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   overflow: hidden;
@@ -29,7 +44,7 @@
   align-items: center;
   justify-content: center;
   background: #111;
-  font-size: 3rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: var(--brand-red);
   margin: 0;
@@ -41,6 +56,33 @@
   object-fit: cover;
   object-position: center 20%;
   display: block;
+}
+
+.shieldStats {
+  position: absolute;
+  top: 54%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.shieldLevel {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #FFFDBA;
+  letter-spacing: 0.02em;
+}
+
+.shieldXp {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #fff;
+  opacity: 0.9;
 }
 
 .profileInfo {
@@ -285,6 +327,13 @@
     grid-template-columns: 200px 1fr;
     gap: 24px;
   }
+  .avatarSection {
+    width: 200px;
+  }
+  .mainAvatar {
+    width: 72px !important;
+    height: 72px !important;
+  }
   .xpCard {
     grid-column: 1 / -1;
     width: 100%;
@@ -297,12 +346,12 @@
     padding: 24px;
   }
   .avatarSection {
-    display: flex;
-    justify-content: center;
+    width: 190px;
+    margin: 0 auto;
   }
   .mainAvatar {
-    width: 160px !important;
-    height: 160px !important;
+    width: 68px !important;
+    height: 68px !important;
   }
   .username {
     font-size: 2.5rem;

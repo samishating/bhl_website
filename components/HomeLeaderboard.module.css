@@ -226,7 +226,11 @@
   box-shadow: 0 0 0 4px rgba(255, 253, 186, 0.12) !important;
 }
 
-/* Trading-card style backdrop behind each podium avatar */
+/* Trading-card style backdrop behind each podium avatar. The PNG canvas is
+   1048x1008 but the shield art itself only occupies the middle ~63% of that
+   width (transparent padding on both sides) -- sizing the avatar/stats off
+   the container's full width instead of the shield's actual visible width
+   is what made the avatar look like it was covering the whole card. */
 .avatarShield {
   position: relative;
   width: 150px;
@@ -236,19 +240,63 @@
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center top;
-  display: flex;
-  justify-content: center;
 }
 
 .avatarShieldLg {
   width: 190px;
 }
 
+/* Small FIFA-card-style photo, sized well inside the shield's visible
+   silhouette rather than the container's full (padded) width. */
 .avatarShield .topCardAvatar {
   position: absolute;
-  top: 15%;
+  top: 9%;
   left: 50%;
   transform: translateX(-50%);
+  width: 54px;
+  height: 54px;
+}
+
+.avatarShieldLg .topCardAvatar {
+  width: 68px;
+  height: 68px;
+}
+
+/* Level + XP, overlaid in the blank strip just below the shield's divider
+   line -- the card's own space, instead of separate text under the card. */
+.shieldStats {
+  position: absolute;
+  top: 54%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.shieldLevel {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #FFFDBA;
+  letter-spacing: 0.02em;
+}
+
+.shieldXp {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.62rem;
+  color: #fff;
+  opacity: 0.9;
+}
+
+.avatarShieldLg .shieldLevel {
+  font-size: 0.8rem;
+}
+
+.avatarShieldLg .shieldXp {
+  font-size: 0.7rem;
 }
 
 .topCardName {

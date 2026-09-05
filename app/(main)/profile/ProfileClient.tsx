@@ -229,6 +229,10 @@ export default function ProfileClient() {
                     <div className={styles.avatarLarge}>
                       {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username[0].toUpperCase()}
                     </div>
+                    <div className={styles.shieldStats}>
+                      <span className={styles.shieldLevel}>Lv.{user.level}</span>
+                      <span className={styles.shieldXp}>{user.xp.toLocaleString()} XP</span>
+                    </div>
                   </div>
                   <div className={styles.heroInfo}>
                     <h2 className={styles.username}>{user.username}</h2>

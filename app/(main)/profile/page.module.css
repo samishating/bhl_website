@@ -57,6 +57,10 @@
   margin-bottom: 40px;
 }
 
+/* The shield PNG canvas is 1048x1008 but the shield art itself only
+   occupies the middle ~63% of that width (transparent padding either
+   side) -- so the photo and stats need to be sized well inside the
+   shield's actual visible silhouette, not the container's full width. */
 .avatarWrapper {
   flex-shrink: 0;
   position: relative;
@@ -70,21 +74,48 @@
 
 .avatarLarge {
   position: absolute;
-  top: 15%;
+  top: 9%;
   left: 50%;
   transform: translateX(-50%);
-  width: 120px;
-  height: 120px;
+  width: 68px;
+  height: 68px;
   border-radius: 20px;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--brand-red);
   overflow: hidden;
+}
+
+.shieldStats {
+  position: absolute;
+  top: 54%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.shieldLevel {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #FFFDBA;
+  letter-spacing: 0.02em;
+}
+
+.shieldXp {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #fff;
+  opacity: 0.9;
 }
 
 .avatarLarge img {

@@ -26,7 +26,7 @@
       rgba(6, 6, 6, 0.16),
       rgba(6, 6, 6, 0.16)
     ),
-    url('/backgrounds/merch-banner.png') center/cover no-repeat;
+    url('/backgrounds/merch-banner.png') center 25% / cover no-repeat;
 }
 
 .heroBg::after {
@@ -141,35 +141,55 @@
 }
 
 @media (max-width: 1024px) {
+  /* The desktop layout puts .heroBg full-bleed (position:absolute; inset:0)
+     behind an overlaid text panel -- on a narrow, very tall mobile viewport,
+     covering that whole box with a 16:9 image forces extreme zoom (a
+     375x812 hero needs ~3x scale-up to cover, leaving only ~1/3 of the
+     image's width visible), blowing the subject up to fill the entire
+     screen. Switched to a real stacked layout instead: a normal-flow image
+     band sized by its own aspect-ratio up top, plain text block below it.
+     No absolute positioning, no forced full-height cover. */
   .heroSection {
+    display: flex;
+    flex-direction: column;
     min-height: auto;
     padding-top: 88px;
   }
 
-  .heroSection::after {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0.62) 50%,
-      rgba(0, 0, 0, 0.88) 100%
-    );
+  .heroBg {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 16 / 12;
+    background-position: 30% 15%;
+  }
+
+  .heroBg::after {
+    top: auto;
+    bottom: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #000 100%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .heroVisualZone {
-    width: 100%;
-    min-height: 0;
+    display: none;
   }
 
   .heroTextContainer {
     position: relative;
     width: 100%;
-    min-height: 80vh;
-    padding: 56px 28px 44px;
-    justify-content: space-between;
+    min-height: 0;
+    padding: 28px 24px 48px;
+    background: #000;
+    justify-content: flex-start;
   }
 
   .heroTitleBlock {
     max-width: 100%;
+    flex: none; /* base has flex:1 (flex-grow), which would stretch this to
+      fill the container now that heroTextContainer isn't a fixed-height box */
   }
 
   .titleBHL {

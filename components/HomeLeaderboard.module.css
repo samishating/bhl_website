@@ -189,6 +189,9 @@
   background-image: url('/ICONS/backgroundCard.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  /* The card's own fill is nearly as dark as the page behind it -- a resting
+     shadow keeps it reading as a raised card instead of blending in. */
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
   transition: transform 0.25s ease, filter 0.25s ease;
 }
 
@@ -198,7 +201,7 @@
 
 .topCardFirst {
   width: 230px;
-  filter: drop-shadow(0 0 16px rgba(255, 253, 186, 0.2));
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 16px rgba(255, 253, 186, 0.2));
 }
 
 @media (min-width: 769px) {
@@ -278,13 +281,21 @@
 
 .topCardDivisions {
   display: flex;
-  gap: 6px;
+  gap: 4px 6px;
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 4px;
   padding-top: 10px;
   width: 100%;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smaller than the site-wide division-tag default -- a card with 4
+   divisions was wrapping to 3 rows and stretching the shield background
+   far taller than its neighbors. Scoped to the podium only. */
+.topCardDivisions :global(.division-tag) {
+  font-size: 0.56rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.65rem;
 }
 
 .tableSection { margin-top: 16px; }

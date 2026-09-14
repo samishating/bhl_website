@@ -14,28 +14,29 @@
   margin-bottom: 40px;
 }
 
-/* The shield PNG canvas is 1048x1008 but the shield art itself only
-   occupies the middle ~63% of that width (transparent padding either
-   side) -- so the photo and stats need to be sized well inside the
-   shield's actual visible silhouette, not the container's full width. */
+/* Same card family as the leaderboard podium: the shield is the frame, a
+   level badge sits in its top-left "rating" corner. Unlike the podium this
+   card only ever holds a fixed-size photo (no variable-height stats/tags
+   inside it -- those already show in .profileInfo right next to it), so
+   the natural 1024/984 art ratio is safe here with no distortion risk. */
 .avatarSection {
   position: relative;
   width: 220px;
-  aspect-ratio: 1048 / 1008;
+  aspect-ratio: 1024 / 984;
   flex-shrink: 0;
   background-image: url('/ICONS/backgroundCard.png');
-  background-size: contain;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
-  background-position: center top;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
 }
 
 .mainAvatar {
   position: absolute !important;
-  top: 9%;
+  top: 16%;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px !important;
-  height: 80px !important;
+  width: 88px !important;
+  height: 88px !important;
   border-radius: 14px !important;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -58,31 +59,16 @@
   display: block;
 }
 
-.shieldStats {
+.avatarLevelBadge {
   position: absolute;
-  top: 54%;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.shieldLevel {
+  top: 16px;
+  left: 20px;
   font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 1.4rem;
   color: #FFFDBA;
-  letter-spacing: 0.02em;
-}
-
-.shieldXp {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.7rem;
-  color: #fff;
-  opacity: 0.9;
+  line-height: 1;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .profileInfo {
@@ -331,8 +317,8 @@
     width: 200px;
   }
   .mainAvatar {
-    width: 72px !important;
-    height: 72px !important;
+    width: 80px !important;
+    height: 80px !important;
   }
   .xpCard {
     grid-column: 1 / -1;
@@ -350,8 +336,8 @@
     margin: 0 auto;
   }
   .mainAvatar {
-    width: 68px !important;
-    height: 68px !important;
+    width: 76px !important;
+    height: 76px !important;
   }
   .username {
     font-size: 2.5rem;

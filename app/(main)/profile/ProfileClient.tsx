@@ -226,12 +226,9 @@ export default function ProfileClient() {
               <div className={styles.viewMode}>
                 <div className={styles.profileHero}>
                   <div className={styles.avatarWrapper}>
+                    <span className={styles.avatarLevelBadge} title={`Level ${user.level}`}>{user.level}</span>
                     <div className={styles.avatarLarge}>
                       {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username[0].toUpperCase()}
-                    </div>
-                    <div className={styles.shieldStats}>
-                      <span className={styles.shieldLevel}>Lv.{user.level}</span>
-                      <span className={styles.shieldXp}>{user.xp.toLocaleString()} XP</span>
                     </div>
                   </div>
                   <div className={styles.heroInfo}>

@@ -57,28 +57,29 @@
   margin-bottom: 40px;
 }
 
-/* The shield PNG canvas is 1048x1008 but the shield art itself only
-   occupies the middle ~63% of that width (transparent padding either
-   side) -- so the photo and stats need to be sized well inside the
-   shield's actual visible silhouette, not the container's full width. */
+/* Same card family as the leaderboard podium: the shield is the frame, a
+   level badge sits in its top-left "rating" corner. Unlike the podium this
+   card only ever holds a fixed-size photo (no variable-height stats/tags
+   inside it -- Level/role/divisions already show in .heroInfo right next
+   to it), so the natural 1024/984 art ratio is safe with no distortion. */
 .avatarWrapper {
   flex-shrink: 0;
   position: relative;
   width: 190px;
-  aspect-ratio: 1048 / 1008;
+  aspect-ratio: 1024 / 984;
   background-image: url('/ICONS/backgroundCard.png');
-  background-size: contain;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
-  background-position: center top;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
 }
 
 .avatarLarge {
   position: absolute;
-  top: 9%;
+  top: 16%;
   left: 50%;
   transform: translateX(-50%);
-  width: 68px;
-  height: 68px;
+  width: 76px;
+  height: 76px;
   border-radius: 14px;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -91,32 +92,18 @@
   overflow: hidden;
 }
 
-.shieldStats {
+.avatarLevelBadge {
   position: absolute;
-  top: 54%;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.shieldLevel {
+  top: 14px;
+  left: 18px;
   font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 1.3rem;
   color: #FFFDBA;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-.shieldXp {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.7rem;
-  color: #fff;
-  opacity: 0.9;
-}
 
 .avatarLarge img {
   width: 100%;

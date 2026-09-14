@@ -171,21 +171,24 @@
 }
 
 /* The shield IS the card now -- its own background/border replace the old
-   plain dark panel entirely, stretched (background-size:100% 100%) to
-   whatever height the content needs rather than the other way around, so
-   name/level/XP/tags all live inside the card instead of below it. Height
-   is content-driven (no aspect-ratio lock): padding-top clears the photo
-   zone, then avatar/name/rating/tags stack in normal flex flow. */
+   plain dark panel entirely. The art's natural ratio is 1024/984; letting
+   it stretch to fit unbounded content warped the shape badly (squished
+   shoulders, a disconnected-looking tip), so the box is capped at ~1.15x
+   that ratio instead and everything below is sized to fit inside that
+   fixed budget -- name is single-line/ellipsis, tags cap at 2 + a "+N"
+   pill, so nothing can grow the card past what the art can take. */
 .topCard {
   position: relative;
   width: 190px;
+  aspect-ratio: 1024 / 1132;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 20px 22px 22px;
+  gap: 5px;
+  padding: 12px 18px;
+  overflow: hidden;
   background-image: url('/ICONS/backgroundCard.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -238,64 +241,81 @@
 /* Squircle photo sitting flush in the card, matching the FIFA-card
    reference (no outlined frame around the photo itself). */
 .topCardAvatar {
-  width: 66px !important;
-  height: 66px !important;
+  width: 58px !important;
+  height: 58px !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 12px !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
   outline: none !important;
+  flex-shrink: 0;
 }
 
 .topCardFirst .topCardAvatar {
-  width: 84px !important;
-  height: 84px !important;
+  width: 74px !important;
+  height: 74px !important;
 }
 
 .topCardName {
+  width: 100%;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #fff;
   text-decoration: none;
   transition: color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topCardTitle {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-top: -6px;
 }
 
 .topCardXp {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   color: var(--brand-red);
   letter-spacing: -0.02em;
-  margin-top: 2px;
 }
 
+/* Capped at 2 tags + a "+N" pill in the JSX (see topCardMoreTag), so this
+   never needs to wrap -- a card with 4 divisions was wrapping to 3 rows
+   and stretching the shield background far taller than its neighbors. */
 .topCardDivisions {
   display: flex;
-  gap: 4px 6px;
-  flex-wrap: wrap;
+  gap: 6px;
+  flex-wrap: nowrap;
   justify-content: center;
-  margin-top: 4px;
-  padding-top: 10px;
   width: 100%;
+  padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Smaller than the site-wide division-tag default -- a card with 4
-   divisions was wrapping to 3 rows and stretching the shield background
-   far taller than its neighbors. Scoped to the podium only. */
 .topCardDivisions :global(.division-tag) {
   font-size: 0.56rem;
   padding: 0.2rem 0.5rem 0.2rem 0.65rem;
+  white-space: nowrap;
+}
+
+.topCardMoreTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  cursor: default;
 }
 
 .tableSection { margin-top: 16px; }

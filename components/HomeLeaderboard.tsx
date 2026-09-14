@@ -203,9 +203,14 @@ export default function HomeLeaderboard() {
                     <div className={styles.topCardXp}><AnimatedCounter value={getDisplayXp(u)} duration={1000} suffix=" XP" /></div>
                     {u.divisions && u.divisions.length > 0 && (
                       <div className={styles.topCardDivisions}>
-                        {u.divisions.map((d: string) => (
+                        {u.divisions.slice(0, 2).map((d: string) => (
                           <span key={d} className={`division-tag ${divTagClass[d]}`}>{d.replace(/_/g, ' ')}</span>
                         ))}
+                        {u.divisions.length > 2 && (
+                          <span className={styles.topCardMoreTag} title={u.divisions.slice(2).map(d => d.replace(/_/g, ' ')).join(', ')}>
+                            +{u.divisions.length - 2}
+                          </span>
+                        )}
                       </div>
                     )}
                   </motion.div>

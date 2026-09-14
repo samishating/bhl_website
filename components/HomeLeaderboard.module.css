@@ -212,18 +212,13 @@
   line-height: 0;
 }
 
-/* Podium spotlight only: circular frame, a deliberate exception to the
-   platform's usual squircle avatar rule for this specific top-3 moment. */
+/* Squircle photo sitting flush in the card, matching the FIFA-card
+   reference (no outlined frame around the photo itself). */
 .topCardAvatar {
-  border: 2px solid rgba(255, 0, 0, 0.4) !important;
-  border-radius: 50% !important;
-  box-shadow: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
   outline: none !important;
-}
-
-.topCardFirst .topCardAvatar {
-  border-color: #FFFDBA !important;
-  box-shadow: 0 0 0 4px rgba(255, 253, 186, 0.12) !important;
 }
 
 /* Trading-card style backdrop behind each podium avatar. The PNG canvas is

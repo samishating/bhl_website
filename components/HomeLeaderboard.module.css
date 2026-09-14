@@ -170,32 +170,35 @@
   margin-bottom: 40px;
 }
 
+/* The shield IS the card now -- its own background/border replace the old
+   plain dark panel entirely, stretched (background-size:100% 100%) to
+   whatever height the content needs rather than the other way around, so
+   name/level/XP/tags all live inside the card instead of below it. Height
+   is content-driven (no aspect-ratio lock): padding-top clears the photo
+   zone, then avatar/name/rating/tags stack in normal flex flow. */
 .topCard {
   position: relative;
+  width: 190px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  padding: 36px 24px 28px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  gap: 8px;
+  padding: 20px 22px 22px;
+  background-image: url('/ICONS/backgroundCard.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transition: transform 0.25s ease, filter 0.25s ease;
 }
 
 .topCard:hover {
-  border-color: var(--border-subtle-hover);
-  background: rgba(255, 255, 255, 0.035);
   transform: translateY(-4px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
 }
 
 .topCardFirst {
-  border-color: rgba(255, 0, 0, 0.35);
-  background: rgba(255, 0, 0, 0.045);
-  padding-top: 44px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  width: 230px;
+  filter: drop-shadow(0 0 16px rgba(255, 253, 186, 0.2));
 }
 
 @media (min-width: 769px) {
@@ -208,90 +211,41 @@
 .topCardBadge {
   position: absolute;
   top: 16px;
-  right: 16px;
+  right: 18px;
   line-height: 0;
+}
+
+/* Level number, top-left -- the "rating" corner of a FIFA-style card. */
+.topCardLevelBadge {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: #FFFDBA;
+  line-height: 1;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.topCardFirst .topCardLevelBadge {
+  font-size: 1.6rem;
 }
 
 /* Squircle photo sitting flush in the card, matching the FIFA-card
    reference (no outlined frame around the photo itself). */
 .topCardAvatar {
+  width: 66px !important;
+  height: 66px !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 12px !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
   outline: none !important;
 }
 
-/* Trading-card style backdrop behind each podium avatar. The PNG canvas is
-   1048x1008 but the shield art itself only occupies the middle ~63% of that
-   width (transparent padding on both sides) -- sizing the avatar/stats off
-   the container's full width instead of the shield's actual visible width
-   is what made the avatar look like it was covering the whole card. */
-.avatarShield {
-  position: relative;
-  width: 150px;
-  aspect-ratio: 1048 / 1008;
-  margin: 0 auto -8px;
-  background-image: url('/ICONS/backgroundCard.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center top;
-}
-
-.avatarShieldLg {
-  width: 190px;
-}
-
-/* Small FIFA-card-style photo, sized well inside the shield's visible
-   silhouette rather than the container's full (padded) width. */
-.avatarShield .topCardAvatar {
-  position: absolute;
-  top: 9%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 54px;
-  height: 54px;
-}
-
-.avatarShieldLg .topCardAvatar {
-  width: 68px;
-  height: 68px;
-}
-
-/* Level + XP, overlaid in the blank strip just below the shield's divider
-   line -- the card's own space, instead of separate text under the card. */
-.shieldStats {
-  position: absolute;
-  top: 54%;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.shieldLevel {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 0.7rem;
-  color: #FFFDBA;
-  letter-spacing: 0.02em;
-}
-
-.shieldXp {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.62rem;
-  color: #fff;
-  opacity: 0.9;
-}
-
-.avatarShieldLg .shieldLevel {
-  font-size: 0.8rem;
-}
-
-.avatarShieldLg .shieldXp {
-  font-size: 0.7rem;
+.topCardFirst .topCardAvatar {
+  width: 84px !important;
+  height: 84px !important;
 }
 
 .topCardName {
@@ -327,7 +281,10 @@
   gap: 6px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 6px;
+  margin-top: 4px;
+  padding-top: 10px;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tableSection { margin-top: 16px; }

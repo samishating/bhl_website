@@ -194,16 +194,14 @@ export default function HomeLeaderboard() {
                     <span className={styles.topCardBadge}>
                       <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '28px', height: '28px' }} />
                     </span>
-                    <div className={`${styles.avatarShield} ${rank === 1 ? styles.avatarShieldLg : ''}`}>
-                      <Link href={`/users/${u._id}`} className={`avatar ${styles.topCardAvatar}`}>
-                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                      </Link>
-                      <div className={styles.shieldStats}>
-                        <span className={styles.shieldLevel}>Lv.{u.level}</span>
-                        <span className={styles.shieldXp}><AnimatedCounter value={getDisplayXp(u)} duration={1000} suffix=" XP" /></span>
-                      </div>
-                    </div>
+                    <Link href={`/users/${u._id}`} className={`avatar ${rank === 1 ? 'avatar-xl' : 'avatar-lg'} ${styles.topCardAvatar}`}>
+                      {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                    </Link>
                     <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>
+                    <div className={styles.topCardRating}>
+                      <span className={styles.topCardLevel}>Lv.{u.level}</span>
+                      <span className={styles.topCardXp}><AnimatedCounter value={getDisplayXp(u)} duration={1000} suffix=" XP" /></span>
+                    </div>
                     <div className={styles.topCardTitle}>{getLevelTitle(u.level, levelTitles)}</div>
                     {u.divisions && u.divisions.length > 0 && (
                       <div className={styles.topCardDivisions}>

@@ -212,12 +212,11 @@
   line-height: 0;
 }
 
-/* Squircle photo -- matches the platform-wide avatar rule (never circular).
-   No background card/shield behind it; the panel itself (.topCard) is the
-   card. */
+/* Podium spotlight only: circular frame, a deliberate exception to the
+   platform's usual squircle avatar rule for this specific top-3 moment. */
 .topCardAvatar {
   border: 2px solid rgba(255, 0, 0, 0.4) !important;
-  border-radius: 14px !important;
+  border-radius: 50% !important;
   box-shadow: none !important;
   outline: none !important;
 }
@@ -225,6 +224,79 @@
 .topCardFirst .topCardAvatar {
   border-color: #FFFDBA !important;
   box-shadow: 0 0 0 4px rgba(255, 253, 186, 0.12) !important;
+}
+
+/* Trading-card style backdrop behind each podium avatar. The PNG canvas is
+   1048x1008 but the shield art itself only occupies the middle ~63% of that
+   width (transparent padding on both sides) -- sizing the avatar/stats off
+   the container's full width instead of the shield's actual visible width
+   is what made the avatar look like it was covering the whole card. */
+.avatarShield {
+  position: relative;
+  width: 150px;
+  aspect-ratio: 1048 / 1008;
+  margin: 0 auto -8px;
+  background-image: url('/ICONS/backgroundCard.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+.avatarShieldLg {
+  width: 190px;
+}
+
+/* Small FIFA-card-style photo, sized well inside the shield's visible
+   silhouette rather than the container's full (padded) width. */
+.avatarShield .topCardAvatar {
+  position: absolute;
+  top: 9%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 54px;
+}
+
+.avatarShieldLg .topCardAvatar {
+  width: 68px;
+  height: 68px;
+}
+
+/* Level + XP, overlaid in the blank strip just below the shield's divider
+   line -- the card's own space, instead of separate text under the card. */
+.shieldStats {
+  position: absolute;
+  top: 54%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.shieldLevel {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #FFFDBA;
+  letter-spacing: 0.02em;
+}
+
+.shieldXp {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.62rem;
+  color: #fff;
+  opacity: 0.9;
+}
+
+.avatarShieldLg .shieldLevel {
+  font-size: 0.8rem;
+}
+
+.avatarShieldLg .shieldXp {
+  font-size: 0.7rem;
 }
 
 .topCardName {
@@ -236,24 +308,6 @@
   color: #fff;
   text-decoration: none;
   transition: color 0.2s ease;
-  margin-top: 4px;
-}
-
-/* Level + XP together, styled like a FIFA card's rating line -- the card's
-   single boldest, most prominent stat. */
-.topCardRating {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px;
-}
-
-.topCardLevel {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: #FFFDBA;
-  letter-spacing: 0.02em;
 }
 
 .topCardTitle {
@@ -261,14 +315,16 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  margin-top: -6px;
 }
 
 .topCardXp {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   color: var(--brand-red);
   letter-spacing: -0.02em;
+  margin-top: 2px;
 }
 
 .topCardDivisions {
@@ -277,9 +333,6 @@
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 6px;
-  padding-top: 14px;
-  width: 100%;
-  border-top: 1px solid var(--border-subtle);
 }
 
 .tableSection { margin-top: 16px; }

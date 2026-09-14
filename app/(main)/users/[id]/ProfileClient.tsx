@@ -137,6 +137,10 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
             <div className={styles.mainAvatar}>
               {profile.avatar ? <img src={profile.avatar} alt={profile.username} /> : profile.username[0].toUpperCase()}
             </div>
+            <div className={styles.shieldStats}>
+              <span className={styles.shieldLevel}>Lv.{profile.level}</span>
+              <span className={styles.shieldXp}>{profile.xp.toLocaleString()} XP</span>
+            </div>
           </div>
 
           <div className={styles.profileInfo}>

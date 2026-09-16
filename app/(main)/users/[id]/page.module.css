@@ -61,8 +61,10 @@
 
 .avatarLevelBadge {
   position: absolute;
-  top: 16px;
-  left: 20px;
+  top: 12px;
+  /* % not px -- the shield art's visible silhouette is only the middle
+     ~63% of this box, so a fixed px inset renders past its edge. */
+  left: 21%;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 800;
   font-size: 1.4rem;

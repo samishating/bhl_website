@@ -187,7 +187,12 @@
   align-items: center;
   text-align: center;
   gap: 5px;
-  padding: 12px 18px;
+  /* Horizontal padding as a % (not px) so it scales with width: the shield
+     art's own visible silhouette is only the middle ~63% of this box (it
+     has transparent margin baked into both sides), so anything padded
+     less than ~19% each side renders past the art's edge into that empty
+     margin -- which is exactly what "stuff outside the card" was. */
+  padding: 12px 19% 14px;
   overflow: hidden;
   background-image: url('/ICONS/backgroundCard.png');
   background-size: 100% 100%;
@@ -214,18 +219,21 @@
   .topCardFirst { margin-top: -24px; }
 }
 
+/* right/left as % here too, for the same reason as .topCard's padding --
+   these anchor from the box's own edge, which is well outside the shield
+   art's visible silhouette at a fixed px inset. */
 .topCardBadge {
   position: absolute;
-  top: 16px;
-  right: 18px;
+  top: 12px;
+  right: 21%;
   line-height: 0;
 }
 
 /* Level number, top-left -- the "rating" corner of a FIFA-style card. */
 .topCardLevelBadge {
   position: absolute;
-  top: 14px;
-  left: 18px;
+  top: 10px;
+  left: 21%;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 800;
   font-size: 1.3rem;

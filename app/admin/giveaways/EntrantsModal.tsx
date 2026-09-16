@@ -3,15 +3,9 @@ import { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/Modal';
 import { useToast } from '@/contexts/ToastContext';
-import { evaluateEntrant, RULE_LABELS, type RuleCheck, type GiveawayRule } from '@/lib/giveaways';
+import { isEligible } from '@/lib/giveaways';
 import type { AdminGiveaway } from './page';
 import styles from './page.module.css';
-
-const CHECK_META: Record<RuleCheck, { symbol: string; className: string; title: string }> = {
-  pass: { symbol: '✓', className: styles.checkPass, title: 'Verified — passed' },
-  fail: { symbol: '✕', className: styles.checkFail, title: 'Verified — failed' },
-  unverified: { symbol: '?', className: styles.checkUnknown, title: 'Not captured — self-reported, trusted' },
-};
 
 interface Props {
   giveaway: AdminGiveaway;
@@ -32,13 +26,13 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
   const evaluated = useMemo(
     () =>
       (giveaway.entrants || [])
-        .map(entrant => ({ entrant, result: evaluateEntrant(entrant, giveaway) }))
-        // Ineligible first so problems are the first thing a superadmin sees.
-        .sort((a, b) => Number(a.result.eligible) - Number(b.result.eligible)),
+        .map(entrant => ({ entrant, eligible: isEligible(entrant) }))
+        // Excluded accounts first so they're the first thing a superadmin sees.
+        .sort((a, b) => Number(a.eligible) - Number(b.eligible)),
     [giveaway]
   );
 
-  const eligibleCount = evaluated.filter(e => e.result.eligible).length;
+  const eligibleCount = evaluated.filter(e => e.eligible).length;
   const shortfall = giveaway.winnerCount - eligibleCount;
 
   const submitImport = async (text: string) => {
@@ -242,15 +236,15 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                 {shortfall > 0 && (
                   <p className={styles.shortfallWarning}>
                     {eligibleCount} eligible but {giveaway.winnerCount} winners configured — the roll will
-                    be blocked until you lower the winner count or relax the rules.
+                    be blocked until you lower the winner count or reinstate someone.
                   </p>
                 )}
 
                 <ul className={styles.entrantList}>
-                  {evaluated.map(({ entrant, result }) => (
+                  {evaluated.map(({ entrant, eligible }) => (
                     <li
                       key={entrant.username}
-                      className={`${styles.entrantRow} ${result.eligible ? '' : styles.entrantRowOut}`}
+                      className={`${styles.entrantRow} ${eligible ? '' : styles.entrantRowOut}`}
                     >
                       <a
                         href={entrant.profileUrl}
@@ -267,22 +261,6 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                             Disqualified{entrant.disqualifiedReason ? ` — ${entrant.disqualifiedReason}` : ''}
                           </span>
                         )}
-                        {(giveaway.rules || []).map((rule: GiveawayRule) => {
-                          const check = result.checks[rule];
-                          // Follows/likes aren't captured any more — they're checked by hand on the
-                          // drawn winners, so an "unverified" badge on every row would just be noise.
-                          if (!check || check === 'unverified') return null;
-                          const meta = CHECK_META[check];
-                          return (
-                            <span
-                              key={rule}
-                              className={`${styles.check} ${meta.className}`}
-                              title={`${RULE_LABELS[rule]} — ${meta.title}`}
-                            >
-                              {meta.symbol} {RULE_LABELS[rule].replace('Must ', '')}
-                            </span>
-                          );
-                        })}
                         {entrant.commentCount > 1 && (
                           <span className={styles.entrantMeta}>{entrant.commentCount} comments</span>
                         )}
@@ -299,18 +277,14 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                             : entrant.disqualified ? 'Reinstate' : 'Disqualify'}
                         </button>
                       ) : (
-                        <span className={styles.entrantMeta}>
-                          {entrant.disqualified ? 'Disqualified' : result.eligible ? '' : result.reason}
-                        </span>
+                        <span className={styles.entrantMeta}>{entrant.disqualified ? 'Disqualified' : ''}</span>
                       )}
                     </li>
                   ))}
                 </ul>
 
                 <p className={styles.legend}>
-                  <span className={styles.checkPass}>✓</span> passed ·{' '}
-                  <span className={styles.checkFail}>✕</span> failed · follows are checked on the
-                  winners after the roll
+                  Everyone here is entered once. Check the drawn winners by hand after the roll.
                 </p>
               </>
             )}

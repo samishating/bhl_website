@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto';
 import { connectDB } from '@/lib/db';
 import { Giveaway, type IGiveaway } from '@/models/Giveaway';
 import { verifySuperAdmin } from '@/lib/auth';
-import { evaluateEntrant, pickWinners } from '@/lib/giveaways';
+import { eligiblePool, pickWinners } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -11,7 +11,7 @@ import { revalidatePath } from 'next/cache';
  *
  * The winner count is NOT supplied by the caller: it was fixed when the giveaway was
  * created, and is re-validated here against the eligible pool as it actually stands.
- * The draw is private until published: a superadmin checks each winner (e.g. that they
+ * The draw is private until published: a superadmin checks each winner by hand (e.g. that they
  * follow the account), redraws anyone who fails via /redraw, then publishes via /publish.
  * A giveaway can only be rolled once; individual winners are replaced, never re-rolled.
  */
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     // Recompute eligibility fresh at roll time rather than trusting anything stored.
-    const pool = giveaway.entrants.filter(e => evaluateEntrant(e, giveaway).eligible);
+    const pool = eligiblePool(giveaway.entrants);
 
     if (pool.length < giveaway.winnerCount) {
       return NextResponse.json(
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           error:
             `Only ${pool.length} eligible entrant${pool.length === 1 ? '' : 's'} but this giveaway is ` +
             `configured for ${giveaway.winnerCount} winner${giveaway.winnerCount === 1 ? '' : 's'}. ` +
-            `Lower the winner count or relax the rules before rolling.`,
+            `Lower the winner count or reinstate excluded entrants before rolling.`,
           eligibleCount: pool.length,
           winnerCount: giveaway.winnerCount,
         },

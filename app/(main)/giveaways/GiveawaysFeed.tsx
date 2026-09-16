@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import { useMotionConfig } from '@/hooks/useMotionConfig';
 import InstagramEmbed from '@/components/InstagramEmbed';
-import { giveawayStatus, rulesSummary, type GiveawayStatus, type GiveawayRule } from '@/lib/giveaways';
+import { giveawayStatus, winnersSummary, type GiveawayStatus } from '@/lib/giveaways';
 import Countdown from './Countdown';
 import styles from './page.module.css';
 
@@ -15,8 +15,6 @@ export interface PublicGiveaway {
   postUrl: string;
   shortcode: string;
   endDate: string;
-  rules: GiveawayRule[];
-  minMentions: number;
   winnerCount: number;
   winners: { username: string; profileUrl: string; fullName?: string }[];
   rolledAt?: string;
@@ -148,7 +146,7 @@ function GiveawayCard({ giveaway, status }: { giveaway: PublicGiveaway; status: 
       <header className={styles.cardHeader}>
         <div className={styles.cardHeadings}>
           <h2 className={styles.cardTitle}>{giveaway.title}</h2>
-          <p className={styles.cardRules}>{rulesSummary(giveaway)}</p>
+          <p className={styles.cardRules}>{winnersSummary(giveaway.winnerCount)}</p>
         </div>
         <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
       </header>

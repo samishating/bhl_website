@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/Modal';
 import { useToast } from '@/contexts/ToastContext';
 import { useMotionConfig } from '@/hooks/useMotionConfig';
-import { evaluateEntrant } from '@/lib/giveaways';
+import { eligiblePool } from '@/lib/giveaways';
 import type { AdminGiveaway } from './page';
 import styles from './page.module.css';
 
@@ -32,7 +32,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
   const stopRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const eligible = useMemo(
-    () => (giveaway.entrants || []).filter(e => evaluateEntrant(e, giveaway).eligible),
+    () => eligiblePool(giveaway.entrants || []),
     [giveaway]
   );
 
@@ -123,7 +123,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
             <p className={styles.shortfallWarning}>
               Only {eligible.length} eligible entrant{eligible.length === 1 ? '' : 's'} for{' '}
               {giveaway.winnerCount} winner{giveaway.winnerCount === 1 ? '' : 's'}. Lower the winner count
-              or relax the rules before rolling.
+              or reinstate excluded entrants before rolling.
             </p>
           ) : (
             <p className={styles.rollNote}>
@@ -166,7 +166,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
             ))}
           </AnimatePresence>
           <p className={styles.rollNote}>
-            Drawn, not public yet. Check that each winner follows the account, redraw anyone who
+            Drawn, not public yet. Check each winner did what the post asked, redraw anyone who
             doesn&apos;t, then hit Publish on the giveaway card.
           </p>
         </div>

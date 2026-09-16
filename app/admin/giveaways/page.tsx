@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import ConfirmationModal from '@/components/ConfirmationModal';
-import { giveawayStatus, evaluateEntrant, rulesSummary, type GiveawayStatus, type GiveawayRule, type GiveawayEntrant } from '@/lib/giveaways';
+import { giveawayStatus, isEligible, winnersSummary, type GiveawayStatus, type GiveawayEntrant } from '@/lib/giveaways';
 import GiveawayFormModal from './GiveawayFormModal';
 import EntrantsModal from './EntrantsModal';
 import RollModal from './RollModal';
@@ -20,8 +20,6 @@ export interface AdminGiveaway {
   shortcode: string;
   mediaId?: string;
   endDate: string;
-  rules: GiveawayRule[];
-  minMentions: number;
   winnerCount: number;
   entrants: GiveawayEntrant[];
   entrantsCapturedAt?: string;
@@ -63,7 +61,7 @@ export default function AdminGiveawaysPage() {
     const res = await fetch(`/api/giveaways/${redrawTarget.giveaway._id}/redraw`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: redrawTarget.username, reason: 'Not following' }),
+      body: JSON.stringify({ username: redrawTarget.username }),
     });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
@@ -218,7 +216,7 @@ export default function AdminGiveawaysPage() {
         title="Redraw this winner"
         message={
           redrawTarget
-            ? `@${redrawTarget.username} will be excluded as not following and can't be drawn again. A replacement is picked at random from the remaining eligible entrants.`
+            ? `@${redrawTarget.username} will be excluded for not meeting the conditions and can't be drawn again. A replacement is picked at random from the remaining eligible entrants.`
             : ''
         }
         confirmLabel={busy ? 'Drawing...' : 'Exclude & redraw'}
@@ -273,7 +271,7 @@ function GiveawayRow({
 
   const entrantCount = giveaway.entrants?.length || 0;
   const eligibleCount = useMemo(
-    () => (giveaway.entrants || []).filter(e => evaluateEntrant(e, giveaway).eligible).length,
+    () => (giveaway.entrants || []).filter(isEligible).length,
     [giveaway]
   );
 
@@ -302,8 +300,8 @@ function GiveawayRow({
           <dd>{new Date(giveaway.endDate).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</dd>
         </div>
         <div className={styles.stat}>
-          <dt>Rules</dt>
-          <dd>{rulesSummary(giveaway)}</dd>
+          <dt>Winners</dt>
+          <dd>{winnersSummary(giveaway.winnerCount)}</dd>
         </div>
         <div className={styles.stat}>
           <dt>Entrants</dt>
@@ -318,8 +316,8 @@ function GiveawayRow({
       {status === 'drawn' && (
         <div className={styles.checkPanel}>
           <p className={styles.checkIntro}>
-            Not public yet. Open each winner and make sure they follow the account
-            {giveaway.rules.includes('like') ? ' and liked the post' : ''}. Redraw anyone who doesn&apos;t, then publish.
+            Not public yet. Open each winner and check they did what the post asked (followed,
+            tagged friends...). Redraw anyone who didn&apos;t, then publish.
           </p>
 
           <ul className={styles.checkList}>

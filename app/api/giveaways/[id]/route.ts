@@ -2,13 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
 import { verifyAdmin } from '@/lib/auth';
-import {
-  GIVEAWAY_RULES,
-  extractShortcode,
-  canonicalPostUrl,
-  shortcodeToMediaId,
-  type GiveawayRule,
-} from '@/lib/giveaways';
+import { extractShortcode, canonicalPostUrl, shortcodeToMediaId } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -73,16 +67,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         return NextResponse.json({ error: 'Winner count must be at least 1' }, { status: 400 });
       }
       update.winnerCount = count;
-    }
-
-    if (Array.isArray(body.rules)) {
-      update.rules = [...new Set(body.rules)].filter(
-        (r): r is GiveawayRule => GIVEAWAY_RULES.includes(r as GiveawayRule)
-      );
-    }
-
-    if (body.minMentions !== undefined) {
-      update.minMentions = Math.max(1, Number(body.minMentions) || 1);
     }
 
     const updated = await Giveaway.findByIdAndUpdate(id, update, { new: true });

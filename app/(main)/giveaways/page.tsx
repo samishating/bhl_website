@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 const DESCRIPTION =
-  'Every Brotherhood Legacy Instagram giveaway in one place. Open the live posts, check the entry rules, and see the winners of every draw we have run.';
+  'Every Brotherhood Legacy Instagram giveaway in one place. Open the live posts to enter, see when entries close, and find out who won every draw we have run.';
 
 export const metadata: Metadata = {
   title: 'Giveaways',
@@ -40,7 +40,7 @@ async function getGiveaways(): Promise<PublicGiveaway[]> {
     await connectDB();
     // Entrant snapshots never leave the server (spec §5) — only public fields are selected.
     const giveaways = await Giveaway.find({})
-      .select('title postUrl shortcode endDate rules minMentions winnerCount winners rolledAt publishedAt')
+      .select('title postUrl shortcode endDate winnerCount winners rolledAt publishedAt')
       .sort({ endDate: -1 })
       .lean();
     // Drawn winners stay private until a superadmin has checked and published them.

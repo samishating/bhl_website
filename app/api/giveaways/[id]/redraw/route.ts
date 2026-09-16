@@ -3,11 +3,11 @@ import { randomInt } from 'node:crypto';
 import { connectDB } from '@/lib/db';
 import { Giveaway, type IGiveaway } from '@/models/Giveaway';
 import { verifySuperAdmin } from '@/lib/auth';
-import { evaluateEntrant, pickReplacement } from '@/lib/giveaways';
+import { eligiblePool, pickReplacement } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
- * POST — replace one drawn winner who failed a manual check (e.g. isn't following).
+ * POST — replace one drawn winner who failed the manual check (didn't follow, didn't tag friends, etc.).
  * Superadmin only, and only before the result is published.
  *
  * The replaced account is disqualified so it can never be drawn again, and the swap is
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params;
     const body = await req.json().catch(() => ({}));
     const handle = typeof body.username === 'string' ? body.username.trim().toLowerCase().replace(/^@/, '') : '';
-    const reason = typeof body.reason === 'string' && body.reason.trim() ? body.reason.trim() : 'Not following';
+    const reason = typeof body.reason === 'string' && body.reason.trim() ? body.reason.trim() : "Didn't meet the conditions";
 
     if (!handle) return NextResponse.json({ error: 'Which winner should be replaced?' }, { status: 400 });
 
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       entrant.disqualifiedReason = reason;
     }
 
-    const pool = giveaway.entrants.filter(e => evaluateEntrant(e, giveaway).eligible);
+    const pool = eligiblePool(giveaway.entrants);
     const replacement = pickReplacement(
       pool,
       giveaway.winners.map(w => w.username),

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Giveaway, type IGiveaway } from '@/models/Giveaway';
 import { verifyAdmin, verifySuperAdmin } from '@/lib/auth';
-import { dedupeEntrants, extractShortcode, evaluateEntrant } from '@/lib/giveaways';
+import { dedupeEntrants, extractShortcode, isEligible } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -10,7 +10,7 @@ import { revalidatePath } from 'next/cache';
  * (scripts/bhl-giveaway-extractor.user.js), pasted or dropped into the admin dashboard.
  *
  * Everything the client sends is treated as raw data: the server does its own dedup,
- * derives mentions from the raw comment text itself, and drops the owner's own replies.
+ * keeps one entry per account, and drops the owner's own replies.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (ownerUsername) giveaway.ownerUsername = ownerUsername.replace(/^@/, '').toLowerCase();
     await giveaway.save();
 
-    const eligibleCount = entrants.filter(e => evaluateEntrant(e, giveaway).eligible).length;
+    const eligibleCount = entrants.filter(isEligible).length;
 
     console.info(
       `[giveaways] entrants imported for ${giveaway.shortcode} by ${admin.userId}: ` +
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 /**
- * PATCH — manually disqualify or reinstate one entrant (spec §8, the trust-but-verify escape hatch).
+ * PATCH — exclude or reinstate one entrant by hand before the roll.
  * Superadmin only, since it directly changes who can win.
  */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

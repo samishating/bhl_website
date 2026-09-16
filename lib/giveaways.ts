@@ -1,16 +1,12 @@
 /**
  * lib/giveaways.ts
  * Isomorphic giveaway logic — safe to import from both server routes and client components.
- * Anything needing node:crypto (the roll itself) lives in the roll route and injects randomness here.
+ * Anything needing node:crypto (the draw itself) lives in the routes and injects randomness here.
+ *
+ * Giveaways have no automatic entry conditions. Every unique commenter is eligible; the
+ * superadmin checks the drawn winners by hand (follows, tagged friends, whatever the post
+ * asked for) and redraws anyone who doesn't qualify before publishing.
  */
-
-/**
- * Rule types are an extensible enum (spec §8) — adding a new one never needs a schema rewrite.
- * These live here rather than in the Mongoose model so client components can import them
- * without pulling mongoose into the browser bundle.
- */
-export const GIVEAWAY_RULES = ['follow', 'mention', 'like'] as const;
-export type GiveawayRule = (typeof GIVEAWAY_RULES)[number];
 
 /**
  * An entrant is an Instagram account, NOT a BHL user (spec §5).
@@ -22,14 +18,10 @@ export interface GiveawayEntrant {
   fullName?: string;
   profilePicUrl?: string;
   profileUrl: string;
-  /** Raw comment text — the server derives `mentions` from this so the check is genuinely machine-verified. */
+  /** Every comment this account left — kept for the audit trail. */
   comments: string[];
-  mentions: string[];
   commentCount: number;
-  /** true/false = verified by the extractor. null = not captured, so the rule falls back to trust-based. */
-  liked: boolean | null;
-  follows: boolean | null;
-  /** Manual superadmin exclusion (spec §8 option 2). */
+  /** Excluded by hand — before the roll, or when a drawn winner is redrawn. */
   disqualified: boolean;
   disqualifiedReason?: string;
 }
@@ -59,22 +51,6 @@ export interface GiveawayReplacedWinner {
  * - rolled: winners published, public and locked
  */
 export type GiveawayStatus = 'active' | 'awaiting_roll' | 'drawn' | 'rolled';
-
-export const RULE_LABELS: Record<GiveawayRule, string> = {
-  follow: 'Must follow',
-  mention: 'Must mention a friend',
-  like: 'Must have liked',
-};
-
-/** How each rule is enforced (spec §8). */
-export const RULE_VERIFIABILITY: Record<GiveawayRule, 'derived' | 'manual'> = {
-  // Machine-verified: derived server-side from the raw comment text.
-  mention: 'derived',
-  // Not captured by the extractor. Stated to entrants, then checked by hand on the drawn
-  // winners before publishing — anyone who fails is redrawn.
-  like: 'manual',
-  follow: 'manual',
-};
 
 // ---------------------------------------------------------------------------
 // Post URL / shortcode / media id
@@ -135,19 +111,6 @@ export function shortcodeToMediaId(shortcode: string): string | null {
 // Entrants
 // ---------------------------------------------------------------------------
 
-/** Instagram usernames: letters, digits, periods and underscores, up to 30 chars. */
-const MENTION_RE = /@([A-Za-z0-9._]{1,30})/g;
-
-export function extractMentions(text: string): string[] {
-  const found = new Set<string>();
-  for (const match of text.matchAll(MENTION_RE)) {
-    // Trailing periods are punctuation, not part of the handle.
-    const handle = match[1].replace(/\.+$/, '').toLowerCase();
-    if (handle) found.add(handle);
-  }
-  return [...found];
-}
-
 export function profileUrl(username: string): string {
   return `https://www.instagram.com/${username}/`;
 }
@@ -186,11 +149,6 @@ export function dedupeEntrants(
     if (existing) {
       existing.comments.push(...texts);
       existing.commentCount += Math.max(1, texts.length);
-      // A capture of `true` anywhere wins; otherwise keep the most informative value.
-      if (row.liked === true) existing.liked = true;
-      else if (row.liked === false && existing.liked === null) existing.liked = false;
-      if (row.follows === true) existing.follows = true;
-      else if (row.follows === false && existing.follows === null) existing.follows = false;
       existing.fullName = existing.fullName || row.fullName || undefined;
       existing.profilePicUrl = existing.profilePicUrl || row.profilePicUrl || undefined;
       existing.userId = existing.userId || row.userId || undefined;
@@ -204,91 +162,21 @@ export function dedupeEntrants(
       profilePicUrl: row.profilePicUrl || undefined,
       profileUrl: profileUrl(username),
       comments: texts,
-      mentions: [],
       commentCount: Math.max(1, texts.length),
-      liked: row.liked === true ? true : row.liked === false ? false : null,
-      follows: row.follows === true ? true : row.follows === false ? false : null,
       disqualified: false,
     });
-  }
-
-  // Derive mentions server-side from the raw text — never trust a client-computed list.
-  for (const entrant of byUsername.values()) {
-    const mentions = new Set<string>();
-    for (const text of entrant.comments) {
-      for (const handle of extractMentions(text)) {
-        // Mentioning yourself isn't tagging a friend.
-        if (handle !== entrant.username) mentions.add(handle);
-      }
-    }
-    entrant.mentions = [...mentions];
   }
 
   return [...byUsername.values()];
 }
 
-// ---------------------------------------------------------------------------
-// Eligibility
-// ---------------------------------------------------------------------------
-
-export type RuleCheck = 'pass' | 'fail' | 'unverified';
-
-export interface EligibilityResult {
-  eligible: boolean;
-  /** Per-rule outcome. 'unverified' = the extractor didn't capture it, so it passes on trust. */
-  checks: Partial<Record<GiveawayRule, RuleCheck>>;
-  reason?: string;
+/** No automatic conditions: every unique commenter is eligible unless excluded by hand. */
+export function isEligible(entrant: Pick<GiveawayEntrant, 'disqualified'>): boolean {
+  return !entrant.disqualified;
 }
 
-type EntrantFacts = Pick<GiveawayEntrant, 'mentions' | 'liked' | 'follows' | 'disqualified'>;
-
-export function evaluateEntrant(
-  entrant: EntrantFacts,
-  giveaway: { rules: GiveawayRule[]; minMentions?: number }
-): EligibilityResult {
-  const checks: EligibilityResult['checks'] = {};
-  const minMentions = Math.max(1, giveaway.minMentions || 1);
-
-  if (entrant.disqualified) {
-    return { eligible: false, checks, reason: 'Manually disqualified' };
-  }
-
-  let eligible = true;
-  let reason: string | undefined;
-
-  for (const rule of giveaway.rules || []) {
-    if (rule === 'mention') {
-      const passed = (entrant.mentions?.length || 0) >= minMentions;
-      checks.mention = passed ? 'pass' : 'fail';
-      if (!passed) {
-        eligible = false;
-        reason = reason || (minMentions > 1 ? `Fewer than ${minMentions} mentions` : 'No friend mentioned');
-      }
-      continue;
-    }
-
-    // follow / like: only a captured `false` disqualifies. `null` means the
-    // extractor didn't capture it, so it falls back to trust-based (spec §8).
-    const captured = rule === 'like' ? entrant.liked : entrant.follows;
-    if (captured === false) {
-      checks[rule] = 'fail';
-      eligible = false;
-      reason = reason || (rule === 'like' ? 'Did not like the post' : 'Not following');
-    } else if (captured === true) {
-      checks[rule] = 'pass';
-    } else {
-      checks[rule] = 'unverified';
-    }
-  }
-
-  return { eligible, checks, reason };
-}
-
-export function eligibleEntrants<T extends EntrantFacts>(
-  entrants: T[],
-  giveaway: { rules: GiveawayRule[]; minMentions?: number }
-): T[] {
-  return entrants.filter(e => evaluateEntrant(e, giveaway).eligible);
+export function eligiblePool<T extends Pick<GiveawayEntrant, 'disqualified'>>(entrants: T[]): T[] {
+  return entrants.filter(isEligible);
 }
 
 // ---------------------------------------------------------------------------
@@ -322,7 +210,21 @@ export function toPublicGiveaway<T extends { winners?: unknown[]; publishedAt?: 
 }
 
 /**
- * Picks one replacement for a winner who failed a manual check (e.g. not following).
+ * Uniform Fisher-Yates, then take the first N (spec §10) — never a `Math.random()` sort.
+ * `randomInt(max)` must return an unbiased integer in [0, max); the routes supply a
+ * node:crypto implementation.
+ */
+export function pickWinners<T>(pool: T[], count: number, randomInt: (maxExclusive: number) => number): T[] {
+  const shuffled = [...pool];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, count);
+}
+
+/**
+ * Picks one replacement for a winner who failed the manual check.
  * Draws uniformly from the eligible pool, excluding everyone already drawn.
  */
 export function pickReplacement<T extends { username: string }>(
@@ -336,23 +238,7 @@ export function pickReplacement<T extends { username: string }>(
   return remaining[randomInt(remaining.length)];
 }
 
-/**
- * Uniform Fisher-Yates, then take the first N (spec §10) — never a `Math.random()` sort.
- * `randomInt(max)` must return an unbiased integer in [0, max); the roll route supplies
- * a node:crypto implementation.
- */
-export function pickWinners<T>(pool: T[], count: number, randomInt: (maxExclusive: number) => number): T[] {
-  const shuffled = [...pool];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled.slice(0, count);
-}
-
-/** Human-readable one-liner for the public feed, e.g. "Must follow · Must mention a friend · 3 winners". */
-export function rulesSummary(giveaway: { rules: GiveawayRule[]; winnerCount: number }): string {
-  const parts = (giveaway.rules || []).map(r => RULE_LABELS[r]).filter(Boolean);
-  parts.push(`${giveaway.winnerCount} winner${giveaway.winnerCount === 1 ? '' : 's'}`);
-  return parts.join(' · ');
+/** e.g. "3 winners" — the only configuration a giveaway has besides its dates. */
+export function winnersSummary(winnerCount: number): string {
+  return `${winnerCount} winner${winnerCount === 1 ? '' : 's'}`;
 }

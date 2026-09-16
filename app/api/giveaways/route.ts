@@ -2,18 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
 import { verifyAdmin } from '@/lib/auth';
-import {
-  GIVEAWAY_RULES,
-  extractShortcode,
-  canonicalPostUrl,
-  shortcodeToMediaId,
-  toPublicGiveaway,
-  type GiveawayRule,
-} from '@/lib/giveaways';
+import { extractShortcode, canonicalPostUrl, shortcodeToMediaId, toPublicGiveaway } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /** Entrant data never leaves the server for public consumers (spec §5/§12). */
-const PUBLIC_FIELDS = 'title postUrl shortcode endDate rules minMentions winnerCount winners rolledAt publishedAt createdAt';
+const PUBLIC_FIELDS = 'title postUrl shortcode endDate winnerCount winners rolledAt publishedAt createdAt';
 
 export async function GET(req: NextRequest) {
   try {
@@ -43,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
     const body = await req.json();
-    const { title, postUrl, endDate, rules, minMentions, winnerCount } = body;
+    const { title, postUrl, endDate, winnerCount } = body;
 
     if (!title?.trim()) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
@@ -64,10 +57,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Winner count must be at least 1' }, { status: 400 });
     }
 
-    const cleanRules: GiveawayRule[] = Array.isArray(rules)
-      ? [...new Set(rules)].filter((r): r is GiveawayRule => GIVEAWAY_RULES.includes(r as GiveawayRule))
-      : [];
-
     const existing = await Giveaway.findOne({ shortcode }).select('_id').lean();
     if (existing) {
       return NextResponse.json({ error: 'That Instagram post is already a giveaway' }, { status: 409 });
@@ -79,8 +68,6 @@ export async function POST(req: NextRequest) {
       shortcode,
       mediaId: shortcodeToMediaId(shortcode),
       endDate: end,
-      rules: cleanRules,
-      minMentions: Math.max(1, Number(minMentions) || 1),
       winnerCount: count,
       createdBy: admin.userId,
     });

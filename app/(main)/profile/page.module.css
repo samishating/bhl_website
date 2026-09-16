@@ -65,7 +65,7 @@
 .avatarWrapper {
   flex-shrink: 0;
   position: relative;
-  width: 190px;
+  width: 260px;
   aspect-ratio: 1024 / 984;
   background-image: url('/ICONS/backgroundCard.png');
   background-size: 100% 100%;
@@ -78,15 +78,15 @@
   top: 16%;
   left: 50%;
   transform: translateX(-50%);
-  width: 76px;
-  height: 76px;
-  border-radius: 14px;
+  width: 104px;
+  height: 104px;
+  border-radius: 16px;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
+  font-size: 2.1rem;
   font-weight: 700;
   color: var(--brand-red);
   overflow: hidden;
@@ -94,13 +94,13 @@
 
 .avatarLevelBadge {
   position: absolute;
-  top: 10px;
+  top: 14px;
   /* % not px -- the shield art's visible silhouette is only the middle
      ~63% of this box, so a fixed px inset renders past its edge. */
   left: 21%;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 800;
-  font-size: 1.3rem;
+  font-size: 1.8rem;
   color: #FFFDBA;
   line-height: 1;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);

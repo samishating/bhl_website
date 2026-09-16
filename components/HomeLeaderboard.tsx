@@ -192,7 +192,7 @@ export default function HomeLeaderboard() {
                     transition={{ duration: 0.4, delay: i * 0.08 }}
                   >
                     <span className={styles.topCardBadge}>
-                      <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '28px', height: '28px' }} />
+                      <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '36px', height: '36px' }} />
                     </span>
                     <span className={styles.topCardLevelBadge} title={`Level ${u.level}`}>{u.level}</span>
                     <Link href={`/users/${u._id}`} className={`avatar ${styles.topCardAvatar}`}>

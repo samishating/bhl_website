@@ -144,7 +144,10 @@ export function extractMentions(text: string): string[] {
 export type Platform = 'instagram' | 'facebook';
 
 const IG_HANDLE_RE = /^[a-z0-9._]{1,30}$/;
-const FB_KEY_RE = /^fb:(id:\d{5,20}|[a-z0-9.]{1,80})$/;
+// fb:id:<number> · fb:pf:<pfbid…> (accounts without a username) · fb:<vanity>
+const FB_KEY_RE = /^fb:(id:\d{5,20}|pf:pfbid[a-z0-9]{10,120}|[a-z0-9.]{1,80})$/;
+// The case-sensitive link for a pfbid account, as captured. Only ever accepted when its pfbid matches the key.
+const FB_PEOPLE_URL_RE = /^https:\/\/(?:www|web)\.facebook\.com\/people\/[^/?#\s]{1,120}\/(pfbid[A-Za-z0-9]{10,120})\/?$/;
 
 export function platformOf(username: string): Platform {
   return username.startsWith('fb:') ? 'facebook' : 'instagram';
@@ -162,12 +165,18 @@ export function entrantLabel(person: { username: string; fullName?: string }): s
 }
 
 /** Built from the key server-side, so an imported capture can never inject its own link. */
-export function profileUrl(username: string): string {
+export function profileUrl(username: string, capturedUrl?: unknown, fullName?: string): string {
   if (platformOf(username) === 'facebook') {
     const key = username.slice(3);
-    return key.startsWith('id:')
-      ? `https://www.facebook.com/profile.php?id=${key.slice(3)}`
-      : `https://www.facebook.com/${key}`;
+    if (key.startsWith('id:')) return `https://www.facebook.com/profile.php?id=${key.slice(3)}`;
+    if (key.startsWith('pf:')) {
+      // pfbids are case-sensitive but keys are stored lowercased, so the link can't be rebuilt from
+      // the key. Use the captured link only if it's a genuine /people/ link for this same pfbid.
+      const match = typeof capturedUrl === 'string' ? capturedUrl.match(FB_PEOPLE_URL_RE) : null;
+      if (match && match[1].toLowerCase() === key.slice(3)) return capturedUrl as string;
+      return `https://www.facebook.com/search/people/?q=${encodeURIComponent(fullName || '')}`;
+    }
+    return `https://www.facebook.com/${key}`;
   }
   return `https://www.instagram.com/${username}/`;
 }
@@ -239,7 +248,7 @@ export function dedupeEntrants(
       userId: row.userId || undefined,
       fullName: row.fullName || undefined,
       profilePicUrl: row.profilePicUrl || undefined,
-      profileUrl: profileUrl(username),
+      profileUrl: profileUrl(username, row.profileUrl, row.fullName),
       comments: texts,
       commentCount: Math.max(1, texts.length),
       mentions: [],

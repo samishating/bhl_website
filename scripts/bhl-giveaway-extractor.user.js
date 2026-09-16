@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BHL Giveaway Extractor
 // @namespace    https://bhl-website.vercel.app/
-// @version      3.0.0
+// @version      3.1.0
 // @description  Capture the unique commenters of a Brotherhood Legacy giveaway on Instagram or Facebook into the JSON the BHL admin dashboard imports.
 // @author       Brotherhood Legacy
 // @match        https://www.instagram.com/*
@@ -213,10 +213,10 @@
     const CLICK_DELAY_MS = 900;       // Between expand clicks, so Facebook can load each batch.
     const MAX_CLICKS = 800;           // Safety cap for huge threads.
     const MAX_RUNTIME_MS = 8 * 60_000;
-    const IDLE_ROUNDS_TO_FINISH = 3;  // Consecutive "nothing left to open" checks before stopping.
+    const IDLE_ROUNDS_TO_FINISH = 4;  // Consecutive "nothing left to open" checks before stopping.
 
     // Button wording differs per Facebook language; these cover English, French, Arabic, Spanish.
-    const FILTER_BUTTON_RE = /^(most relevant|top comments|newest|all comments|plus pertinents|les plus pertinents|plus récents|tous les commentaires|الأكثر صلة|الأحدث|كل التعليقات|más relevantes|más recientes|todos los comentarios)$/i;
+    const FILTER_BUTTON_RE = /^(most relevant|top comments|newest|all comments|plus pertinents|les plus pertinents|plus récents|tous les commentaires|الأكثر صلة|الأحدث|كل التعليقات|más relevantes|más recientes|todos los comentarios)\b/i;
     const ALL_COMMENTS_RE = /^(all comments|tous les commentaires|كل التعليقات|todos los comentarios)/i;
     const SEE_MORE_TEXT_RE = /^(see more|voir plus|عرض المزيد|ver más)$/i;
     const COMMENT_WORD_RE = /(comment|repl|répon|commentaire|تعليق|رد|ردود|comentario|respuesta)/i;
@@ -232,7 +232,11 @@
       'videos', 'posts', 'home.php', 'me', 'profile.php', 'people', 'saved', 'memories', 'feeds',
     ]);
 
-    /** Stable account key from a profile link: fb:id:<number> or fb:<vanity>. */
+    /**
+     * Stable account key from a profile link: fb:id:<number>, fb:pf:<pfbid…> or fb:<vanity>.
+     * Accounts without a username are linked as /people/<Name>/pfbid…/ — those are very common
+     * on giveaway posts, and missing them used to hand the entry to the first friend they tagged.
+     */
     function profileKey(href) {
       let url;
       try {
@@ -248,6 +252,7 @@
         return id && /^\d{5,20}$/.test(id) ? `fb:id:${id}` : null;
       }
       if (parts[0] === 'people' && /^\d{5,20}$/.test(parts[2] || '')) return `fb:id:${parts[2]}`;
+      if (parts[0] === 'people' && /^pfbid[A-Za-z0-9]{10,120}$/.test(parts[2] || '')) return `fb:pf:${parts[2]}`;
       if (parts[0] === 'groups' && parts[2] === 'user' && /^\d{5,20}$/.test(parts[3] || '')) return `fb:id:${parts[3]}`;
 
       if (parts.length === 1 && !RESERVED_PATHS.has(parts[0].toLowerCase()) && /^[a-z0-9.]{3,80}$/i.test(parts[0])) {
@@ -280,14 +285,35 @@
       return (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
     }
 
+    /**
+     * Facebook ignores a lone synthetic "click" on some controls, so send the full press sequence
+     * a real click produces. Only ever called on the comment filter and expand buttons.
+     */
     function click(el) {
       el.scrollIntoView({ block: 'center' });
-      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+      const init = { bubbles: true, cancelable: true, composed: true, button: 0 };
+      for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup']) {
+        const Event = type.startsWith('pointer') && typeof PointerEvent === 'function' ? PointerEvent : MouseEvent;
+        el.dispatchEvent(new Event(type, init));
+      }
+      el.click();
+    }
+
+    /** The element that actually scrolls the comments (the post dialog's inner panel, or the page). */
+    function scrollerFor(scope) {
+      const last = commentArticles(scope).pop();
+      for (let node = last && last.parentElement; node && node !== document.body; node = node.parentElement) {
+        const { overflowY } = getComputedStyle(node);
+        if (/(auto|scroll)/.test(overflowY) && node.scrollHeight > node.clientHeight + 10) return node;
+      }
+      return document.scrollingElement;
     }
 
     /** Switch the comment filter from "Most relevant" to "All comments" so nothing is hidden. */
     async function showAllComments(scope) {
-      const filter = [...scope.querySelectorAll('[role="button"]')].find(b => FILTER_BUTTON_RE.test(textOf(b)));
+      // The sort control can sit outside the comment list, so look across the whole page.
+      const filter = [...scope.querySelectorAll('[role="button"]'), ...document.querySelectorAll('[role="button"]')]
+        .find(b => textOf(b).length < 40 && FILTER_BUTTON_RE.test(textOf(b)));
       if (!filter) {
         log('No comment filter found — continuing with what Facebook shows.');
         return;
@@ -317,9 +343,13 @@
       return COMMENT_WORD_RE.test(text) && MORE_WORD_RE.test(text);
     }
 
-    /** Keep opening "View more comments" / "View N replies" until there's nothing left. */
+    /**
+     * Keep opening "View more comments" / "View N replies" until there's nothing left.
+     * Returns the buttons that were clicked but didn't open, so the panel can say what's missing.
+     */
     async function expandEverything(scope, onProgress) {
       const clicked = new WeakSet();
+      const stuck = [];
       const started = Date.now();
       let clicks = 0;
       let idle = 0;
@@ -327,59 +357,83 @@
       while (idle < IDLE_ROUNDS_TO_FINISH && clicks < MAX_CLICKS && Date.now() - started < MAX_RUNTIME_MS) {
         const next = [...scope.querySelectorAll('[role="button"]')].find(b => !clicked.has(b) && isExpander(b));
         if (next) {
+          const text = textOf(next);
           clicked.add(next);
           click(next);
           clicks += 1;
           idle = 0;
           onProgress(commentArticles(scope).length, clicks);
           await sleep(CLICK_DELAY_MS);
+          // A button that worked disappears or changes; one still showing the same text didn't open.
+          // It's never clicked twice, since a second click could collapse what did open.
+          if (next.isConnected && textOf(next) === text && !SEE_MORE_TEXT_RE.test(text)) stuck.push(text);
           continue;
         }
 
-        // Nothing visible to open: scroll to the end so lazy-loaded buttons render, then look again.
+        // Nothing visible to open: scroll the comment list to its end so Facebook loads the next
+        // batch and renders lazy buttons, then look again.
         idle += 1;
-        const scroller = scope === document.body ? document.scrollingElement : scope.querySelector('[style*="overflow"]') || scope;
+        const scroller = scrollerFor(scope);
+        const last = commentArticles(scope).pop();
+        if (last) last.scrollIntoView({ block: 'end' });
         scroller.scrollTop = scroller.scrollHeight;
-        window.scrollTo(0, document.body.scrollHeight);
-        await sleep(1500);
+        await sleep(1800);
       }
 
       if (clicks >= MAX_CLICKS || Date.now() - started >= MAX_RUNTIME_MS) {
         log('Stopped expanding at the safety limit — very large threads may be incomplete.');
       }
+      return stuck;
     }
 
+    /** A /people/<Name>/pfbid…/ link can't be rebuilt from its key (pfbids are case-sensitive), so keep it. */
+    function peopleUrl(href) {
+      try {
+        const url = new URL(href, location.origin);
+        return /^\/people\/[^/]+\/pfbid[A-Za-z0-9]+\/?$/.test(url.pathname) ? `https://www.facebook.com${url.pathname}` : undefined;
+      } catch {
+        return undefined;
+      }
+    }
+
+    /**
+     * Returns { rows, skipped }. A comment is only kept when its commenter is certain: the first
+     * link in the block (their avatar/name) must be a profile, and that name must appear in the
+     * block's own label ("Comment by <name> …"). Otherwise it's skipped and counted, never
+     * handed to someone else.
+     */
     function readComments(scope, ownerKeys) {
       const rows = [];
+      let skipped = 0;
       for (const article of commentArticles(scope)) {
-        const author = [...article.querySelectorAll('a[href]')].find(a =>
-          a.closest('div[role="article"]') === article && profileKey(a.href) && textOf(a)
-        );
-        if (!author) continue; // deleted or anonymous commenter
-        const key = profileKey(author.href);
+        const own = [...article.querySelectorAll('a[href]')].filter(a => a.closest('div[role="article"]') === article);
+        const key = own[0] ? profileKey(own[0].href) : null;
+        const nameLink = key ? own.find(a => profileKey(a.href) === key && textOf(a)) : null;
+        const label = article.getAttribute('aria-label') || '';
+        if (!key || !nameLink || !label.includes(textOf(nameLink))) {
+          skipped += 1;
+          continue;
+        }
         if (ownerKeys.includes(key)) continue;
 
-        // The comment body: this comment's own text block, not the name and not a nested reply.
-        const body = [...article.querySelectorAll('div[dir="auto"], span[dir="auto"]')].find(el =>
-          el.closest('div[role="article"]') === article &&
-          !author.contains(el) &&
-          !el.contains(author) &&
-          textOf(el) &&
-          textOf(el) !== textOf(author)
-        );
+        // Tags: every other person linked inside this comment (replies are separate comment blocks).
+        // This doesn't depend on where Facebook puts the timestamp, which moves between layouts.
+        const tagged = own.map(a => profileKey(a.href)).filter(k => k && k !== key);
 
-        const tagged = body
-          ? [...body.querySelectorAll('a[href]')].map(a => profileKey(a.href)).filter(k => k && k !== key)
-          : [];
+        // Comment text, for the audit trail only: the first text block that isn't the name line.
+        const body = [...article.querySelectorAll('div[dir="auto"]')].find(el =>
+          el.closest('div[role="article"]') === article && !el.contains(nameLink) && textOf(el)
+        );
 
         rows.push({
           username: key,
-          fullName: textOf(author),
-          text: body ? textOf(body) : '',
+          fullName: textOf(nameLink),
+          profileUrl: peopleUrl(nameLink.href),
+          text: body ? textOf(body) : own.filter(a => profileKey(a.href) && profileKey(a.href) !== key).map(textOf).join(' '),
           mentions: [...new Set(tagged)],
         });
       }
-      return rows;
+      return { rows, skipped };
     }
 
     function ownerKeys(scope) {
@@ -413,10 +467,13 @@
       await showAllComments(scope);
 
       log('Opening every comment and reply...');
-      await expandEverything(scope, (count, clicks) => setStatus(`Opening comments... ${count} loaded (${clicks} expanded)`));
+      const stuck = await expandEverything(scope, (count, clicks) => setStatus(`Opening comments... ${count} loaded (${clicks} expanded)`));
 
       const owners = ownerKeys(scope);
-      const rows = readComments(scope, owners);
+      const { rows, skipped } = readComments(scope, owners);
+      if (skipped > 0) {
+        log(`Skipped ${skipped} comment(s) whose author couldn't be identified for certain (deleted accounts, or Facebook changed its layout).`);
+      }
       if (rows.length === 0) {
         throw new Error('No comments found. Open the post itself (not the feed) and try again, or switch Facebook to English.');
       }
@@ -424,6 +481,22 @@
       const entrants = uniqueEntrants(rows, owners);
       const tagged = entrants.filter(e => e.mentions.length > 0).length;
       log(`${rows.length} comments -> ${entrants.length} unique accounts (${tagged} tagged at least one friend).`);
+
+      // Say plainly what might be missing, so a bad capture is never silently imported.
+      const unopened = [...scope.querySelectorAll('[role="button"]')].filter(isExpander).map(textOf)
+        .filter(t => !SEE_MORE_TEXT_RE.test(t));
+      if (stuck.length || unopened.length) {
+        const sample = [...new Set([...stuck, ...unopened])].slice(0, 4).join(' | ');
+        log(`Warning: ${stuck.length + unopened.length} comment button(s) didn't open (${sample}). Some comments may be missing — try Capture again.`);
+      }
+      if (rows.length >= 5 && tagged === 0) {
+        // Diagnostic for when Facebook's markup changes: what links the first comment actually has.
+        const first = commentArticles(scope)[0];
+        const paths = first
+          ? [...first.querySelectorAll('a[href]')].map(a => { try { return new URL(a.href, location.origin).pathname; } catch { return '?'; } })
+          : [];
+        log(`Debug: no tags found. First comment's links: ${paths.slice(0, 6).join(', ') || 'none'}`);
+      }
 
       return {
         version: 2,
@@ -459,6 +532,7 @@
         if (row.mentions) existing.mentions = [...new Set([...existing.mentions, ...row.mentions])];
         existing.fullName = existing.fullName || row.fullName;
         existing.profilePicUrl = existing.profilePicUrl || row.profilePicUrl;
+        existing.profileUrl = existing.profileUrl || row.profileUrl;
         existing.userId = existing.userId || row.userId;
         continue;
       }
@@ -467,6 +541,7 @@
         userId: row.userId,
         fullName: row.fullName,
         profilePicUrl: row.profilePicUrl,
+        profileUrl: row.profileUrl,
         comments: row.text ? [row.text] : [],
       };
       // Facebook tags are profile links the site can't see in the text, so they travel with the entry.

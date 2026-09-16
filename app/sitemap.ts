@@ -6,6 +6,10 @@ import { Giveaway } from '@/models/Giveaway';
 
 const BASE_URL = 'https://bhl-website.vercel.app';
 
+// Without this the sitemap is prerendered once at build time, so products, public
+// profiles and giveaway winners pages created after a deploy never appear in it.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/`, changeFrequency: 'daily', priority: 1 },

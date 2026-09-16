@@ -343,3 +343,20 @@
   font-size: 0.9rem;
   line-height: 1.65;
 }
+
+/* ─── Phone ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Three short pills fit without scrolling once the compact min-width is lifted,
+     so no option is ever clipped off the edge. */
+  .filterRow :global(.selection-pill) {
+    min-width: 0;
+    padding: 10px 20px;
+  }
+
+  /* Status badge sits above the title so the title gets the full card width. */
+  .cardHeader {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

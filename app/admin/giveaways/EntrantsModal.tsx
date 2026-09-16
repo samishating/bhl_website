@@ -262,6 +262,11 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                       </a>
 
                       <span className={styles.entrantChecks}>
+                        {entrant.disqualified && (
+                          <span className={styles.disqualifiedTag}>
+                            Disqualified{entrant.disqualifiedReason ? ` — ${entrant.disqualifiedReason}` : ''}
+                          </span>
+                        )}
                         {(giveaway.rules || []).map((rule: GiveawayRule) => {
                           const check = result.checks[rule];
                           if (!check) return null;

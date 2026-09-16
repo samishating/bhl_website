@@ -1,12 +1,10 @@
 // ==UserScript==
 // @name         BHL Giveaway Extractor
 // @namespace    https://bhl-website.vercel.app/
-// @version      1.0.0
+// @version      1.1.0
 // @description  Capture the entrants of a Brotherhood Legacy Instagram giveaway (comments, and optionally who liked and who follows) into the JSON the BHL admin dashboard imports.
 // @author       Brotherhood Legacy
-// @match        https://www.instagram.com/p/*
-// @match        https://www.instagram.com/reel/*
-// @match        https://www.instagram.com/tv/*
+// @match        https://www.instagram.com/*
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==
@@ -14,7 +12,9 @@
 /*
  * HOW TO USE
  *   1. Log into Instagram as the account that owns the giveaway post.
- *   2. Open the giveaway post's own page (the URL must be /p/<shortcode>/).
+ *   2. Open the giveaway post. Both /p/<shortcode>/ and the /<username>/p/<shortcode>/
+ *      links Instagram uses when you open a post from a profile work. The panel only
+ *      appears while a post is open, including after in-app navigation.
  *   3. Click the "Capture entrants" panel in the bottom-right.
  *   4. When it finishes, click Download (or Copy) and drop the file into
  *      BHL Admin -> Giveaways -> Entrants -> Import.
@@ -240,12 +240,32 @@
     logBox.scrollTop = logBox.scrollHeight;
   }
 
-  panel.querySelector('#bhl-hide').onclick = () => panel.remove();
+  // Instagram is a single-page app: moving from a profile to a post changes the URL
+  // without a page load, so the script runs on every Instagram page and only shows
+  // the panel while a post is actually open.
+  let dismissed = false;
+  let capturing = false;
+  let lastPath = null;
+  function syncVisibility() {
+    if (location.pathname === lastPath) return;
+    lastPath = location.pathname;
+    // Never hide mid-capture — the run keeps using the shortcode it started with.
+    if (capturing) return;
+    panel.style.display = !dismissed && shortcodeFromUrl() ? 'block' : 'none';
+  }
+  syncVisibility();
+  setInterval(syncVisibility, 800);
+
+  panel.querySelector('#bhl-hide').onclick = () => {
+    dismissed = true;
+    panel.style.display = 'none';
+  };
 
   let capture = null;
 
   panel.querySelector('#bhl-run').onclick = async () => {
     const button = panel.querySelector('#bhl-run');
+    capturing = true;
     button.disabled = true;
     button.textContent = 'Capturing...';
     logBox.textContent = '';
@@ -253,7 +273,7 @@
 
     try {
       const shortcode = shortcodeFromUrl();
-      if (!shortcode) throw new Error('Open the post\'s own page first (instagram.com/p/...).');
+      if (!shortcode) throw new Error('Open the giveaway post first.');
 
       const mediaId = shortcodeToMediaId(shortcode);
       if (!mediaId) throw new Error(`Could not derive a media id from "${shortcode}".`);
@@ -327,6 +347,8 @@
     } catch (err) {
       log(`Failed: ${err.message}`);
     } finally {
+      capturing = false;
+      lastPath = null; // re-evaluate visibility against wherever the user is now
       button.disabled = false;
       button.textContent = 'Capture entrants';
     }

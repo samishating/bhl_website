@@ -130,9 +130,9 @@
 }
 
 .statusAwaiting {
-  background: rgba(255, 253, 186, 0.1);
-  color: var(--cream);
-  border: 1px solid rgba(255, 253, 186, 0.3);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 0, 0, 0.4);
 }
 
 .statusRolled {
@@ -255,8 +255,8 @@
   margin-top: 24px;
   padding: 16px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 253, 186, 0.25);
-  background: rgba(255, 253, 186, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .verifyNoticeTitle {
@@ -267,7 +267,8 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--cream);
+  color: var(--text-primary);
+  opacity: 0.9;
 }
 
 .verifyNoticeBody {
@@ -362,7 +363,7 @@
   margin: 16px 0 0;
   font-size: 0.75rem;
   line-height: 1.5;
-  color: var(--cream);
+  color: var(--text-secondary);
   opacity: 0.75;
 }
 
@@ -503,8 +504,8 @@
 }
 
 .checkUnknown {
-  color: var(--cream);
-  background: rgba(255, 253, 186, 0.08);
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .entrantMeta {
@@ -600,4 +601,16 @@
   color: var(--text-muted);
   opacity: 0.5;
   font-size: 0.9rem;
+}
+
+.disqualifiedTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--brand-red);
+  background: rgba(255, 0, 0, 0.1);
+  white-space: nowrap;
 }

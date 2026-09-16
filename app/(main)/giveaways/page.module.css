@@ -85,7 +85,10 @@
 /* ─── Feed grid ─────────────────────────────────────── */
 .feed {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  /* auto-fit + a capped track keeps a lone card centered under the hero
+     instead of stranding it in the first column of an empty row. */
+  grid-template-columns: repeat(auto-fit, minmax(340px, 480px));
+  justify-content: center;
   gap: 32px;
   align-items: start;
 }

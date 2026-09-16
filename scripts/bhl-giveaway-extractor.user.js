@@ -167,7 +167,7 @@
     return rows;
   }
 
-  /** One entry per account — every comment kept, so the site can check mentions across all of them. */
+  /** One entry per account — repeat comments are kept on that entry for reference, never as extra entries. */
   function uniqueEntrants(rows, ownerUsername) {
     const owner = ownerUsername ? ownerUsername.toLowerCase() : null;
     const byUsername = new Map();

@@ -11,7 +11,9 @@ import { revalidatePath } from 'next/cache';
  *
  * The winner count is NOT supplied by the caller: it was fixed when the giveaway was
  * created, and is re-validated here against the eligible pool as it actually stands.
- * Rolling is a one-time, locked event — a giveaway with winners can never be re-rolled.
+ * The draw is private until published: a superadmin checks each winner (e.g. that they
+ * follow the account), redraws anyone who fails via /redraw, then publishes via /publish.
+ * A giveaway can only be rolled once; individual winners are replaced, never re-rolled.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (giveaway.winners.length > 0) {
       return NextResponse.json(
-        { error: 'This giveaway has already been rolled. The result is locked.' },
+        { error: 'Winners have already been drawn for this giveaway. Replace individual winners instead of re-rolling.' },
         { status: 409 }
       );
     }
@@ -79,9 +81,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       `${pool.length} eligible -> ${drawn.map(w => w.username).join(', ')}`
     );
 
+    // Only the dashboard changes — the public feed and winners page wait for publishing.
     revalidatePath('/admin/giveaways');
-    revalidatePath('/giveaways');
-    revalidatePath(`/giveaways/${giveaway.shortcode}`);
 
     return NextResponse.json({
       winners: giveaway.winners,

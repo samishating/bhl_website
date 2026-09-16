@@ -12,12 +12,13 @@ import {
 import { revalidatePath } from 'next/cache';
 
 /**
- * A rolled giveaway is locked: its result can never change and its public
- * winners page stays up permanently, so edits and deletes are both refused.
+ * Once winners are drawn the giveaway is locked: its settings and entrants are what the
+ * draw ran against, so edits and deletes are refused from then on — including after
+ * publishing, when the public winners page must stay up permanently.
  */
 function lockedResponse() {
   return NextResponse.json(
-    { error: 'This giveaway has been rolled and is locked. Its winners page stays published.' },
+    { error: 'Winners have been drawn for this giveaway, so it can no longer be edited or removed.' },
     { status: 409 }
   );
 }

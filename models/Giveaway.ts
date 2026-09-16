@@ -4,11 +4,12 @@ import {
   type GiveawayRule,
   type GiveawayEntrant,
   type GiveawayWinner,
+  type GiveawayReplacedWinner,
 } from '@/lib/giveaways';
 
 // The rule enum and the entrant/winner shapes live in lib/giveaways.ts so that client
 // components can import them without dragging mongoose into the browser bundle.
-export type { GiveawayRule, GiveawayEntrant, GiveawayWinner };
+export type { GiveawayRule, GiveawayEntrant, GiveawayWinner, GiveawayReplacedWinner };
 
 export interface IGiveaway extends Document {
   title: string;
@@ -25,9 +26,15 @@ export interface IGiveaway extends Document {
   entrantsCapturedAt?: Date;
   entrantsSource?: 'userscript' | 'manual';
   ownerUsername?: string;
+  /** Drawn winners. Private until `publishedAt` is set — a superadmin checks them first. */
   winners: GiveawayWinner[];
   rolledAt?: Date;
   rolledBy?: Types.ObjectId;
+  /** Winners swapped out before publishing (e.g. not following), kept for the audit trail. */
+  replacedWinners: GiveawayReplacedWinner[];
+  /** Set once the winners are confirmed. Only then is the result public and locked. */
+  publishedAt?: Date;
+  publishedBy?: Types.ObjectId;
   createdBy?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -55,6 +62,15 @@ const WinnerSchema = new Schema<GiveawayWinner>({
   profilePicUrl: { type: String },
 }, { _id: false });
 
+const ReplacedWinnerSchema = new Schema<GiveawayReplacedWinner>({
+  username: { type: String, required: true },
+  profileUrl: { type: String, required: true },
+  reason: { type: String, required: true },
+  replacedBy: { type: String, required: true },
+  replacedAt: { type: Date, required: true },
+  replacedByUserId: { type: Schema.Types.ObjectId, ref: 'User' },
+}, { _id: false });
+
 const GiveawaySchema = new Schema<IGiveaway>({
   title: { type: String, required: true, trim: true },
   postUrl: { type: String, required: true, trim: true },
@@ -71,6 +87,9 @@ const GiveawaySchema = new Schema<IGiveaway>({
   winners: { type: [WinnerSchema], default: [] },
   rolledAt: { type: Date },
   rolledBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  replacedWinners: { type: [ReplacedWinnerSchema], default: [] },
+  publishedAt: { type: Date },
+  publishedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 

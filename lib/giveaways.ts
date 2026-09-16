@@ -41,7 +41,24 @@ export interface GiveawayWinner {
   profilePicUrl?: string;
 }
 
-export type GiveawayStatus = 'active' | 'awaiting_roll' | 'rolled';
+/** A drawn winner swapped out before publishing, kept for the audit trail. */
+export interface GiveawayReplacedWinner {
+  username: string;
+  profileUrl: string;
+  reason: string;
+  /** The username drawn in their place. */
+  replacedBy: string;
+  replacedAt: Date | string;
+  replacedByUserId?: unknown;
+}
+
+/**
+ * - active: entries open
+ * - awaiting_roll: entries closed, nothing drawn yet
+ * - drawn: winners drawn but not yet checked/published — admin-only, the public still sees awaiting_roll
+ * - rolled: winners published, public and locked
+ */
+export type GiveawayStatus = 'active' | 'awaiting_roll' | 'drawn' | 'rolled';
 
 export const RULE_LABELS: Record<GiveawayRule, string> = {
   follow: 'Must follow',
@@ -49,13 +66,14 @@ export const RULE_LABELS: Record<GiveawayRule, string> = {
   like: 'Must have liked',
 };
 
-/** Which rules the extractor can actually prove, vs. which are self-reported (spec §8). */
-export const RULE_VERIFIABILITY: Record<GiveawayRule, 'derived' | 'captured'> = {
-  // Always machine-verified: derived server-side from the raw comment text.
+/** How each rule is enforced (spec §8). */
+export const RULE_VERIFIABILITY: Record<GiveawayRule, 'derived' | 'manual'> = {
+  // Machine-verified: derived server-side from the raw comment text.
   mention: 'derived',
-  // Verified only when the extractor captured it; otherwise trust-based.
-  like: 'captured',
-  follow: 'captured',
+  // Not captured by the extractor. Stated to entrants, then checked by hand on the drawn
+  // winners before publishing — anyone who fails is redrawn.
+  like: 'manual',
+  follow: 'manual',
 };
 
 // ---------------------------------------------------------------------------
@@ -277,16 +295,46 @@ export function eligibleEntrants<T extends EntrantFacts>(
 // Status + the draw
 // ---------------------------------------------------------------------------
 
-export function giveawayStatus(giveaway: { endDate: Date | string; winners?: unknown[] }): GiveawayStatus {
-  if (giveaway.winners && giveaway.winners.length > 0) return 'rolled';
+export function giveawayStatus(giveaway: {
+  endDate: Date | string;
+  winners?: unknown[];
+  publishedAt?: Date | string | null;
+}): GiveawayStatus {
+  if (giveaway.publishedAt) return 'rolled';
+  if (giveaway.winners && giveaway.winners.length > 0) return 'drawn';
   return new Date(giveaway.endDate).getTime() > Date.now() ? 'active' : 'awaiting_roll';
 }
 
 export const STATUS_LABELS: Record<GiveawayStatus, string> = {
   active: 'Accepting entries',
   awaiting_roll: 'Entries closed',
+  drawn: 'Checking winners',
   rolled: 'Winners announced',
 };
+
+/**
+ * Strips unpublished winners before a giveaway leaves the server for a public consumer.
+ * Until publishing, a drawn winner might still be redrawn, so they must never be exposed.
+ */
+export function toPublicGiveaway<T extends { winners?: unknown[]; publishedAt?: Date | string | null }>(giveaway: T): T {
+  if (giveaway.publishedAt) return giveaway;
+  return { ...giveaway, winners: [] };
+}
+
+/**
+ * Picks one replacement for a winner who failed a manual check (e.g. not following).
+ * Draws uniformly from the eligible pool, excluding everyone already drawn.
+ */
+export function pickReplacement<T extends { username: string }>(
+  pool: T[],
+  alreadyDrawn: string[],
+  randomInt: (maxExclusive: number) => number
+): T | null {
+  const taken = new Set(alreadyDrawn);
+  const remaining = pool.filter(e => !taken.has(e.username));
+  if (remaining.length === 0) return null;
+  return remaining[randomInt(remaining.length)];
+}
 
 /**
  * Uniform Fisher-Yates, then take the first N (spec §10) — never a `Math.random()` sort.

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (!giveaway) return NextResponse.json({ error: 'Giveaway not found' }, { status: 404 });
     if (giveaway.winners.length > 0) {
       return NextResponse.json(
-        { error: 'This giveaway has been rolled and is locked — its entrant snapshot cannot be replaced.' },
+        { error: 'Winners have been drawn for this giveaway, so its entrants can no longer be replaced.' },
         { status: 409 }
       );
     }
@@ -129,7 +129,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!giveaway) return NextResponse.json({ error: 'Giveaway not found' }, { status: 404 });
     if (giveaway.winners.length > 0) {
       return NextResponse.json(
-        { error: 'This giveaway has been rolled and is locked.' },
+        { error: 'Winners have been drawn for this giveaway. Use Redraw on a winner instead.' },
         { status: 409 }
       );
     }

@@ -27,9 +27,10 @@ async function getGiveaway(slug: string): Promise<WinnersRecord | null> {
   try {
     await connectDB();
     const giveaway = await Giveaway.findOne({ shortcode: slug })
-      .select('title postUrl shortcode endDate rules winnerCount winners rolledAt')
-      .lean();
-    if (!giveaway) return null;
+      .select('title postUrl shortcode endDate rules winnerCount winners rolledAt publishedAt')
+      .lean() as { publishedAt?: Date } | null;
+    // No winners page until the result is published — drawn winners may still be redrawn.
+    if (!giveaway || !giveaway.publishedAt) return null;
     return JSON.parse(JSON.stringify(giveaway));
   } catch {
     return null;

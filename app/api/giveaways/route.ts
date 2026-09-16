@@ -7,12 +7,13 @@ import {
   extractShortcode,
   canonicalPostUrl,
   shortcodeToMediaId,
+  toPublicGiveaway,
   type GiveawayRule,
 } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /** Entrant data never leaves the server for public consumers (spec §5/§12). */
-const PUBLIC_FIELDS = 'title postUrl shortcode endDate rules minMentions winnerCount winners rolledAt createdAt';
+const PUBLIC_FIELDS = 'title postUrl shortcode endDate rules minMentions winnerCount winners rolledAt publishedAt createdAt';
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,7 +24,9 @@ export async function GET(req: NextRequest) {
     const query = Giveaway.find({}).sort({ endDate: -1 });
     if (!admin) query.select(PUBLIC_FIELDS);
 
-    const giveaways = await query.lean();
+    const records = await query.lean();
+    // Drawn-but-unpublished winners may still be redrawn, so the public never sees them.
+    const giveaways = admin ? records : records.map(g => toPublicGiveaway(g as { winners?: unknown[]; publishedAt?: Date }));
     return NextResponse.json({ giveaways }, {
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
     });

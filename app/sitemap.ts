@@ -42,13 +42,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }));
 
-    // Only rolled giveaways have a published winners page (spec §7).
-    const giveaways = await Giveaway.find({ 'winners.0': { $exists: true } })
-      .select('shortcode rolledAt updatedAt')
+    // Only giveaways with published winners have a public winners page (spec §7).
+    const giveaways = await Giveaway.find({ publishedAt: { $exists: true, $ne: null } })
+      .select('shortcode publishedAt updatedAt')
       .lean();
     giveawayRoutes = giveaways.map((g: any) => ({
       url: `${BASE_URL}/giveaways/${g.shortcode}`,
-      lastModified: g.rolledAt ? new Date(g.rolledAt) : g.updatedAt ? new Date(g.updatedAt) : undefined,
+      lastModified: g.publishedAt ? new Date(g.publishedAt) : g.updatedAt ? new Date(g.updatedAt) : undefined,
       changeFrequency: 'yearly',
       priority: 0.5,
     }));

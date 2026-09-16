@@ -127,8 +127,8 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
             </p>
           ) : (
             <p className={styles.rollNote}>
-              Winners are drawn with a uniform shuffle from the eligible pool. This runs once — the
-              result is permanent and publishes the giveaway&apos;s winners page immediately.
+              Winners are drawn with a uniform shuffle from the eligible pool. Nothing goes public
+              yet — you&apos;ll check each winner and redraw anyone who doesn&apos;t qualify before publishing.
             </p>
           )}
         </div>
@@ -166,7 +166,8 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
             ))}
           </AnimatePresence>
           <p className={styles.rollNote}>
-            Locked in. The public winners page is live at /giveaways/{giveaway.shortcode}
+            Drawn, not public yet. Check that each winner follows the account, redraw anyone who
+            doesn&apos;t, then hit Publish on the giveaway card.
           </p>
         </div>
       )}

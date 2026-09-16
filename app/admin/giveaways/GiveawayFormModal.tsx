@@ -182,14 +182,13 @@ export default function GiveawayFormModal({ giveaway, onClose, onSaved }: Props)
           </div>
         )}
 
-        {rules.some(r => RULE_VERIFIABILITY[r] === 'captured') && (
+        {rules.some(r => RULE_VERIFIABILITY[r] === 'manual') && (
           <div className={styles.verifyNotice}>
             <strong className={styles.verifyNoticeTitle}>Verification note</strong>
             <p className={styles.verifyNoticeBody}>
-              Mentions are always machine-verified from the comment text.{' '}
-              {rules.filter(r => RULE_VERIFIABILITY[r] === 'captured').map(r => RULE_LABELS[r]).join(' and ')}
-              {' '}can only be verified if your capture includes that data — otherwise it is self-reported,
-              and you can disqualify anyone manually before rolling.
+              Mentions are checked automatically from the comment text.{' '}
+              {rules.filter(r => RULE_VERIFIABILITY[r] === 'manual').map(r => RULE_LABELS[r]).join(' and ')}
+              {' '}is checked by you on the drawn winners before publishing — redraw anyone who doesn&apos;t qualify.
             </p>
           </div>
         )}

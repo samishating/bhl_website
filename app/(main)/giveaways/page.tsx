@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
+import { toPublicGiveaway } from '@/lib/giveaways';
 import GiveawaysFeed, { type PublicGiveaway } from './GiveawaysFeed';
 import styles from './page.module.css';
 
@@ -39,10 +40,11 @@ async function getGiveaways(): Promise<PublicGiveaway[]> {
     await connectDB();
     // Entrant snapshots never leave the server (spec §5) — only public fields are selected.
     const giveaways = await Giveaway.find({})
-      .select('title postUrl shortcode endDate rules minMentions winnerCount winners rolledAt')
+      .select('title postUrl shortcode endDate rules minMentions winnerCount winners rolledAt publishedAt')
       .sort({ endDate: -1 })
       .lean();
-    return JSON.parse(JSON.stringify(giveaways));
+    // Drawn winners stay private until a superadmin has checked and published them.
+    return JSON.parse(JSON.stringify(giveaways.map(g => toPublicGiveaway(g as { winners?: unknown[]; publishedAt?: Date }))));
   } catch {
     // DB unreachable — render the empty state rather than throwing the whole page.
     return [];

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         BHL Giveaway Extractor
 // @namespace    https://bhl-website.vercel.app/
-// @version      1.1.0
-// @description  Capture the entrants of a Brotherhood Legacy Instagram giveaway (comments, and optionally who liked and who follows) into the JSON the BHL admin dashboard imports.
+// @version      2.0.0
+// @description  Capture the unique commenters of a Brotherhood Legacy Instagram giveaway into the JSON the BHL admin dashboard imports.
 // @author       Brotherhood Legacy
 // @match        https://www.instagram.com/*
 // @run-at       document-idle
@@ -15,37 +15,29 @@
  *   2. Open the giveaway post. Both /p/<shortcode>/ and the /<username>/p/<shortcode>/
  *      links Instagram uses when you open a post from a profile work. The panel only
  *      appears while a post is open, including after in-app navigation.
- *   3. Click the "Capture entrants" panel in the bottom-right.
+ *   3. Click "Capture entrants" in the panel at the bottom-right.
  *   4. When it finishes, click Download (or Copy) and drop the file into
  *      BHL Admin -> Giveaways -> Entrants -> Import.
  *
  * WHAT IT CAPTURES
- *   - Every top-level comment (paginated). Threaded REPLIES are not captured —
- *     entries are expected to be top-level comments.
- *   - Optionally the post's likers, to verify the "must have liked" rule.
- *   - Optionally your own follower list, to verify the "must follow" rule.
- *
- * WHAT IT DELIBERATELY DOES NOT DO
- *   - It does not dedupe, filter, or decide eligibility. It dumps what it sees and
- *     the server does all of that, so the roll stays reproducible and auditable.
- *   - If a check can't be completed (e.g. Instagram truncates the likers list), the
- *     field is emitted as `null` rather than `false`, and the site falls back to
- *     trust-based for that rule instead of wrongly excluding people.
+ *   Every top-level comment on the post, collapsed to one entry per account — commenting
+ *   ten times still counts once. Threaded replies and the post owner's own comments are
+ *   left out. Follows and likes are NOT captured: check that each winner follows the
+ *   account from the admin dashboard before publishing, and redraw anyone who doesn't.
  *
  * NOTE ON FRAGILITY
- *   These are Instagram's own internal web endpoints, not a documented API. They can
- *   change without notice. Requests are throttled and back off on 429 — do not lower
- *   the delays, since hammering them can get the account temporarily action-blocked.
+ *   This uses Instagram's own internal web endpoints, not a documented API. They can
+ *   change without notice. Requests are throttled and back off on 429 — don't lower the
+ *   delays, since hammering them can get the account temporarily action-blocked.
  */
 
 (function () {
   'use strict';
 
   // --- Tuning -------------------------------------------------------------
-  const PAGE_DELAY_MS = 1200;     // Between successive pages of the same list.
+  const PAGE_DELAY_MS = 1200;     // Between successive pages of comments.
   const BACKOFF_MS = 60_000;      // How long to wait after a 429 before retrying.
   const MAX_RETRIES = 3;
-  const FOLLOWER_PAGE_SIZE = 200;
 
   // The web app id Instagram's own frontend sends. Read from the page when possible
   // so this keeps working if Instagram rotates it; the constant is only a fallback.
@@ -105,40 +97,48 @@
     }
     if (!res.ok) throw new Error(`Instagram returned ${res.status} for ${path}`);
 
+    // Logged out, Instagram answers 200 with its HTML login page instead of JSON.
+    const type = res.headers.get('content-type') || '';
+    if (!type.includes('json')) {
+      throw new Error('Instagram sent its login page instead of data — log in as the post owner and try again.');
+    }
+
     return res.json();
   }
 
   // --- Capture steps ------------------------------------------------------
 
-  /** Post owner + like count. The like count is what tells us if the likers list got truncated. */
-  async function fetchMediaInfo(mediaId) {
+  /** The post owner, so their own replies can be left out of the entrants. */
+  async function fetchOwnerUsername(mediaId) {
     try {
       const data = await igFetch(`/api/v1/media/${mediaId}/info/`);
       const item = data && data.items && data.items[0];
-      if (!item) return {};
-      return {
-        ownerUsername: item.user && item.user.username,
-        likeCount: typeof item.like_count === 'number' ? item.like_count : null,
-      };
+      return (item && item.user && item.user.username) || null;
     } catch (err) {
-      log(`Could not read post info (${err.message}). Continuing without it.`);
-      return {};
+      log(`Could not read the post owner (${err.message}). The site will still drop them if it knows them.`);
+      return null;
     }
   }
 
   async function fetchComments(mediaId, onProgress) {
     const rows = [];
-    let minId = null;
+    const seenCommentIds = new Set();
+    let cursor = null;
     let page = 0;
 
     for (;;) {
-      const query = minId
-        ? `?can_support_threading=true&permalink_enabled=false&min_id=${encodeURIComponent(minId)}`
-        : '?can_support_threading=true&permalink_enabled=false';
-      const data = await igFetch(`/api/v1/media/${mediaId}/comments/${query}`);
+      const params = new URLSearchParams({ can_support_threading: 'true', permalink_enabled: 'false' });
+      if (cursor) params.set(cursor.param, cursor.value);
+      const data = await igFetch(`/api/v1/media/${mediaId}/comments/?${params}`);
 
       const batch = Array.isArray(data.comments) ? data.comments : [];
+      let fresh = 0;
       for (const comment of batch) {
+        const key = String(comment.pk || comment.id || '');
+        if (key && seenCommentIds.has(key)) continue;
+        if (key) seenCommentIds.add(key);
+        fresh += 1;
+
         const user = comment.user || {};
         // Deleted/restricted accounts come back without a username — skip rather than crash.
         if (!user.username) continue;
@@ -147,55 +147,51 @@
           userId: user.pk != null ? String(user.pk) : undefined,
           fullName: user.full_name || undefined,
           profilePicUrl: user.profile_pic_url || undefined,
-          comment: typeof comment.text === 'string' ? comment.text : '',
+          text: typeof comment.text === 'string' ? comment.text : '',
         });
       }
 
       page += 1;
       onProgress(rows.length, page);
 
-      minId = data.next_min_id || null;
-      if (!minId || batch.length === 0) break;
+      // Instagram has used both cursor styles on this endpoint; follow whichever it sends.
+      if (data.next_min_id) cursor = { param: 'min_id', value: data.next_min_id };
+      else if (data.next_max_id) cursor = { param: 'max_id', value: data.next_max_id };
+      else break;
+
+      // A page of only already-seen comments means the cursor stopped advancing.
+      if (batch.length === 0 || fresh === 0) break;
       await sleep(PAGE_DELAY_MS);
     }
 
     return rows;
   }
 
-  async function fetchLikers(mediaId, likeCount) {
-    const data = await igFetch(`/api/v1/media/${mediaId}/likers/`);
-    const users = Array.isArray(data.users) ? data.users : [];
-    const handles = new Set(users.map(u => String(u.username || '').toLowerCase()).filter(Boolean));
+  /** One entry per account — every comment kept, so the site can check mentions across all of them. */
+  function uniqueEntrants(rows, ownerUsername) {
+    const owner = ownerUsername ? ownerUsername.toLowerCase() : null;
+    const byUsername = new Map();
 
-    // Instagram caps this list on high-engagement posts. If it looks truncated we must
-    // NOT treat missing accounts as "didn't like" — report it as uncapturable instead.
-    const truncated = typeof likeCount === 'number' && handles.size < likeCount;
-    return { handles, truncated, seen: handles.size, likeCount };
-  }
-
-  async function fetchFollowers(onProgress) {
-    const selfId = cookie('ds_user_id');
-    if (!selfId) throw new Error('Could not read your user id from cookies — are you logged in?');
-
-    const handles = new Set();
-    let maxId = '';
-
-    for (;;) {
-      const query = `?count=${FOLLOWER_PAGE_SIZE}${maxId ? `&max_id=${encodeURIComponent(maxId)}` : ''}`;
-      const data = await igFetch(`/api/v1/friendships/${selfId}/followers/${query}`);
-
-      const users = Array.isArray(data.users) ? data.users : [];
-      for (const user of users) {
-        if (user.username) handles.add(String(user.username).toLowerCase());
+    for (const row of rows) {
+      if (owner && row.username === owner) continue;
+      const existing = byUsername.get(row.username);
+      if (existing) {
+        if (row.text) existing.comments.push(row.text);
+        existing.fullName = existing.fullName || row.fullName;
+        existing.profilePicUrl = existing.profilePicUrl || row.profilePicUrl;
+        existing.userId = existing.userId || row.userId;
+        continue;
       }
-      onProgress(handles.size);
-
-      maxId = data.next_max_id || '';
-      if (!maxId || users.length === 0) break;
-      await sleep(PAGE_DELAY_MS);
+      byUsername.set(row.username, {
+        username: row.username,
+        userId: row.userId,
+        fullName: row.fullName,
+        profilePicUrl: row.profilePicUrl,
+        comments: row.text ? [row.text] : [],
+      });
     }
 
-    return handles;
+    return [...byUsername.values()];
   }
 
   // --- UI -----------------------------------------------------------------
@@ -213,12 +209,6 @@
       <strong style="letter-spacing:0.08em;text-transform:uppercase;font-size:11px;color:#FF3B3B">BHL Giveaway</strong>
       <button id="bhl-hide" style="border:none;background:transparent;color:#888;cursor:pointer;font-size:16px;line-height:1">&times;</button>
     </div>
-    <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer">
-      <input type="checkbox" id="bhl-likes" checked> Verify who liked
-    </label>
-    <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer">
-      <input type="checkbox" id="bhl-follows"> Verify who follows (slow)
-    </label>
     <button id="bhl-run" style="width:100%;padding:10px;border:none;border-radius:8px;background:#FF0000;color:#fff;font-weight:700;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;font-size:12px">Capture entrants</button>
     <div id="bhl-log" style="margin-top:12px;max-height:160px;overflow-y:auto;font-size:11px;color:#bbb;white-space:pre-wrap"></div>
     <div id="bhl-actions" style="display:none;gap:8px;margin-top:12px">
@@ -279,60 +269,21 @@
       if (!mediaId) throw new Error(`Could not derive a media id from "${shortcode}".`);
       log(`Post ${shortcode} -> media ${mediaId}`);
 
-      const { ownerUsername, likeCount } = await fetchMediaInfo(mediaId);
-      if (ownerUsername) log(`Owner: @${ownerUsername}`);
+      const ownerUsername = await fetchOwnerUsername(mediaId);
+      if (ownerUsername) log(`Owner: @${ownerUsername} (their comments are left out)`);
 
       log('Fetching comments...');
       const rows = await fetchComments(mediaId, (count, page) =>
         setStatus(`Fetching comments... ${count} from ${page} page${page === 1 ? '' : 's'}`)
       );
-      log(`${rows.length} raw comments captured.`);
 
-      // --- optional: likes ---
-      let likedHandles = null;
-      if (panel.querySelector('#bhl-likes').checked) {
-        log('Fetching likers...');
-        try {
-          const result = await fetchLikers(mediaId, likeCount);
-          if (result.truncated) {
-            log(
-              `Instagram only returned ${result.seen} of ${result.likeCount} likers. ` +
-              `Leaving "liked" unset so nobody is wrongly excluded.`
-            );
-          } else {
-            likedHandles = result.handles;
-            log(`${result.handles.size} likers captured.`);
-          }
-        } catch (err) {
-          log(`Could not fetch likers (${err.message}). Leaving "liked" unset.`);
-        }
-      }
+      const entrants = uniqueEntrants(rows, ownerUsername);
+      log(`${rows.length} comments -> ${entrants.length} unique accounts.`);
 
-      // --- optional: follows ---
-      let followerHandles = null;
-      if (panel.querySelector('#bhl-follows').checked) {
-        log('Fetching your followers...');
-        try {
-          followerHandles = await fetchFollowers(count => setStatus(`Fetching your followers... ${count}`));
-          log(`${followerHandles.size} followers captured.`);
-        } catch (err) {
-          log(`Could not fetch followers (${err.message}). Leaving "follows" unset.`);
-        }
-      }
-
-      // Stamp each row. `null` where we couldn't verify — never a guessed `false`.
-      const entrants = rows.map(row => ({
-        username: row.username,
-        userId: row.userId,
-        fullName: row.fullName,
-        profilePicUrl: row.profilePicUrl,
-        comments: [row.comment],
-        liked: likedHandles ? likedHandles.has(row.username) : null,
-        follows: followerHandles ? followerHandles.has(row.username) : null,
-      }));
+      if (entrants.length === 0) throw new Error('No entrants found on this post.');
 
       capture = {
-        version: 1,
+        version: 2,
         postUrl: `https://www.instagram.com/p/${shortcode}/`,
         postId: mediaId,
         capturedAt: new Date().toISOString(),
@@ -340,9 +291,7 @@
         entrants,
       };
 
-      const unique = new Set(entrants.map(e => e.username)).size;
-      log(`Done. ${entrants.length} comments from ${unique} unique accounts.`);
-      log('The site does the dedup and rule checks on import.');
+      log('Done. Download it and import it on the giveaway in the admin dashboard.');
       panel.querySelector('#bhl-actions').style.display = 'flex';
     } catch (err) {
       log(`Failed: ${err.message}`);

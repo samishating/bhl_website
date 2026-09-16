@@ -20,6 +20,7 @@ export interface PublicGiveaway {
   winnerCount: number;
   winners: { username: string; profileUrl: string; fullName?: string }[];
   rolledAt?: string;
+  publishedAt?: string;
 }
 
 type Filter = 'all' | 'live' | 'ended';
@@ -33,6 +34,9 @@ const FILTERS: { key: Filter; label: string }[] = [
 const STATUS_BADGE: Record<GiveawayStatus, { label: string; className: string }> = {
   active: { label: 'Accepting entries', className: styles.badgeActive },
   awaiting_roll: { label: 'Entries closed', className: styles.badgeClosed },
+  // Never reaches the public (unpublished winners are stripped server-side), but reads
+  // the same as "entries closed" if it ever did.
+  drawn: { label: 'Entries closed', className: styles.badgeClosed },
   rolled: { label: 'Winners announced', className: styles.badgeRolled },
 };
 

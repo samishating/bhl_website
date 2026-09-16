@@ -269,7 +269,9 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                         )}
                         {(giveaway.rules || []).map((rule: GiveawayRule) => {
                           const check = result.checks[rule];
-                          if (!check) return null;
+                          // Follows/likes aren't captured any more — they're checked by hand on the
+                          // drawn winners, so an "unverified" badge on every row would just be noise.
+                          if (!check || check === 'unverified') return null;
                           const meta = CHECK_META[check];
                           return (
                             <span
@@ -306,9 +308,9 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                 </ul>
 
                 <p className={styles.legend}>
-                  <span className={styles.checkPass}>✓</span> machine-verified ·{' '}
-                  <span className={styles.checkFail}>✕</span> verified fail ·{' '}
-                  <span className={styles.checkUnknown}>?</span> not captured, trusted
+                  <span className={styles.checkPass}>✓</span> passed ·{' '}
+                  <span className={styles.checkFail}>✕</span> failed · follows are checked on the
+                  winners after the roll
                 </p>
               </>
             )}

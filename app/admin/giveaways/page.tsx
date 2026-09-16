@@ -29,12 +29,15 @@ export interface AdminGiveaway {
   ownerUsername?: string;
   winners: { username: string; profileUrl: string; fullName?: string }[];
   rolledAt?: string;
+  replacedWinners?: { username: string; reason: string; replacedBy: string }[];
+  publishedAt?: string;
 }
 
 const STATUS_META: Record<GiveawayStatus, { label: string; className: string }> = {
   active: { label: 'Live', className: styles.statusActive },
   awaiting_roll: { label: 'Awaiting roll', className: styles.statusAwaiting },
-  rolled: { label: 'Rolled', className: styles.statusRolled },
+  drawn: { label: 'Check winners', className: styles.statusAwaiting },
+  rolled: { label: 'Published', className: styles.statusRolled },
 };
 
 export default function AdminGiveawaysPage() {
@@ -50,6 +53,43 @@ export default function AdminGiveawaysPage() {
   const [rollTarget, setRollTarget] = useState<AdminGiveaway | null>(null);
   const [removeTarget, setRemoveTarget] = useState<AdminGiveaway | null>(null);
   const [removing, setRemoving] = useState(false);
+  const [redrawTarget, setRedrawTarget] = useState<{ giveaway: AdminGiveaway; username: string } | null>(null);
+  const [publishTarget, setPublishTarget] = useState<AdminGiveaway | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const handleRedraw = async () => {
+    if (!redrawTarget || busy) return;
+    setBusy(true);
+    const res = await fetch(`/api/giveaways/${redrawTarget.giveaway._id}/redraw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: redrawTarget.username, reason: 'Not following' }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    setRedrawTarget(null);
+    if (res.ok) {
+      showToast(`@${data.replaced} replaced by @${data.replacement.username}`, 'success');
+      load();
+    } else {
+      showToast(data.error || 'Redraw failed', 'error');
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!publishTarget || busy) return;
+    setBusy(true);
+    const res = await fetch(`/api/giveaways/${publishTarget._id}/publish`, { method: 'POST' });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    setPublishTarget(null);
+    if (res.ok) {
+      showToast('Winners published — the winners page is live', 'success');
+      load();
+    } else {
+      showToast(data.error || 'Publish failed', 'error');
+    }
+  };
 
   const load = useCallback(async () => {
     try {
@@ -125,6 +165,8 @@ export default function AdminGiveawaysPage() {
                 onEntrants={() => setEntrantsTarget(giveaway)}
                 onRoll={() => setRollTarget(giveaway)}
                 onRemove={() => setRemoveTarget(giveaway)}
+                onRedraw={username => setRedrawTarget({ giveaway, username })}
+                onPublish={() => setPublishTarget(giveaway)}
               />
             ))}
           </motion.div>
@@ -170,6 +212,36 @@ export default function AdminGiveawaysPage() {
         onConfirm={handleRemove}
         onCancel={() => setRemoveTarget(null)}
       />
+
+      <ConfirmationModal
+        isOpen={!!redrawTarget}
+        title="Redraw this winner"
+        message={
+          redrawTarget
+            ? `@${redrawTarget.username} will be excluded as not following and can't be drawn again. A replacement is picked at random from the remaining eligible entrants.`
+            : ''
+        }
+        confirmLabel={busy ? 'Drawing...' : 'Exclude & redraw'}
+        cancelLabel="Keep winner"
+        variant="warning"
+        onConfirm={handleRedraw}
+        onCancel={() => setRedrawTarget(null)}
+      />
+
+      <ConfirmationModal
+        isOpen={!!publishTarget}
+        title="Publish winners"
+        message={
+          publishTarget
+            ? `${publishTarget.winners.map(w => `@${w.username}`).join(', ')} will be announced on the public winners page. After this the result is final — no more redraws.`
+            : ''
+        }
+        confirmLabel={busy ? 'Publishing...' : 'Publish'}
+        cancelLabel="Not yet"
+        variant="info"
+        onConfirm={handlePublish}
+        onCancel={() => setPublishTarget(null)}
+      />
     </>
   );
 }
@@ -182,6 +254,8 @@ function GiveawayRow({
   onEntrants,
   onRoll,
   onRemove,
+  onRedraw,
+  onPublish,
 }: {
   giveaway: AdminGiveaway;
   status: GiveawayStatus;
@@ -190,9 +264,12 @@ function GiveawayRow({
   onEntrants: () => void;
   onRoll: () => void;
   onRemove: () => void;
+  onRedraw: (username: string) => void;
+  onPublish: () => void;
 }) {
   const meta = STATUS_META[status];
-  const locked = status === 'rolled';
+  // Settings and entrants freeze the moment winners are drawn, published or not.
+  const locked = status === 'rolled' || status === 'drawn';
 
   const entrantCount = giveaway.entrants?.length || 0;
   const eligibleCount = useMemo(
@@ -238,7 +315,50 @@ function GiveawayRow({
         </div>
       </dl>
 
-      {locked && giveaway.winners.length > 0 && (
+      {status === 'drawn' && (
+        <div className={styles.checkPanel}>
+          <p className={styles.checkIntro}>
+            Not public yet. Open each winner and make sure they follow the account
+            {giveaway.rules.includes('like') ? ' and liked the post' : ''}. Redraw anyone who doesn&apos;t, then publish.
+          </p>
+
+          <ul className={styles.checkList}>
+            {giveaway.winners.map((winner, index) => (
+              <motion.li
+                key={winner.username}
+                className={styles.checkRow}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                <span className={styles.checkRank}>{String(index + 1).padStart(2, '0')}</span>
+                <a
+                  href={winner.profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.checkHandle}
+                >
+                  @{winner.username} ↗
+                </a>
+                {isSuperadmin && (
+                  <button className="btn btn-ghost btn-sm" onClick={() => onRedraw(winner.username)}>
+                    Redraw
+                  </button>
+                )}
+              </motion.li>
+            ))}
+          </ul>
+
+          {(giveaway.replacedWinners?.length ?? 0) > 0 && (
+            <p className={styles.replacedNote}>
+              Replaced:{' '}
+              {giveaway.replacedWinners!.map(r => `@${r.username} (${r.reason.toLowerCase()})`).join(', ')}
+            </p>
+          )}
+        </div>
+      )}
+
+      {status === 'rolled' && giveaway.winners.length > 0 && (
         <div className={styles.winnerStrip}>
           <span className={styles.winnerStripLabel}>
             {giveaway.winners.length === 1 ? 'Winner' : 'Winners'}
@@ -255,7 +375,12 @@ function GiveawayRow({
             {entrantCount === 0 ? 'Import entrants' : 'Entrants'}
           </button>
         )}
-        {locked && (
+        {status === 'drawn' && isSuperadmin && (
+          <button className="btn btn-primary btn-sm" onClick={onPublish}>
+            Publish winners
+          </button>
+        )}
+        {status === 'rolled' && (
           <a
             href={`/giveaways/${giveaway.shortcode}`}
             target="_blank"
@@ -280,11 +405,14 @@ function GiveawayRow({
             <button className="btn btn-danger btn-sm" onClick={onRemove} title="Remove giveaway">🗑️</button>
           </>
         )}
-        {locked && <span className={styles.lockedNote}>Locked — result is final</span>}
+        {status === 'rolled' && <span className={styles.lockedNote}>Published — result is final</span>}
       </div>
 
       {status === 'awaiting_roll' && !isSuperadmin && (
         <p className={styles.roleNote}>Only a superadmin can roll this giveaway.</p>
+      )}
+      {status === 'drawn' && !isSuperadmin && (
+        <p className={styles.roleNote}>Only a superadmin can redraw or publish these winners.</p>
       )}
     </motion.div>
   );

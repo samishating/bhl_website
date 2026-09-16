@@ -24,6 +24,7 @@ export default function Footer() {
               <li><Link href="/#divisions">Divisions</Link></li>
               <li><Link href="/#leaderboard">Leaderboard</Link></li>
               <li><Link href="/#challenges">Challenges</Link></li>
+              <li><Link href="/giveaways">Giveaways</Link></li>
               <li><Link href="/#hero">Join Us</Link></li>
             </ul>
           </div>

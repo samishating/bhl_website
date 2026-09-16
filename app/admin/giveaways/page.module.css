@@ -1,0 +1,603 @@
+/* ─── Page header ───────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.loading {
+  text-align: center;
+  padding: 10rem 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 80px 32px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+}
+
+/* ─── Giveaway cards ────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: rgba(20, 20, 20, 0.72);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 0, 0, 0.12);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardHeadings {
+  min-width: 0;
+}
+
+.cardTitle {
+  margin: 0 0 8px;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  opacity: 0.9;
+}
+
+.postLink {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.7;
+}
+
+.postLink:hover {
+  color: var(--brand-red);
+  opacity: 1;
+}
+
+/* ─── Status chip ───────────────────────────────────── */
+.status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.statusAwaiting {
+  background: rgba(255, 253, 186, 0.1);
+  color: var(--cream);
+  border: 1px solid rgba(255, 253, 186, 0.3);
+}
+
+.statusRolled {
+  background: rgba(255, 0, 0, 0.12);
+  color: var(--brand-red);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+/* ─── Stat rows ─────────────────────────────────────── */
+.statRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.stat dt {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.stat dd {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  opacity: 0.9;
+}
+
+.winnerStrip {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  background: rgba(255, 0, 0, 0.06);
+}
+
+.winnerStripLabel {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-red);
+  flex-shrink: 0;
+}
+
+.winnerStripNames {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  opacity: 0.9;
+  word-break: break-word;
+}
+
+/* ─── Card actions ──────────────────────────────────── */
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.actionSpacer {
+  flex: 1;
+}
+
+.lockedNote,
+.roleNote {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.roleNote {
+  margin: 0;
+}
+
+/* ─── Form bits ─────────────────────────────────────── */
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 500px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fieldHint {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  opacity: 0.65;
+}
+
+.verifyNotice {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 253, 186, 0.25);
+  background: rgba(255, 253, 186, 0.06);
+}
+
+.verifyNoticeTitle {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+.verifyNoticeBody {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+/* ─── Entrants modal ────────────────────────────────── */
+.tabRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.captureHint {
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.captureHintBody {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+.captureFacts {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.captureFacts dt {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.captureFacts dd {
+  margin: 0;
+}
+
+.captureFacts code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--brand-red);
+}
+
+.dropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.dropZone:hover,
+.dropZoneActive {
+  border-color: var(--border-hover);
+  background: rgba(255, 0, 0, 0.05);
+}
+
+.dropZoneLabel {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.replaceWarning {
+  margin: 16px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--cream);
+  opacity: 0.75;
+}
+
+/* ─── Review tab ────────────────────────────────────── */
+.reviewEmpty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.reviewSummary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.rollReady .reviewSummary {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.reviewStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.reviewStatValue {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.reviewStatLabel {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.shortfallWarning {
+  margin: 0 0 24px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  background: rgba(255, 0, 0, 0.07);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.entrantList {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.entrantRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.entrantRowOut {
+  opacity: 0.5;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 560px) {
+  .entrantRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.entrantHandle {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
+}
+
+.entrantHandle:hover {
+  color: var(--brand-red);
+}
+
+.entrantChecks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.checkPass {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.checkFail {
+  color: var(--brand-red);
+  background: rgba(255, 0, 0, 0.1);
+}
+
+.checkUnknown {
+  color: var(--cream);
+  background: rgba(255, 253, 186, 0.08);
+}
+
+.entrantMeta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.legend {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ─── Roll modal ────────────────────────────────────── */
+.rollNote {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  opacity: 0.75;
+  text-align: center;
+}
+
+.rollStage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 0;
+}
+
+.rollSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(255, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.rollSlotName {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.rollWinner {
+  display: grid;
+  grid-template-columns: 32px 1fr 16px;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 0, 0, 0.35);
+  background: rgba(255, 0, 0, 0.08);
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.rollWinner:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.42), 0 0 14px rgba(255, 0, 0, 0.16);
+}
+
+.rollWinnerRank {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--brand-red);
+  opacity: 0.8;
+}
+
+.rollWinnerHandle {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rollWinnerGo {
+  color: var(--text-muted);
+  opacity: 0.5;
+  font-size: 0.9rem;
+}

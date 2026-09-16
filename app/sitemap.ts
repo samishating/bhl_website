@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { User } from '@/models/User';
+import { Giveaway } from '@/models/Giveaway';
 
 const BASE_URL = 'https://bhl-website.vercel.app';
 
@@ -10,11 +11,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/`, changeFrequency: 'daily', priority: 1 },
     { url: `${BASE_URL}/community`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/merch`, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${BASE_URL}/giveaways`, changeFrequency: 'daily', priority: 0.7 },
     { url: `${BASE_URL}/apply`, changeFrequency: 'weekly', priority: 0.6 },
   ];
 
   let productRoutes: MetadataRoute.Sitemap = [];
   let userRoutes: MetadataRoute.Sitemap = [];
+  let giveawayRoutes: MetadataRoute.Sitemap = [];
 
   try {
     await connectDB();
@@ -34,9 +37,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.5,
     }));
+
+    // Only rolled giveaways have a published winners page (spec §7).
+    const giveaways = await Giveaway.find({ 'winners.0': { $exists: true } })
+      .select('shortcode rolledAt updatedAt')
+      .lean();
+    giveawayRoutes = giveaways.map((g: any) => ({
+      url: `${BASE_URL}/giveaways/${g.shortcode}`,
+      lastModified: g.rolledAt ? new Date(g.rolledAt) : g.updatedAt ? new Date(g.updatedAt) : undefined,
+      changeFrequency: 'yearly',
+      priority: 0.5,
+    }));
   } catch {
     // DB unreachable at build time — fall back to static routes only
   }
 
-  return [...staticRoutes, ...productRoutes, ...userRoutes];
+  return [...staticRoutes, ...productRoutes, ...userRoutes, ...giveawayRoutes];
 }

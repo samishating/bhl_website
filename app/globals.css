@@ -1037,3 +1037,45 @@ tbody tr:last-child td { border-bottom: none; }
   font-weight: 600;
   animation: pulse-text 2s ease-in-out infinite;
 }
+
+/* ─── Instagram Embeds ──────────────────────────────── */
+/* Host for Instagram's own embed.js output. The script replaces the blockquote
+   with its iframe, so the host only needs to center it and cap its width. */
+.ig-embed-host {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 420px;
+}
+
+.ig-embed-host iframe.instagram-media {
+  margin: 0 !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ig-embed-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.ig-embed-fallback:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}

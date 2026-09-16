@@ -28,6 +28,7 @@ export const adminLinks: AdminLink[] = [
   { href: '/admin/challenges', label: 'Challenges', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/submissions', label: 'Submissions', icon: '/ICONS/INBOX.svg' },
   { href: '/admin/applications', label: 'Applications', icon: '/ICONS/INBOX.svg' },
+  { href: '/admin/giveaways', label: 'Giveaways', icon: '/ICONS/trophy_1.svg' },
   { href: '/admin/products', label: 'Products', icon: '/ICONS/PRODUCTS.svg' },
   { href: '/admin/orders', label: 'Orders', icon: '/ICONS/LIST PRODUCTS.svg' },
   { href: '/admin/referrals', label: 'Referrals', icon: '/ICONS/REFERRALS.svg', superOnly: true },

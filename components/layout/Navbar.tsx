@@ -12,6 +12,7 @@ import styles from './Navbar.module.css';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/merch', label: 'Merch' },
+  { href: '/giveaways', label: 'Giveaways' },
   { href: '/apply', label: 'Apply to Us' },
   { href: '/community', label: 'Community' },
 ];

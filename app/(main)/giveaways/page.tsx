@@ -56,16 +56,12 @@ export default async function GiveawaysPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.hero}>
+      {/* Compact intro — the filters sit beside it so the first giveaway fits above the fold. */}
+      <GiveawaysFeed giveaways={giveaways}>
         <span className={styles.eyebrow}>Brotherhood Legacy</span>
         <h1 className={styles.title}>Giveaways</h1>
-        <p className={styles.subtitle}>
-          Every giveaway we run, straight from Instagram. Open a live post to enter, or look back
-          at the draws that have already been settled.
-        </p>
-      </header>
-
-      <GiveawaysFeed giveaways={giveaways} />
+        <p className={styles.subtitle}>Every giveaway we run, straight from Instagram.</p>
+      </GiveawaysFeed>
     </div>
   );
 }

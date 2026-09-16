@@ -46,7 +46,13 @@ function formatEndDate(value: string) {
   });
 }
 
-export default function GiveawaysFeed({ giveaways }: { giveaways: PublicGiveaway[] }) {
+interface FeedProps {
+  giveaways: PublicGiveaway[];
+  /** The page intro (eyebrow, h1, subtitle), laid out beside the filters in one compact bar. */
+  children: React.ReactNode;
+}
+
+export default function GiveawaysFeed({ giveaways, children }: FeedProps) {
   const [filter, setFilter] = useState<Filter>('all');
   const { shouldReduce } = useMotionConfig();
 
@@ -70,90 +76,80 @@ export default function GiveawaysFeed({ giveaways }: { giveaways: PublicGiveaway
 
   const liveCount = ordered.filter(x => x.status === 'active').length;
 
-  if (giveaways.length === 0) {
-    return (
-      <section className={styles.emptyState}>
-        <p className={styles.emptyTitle}>No giveaways running right now</p>
-        <p className={styles.emptyBody}>
-          Follow us on Instagram to catch the next drop — every giveaway we run lands on this page.
-        </p>
-      </section>
-    );
-  }
-
   return (
-    <section className={styles.feedSection} aria-label="Giveaway feed">
-      <div className={styles.filterRow}>
-        <div className="selection-pill-group" role="tablist" aria-label="Filter giveaways">
-          {FILTERS.map(f => (
-            <button
-              key={f.key}
-              role="tab"
-              aria-selected={filter === f.key}
-              className={`selection-pill selection-pill-compact ${filter === f.key ? 'selection-pill-active' : ''}`}
-              onClick={() => setFilter(f.key)}
-            >
-              {filter === f.key && (
-                <motion.span
-                  layoutId="giveaway-filter-indicator"
-                  className="selection-pill-indicator"
-                  transition={shouldReduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36 }}
-                />
-              )}
-              <span className="selection-pill-label">{f.label}</span>
-            </button>
-          ))}
-        </div>
-        <p className={styles.filterMeta}>
-          {liveCount > 0
-            ? `${liveCount} giveaway${liveCount === 1 ? '' : 's'} open right now`
-            : 'No giveaways open right now'}
-        </p>
-      </div>
+    <>
+      <header className={styles.topBar}>
+        <div className={styles.intro}>{children}</div>
 
-      <motion.div
-        className={styles.feed}
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-      >
-        <AnimatePresence mode="popLayout">
-          {visible.map(({ giveaway, status }) => (
-            <GiveawayCard key={giveaway._id} giveaway={giveaway} status={status} />
-          ))}
-        </AnimatePresence>
-      </motion.div>
+        {giveaways.length > 0 && (
+          <div className={styles.filters}>
+            <div className="selection-pill-group" role="tablist" aria-label="Filter giveaways">
+              {FILTERS.map(f => (
+                <button
+                  key={f.key}
+                  role="tab"
+                  aria-selected={filter === f.key}
+                  className={`selection-pill selection-pill-compact ${filter === f.key ? 'selection-pill-active' : ''}`}
+                  onClick={() => setFilter(f.key)}
+                >
+                  {filter === f.key && (
+                    <motion.span
+                      layoutId="giveaway-filter-indicator"
+                      className="selection-pill-indicator"
+                      transition={shouldReduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36 }}
+                    />
+                  )}
+                  <span className="selection-pill-label">{f.label}</span>
+                </button>
+              ))}
+            </div>
+            <p className={styles.filterMeta}>
+              {liveCount > 0 ? `${liveCount} open now` : 'None open right now'}
+            </p>
+          </div>
+        )}
+      </header>
 
-      {visible.length === 0 && (
-        <p className={styles.filterEmpty}>
-          {filter === 'live' ? 'Nothing is open at the moment.' : 'No giveaways have ended yet.'}
-        </p>
+      {giveaways.length === 0 ? (
+        <section className={styles.emptyState}>
+          <p className={styles.emptyTitle}>No giveaways running right now</p>
+          <p className={styles.emptyBody}>
+            Follow us on Instagram to catch the next drop — every giveaway we run lands on this page.
+          </p>
+        </section>
+      ) : (
+        <section aria-label="Giveaway feed">
+          <motion.div className={styles.feed} variants={staggerContainer} initial="hidden" animate="visible">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visible.map(({ giveaway, status }) => (
+                <GiveawayCard key={giveaway._id} giveaway={giveaway} status={status} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+
+          {visible.length === 0 && (
+            <p className={styles.filterEmpty}>
+              {filter === 'live' ? 'Nothing is open at the moment.' : 'No giveaways have ended yet.'}
+            </p>
+          )}
+        </section>
       )}
-    </section>
+    </>
   );
 }
 
 function GiveawayCard({ giveaway, status }: { giveaway: PublicGiveaway; status: GiveawayStatus }) {
-  const [showClosedNote, setShowClosedNote] = useState(false);
   const badge = STATUS_BADGE[status];
+  const winnersHref = `/giveaways/${giveaway.shortcode}`;
 
   return (
     <motion.article
       className={`${styles.card} ${status !== 'active' ? styles.cardEnded : ''}`}
       variants={fadeUp}
-      layout
       exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
     >
-      <header className={styles.cardHeader}>
-        <div className={styles.cardHeadings}>
-          <h2 className={styles.cardTitle}>{giveaway.title}</h2>
-          <p className={styles.cardRules}>{entrySummary(giveaway.minTags, giveaway.winnerCount)}</p>
-        </div>
-        <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
-      </header>
-
+      {/* Post on the left at Instagram's minimum embed width, so the card is only as tall as the post. */}
       <div className={styles.embedWrap}>
-        {/* The genuine Instagram embed — dimmed once entries close. */}
         <div className={status === 'active' ? undefined : styles.embedInactive}>
           <InstagramEmbed postUrl={giveaway.postUrl} />
         </div>
@@ -164,55 +160,47 @@ function GiveawayCard({ giveaway, status }: { giveaway: PublicGiveaway; status: 
           and intercepts the click instead (spec §7).
         */}
         {status === 'awaiting_roll' && (
-          <button
-            type="button"
-            className={styles.overlay}
-            onClick={() => setShowClosedNote(v => !v)}
-            aria-label="Entries are closed — winners have not been drawn yet"
-          />
+          <div className={`${styles.overlay} ${styles.overlayBlock}`} aria-hidden="true" />
         )}
-
         {status === 'rolled' && (
-          <Link
-            href={`/giveaways/${giveaway.shortcode}`}
-            className={styles.overlay}
-            aria-label={`See the winners of ${giveaway.title}`}
-          >
+          <Link href={winnersHref} className={styles.overlay} aria-label={`See the winners of ${giveaway.title}`}>
             <span className={styles.overlayCta}>See the winners</span>
           </Link>
         )}
       </div>
 
-      <AnimatePresence>
-        {status === 'awaiting_roll' && showClosedNote && (
-          <motion.p
-            className={styles.closedNote}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-          >
+      <div className={styles.info}>
+        <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
+        <h2 className={styles.cardTitle}>{giveaway.title}</h2>
+        <p className={styles.cardRules}>{entrySummary(giveaway.minTags, giveaway.winnerCount)}</p>
+
+        <div className={styles.infoBlock}>
+          {status === 'active' ? (
+            <>
+              <Countdown endDate={giveaway.endDate} />
+              <span className={styles.endsAt}>Closes {formatEndDate(giveaway.endDate)}</span>
+            </>
+          ) : (
+            <span className={styles.endedLabel}>Ended {formatEndDate(giveaway.endDate)}</span>
+          )}
+        </div>
+
+        {status === 'active' && (
+          <a href={giveaway.postUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary ${styles.cta}`}>
+            Enter on Instagram ↗
+          </a>
+        )}
+        {status === 'awaiting_roll' && (
+          <p className={styles.closedNote}>
             Entries are closed — winners haven&apos;t been drawn yet. Check back soon.
-          </motion.p>
+          </p>
         )}
-      </AnimatePresence>
-
-      <footer className={styles.cardFooter}>
-        {status === 'active' ? (
-          <Countdown endDate={giveaway.endDate} />
-        ) : (
-          <span className={styles.endedLabel}>Ended {formatEndDate(giveaway.endDate)}</span>
-        )}
-
         {status === 'rolled' && (
-          <Link href={`/giveaways/${giveaway.shortcode}`} className={styles.winnersLink}>
-            {giveaway.winners.length === 1 ? 'Winner' : `${giveaway.winners.length} winners`} →
+          <Link href={winnersHref} className={`btn btn-primary ${styles.cta}`}>
+            {giveaway.winners.length === 1 ? 'See the winner' : `See the ${giveaway.winners.length} winners`} →
           </Link>
         )}
-        {status === 'active' && (
-          <span className={styles.endsAt}>Closes {formatEndDate(giveaway.endDate)}</span>
-        )}
-      </footer>
+      </div>
     </motion.article>
   );
 }

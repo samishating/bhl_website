@@ -1,71 +1,84 @@
+/*
+  Height budget (898px-tall laptop viewport, the tightest common case):
+  88 navbar offset (from the layout) + 8 page top + ~117 top bar + 672 card = ~885px.
+  The card is only as tall as the Instagram post because the post sits at Instagram's
+  minimum embed width (326px) beside the details, instead of stacked under them.
+*/
+
 .page {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 32px 24px 96px;
+  padding: 8px 24px 96px;
 }
 
-/* ─── Hero ──────────────────────────────────────────── */
-.hero {
-  text-align: center;
-  padding: 48px 0 32px;
+/* ─── Top bar: intro left, filters right ────────────── */
+.topBar {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Signature thin red underline, sitting on the divider instead of adding height. */
+.topBar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 64px;
+  height: 2px;
+  background: var(--brand-red);
+}
+
+.intro {
+  min-width: 0;
 }
 
 .eyebrow {
   display: block;
+  margin-bottom: 4px;
   font-family: var(--font-rajdhani), sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--brand-red);
-  margin-bottom: 16px;
 }
 
 .title {
+  margin: 0 0 8px;
   font-family: var(--font-rajdhani), sans-serif;
-  font-size: clamp(2.75rem, 8vw, 4.5rem);
+  font-size: clamp(1.9rem, 3.2vw, 2.4rem);
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   line-height: 1;
-  margin: 0 0 24px;
   color: var(--text-primary);
 }
 
-.title::after {
-  content: '';
-  display: block;
-  width: 64px;
-  height: 2px;
-  margin: 24px auto 0;
-  background: var(--brand-red);
-}
-
 .subtitle {
-  max-width: 560px;
-  margin: 0 auto;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
   color: var(--text-muted);
-  font-size: 1rem;
-  line-height: 1.65;
 }
 
-/* ─── Filter row ────────────────────────────────────── */
-.feedSection {
-  margin-top: 32px;
-}
-
-.filterRow {
+.filters {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .filterMeta {
   margin: 0;
   font-family: var(--font-rajdhani), sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -82,80 +95,121 @@
   text-transform: uppercase;
 }
 
-/* ─── Feed grid ─────────────────────────────────────── */
+/* ─── Feed ──────────────────────────────────────────── */
 .feed {
-  display: grid;
-  /* auto-fit + a capped track keeps a lone card centered under the hero
-     instead of stranding it in the first column of an empty row. */
-  grid-template-columns: repeat(auto-fit, minmax(340px, 480px));
-  justify-content: center;
-  gap: 32px;
-  align-items: start;
-}
-
-@media (max-width: 720px) {
-  .feed {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ─── Card (shared premium panel family) ────────────── */
-.card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ─── Card: post left, details right ────────────────── */
+.card {
+  display: grid;
+  grid-template-columns: 328px minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 820px;
+  padding: 16px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background: rgba(20, 20, 20, 0.72);
   backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
   border-color: var(--border-hover);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 0, 0, 0.12);
-  transform: translateY(-4px);
 }
 
 .cardEnded {
   border-color: var(--border-subtle);
 }
 
-.cardHeader {
+/* ─── Embed + overlay ───────────────────────────────── */
+.embedWrap {
+  position: relative;
+  align-self: start;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Don't reserve the generic 420px placeholder height in this tighter layout. */
+.embedWrap :global(.ig-embed-host) {
+  min-height: 0;
+}
+
+.embedInactive {
+  filter: grayscale(1);
+  opacity: 0.45;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/*
+  Transparent click interceptor stacked above the embed. Instagram's own markup
+  keeps its link; this simply sits on top of it (spec §7).
+*/
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background 0.3s ease;
 }
 
-.cardHeadings {
-  min-width: 0;
+.overlay:hover {
+  background: rgba(0, 0, 0, 0.35);
 }
 
-.cardTitle {
-  margin: 0 0 8px;
-  font-family: var(--font-rajdhani), sans-serif;
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+/* Entries closed, nothing drawn: swallow the click without pretending it goes anywhere. */
+.overlayBlock,
+.overlayBlock:hover {
+  cursor: default;
+  background: transparent;
+}
+
+.overlayCta {
+  opacity: 0;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hover);
+  background: rgba(14, 13, 13, 0.92);
   color: var(--text-primary);
-  opacity: 0.9;
-}
-
-.cardRules {
-  margin: 0;
+  font-family: var(--font-rajdhani), sans-serif;
   font-size: 0.82rem;
-  line-height: 1.5;
-  color: var(--text-muted);
-  opacity: 0.75;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  transform: translateY(6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* ─── Status badge ──────────────────────────────────── */
+.overlay:hover .overlayCta,
+.overlay:focus-visible .overlayCta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Details column ────────────────────────────────── */
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  padding: 8px 8px 8px 0;
+}
+
 .badge {
-  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   height: 28px;
@@ -187,91 +241,42 @@
   border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
-/* ─── Embed + overlay ───────────────────────────────── */
-.embedWrap {
-  position: relative;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.embedInactive {
-  filter: grayscale(1);
-  opacity: 0.45;
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-/*
-  Transparent click interceptor stacked above the embed. Instagram's own markup
-  keeps its link; this simply sits on top of it (spec §7).
-*/
-.overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: var(--radius-md);
-  transition: background 0.3s ease;
-}
-
-.overlay:hover {
-  background: rgba(0, 0, 0, 0.35);
-}
-
-.overlayCta {
-  opacity: 0;
-  padding: 12px 20px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-hover);
-  background: rgba(14, 13, 13, 0.92);
-  color: var(--text-primary);
-  font-family: var(--font-rajdhani), sans-serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  transform: translateY(6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.overlay:hover .overlayCta,
-.overlay:focus-visible .overlayCta {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.closedNote {
+.cardTitle {
   margin: 0;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  line-height: 1.5;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
 }
 
-/* ─── Card footer ───────────────────────────────────── */
-.cardFooter {
+.cardRules {
+  margin: -8px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+.infoBlock {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-subtle);
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .countdown {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  min-height: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 48px;
 }
 
 .countdownLabel {
@@ -286,34 +291,31 @@
 
 .countdownValue {
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
   font-weight: 700;
+  line-height: 1.1;
   color: var(--brand-red);
   font-variant-numeric: tabular-nums;
 }
 
 .endsAt,
 .endedLabel {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
   color: var(--text-muted);
-  opacity: 0.7;
-}
-
-.winnersLink {
-  font-family: var(--font-rajdhani), sans-serif;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--brand-red);
-  text-decoration: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.winnersLink:hover {
   opacity: 0.8;
-  transform: translateX(2px);
+}
+
+.cta {
+  text-decoration: none;
+}
+
+.closedNote {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  opacity: 0.85;
 }
 
 /* ─── Empty state ───────────────────────────────────── */
@@ -344,19 +346,42 @@
   line-height: 1.65;
 }
 
-/* ─── Phone ─────────────────────────────────────────── */
-@media (max-width: 640px) {
+/* ─── Narrow screens: stack details above the post ──── */
+@media (max-width: 760px) {
+  .page {
+    padding: 8px 16px 64px;
+  }
+
+  .topBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .filters {
+    align-items: flex-start;
+  }
+
   /* Three short pills fit without scrolling once the compact min-width is lifted,
      so no option is ever clipped off the edge. */
-  .filterRow :global(.selection-pill) {
+  .filters :global(.selection-pill) {
     min-width: 0;
     padding: 10px 20px;
   }
 
-  /* Status badge sits above the title so the title gets the full card width. */
-  .cardHeader {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 8px;
+  .card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .info {
+    order: -1;
+    padding: 0;
+  }
+
+  .embedWrap {
+    justify-self: center;
+    width: 100%;
+    max-width: 540px;
   }
 }

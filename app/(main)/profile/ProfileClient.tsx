@@ -226,7 +226,6 @@ export default function ProfileClient() {
               <div className={styles.viewMode}>
                 <div className={styles.profileHero}>
                   <div className={styles.avatarWrapper}>
-                    <span className={styles.avatarLevelBadge} title={`Level ${user.level}`}>{user.level}</span>
                     <div className={styles.avatarLarge}>
                       {user.avatar ? <img src={user.avatar} alt={user.username} /> : user.username[0].toUpperCase()}
                     </div>

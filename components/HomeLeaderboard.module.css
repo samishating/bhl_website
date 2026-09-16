@@ -170,57 +170,32 @@
   margin-bottom: 40px;
 }
 
-/* The shield IS the card now -- its own background/border replace the old
-   plain dark panel entirely. The art's natural ratio is 1024/984; letting
-   it stretch to fit unbounded content warped the shape badly (squished
-   shoulders, a disconnected-looking tip), so the box is capped at ~1.15x
-   that ratio instead and everything below is sized to fit inside that
-   fixed budget -- name is single-line/ellipsis, tags cap at 2 + a "+N"
-   pill, so nothing can grow the card past what the art can take.
-   filter (drop-shadow) lives on this outer box only, never combined with
-   overflow:hidden on the same element -- Chromium rasterizes a filtered +
-   clipped element together and at fractional pixel heights (this card's
-   aspect-ratio never lands on a whole pixel) that produced a faint seam
-   line straight across the middle of the card's text. .topCardInner below
-   carries the actual clip + background instead. */
 .topCard {
   position: relative;
-  width: 250px;
-  aspect-ratio: 1024 / 1132;
-  margin: 0 auto;
-  /* The card's own fill is nearly as dark as the page behind it -- a resting
-     shadow keeps it reading as a raised card instead of blending in. */
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
-  transition: transform 0.25s ease, filter 0.25s ease;
-}
-
-.topCard:hover {
-  transform: translateY(-4px);
-}
-
-.topCardFirst {
-  width: 310px;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 16px rgba(255, 253, 186, 0.2));
-}
-
-.topCardInner {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 7px;
-  /* Horizontal padding as a % (not px) so it scales with width: the shield
-     art's own visible silhouette is only the middle ~63% of this box (it
-     has transparent margin baked into both sides), so anything padded
-     less than ~19% each side renders past the art's edge into that empty
-     margin -- which is exactly what "stuff outside the card" was. */
-  padding: 16px 19% 18px;
-  overflow: hidden;
-  background-image: url('/ICONS/backgroundCard.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
+  gap: 10px;
+  padding: 36px 24px 28px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.topCard:hover {
+  border-color: var(--border-subtle-hover);
+  background: rgba(255, 255, 255, 0.035);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.topCardFirst {
+  border-color: rgba(255, 0, 0, 0.35);
+  background: rgba(255, 0, 0, 0.045);
+  padding-top: 44px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width: 769px) {
@@ -230,90 +205,61 @@
   .topCardFirst { margin-top: -24px; }
 }
 
-/* Squircle photo sitting flush in the card, matching the FIFA-card
-   reference (no outlined frame around the photo itself). */
+.topCardBadge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  line-height: 0;
+}
+
+/* Podium spotlight only: circular frame, a deliberate exception to the
+   platform's usual squircle avatar rule for this specific top-3 moment. */
 .topCardAvatar {
-  width: 76px !important;
-  height: 76px !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  border: 2px solid rgba(255, 0, 0, 0.4) !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
   outline: none !important;
-  flex-shrink: 0;
 }
 
 .topCardFirst .topCardAvatar {
-  width: 98px !important;
-  height: 98px !important;
+  border-color: #FFFDBA !important;
+  box-shadow: 0 0 0 4px rgba(255, 253, 186, 0.12) !important;
 }
 
 .topCardName {
-  width: 100%;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   color: #fff;
   text-decoration: none;
   transition: color 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.topCardFirst .topCardName {
-  font-size: 1.3rem;
 }
 
 .topCardTitle {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  margin-top: -6px;
 }
 
-/* Capped at 2 tags + a "+N" pill in the JSX (see topCardMoreTag), so this
-   never needs to wrap -- a card with 4 divisions was wrapping to 3 rows
-   and stretching the shield background far taller than its neighbors.
-   margin-top pushes this row clear of a decorative line baked into the
-   shield art itself (runs roughly 41%-61% down the card) -- now that XP
-   was removed, the tags were the next flex item up and landed right on
-   top of it. topCardFirst needs a bigger push since it's a taller box but
-   the art's line sits at the same % of height either way. */
+.topCardXp {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--brand-red);
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+
 .topCardDivisions {
   display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
+  gap: 6px;
+  flex-wrap: wrap;
   justify-content: center;
-  width: 100%;
-  margin-top: 27px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.topCardFirst .topCardDivisions {
-  margin-top: 43px;
-}
-
-.topCardDivisions :global(.division-tag) {
-  font-size: 0.68rem;
-  padding: 0.25rem 0.6rem 0.25rem 0.75rem;
-  white-space: nowrap;
-}
-
-.topCardMoreTag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.6rem;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 700;
-  cursor: default;
+  margin-top: 6px;
 }
 
 .tableSection { margin-top: 16px; }

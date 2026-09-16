@@ -57,60 +57,24 @@
   margin-bottom: 40px;
 }
 
-/* Same card family as the leaderboard podium: the shield is the frame, a
-   level badge sits in its top-left "rating" corner. Unlike the podium this
-   card only ever holds a fixed-size photo (no variable-height stats/tags
-   inside it -- Level/role/divisions already show in .heroInfo right next
-   to it), so the natural 1024/984 art ratio is safe with no distortion. */
 .avatarWrapper {
   flex-shrink: 0;
-  position: relative;
-  width: 260px;
-  aspect-ratio: 1024 / 984;
-  background-image: url('/ICONS/backgroundCard.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
 }
 
 .avatarLarge {
-  position: absolute;
-  top: 16%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 104px;
-  height: 104px;
-  border-radius: 16px;
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
   background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.1rem;
+  font-size: 3rem;
   font-weight: 700;
   color: var(--brand-red);
   overflow: hidden;
 }
-
-/* Pinned on the photo's top-left corner (centered on the corner point via
-   the transform), like a sticker half-overlapping the picture, instead of
-   floating in the shield's empty space above it. top matches .avatarLarge's
-   own top:16% so both scale together; left is computed from .avatarLarge's
-   width vs .avatarWrapper's width (50% - avatarWidth/wrapperWidth/2). */
-.avatarLevelBadge {
-  position: absolute;
-  top: 16%;
-  left: 30%;
-  transform: translate(-50%, -50%);
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 800;
-  font-size: 1.8rem;
-  color: #FFFDBA;
-  line-height: 1;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-  z-index: 2;
-}
-
 
 .avatarLarge img {
   width: 100%;

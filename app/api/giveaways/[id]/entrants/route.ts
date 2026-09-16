@@ -61,7 +61,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     const ownerUsername = typeof payload?.ownerUsername === 'string' ? payload.ownerUsername : undefined;
-    const entrants = dedupeEntrants(rows, { ownerUsername });
+    // Fall back to the owner from an earlier import, so tagging the giveaway account never counts as a friend.
+    const entrants = dedupeEntrants(rows, { ownerUsername: ownerUsername ?? giveaway.ownerUsername });
 
     if (entrants.length === 0) {
       return NextResponse.json(
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (ownerUsername) giveaway.ownerUsername = ownerUsername.replace(/^@/, '').toLowerCase();
     await giveaway.save();
 
-    const eligibleCount = entrants.filter(isEligible).length;
+    const eligibleCount = entrants.filter(e => isEligible(e, giveaway.minTags)).length;
 
     console.info(
       `[giveaways] entrants imported for ${giveaway.shortcode} by ${admin.userId}: ` +

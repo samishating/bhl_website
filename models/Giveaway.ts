@@ -17,6 +17,8 @@ export interface IGiveaway extends Document {
   /** Numeric media id derived from the shortcode; the extractor userscript needs it. */
   mediaId?: string;
   endDate: Date;
+  /** Friends an entrant must tag to be eligible. 0 = any comment counts. */
+  minTags: number;
   winnerCount: number;
   entrants: GiveawayEntrant[];
   entrantsCapturedAt?: Date;
@@ -44,6 +46,7 @@ const EntrantSchema = new Schema<GiveawayEntrant>({
   profileUrl: { type: String, required: true },
   comments: { type: [String], default: [] },
   commentCount: { type: Number, default: 1 },
+  mentions: { type: [String], default: [] },
   disqualified: { type: Boolean, default: false },
   disqualifiedReason: { type: String },
 }, { _id: false });
@@ -70,6 +73,7 @@ const GiveawaySchema = new Schema<IGiveaway>({
   shortcode: { type: String, required: true, unique: true, index: true },
   mediaId: { type: String },
   endDate: { type: Date, required: true },
+  minTags: { type: Number, default: 0, min: 0 },
   winnerCount: { type: Number, required: true, default: 1, min: 1 },
   entrants: { type: [EntrantSchema], default: [] },
   entrantsCapturedAt: { type: Date },

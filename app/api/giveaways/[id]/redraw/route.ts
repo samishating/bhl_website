@@ -48,7 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       entrant.disqualifiedReason = reason;
     }
 
-    const pool = eligiblePool(giveaway.entrants);
+    const pool = eligiblePool(giveaway.entrants, giveaway.minTags);
     const replacement = pickReplacement(
       pool,
       giveaway.winners.map(w => w.username),

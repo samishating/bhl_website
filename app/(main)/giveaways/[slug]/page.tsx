@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
 import InstagramEmbed from '@/components/InstagramEmbed';
-import { winnersSummary } from '@/lib/giveaways';
+import { entrySummary } from '@/lib/giveaways';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -17,6 +17,7 @@ interface WinnersRecord {
   postUrl: string;
   shortcode: string;
   endDate: string;
+  minTags?: number;
   winnerCount: number;
   rolledAt?: string;
   winners: { username: string; profileUrl: string; fullName?: string }[];
@@ -26,7 +27,7 @@ async function getGiveaway(slug: string): Promise<WinnersRecord | null> {
   try {
     await connectDB();
     const giveaway = await Giveaway.findOne({ shortcode: slug })
-      .select('title postUrl shortcode endDate winnerCount winners rolledAt publishedAt')
+      .select('title postUrl shortcode endDate minTags winnerCount winners rolledAt publishedAt')
       .lean() as { publishedAt?: Date } | null;
     // No winners page until the result is published — drawn winners may still be redrawn.
     if (!giveaway || !giveaway.publishedAt) return null;
@@ -97,7 +98,7 @@ export default async function GiveawayWinnersPage({ params }: { params: Promise<
           Entries closed {formatDate(giveaway.endDate)}
           {giveaway.rolledAt && <> · Drawn {formatDate(giveaway.rolledAt)}</>}
         </p>
-        <p className={styles.rules}>{winnersSummary(giveaway.winnerCount)}</p>
+        <p className={styles.rules}>{entrySummary(giveaway.minTags, giveaway.winnerCount)}</p>
       </header>
 
       <div className={styles.layout}>
@@ -131,7 +132,7 @@ export default async function GiveawayWinnersPage({ params }: { params: Promise<
           </ul>
 
           <p className={styles.winnersNote}>
-            Winners were drawn at random from every unique account that commented, then checked by hand
+            Winners were drawn at random from every unique account that met the entry condition, then checked by hand
             before being announced. Tap a handle to open that profile on Instagram.
           </p>
         </section>

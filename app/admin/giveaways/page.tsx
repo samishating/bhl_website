@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import ConfirmationModal from '@/components/ConfirmationModal';
-import { giveawayStatus, isEligible, winnersSummary, type GiveawayStatus, type GiveawayEntrant } from '@/lib/giveaways';
+import { giveawayStatus, isEligible, entrySummary, type GiveawayStatus, type GiveawayEntrant } from '@/lib/giveaways';
 import GiveawayFormModal from './GiveawayFormModal';
 import EntrantsModal from './EntrantsModal';
 import RollModal from './RollModal';
@@ -20,6 +20,7 @@ export interface AdminGiveaway {
   shortcode: string;
   mediaId?: string;
   endDate: string;
+  minTags?: number;
   winnerCount: number;
   entrants: GiveawayEntrant[];
   entrantsCapturedAt?: string;
@@ -271,7 +272,7 @@ function GiveawayRow({
 
   const entrantCount = giveaway.entrants?.length || 0;
   const eligibleCount = useMemo(
-    () => (giveaway.entrants || []).filter(isEligible).length,
+    () => (giveaway.entrants || []).filter(e => isEligible(e, giveaway.minTags)).length,
     [giveaway]
   );
 
@@ -300,8 +301,8 @@ function GiveawayRow({
           <dd>{new Date(giveaway.endDate).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</dd>
         </div>
         <div className={styles.stat}>
-          <dt>Winners</dt>
-          <dd>{winnersSummary(giveaway.winnerCount)}</dd>
+          <dt>Entry</dt>
+          <dd>{entrySummary(giveaway.minTags, giveaway.winnerCount)}</dd>
         </div>
         <div className={styles.stat}>
           <dt>Entrants</dt>

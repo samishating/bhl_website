@@ -48,7 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     // Recompute eligibility fresh at roll time rather than trusting anything stored.
-    const pool = eligiblePool(giveaway.entrants);
+    const pool = eligiblePool(giveaway.entrants, giveaway.minTags);
 
     if (pool.length < giveaway.winnerCount) {
       return NextResponse.json(
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           error:
             `Only ${pool.length} eligible entrant${pool.length === 1 ? '' : 's'} but this giveaway is ` +
             `configured for ${giveaway.winnerCount} winner${giveaway.winnerCount === 1 ? '' : 's'}. ` +
-            `Lower the winner count or reinstate excluded entrants before rolling.`,
+            `Lower the winner count or the required tags, or reinstate excluded entrants, before rolling.`,
           eligibleCount: pool.length,
           winnerCount: giveaway.winnerCount,
         },

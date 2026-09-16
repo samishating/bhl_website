@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
 import { verifyAdmin } from '@/lib/auth';
-import { extractShortcode, canonicalPostUrl, shortcodeToMediaId, toPublicGiveaway } from '@/lib/giveaways';
+import {
+  extractShortcode,
+  canonicalPostUrl,
+  shortcodeToMediaId,
+  toPublicGiveaway,
+  parseMinTags,
+  MAX_REQUIRED_TAGS,
+} from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /** Entrant data never leaves the server for public consumers (spec §5/§12). */
-const PUBLIC_FIELDS = 'title postUrl shortcode endDate winnerCount winners rolledAt publishedAt createdAt';
+const PUBLIC_FIELDS = 'title postUrl shortcode endDate minTags winnerCount winners rolledAt publishedAt createdAt';
 
 export async function GET(req: NextRequest) {
   try {
@@ -38,6 +45,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { title, postUrl, endDate, winnerCount } = body;
 
+    const minTags = parseMinTags(body.minTags);
+    if (minTags === null) {
+      return NextResponse.json(
+        { error: `Required tags must be a whole number from 0 to ${MAX_REQUIRED_TAGS}` },
+        { status: 400 }
+      );
+    }
+
     if (!title?.trim()) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
@@ -68,6 +83,7 @@ export async function POST(req: NextRequest) {
       shortcode,
       mediaId: shortcodeToMediaId(shortcode),
       endDate: end,
+      minTags,
       winnerCount: count,
       createdBy: admin.userId,
     });

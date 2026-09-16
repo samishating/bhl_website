@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
 import { verifyAdmin } from '@/lib/auth';
-import { extractShortcode, canonicalPostUrl, shortcodeToMediaId } from '@/lib/giveaways';
+import {
+  extractShortcode,
+  canonicalPostUrl,
+  shortcodeToMediaId,
+  parseMinTags,
+  MAX_REQUIRED_TAGS,
+} from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -67,6 +73,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         return NextResponse.json({ error: 'Winner count must be at least 1' }, { status: 400 });
       }
       update.winnerCount = count;
+    }
+
+    if (body.minTags !== undefined) {
+      const minTags = parseMinTags(body.minTags);
+      if (minTags === null) {
+        return NextResponse.json(
+          { error: `Required tags must be a whole number from 0 to ${MAX_REQUIRED_TAGS}` },
+          { status: 400 }
+        );
+      }
+      // Tags are stored per entrant at import, so changing this before the roll just re-filters.
+      update.minTags = minTags;
     }
 
     const updated = await Giveaway.findByIdAndUpdate(id, update, { new: true });

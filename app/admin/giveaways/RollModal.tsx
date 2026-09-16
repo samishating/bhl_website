@@ -32,7 +32,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
   const stopRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const eligible = useMemo(
-    () => eligiblePool(giveaway.entrants || []),
+    () => eligiblePool(giveaway.entrants || [], giveaway.minTags),
     [giveaway]
   );
 
@@ -123,7 +123,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
             <p className={styles.shortfallWarning}>
               Only {eligible.length} eligible entrant{eligible.length === 1 ? '' : 's'} for{' '}
               {giveaway.winnerCount} winner{giveaway.winnerCount === 1 ? '' : 's'}. Lower the winner count
-              or reinstate excluded entrants before rolling.
+              or the required tags, or reinstate excluded entrants, before rolling.
             </p>
           ) : (
             <p className={styles.rollNote}>

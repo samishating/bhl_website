@@ -40,7 +40,7 @@ async function getGiveaways(): Promise<PublicGiveaway[]> {
     await connectDB();
     // Entrant snapshots never leave the server (spec §5) — only public fields are selected.
     const giveaways = await Giveaway.find({})
-      .select('title postUrl shortcode endDate winnerCount winners rolledAt publishedAt')
+      .select('title postUrl shortcode endDate minTags winnerCount winners rolledAt publishedAt')
       .sort({ endDate: -1 })
       .lean();
     // Drawn winners stay private until a superadmin has checked and published them.

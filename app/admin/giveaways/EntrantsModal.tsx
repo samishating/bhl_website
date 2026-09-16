@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/Modal';
 import { useToast } from '@/contexts/ToastContext';
-import { isEligible } from '@/lib/giveaways';
+import { ineligibleReason } from '@/lib/giveaways';
 import type { AdminGiveaway } from './page';
 import styles from './page.module.css';
 
@@ -22,14 +22,18 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
   const [dragging, setDragging] = useState(false);
   const [busyHandle, setBusyHandle] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const requiredTags = giveaway.minTags ?? 0;
 
   const evaluated = useMemo(
     () =>
       (giveaway.entrants || [])
-        .map(entrant => ({ entrant, eligible: isEligible(entrant) }))
+        .map(entrant => {
+          const reason = ineligibleReason(entrant, requiredTags);
+          return { entrant, eligible: reason === null, reason, tagCount: entrant.mentions?.length ?? 0 };
+        })
         // Excluded accounts first so they're the first thing a superadmin sees.
         .sort((a, b) => Number(a.eligible) - Number(b.eligible)),
-    [giveaway]
+    [giveaway, requiredTags]
   );
 
   const eligibleCount = evaluated.filter(e => e.eligible).length;
@@ -236,12 +240,12 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                 {shortfall > 0 && (
                   <p className={styles.shortfallWarning}>
                     {eligibleCount} eligible but {giveaway.winnerCount} winners configured — the roll will
-                    be blocked until you lower the winner count or reinstate someone.
+                    be blocked until you lower the winner count or the required tags, or reinstate someone.
                   </p>
                 )}
 
                 <ul className={styles.entrantList}>
-                  {evaluated.map(({ entrant, eligible }) => (
+                  {evaluated.map(({ entrant, eligible, reason, tagCount }) => (
                     <li
                       key={entrant.username}
                       className={`${styles.entrantRow} ${eligible ? '' : styles.entrantRowOut}`}
@@ -259,6 +263,17 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                         {entrant.disqualified && (
                           <span className={styles.disqualifiedTag}>
                             Disqualified{entrant.disqualifiedReason ? ` — ${entrant.disqualifiedReason}` : ''}
+                          </span>
+                        )}
+                        {!entrant.disqualified && reason && (
+                          <span className={styles.disqualifiedTag}>{reason}</span>
+                        )}
+                        {requiredTags > 0 && (
+                          <span
+                            className={`${styles.tagCount} ${tagCount >= requiredTags ? styles.tagCountMet : ''}`}
+                            title={entrant.mentions?.length ? entrant.mentions.map(m => `@${m}`).join(', ') : 'No friends tagged'}
+                          >
+                            {tagCount} tagged
                           </span>
                         )}
                         {entrant.commentCount > 1 && (
@@ -284,7 +299,10 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                 </ul>
 
                 <p className={styles.legend}>
-                  Everyone here is entered once. Check the drawn winners by hand after the roll.
+                  {requiredTags > 0
+                    ? `Entry needs ${requiredTags} tagged friend${requiredTags === 1 ? '' : 's'}. Hover a tag count to see who was tagged. `
+                    : 'Any comment counts. '}
+                  Check the drawn winners by hand after the roll.
                 </p>
               </>
             )}

@@ -3,10 +3,13 @@
  * Isomorphic giveaway logic — safe to import from both server routes and client components.
  * Anything needing node:crypto (the draw itself) lives in the routes and injects randomness here.
  *
- * Giveaways have no automatic entry conditions. Every unique commenter is eligible; the
- * superadmin checks the drawn winners by hand (follows, tagged friends, whatever the post
- * asked for) and redraws anyone who doesn't qualify before publishing.
+ * The only automatic entry condition is an optional minimum number of tagged friends, set per
+ * giveaway (`minTags`, 0 = any comment). Everything else — follows, likes — is checked by hand
+ * on the drawn winners, who are redrawn before publishing if they don't qualify.
  */
+
+/** Upper bound for the "must tag N friends" setting — keeps typos like 50 from emptying the pool. */
+export const MAX_REQUIRED_TAGS = 10;
 
 /**
  * An entrant is an Instagram account, NOT a BHL user (spec §5).
@@ -21,6 +24,8 @@ export interface GiveawayEntrant {
   /** Every comment this account left — kept for the audit trail. */
   comments: string[];
   commentCount: number;
+  /** Distinct friends tagged across all their comments (never themselves or the giveaway account). */
+  mentions: string[];
   /** Excluded by hand — before the roll, or when a drawn winner is redrawn. */
   disqualified: boolean;
   disqualifiedReason?: string;
@@ -111,6 +116,22 @@ export function shortcodeToMediaId(shortcode: string): string | null {
 // Entrants
 // ---------------------------------------------------------------------------
 
+/**
+ * Instagram handles: letters, digits, periods, underscores, up to 30 chars. The `@` must not
+ * follow a handle character, so email addresses like name@gmail.com aren't read as tags.
+ */
+const TAG_RE = /(?:^|[^A-Za-z0-9._@])@([A-Za-z0-9._]{1,30})/g;
+
+export function extractMentions(text: string): string[] {
+  const found = new Set<string>();
+  for (const match of text.matchAll(TAG_RE)) {
+    // A trailing period is sentence punctuation, not part of the handle.
+    const handle = match[1].replace(/\.+$/, '').toLowerCase();
+    if (handle) found.add(handle);
+  }
+  return [...found];
+}
+
 export function profileUrl(username: string): string {
   return `https://www.instagram.com/${username}/`;
 }
@@ -163,20 +184,60 @@ export function dedupeEntrants(
       profileUrl: profileUrl(username),
       comments: texts,
       commentCount: Math.max(1, texts.length),
+      mentions: [],
       disqualified: false,
     });
+  }
+
+  // Tags are derived here from the raw comment text — never trusted from the client.
+  for (const entrant of byUsername.values()) {
+    const tagged = new Set<string>();
+    for (const text of entrant.comments) {
+      for (const handle of extractMentions(text)) {
+        // Tagging yourself or the giveaway account isn't tagging a friend.
+        if (handle !== entrant.username && handle !== owner) tagged.add(handle);
+      }
+    }
+    entrant.mentions = [...tagged];
   }
 
   return [...byUsername.values()];
 }
 
-/** No automatic conditions: every unique commenter is eligible unless excluded by hand. */
-export function isEligible(entrant: Pick<GiveawayEntrant, 'disqualified'>): boolean {
-  return !entrant.disqualified;
+type EligibilityFacts = Pick<GiveawayEntrant, 'disqualified'> & { mentions?: string[] };
+
+/** Why an entrant can't win, or null if they can. */
+export function ineligibleReason(entrant: EligibilityFacts, minTags = 0): string | null {
+  if (entrant.disqualified) return 'Excluded';
+  const tags = entrant.mentions?.length ?? 0;
+  if (tags < minTags) {
+    return tags === 0 ? 'No friends tagged' : `Tagged ${tags} of ${minTags}`;
+  }
+  return null;
 }
 
-export function eligiblePool<T extends Pick<GiveawayEntrant, 'disqualified'>>(entrants: T[]): T[] {
-  return entrants.filter(isEligible);
+/** Eligible = not excluded by hand, and tagged at least the giveaway's required number of friends. */
+export function isEligible(entrant: EligibilityFacts, minTags = 0): boolean {
+  return ineligibleReason(entrant, minTags) === null;
+}
+
+export function eligiblePool<T extends EligibilityFacts>(entrants: T[], minTags = 0): T[] {
+  return entrants.filter(e => isEligible(e, minTags));
+}
+
+/** Validates the admin's "must tag N friends" input. Returns null when it's out of range. */
+export function parseMinTags(value: unknown): number | null {
+  if (value === undefined || value === null || value === '') return 0;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 0 || n > MAX_REQUIRED_TAGS) return null;
+  return n;
+}
+
+/** Public one-liner for the entry condition, e.g. "Tag 2 friends · 3 winners". */
+export function entrySummary(minTags: number | undefined, winnerCount: number): string {
+  const tags = minTags ?? 0;
+  const condition = tags === 0 ? 'Comment to enter' : `Tag ${tags} friend${tags === 1 ? '' : 's'}`;
+  return `${condition} · ${winnersSummary(winnerCount)}`;
 }
 
 // ---------------------------------------------------------------------------

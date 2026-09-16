@@ -267,9 +267,9 @@
   width: 100%;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   color: #fff;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -278,19 +278,31 @@
   text-overflow: ellipsis;
 }
 
+.topCardFirst .topCardName {
+  font-size: 1rem;
+}
+
 .topCardTitle {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
 .topCardXp {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   color: var(--brand-red);
   letter-spacing: -0.02em;
+}
+
+.topCardFirst .topCardXp {
+  font-size: 1rem;
 }
 
 /* Capped at 2 tags + a "+N" pill in the JSX (see topCardMoreTag), so this

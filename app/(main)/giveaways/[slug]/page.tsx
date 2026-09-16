@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { connectDB } from '@/lib/db';
 import { Giveaway } from '@/models/Giveaway';
 import InstagramEmbed from '@/components/InstagramEmbed';
-import { entrySummary } from '@/lib/giveaways';
+import { entrySummary, entrantLabel, platformOf, PLATFORM_LABELS } from '@/lib/giveaways';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: 'Giveaway not found', robots: { index: false, follow: true } };
   }
 
-  const names = giveaway.winners.map(w => `@${w.username}`).join(', ');
+  const names = giveaway.winners.map(entrantLabel).join(', ');
   const description = `${giveaway.title} has been drawn. ${
     giveaway.winners.length === 1 ? 'The winner is' : 'The winners are'
   } ${names}. See the full result and the original Instagram post.`;
@@ -122,9 +122,13 @@ export default async function GiveawayWinnersPage({ params }: { params: Promise<
                     rel="noopener noreferrer"
                     className={styles.winnerHandle}
                   >
-                    @{winner.username}
+                    {entrantLabel(winner)}
                   </a>
-                  {winner.fullName && <span className={styles.winnerName}>{winner.fullName}</span>}
+                  <span className={styles.winnerName}>
+                    {PLATFORM_LABELS[platformOf(winner.username)]}
+                    {/* Instagram shows the handle above, so the real name adds something; on Facebook the name is already the label. */}
+                    {winner.fullName && platformOf(winner.username) === 'instagram' && ` · ${winner.fullName}`}
+                  </span>
                 </span>
                 <span className={styles.winnerGo} aria-hidden="true">↗</span>
               </li>
@@ -133,7 +137,7 @@ export default async function GiveawayWinnersPage({ params }: { params: Promise<
 
           <p className={styles.winnersNote}>
             Winners were drawn at random from every unique account that met the entry condition, then checked by hand
-            before being announced. Tap a handle to open that profile on Instagram.
+            before being announced. Tap a winner to open their profile.
           </p>
         </section>
       </div>

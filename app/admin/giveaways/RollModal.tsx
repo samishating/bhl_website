@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/Modal';
 import { useToast } from '@/contexts/ToastContext';
 import { useMotionConfig } from '@/hooks/useMotionConfig';
-import { eligiblePool } from '@/lib/giveaways';
+import { eligiblePool, entrantLabel } from '@/lib/giveaways';
 import type { AdminGiveaway } from './page';
 import styles from './page.module.css';
 
@@ -138,7 +138,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
         <div className={styles.rollStage} aria-live="polite" aria-label="Drawing winners">
           {Array.from({ length: giveaway.winnerCount }).map((_, i) => (
             <div key={i} className={styles.rollSlot}>
-              <span className={styles.rollSlotName}>@{ticker[i] || pool[0]}</span>
+              <span className={styles.rollSlotName}>{ticker[i] || pool[0]}</span>
             </div>
           ))}
           <p className={styles.rollNote}>Drawing...</p>
@@ -160,7 +160,7 @@ export default function RollModal({ giveaway, onClose, onRolled }: Props) {
                 transition={shouldReduce ? { duration: 0 } : { duration: 0.35, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
               >
                 <span className={styles.rollWinnerRank}>{String(index + 1).padStart(2, '0')}</span>
-                <span className={styles.rollWinnerHandle}>@{winner.username}</span>
+                <span className={styles.rollWinnerHandle}>{entrantLabel(winner)}</span>
                 <span className={styles.rollWinnerGo} aria-hidden="true">↗</span>
               </motion.a>
             ))}

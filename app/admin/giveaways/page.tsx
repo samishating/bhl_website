@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import ConfirmationModal from '@/components/ConfirmationModal';
-import { giveawayStatus, isEligible, entrySummary, type GiveawayStatus, type GiveawayEntrant } from '@/lib/giveaways';
+import { giveawayStatus, isEligible, entrySummary, entrantLabel, platformOf, PLATFORM_LABELS, type GiveawayStatus, type GiveawayEntrant } from '@/lib/giveaways';
 import GiveawayFormModal from './GiveawayFormModal';
 import EntrantsModal from './EntrantsModal';
 import RollModal from './RollModal';
@@ -28,7 +28,7 @@ export interface AdminGiveaway {
   ownerUsername?: string;
   winners: { username: string; profileUrl: string; fullName?: string }[];
   rolledAt?: string;
-  replacedWinners?: { username: string; reason: string; replacedBy: string }[];
+  replacedWinners?: { username: string; fullName?: string; reason: string; replacedBy: string }[];
   publishedAt?: string;
 }
 
@@ -52,7 +52,7 @@ export default function AdminGiveawaysPage() {
   const [rollTarget, setRollTarget] = useState<AdminGiveaway | null>(null);
   const [removeTarget, setRemoveTarget] = useState<AdminGiveaway | null>(null);
   const [removing, setRemoving] = useState(false);
-  const [redrawTarget, setRedrawTarget] = useState<{ giveaway: AdminGiveaway; username: string } | null>(null);
+  const [redrawTarget, setRedrawTarget] = useState<{ giveaway: AdminGiveaway; username: string; label: string } | null>(null);
   const [publishTarget, setPublishTarget] = useState<AdminGiveaway | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -68,7 +68,7 @@ export default function AdminGiveawaysPage() {
     setBusy(false);
     setRedrawTarget(null);
     if (res.ok) {
-      showToast(`@${data.replaced} replaced by @${data.replacement.username}`, 'success');
+      showToast(`${data.replacedLabel} replaced by ${data.replacement.label}`, 'success');
       load();
     } else {
       showToast(data.error || 'Redraw failed', 'error');
@@ -164,7 +164,7 @@ export default function AdminGiveawaysPage() {
                 onEntrants={() => setEntrantsTarget(giveaway)}
                 onRoll={() => setRollTarget(giveaway)}
                 onRemove={() => setRemoveTarget(giveaway)}
-                onRedraw={username => setRedrawTarget({ giveaway, username })}
+                onRedraw={winner => setRedrawTarget({ giveaway, username: winner.username, label: entrantLabel(winner) })}
                 onPublish={() => setPublishTarget(giveaway)}
               />
             ))}
@@ -217,7 +217,7 @@ export default function AdminGiveawaysPage() {
         title="Redraw this winner"
         message={
           redrawTarget
-            ? `@${redrawTarget.username} will be excluded for not meeting the conditions and can't be drawn again. A replacement is picked at random from the remaining eligible entrants.`
+            ? `${redrawTarget.label} will be excluded for not meeting the conditions and can't be drawn again. A replacement is picked at random from the remaining eligible entrants.`
             : ''
         }
         confirmLabel={busy ? 'Drawing...' : 'Exclude & redraw'}
@@ -232,7 +232,7 @@ export default function AdminGiveawaysPage() {
         title="Publish winners"
         message={
           publishTarget
-            ? `${publishTarget.winners.map(w => `@${w.username}`).join(', ')} will be announced on the public winners page. After this the result is final — no more redraws.`
+            ? `${publishTarget.winners.map(entrantLabel).join(', ')} will be announced on the public winners page. After this the result is final — no more redraws.`
             : ''
         }
         confirmLabel={busy ? 'Publishing...' : 'Publish'}
@@ -263,7 +263,7 @@ function GiveawayRow({
   onEntrants: () => void;
   onRoll: () => void;
   onRemove: () => void;
-  onRedraw: (username: string) => void;
+  onRedraw: (winner: { username: string; fullName?: string }) => void;
   onPublish: () => void;
 }) {
   const meta = STATUS_META[status];
@@ -337,10 +337,11 @@ function GiveawayRow({
                   rel="noopener noreferrer"
                   className={styles.checkHandle}
                 >
-                  @{winner.username} ↗
+                  {entrantLabel(winner)} ↗
+                  <span className={styles.platformTag}>{PLATFORM_LABELS[platformOf(winner.username)]}</span>
                 </a>
                 {isSuperadmin && (
-                  <button className="btn btn-ghost btn-sm" onClick={() => onRedraw(winner.username)}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => onRedraw(winner)}>
                     Redraw
                   </button>
                 )}
@@ -351,7 +352,7 @@ function GiveawayRow({
           {(giveaway.replacedWinners?.length ?? 0) > 0 && (
             <p className={styles.replacedNote}>
               Replaced:{' '}
-              {giveaway.replacedWinners!.map(r => `@${r.username} (${r.reason.toLowerCase()})`).join(', ')}
+              {giveaway.replacedWinners!.map(r => `${entrantLabel(r)} (${r.reason.toLowerCase()})`).join(', ')}
             </p>
           )}
         </div>
@@ -363,7 +364,7 @@ function GiveawayRow({
             {giveaway.winners.length === 1 ? 'Winner' : 'Winners'}
           </span>
           <span className={styles.winnerStripNames}>
-            {giveaway.winners.map(w => `@${w.username}`).join(', ')}
+            {giveaway.winners.map(entrantLabel).join(', ')}
           </span>
         </div>
       )}

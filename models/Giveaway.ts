@@ -24,6 +24,8 @@ export interface IGiveaway extends Document {
   entrantsCapturedAt?: Date;
   entrantsSource?: 'userscript' | 'manual';
   ownerUsername?: string;
+  /** The Facebook post the Facebook entrants were captured from, if any. */
+  facebookPostUrl?: string;
   /** Drawn winners. Private until `publishedAt` is set — a superadmin checks them first. */
   winners: GiveawayWinner[];
   rolledAt?: Date;
@@ -60,6 +62,7 @@ const WinnerSchema = new Schema<GiveawayWinner>({
 
 const ReplacedWinnerSchema = new Schema<GiveawayReplacedWinner>({
   username: { type: String, required: true },
+  fullName: { type: String },
   profileUrl: { type: String, required: true },
   reason: { type: String, required: true },
   replacedBy: { type: String, required: true },
@@ -79,6 +82,7 @@ const GiveawaySchema = new Schema<IGiveaway>({
   entrantsCapturedAt: { type: Date },
   entrantsSource: { type: String, enum: ['userscript', 'manual'] },
   ownerUsername: { type: String },
+  facebookPostUrl: { type: String },
   winners: { type: [WinnerSchema], default: [] },
   rolledAt: { type: Date },
   rolledBy: { type: Schema.Types.ObjectId, ref: 'User' },

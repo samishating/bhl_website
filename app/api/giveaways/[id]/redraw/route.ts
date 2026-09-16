@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto';
 import { connectDB } from '@/lib/db';
 import { Giveaway, type IGiveaway } from '@/models/Giveaway';
 import { verifySuperAdmin } from '@/lib/auth';
-import { eligiblePool, pickReplacement } from '@/lib/giveaways';
+import { eligiblePool, pickReplacement, entrantLabel } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const slot = giveaway.winners.findIndex(w => w.username === handle);
     if (slot === -1) {
-      return NextResponse.json({ error: `@${handle} is not one of the drawn winners.` }, { status: 400 });
+      return NextResponse.json({ error: 'That account is not one of the drawn winners.' }, { status: 400 });
     }
 
     // Exclude the failed winner for good, then redraw from whoever is still eligible.
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json(
         {
           error:
-            `No eligible entrants left to replace @${handle}. ` +
+            `No eligible entrants left to replace ${entrantLabel(giveaway.winners[slot])}. ` +
             `Every remaining entrant has already been drawn or excluded.`,
         },
         { status: 400 }
@@ -77,6 +77,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     giveaway.markModified('winners');
     giveaway.replacedWinners.push({
       username: replaced.username,
+      fullName: replaced.fullName,
       profileUrl: replaced.profileUrl,
       reason,
       replacedBy: replacement.username,
@@ -94,8 +95,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     return NextResponse.json({
       replaced: replaced.username,
+      replacedLabel: entrantLabel(replaced),
       replacement: {
         username: replacement.username,
+        label: entrantLabel(replacement),
         profileUrl: replacement.profileUrl,
         fullName: replacement.fullName,
       },

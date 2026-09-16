@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto';
 import { connectDB } from '@/lib/db';
 import { Giveaway, type IGiveaway } from '@/models/Giveaway';
 import { verifySuperAdmin } from '@/lib/auth';
-import { eligiblePool, pickWinners } from '@/lib/giveaways';
+import { eligiblePool, pickWinners, entrantLabel } from '@/lib/giveaways';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({
       winners: giveaway.winners,
       // Real eligible handles so the dashboard can cycle actual names during the reveal.
-      pool: pool.map(e => e.username),
+      pool: pool.map(entrantLabel),
       eligibleCount: pool.length,
       giveaway,
     });

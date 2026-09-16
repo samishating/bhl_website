@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal from '@/components/Modal';
 import { useToast } from '@/contexts/ToastContext';
-import { ineligibleReason } from '@/lib/giveaways';
+import { ineligibleReason, entrantLabel, platformOf, PLATFORM_LABELS, type Platform } from '@/lib/giveaways';
 import type { AdminGiveaway } from './page';
 import styles from './page.module.css';
 
@@ -81,7 +81,8 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
     submitImport(text);
   };
 
-  const toggleDisqualify = async (username: string, disqualified: boolean) => {
+  const toggleDisqualify = async (entrant: { username: string; fullName?: string }, disqualified: boolean) => {
+    const { username } = entrant;
     setBusyHandle(username);
     const res = await fetch(`/api/giveaways/${giveaway._id}/entrants`, {
       method: 'PATCH',
@@ -92,7 +93,7 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
     setBusyHandle(null);
 
     if (res.ok) {
-      showToast(disqualified ? `@${username} disqualified` : `@${username} reinstated`, 'info');
+      showToast(`${entrantLabel(entrant)} ${disqualified ? 'disqualified' : 'reinstated'}`, 'info');
       onChanged(data.giveaway);
     } else {
       showToast(data.error || 'Could not update entrant', 'error');
@@ -135,8 +136,8 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
           >
             <div className={styles.captureHint}>
               <p className={styles.captureHintBody}>
-                Run the BHL giveaway extractor userscript on this post while logged into Instagram,
-                then paste or drop the JSON it produces.
+                Run the BHL giveaway extractor on the Instagram post, and on the Facebook post too if
+                you shared it there. Import each file here — both go into the same draw.
               </p>
               <dl className={styles.captureFacts}>
                 <div>
@@ -205,8 +206,8 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
 
             {giveaway.entrants?.length > 0 && (
               <p className={styles.replaceWarning}>
-                This replaces the current snapshot of {giveaway.entrants.length} entrants.
-                Manual disqualifications are carried over by username.
+                Importing replaces only the entrants from the same platform — an Instagram capture
+                leaves Facebook entrants alone, and the other way round. Manual disqualifications carry over.
               </p>
             )}
           </motion.div>
@@ -237,6 +238,12 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                   </div>
                 </div>
 
+                <p className={styles.platformSplit}>
+                  {(['instagram', 'facebook'] as Platform[])
+                    .map(p => `${PLATFORM_LABELS[p]}: ${evaluated.filter(e => platformOf(e.entrant.username) === p).length}`)
+                    .join(' · ')}
+                </p>
+
                 {shortfall > 0 && (
                   <p className={styles.shortfallWarning}>
                     {eligibleCount} eligible but {giveaway.winnerCount} winners configured — the roll will
@@ -256,10 +263,11 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                         rel="noopener noreferrer"
                         className={styles.entrantHandle}
                       >
-                        @{entrant.username}
+                        {entrantLabel(entrant)}
                       </a>
 
                       <span className={styles.entrantChecks}>
+                        <span className={styles.platformTag}>{PLATFORM_LABELS[platformOf(entrant.username)]}</span>
                         {entrant.disqualified && (
                           <span className={styles.disqualifiedTag}>
                             Disqualified{entrant.disqualifiedReason ? ` — ${entrant.disqualifiedReason}` : ''}
@@ -271,7 +279,7 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                         {requiredTags > 0 && (
                           <span
                             className={`${styles.tagCount} ${tagCount >= requiredTags ? styles.tagCountMet : ''}`}
-                            title={entrant.mentions?.length ? entrant.mentions.map(m => `@${m}`).join(', ') : 'No friends tagged'}
+                            title={entrant.mentions?.length ? entrant.mentions.map(m => (m.startsWith('fb:') ? m.slice(3) : `@${m}`)).join(', ') : 'No friends tagged'}
                           >
                             {tagCount} tagged
                           </span>
@@ -284,7 +292,7 @@ export default function EntrantsModal({ giveaway, isSuperadmin, onClose, onChang
                       {isSuperadmin ? (
                         <button
                           className={`btn btn-sm ${entrant.disqualified ? 'btn-ghost' : 'btn-danger'}`}
-                          onClick={() => toggleDisqualify(entrant.username, !entrant.disqualified)}
+                          onClick={() => toggleDisqualify(entrant, !entrant.disqualified)}
                           disabled={busyHandle === entrant.username}
                         >
                           {busyHandle === entrant.username

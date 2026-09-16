@@ -12,7 +12,7 @@
 export const MAX_REQUIRED_TAGS = 10;
 
 /**
- * An entrant is an Instagram account, NOT a BHL user (spec §5).
+ * An entrant is an Instagram or Facebook account, NOT a BHL user (spec §5).
  * Stored as plain embedded data, never linked to the `users` collection.
  */
 export interface GiveawayEntrant {
@@ -41,6 +41,7 @@ export interface GiveawayWinner {
 /** A drawn winner swapped out before publishing, kept for the audit trail. */
 export interface GiveawayReplacedWinner {
   username: string;
+  fullName?: string;
   profileUrl: string;
   reason: string;
   /** The username drawn in their place. */
@@ -132,8 +133,49 @@ export function extractMentions(text: string): string[] {
   return [...found];
 }
 
+// ---------------------------------------------------------------------------
+// Platforms
+//
+// Entrants from both platforms share one draw. `username` stays the unique key:
+// Instagram handles as-is, Facebook accounts as `fb:<vanity>` or `fb:id:<number>`.
+// Instagram handles can't contain ":", so the two can never collide.
+// ---------------------------------------------------------------------------
+
+export type Platform = 'instagram' | 'facebook';
+
+const IG_HANDLE_RE = /^[a-z0-9._]{1,30}$/;
+const FB_KEY_RE = /^fb:(id:\d{5,20}|[a-z0-9.]{1,80})$/;
+
+export function platformOf(username: string): Platform {
+  return username.startsWith('fb:') ? 'facebook' : 'instagram';
+}
+
+export const PLATFORM_LABELS: Record<Platform, string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+};
+
+/** How an entrant or winner is shown: "@handle" on Instagram, their name on Facebook. */
+export function entrantLabel(person: { username: string; fullName?: string }): string {
+  if (platformOf(person.username) === 'facebook') return person.fullName || 'Facebook user';
+  return `@${person.username}`;
+}
+
+/** Built from the key server-side, so an imported capture can never inject its own link. */
 export function profileUrl(username: string): string {
+  if (platformOf(username) === 'facebook') {
+    const key = username.slice(3);
+    return key.startsWith('id:')
+      ? `https://www.facebook.com/profile.php?id=${key.slice(3)}`
+      : `https://www.facebook.com/${key}`;
+  }
   return `https://www.instagram.com/${username}/`;
+}
+
+function normalizeKey(value: unknown, platform: Platform): string | null {
+  const key = String(value ?? '').trim().toLowerCase().replace(/^@/, '');
+  const valid = platform === 'facebook' ? FB_KEY_RE.test(key) : IG_HANDLE_RE.test(key);
+  return valid ? key : null;
 }
 
 type RawEntrantRow = Partial<GiveawayEntrant> & {
@@ -143,22 +185,38 @@ type RawEntrantRow = Partial<GiveawayEntrant> & {
 };
 
 /**
- * Collapses raw captured rows into one entrant per account (spec §5).
+ * Collapses raw captured rows from ONE platform into one entrant per account (spec §5).
  * Accepts either pre-grouped rows (one per account, with a `comments` array) or
  * flat per-comment rows — repeat comments never buy extra entries either way.
+ *
+ * `owners` are the giveaway account's own keys on that platform: their replies are
+ * dropped, and tagging them never counts as tagging a friend.
  */
 export function dedupeEntrants(
   rows: RawEntrantRow[],
-  opts: { ownerUsername?: string } = {}
+  opts: { owners?: string[]; platform?: Platform } = {}
 ): GiveawayEntrant[] {
-  const owner = opts.ownerUsername?.trim().toLowerCase().replace(/^@/, '');
+  const platform = opts.platform ?? 'instagram';
+  const owners = new Set(
+    (opts.owners ?? []).map(o => normalizeKey(o, platform)).filter((o): o is string => !!o)
+  );
   const byUsername = new Map<string, GiveawayEntrant>();
+  // Facebook tags are profile links, not "@handle" text, so the capture lists them per row.
+  const capturedTags = new Map<string, Set<string>>();
 
   for (const row of rows) {
-    const username = String(row.username || '').trim().toLowerCase().replace(/^@/, '');
-    // Skip junk and the giveaway account's own replies.
-    if (!username || !/^[a-z0-9._]{1,30}$/.test(username)) continue;
-    if (owner && username === owner) continue;
+    const username = normalizeKey(row.username, platform);
+    // Skip junk, rows from the other platform, and the giveaway account's own replies.
+    if (!username || owners.has(username)) continue;
+
+    if (platform === 'facebook' && Array.isArray(row.mentions)) {
+      const tags = capturedTags.get(username) ?? new Set<string>();
+      for (const tag of row.mentions) {
+        const key = normalizeKey(tag, 'facebook');
+        if (key) tags.add(key);
+      }
+      capturedTags.set(username, tags);
+    }
 
     const texts = [
       ...(Array.isArray(row.comments) ? row.comments : []),
@@ -189,14 +247,17 @@ export function dedupeEntrants(
     });
   }
 
-  // Tags are derived here from the raw comment text — never trusted from the client.
   for (const entrant of byUsername.values()) {
+    // Instagram tags are derived here from the raw comment text. Facebook tags can only
+    // come from the capture's profile links, but are still validated key by key above.
+    const candidates = platform === 'facebook'
+      ? [...(capturedTags.get(entrant.username) ?? [])]
+      : entrant.comments.flatMap(extractMentions);
+
     const tagged = new Set<string>();
-    for (const text of entrant.comments) {
-      for (const handle of extractMentions(text)) {
-        // Tagging yourself or the giveaway account isn't tagging a friend.
-        if (handle !== entrant.username && handle !== owner) tagged.add(handle);
-      }
+    for (const handle of candidates) {
+      // Tagging yourself or the giveaway account isn't tagging a friend.
+      if (handle !== entrant.username && !owners.has(handle)) tagged.add(handle);
     }
     entrant.mentions = [...tagged];
   }

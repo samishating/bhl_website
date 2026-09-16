@@ -59,20 +59,6 @@
   display: block;
 }
 
-.avatarLevelBadge {
-  position: absolute;
-  top: 16px;
-  /* % not px -- the shield art's visible silhouette is only the middle
-     ~63% of this box, so a fixed px inset renders past its edge. */
-  left: 21%;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 800;
-  font-size: 1.8rem;
-  color: #FFFDBA;
-  line-height: 1;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-}
-
 .profileInfo {
   display: flex;
   flex-direction: column;

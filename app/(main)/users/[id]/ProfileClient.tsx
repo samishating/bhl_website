@@ -134,7 +134,6 @@ export default function ProfileClient({ initialProfile, initialSubmissions }: { 
           variants={fadeUp}
         >
           <div className={styles.avatarSection}>
-            <span className={styles.avatarLevelBadge} title={`Level ${profile.level}`}>{profile.level}</span>
             <div className={styles.mainAvatar}>
               {profile.avatar ? <img src={profile.avatar} alt={profile.username} /> : profile.username[0].toUpperCase()}
             </div>

@@ -92,18 +92,23 @@
   overflow: hidden;
 }
 
+/* Pinned on the photo's top-left corner (centered on the corner point via
+   the transform), like a sticker half-overlapping the picture, instead of
+   floating in the shield's empty space above it. top matches .avatarLarge's
+   own top:16% so both scale together; left is computed from .avatarLarge's
+   width vs .avatarWrapper's width (50% - avatarWidth/wrapperWidth/2). */
 .avatarLevelBadge {
   position: absolute;
-  top: 14px;
-  /* % not px -- the shield art's visible silhouette is only the middle
-     ~63% of this box, so a fixed px inset renders past its edge. */
-  left: 21%;
+  top: 16%;
+  left: 30%;
+  transform: translate(-50%, -50%);
   font-family: 'Rajdhani', sans-serif;
   font-weight: 800;
   font-size: 1.8rem;
   color: #FFFDBA;
   line-height: 1;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  z-index: 2;
 }
 
 

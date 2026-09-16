@@ -16,12 +16,6 @@ const divTagClass: Record<string, string> = {
   gaming_creator: 'tag-gaming_creator', music_creator: 'tag-music_creator', 
   sport_creator: 'tag-sport_creator', content_creator: 'tag-content_creator',
 };
-const rankIcons = [
-  '/ICONS/MEDAL 1.svg',
-  '/ICONS/MEDAL 2.svg',
-  '/ICONS/MEDAL 3.svg'
-];
-
 interface LeaderboardUser {
   _id: string;
   username: string;
@@ -191,26 +185,23 @@ export default function HomeLeaderboard() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: i * 0.08 }}
                   >
-                    <span className={styles.topCardBadge}>
-                      <img src={rankIcons[i]} alt={`Rank ${rank}`} style={{ width: '36px', height: '36px' }} />
-                    </span>
-                    <span className={styles.topCardLevelBadge} title={`Level ${u.level}`}>{u.level}</span>
-                    <Link href={`/users/${u._id}`} className={`avatar ${styles.topCardAvatar}`}>
-                      {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
-                    </Link>
-                    <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>
-                    <div className={styles.topCardTitle}>{getLevelTitle(u.level, levelTitles)}</div>
-                    <div className={styles.topCardXp}><AnimatedCounter value={getDisplayXp(u)} duration={1000} suffix=" XP" /></div>
-                    {u.divisions && u.divisions.length > 0 && (
-                      <div className={styles.topCardDivisions}>
-                        <span className={`division-tag ${divTagClass[u.divisions[0]]}`}>{u.divisions[0].replace(/_/g, ' ')}</span>
-                        {u.divisions.length > 1 && (
-                          <span className={styles.topCardMoreTag} title={u.divisions.slice(1).map(d => d.replace(/_/g, ' ')).join(', ')}>
-                            +{u.divisions.length - 1}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    <div className={styles.topCardInner}>
+                      <Link href={`/users/${u._id}`} className={`avatar ${styles.topCardAvatar}`}>
+                        {u.avatar ? <img src={u.avatar} alt={u.username} /> : u.username[0].toUpperCase()}
+                      </Link>
+                      <Link href={`/users/${u._id}`} className={styles.topCardName}>{u.username}</Link>
+                      <div className={styles.topCardTitle}>{getLevelTitle(u.level, levelTitles)}</div>
+                      {u.divisions && u.divisions.length > 0 && (
+                        <div className={styles.topCardDivisions}>
+                          <span className={`division-tag ${divTagClass[u.divisions[0]]}`}>{u.divisions[0].replace(/_/g, ' ')}</span>
+                          {u.divisions.length > 1 && (
+                            <span className={styles.topCardMoreTag} title={u.divisions.slice(1).map(d => d.replace(/_/g, ' ')).join(', ')}>
+                              +{u.divisions.length - 1}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </motion.div>
                 );
               })}
